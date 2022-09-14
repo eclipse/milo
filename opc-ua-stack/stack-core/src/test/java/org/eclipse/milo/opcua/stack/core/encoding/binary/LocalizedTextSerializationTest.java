@@ -30,8 +30,8 @@ public class LocalizedTextSerializationTest extends BinarySerializationFixture {
 
     @Test(dataProvider = "getLocalizedTexts", description = "LocalizedText is round-trip serializable.")
     public void testLocalizedText(LocalizedText localizedText) throws Exception {
-        writer.writeLocalizedText(localizedText);
-        LocalizedText decoded = reader.readLocalizedText();
+        writer.encodeLocalizedText(localizedText);
+        LocalizedText decoded = reader.decodeLocalizedText();
 
         assertEquals(decoded, localizedText);
     }

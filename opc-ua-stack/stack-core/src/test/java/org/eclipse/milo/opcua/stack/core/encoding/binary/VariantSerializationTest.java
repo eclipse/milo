@@ -47,8 +47,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
 
     @Test(dataProvider = "VariantProvider")
     public void testVariantRoundTrip(Variant variant) {
-        writer.writeVariant(variant);
-        Variant decoded = reader.readVariant();
+        writer.encodeVariant(variant);
+        Variant decoded = reader.decodeVariant();
 
         assertEquals(decoded, variant);
     }
@@ -61,8 +61,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         );
 
         Variant v = new Variant(sc1);
-        writer.writeVariant(v);
-        Variant decoded = reader.readVariant();
+        writer.encodeVariant(v);
+        Variant decoded = reader.decodeVariant();
 
         ExtensionObject extensionObject = (ExtensionObject) decoded.getValue();
         ServiceCounterDataType sc2 = (ServiceCounterDataType) extensionObject.decode(new TestEncodingContext());
@@ -91,8 +91,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
     @Test(dataProvider = "PrimitiveArrayVariantProvider",
         description = "Test that after primitive array types given to variants come out as expected after encoding/decoding.")
     public void testPrimitiveArrayVariantRoundTrip(Variant variant, Variant expected) {
-        writer.writeVariant(variant);
-        Variant decoded = reader.readVariant();
+        writer.encodeVariant(variant);
+        Variant decoded = reader.decodeVariant();
 
         assertEquals(decoded, expected);
     }
@@ -107,7 +107,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         OpcUaBinaryDecoder reader = new OpcUaBinaryDecoder(new TestEncodingContext());
         reader.setBuffer(buffer);
 
-        Variant v = reader.readVariant();
+        Variant v = reader.decodeVariant();
 
         assertNotNull(v);
         assertNull(v.getValue());

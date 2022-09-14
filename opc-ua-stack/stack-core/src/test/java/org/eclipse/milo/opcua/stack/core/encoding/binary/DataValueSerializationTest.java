@@ -32,10 +32,10 @@ public class DataValueSerializationTest {
     public void testDataValueRoundTrip(DataValue value) {
         ByteBuf buffer = BufferUtil.pooledBuffer();
         encoder.setBuffer(buffer);
-        encoder.writeDataValue(value);
+        encoder.encodeDataValue(value);
 
         decoder.setBuffer(buffer);
-        DataValue decodedValue = decoder.readDataValue();
+        DataValue decodedValue = decoder.decodeDataValue();
 
         assertEquals(decodedValue, value);
     }

@@ -36,8 +36,8 @@ public class DiagnosticInfoSerializationTest extends BinarySerializationFixture 
 
     @Test(dataProvider = "DiagnosticInfoProvider")
     public void testDiagnosticInfoRoundTrip(DiagnosticInfo diagnosticInfo) {
-        writer.writeDiagnosticInfo(diagnosticInfo);
-        DiagnosticInfo decoded = reader.readDiagnosticInfo();
+        writer.encodeDiagnosticInfo(diagnosticInfo);
+        DiagnosticInfo decoded = reader.decodeDiagnosticInfo();
 
         assertEquals(decoded, diagnosticInfo);
     }

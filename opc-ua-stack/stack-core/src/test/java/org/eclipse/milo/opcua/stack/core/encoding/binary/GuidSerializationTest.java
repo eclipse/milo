@@ -32,8 +32,8 @@ public class GuidSerializationTest extends BinarySerializationFixture {
 
     @Test(dataProvider = "GuidProvider", description = "Guid is round-trip serializable.")
     public void testGuidRoundTrip(UUID uuid) throws Exception {
-        writer.writeGuid(uuid);
-        UUID decoded = reader.readGuid();
+        writer.encodeGuid(uuid);
+        UUID decoded = reader.decodeGuid();
 
         assertEquals(decoded, uuid);
     }

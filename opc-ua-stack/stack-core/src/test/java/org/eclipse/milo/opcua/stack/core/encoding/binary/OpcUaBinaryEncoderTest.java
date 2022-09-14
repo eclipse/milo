@@ -35,47 +35,47 @@ public class OpcUaBinaryEncoderTest {
     @Test
     public void testWriteBit() throws Exception {
         {
-            writer.writeBit(1);
-            writer.writeBit(1);
-            writer.writeBit(1);
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(0);
-            writer.writeBit(0);
-            writer.writeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(1);
+            writer.encodeBit(1);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(0);
+            writer.encodeBit(0);
+            writer.encodeBit(0);
             assertEquals(buffer.readUnsignedByte(), 0b00001111);
         }
         {
-            writer.writeBit(0);
-            writer.writeBit(0);
-            writer.writeBit(0);
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(1);
-            writer.writeBit(1);
-            writer.writeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(0);
+            writer.encodeBit(0);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(1);
+            writer.encodeBit(1);
+            writer.encodeBit(1);
             assertEquals(buffer.readUnsignedByte(), 0b11110000);
         }
         {
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
             assertEquals(buffer.readUnsignedByte(), 0b10101010);
         }
         {
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(0);
-            writer.writeBit(1);
-            writer.writeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
+            writer.encodeBit(1);
+            writer.encodeBit(0);
             assertEquals(buffer.readUnsignedByte(), 0b01010101);
         }
     }
@@ -87,7 +87,7 @@ public class OpcUaBinaryEncoderTest {
             AccessLevelType.Field.CurrentWrite
         );
 
-        writer.writeVariant(new Variant(accessLevelType));
+        writer.encodeVariant(new Variant(accessLevelType));
 
         assertEquals(ubyte(buffer.readUnsignedByte()), accessLevelType.getValue());
     }

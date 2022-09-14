@@ -75,8 +75,8 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         return this;
     }
 
-    public <T> T[] readArray(Supplier<T> read, Class<T> clazz) throws UaSerializationException {
-        int length = readInt32();
+    public <T> T[] decodeArray(Supplier<T> read, Class<T> clazz) throws UaSerializationException {
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -94,7 +94,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
     }
 
-    public int readBit() throws UaSerializationException {
+    public int decodeBit() throws UaSerializationException {
         if (bitsRemaining == 0) {
             currentByte = buffer.readUnsignedByte();
             bitsRemaining = 8;
@@ -106,80 +106,80 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         return bit;
     }
 
-    public Character readCharacter() throws UaSerializationException {
+    public Character decodeCharacter() throws UaSerializationException {
         return (char) (buffer.readUnsignedByte());
     }
 
-    public Character readWideChar() throws UaSerializationException {
+    public Character decodeWideChar() throws UaSerializationException {
         return buffer.readChar();
     }
 
-    public String readUtf8NullTerminatedString() throws UaSerializationException {
-        return readNullTerminatedString(CHARSET_UTF8);
+    public String decodeUtf8NullTerminatedString() throws UaSerializationException {
+        return decodeNullTerminatedString(CHARSET_UTF8);
     }
 
-    public String readUtf8CharArray() throws UaSerializationException {
-        return readLengthPrefixedString(CHARSET_UTF8);
+    public String decodeUtf8CharArray() throws UaSerializationException {
+        return decodeLengthPrefixedString(CHARSET_UTF8);
     }
 
-    public String readUtf16NullTerminatedString() throws UaSerializationException {
-        return readNullTerminatedString(CHARSET_UTF16);
+    public String decodeUtf16NullTerminatedString() throws UaSerializationException {
+        return decodeNullTerminatedString(CHARSET_UTF16);
     }
 
-    public String readUtf16CharArray() throws UaSerializationException {
-        return readLengthPrefixedString(CHARSET_UTF16);
+    public String decodeUtf16CharArray() throws UaSerializationException {
+        return decodeLengthPrefixedString(CHARSET_UTF16);
     }
 
-    public Boolean readBoolean() throws UaSerializationException {
+    public Boolean decodeBoolean() throws UaSerializationException {
         return buffer.readBoolean();
     }
 
-    public Byte readSByte() throws UaSerializationException {
+    public Byte decodeSByte() throws UaSerializationException {
         return buffer.readByte();
     }
 
-    public UByte readByte() throws UaSerializationException {
+    public UByte decodeByte() throws UaSerializationException {
         return ubyte(buffer.readUnsignedByte());
     }
 
-    public Short readInt16() throws UaSerializationException {
+    public Short decodeInt16() throws UaSerializationException {
         return buffer.readShortLE();
     }
 
-    public UShort readUInt16() throws UaSerializationException {
+    public UShort decodeUInt16() throws UaSerializationException {
         return ushort(buffer.readUnsignedShortLE());
     }
 
-    public Integer readInt32() throws UaSerializationException {
+    public Integer decodeInt32() throws UaSerializationException {
         return buffer.readIntLE();
     }
 
-    public UInteger readUInt32() throws UaSerializationException {
+    public UInteger decodeUInt32() throws UaSerializationException {
         return uint(buffer.readUnsignedIntLE());
     }
 
-    public Long readInt64() throws UaSerializationException {
+    public Long decodeInt64() throws UaSerializationException {
         return buffer.readLongLE();
     }
 
-    public ULong readUInt64() throws UaSerializationException {
+    public ULong decodeUInt64() throws UaSerializationException {
         return ulong(buffer.readLongLE());
     }
 
-    public Float readFloat() throws UaSerializationException {
+    public Float decodeFloat() throws UaSerializationException {
         return buffer.readFloatLE();
     }
 
-    public Double readDouble() throws UaSerializationException {
+    public Double decodeDouble() throws UaSerializationException {
         return buffer.readDoubleLE();
     }
 
-    public DateTime readDateTime() throws UaSerializationException {
+    public DateTime decodeDateTime() throws UaSerializationException {
         return new DateTime(buffer.readLongLE());
     }
 
-    public ByteString readByteString() throws UaSerializationException {
-        int length = readInt32();
+    public ByteString decodeByteString() throws UaSerializationException {
+        int length = decodeInt32();
 
         if (length == -1) {
             return ByteString.NULL_VALUE;
@@ -192,7 +192,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
     }
 
-    public UUID readGuid() throws UaSerializationException {
+    public UUID decodeGuid() throws UaSerializationException {
         long part1 = buffer.readUnsignedIntLE();
         long part2 = buffer.readUnsignedShortLE();
         long part3 = buffer.readUnsignedShortLE();
@@ -203,8 +203,8 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         return new UUID(msb, part4);
     }
 
-    public XmlElement readXmlElement() throws UaSerializationException {
-        ByteString byteString = readByteString();
+    public XmlElement decodeXmlElement() throws UaSerializationException {
+        ByteString byteString = decodeByteString();
         byte[] bs = byteString.bytes();
 
         if (bs == null) {
@@ -215,20 +215,20 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
     }
 
-    public DataValue readDataValue() throws UaSerializationException {
+    public DataValue decodeDataValue() throws UaSerializationException {
         int mask = buffer.readByte() & 0xFF;
 
-        Variant value = ((mask & 0x01) != 0) ? readVariant() : Variant.NULL_VALUE;
-        StatusCode status = ((mask & 0x02) != 0) ? readStatusCode() : StatusCode.GOOD;
-        DateTime sourceTime = ((mask & 0x04) != 0) ? readDateTime() : DateTime.MIN_VALUE;
-        UShort sourcePicoseconds = ((mask & 0x10) != 0) ? readUInt16() : null;
-        DateTime serverTime = ((mask & 0x08) != 0) ? readDateTime() : DateTime.MIN_VALUE;
-        UShort serverPicoseconds = ((mask & 0x20) != 0) ? readUInt16() : null;
+        Variant value = ((mask & 0x01) != 0) ? decodeVariant() : Variant.NULL_VALUE;
+        StatusCode status = ((mask & 0x02) != 0) ? decodeStatusCode() : StatusCode.GOOD;
+        DateTime sourceTime = ((mask & 0x04) != 0) ? decodeDateTime() : DateTime.MIN_VALUE;
+        UShort sourcePicoseconds = ((mask & 0x10) != 0) ? decodeUInt16() : null;
+        DateTime serverTime = ((mask & 0x08) != 0) ? decodeDateTime() : DateTime.MIN_VALUE;
+        UShort serverPicoseconds = ((mask & 0x20) != 0) ? decodeUInt16() : null;
 
         return new DataValue(value, status, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
     }
 
-    public DiagnosticInfo readDiagnosticInfo() throws UaSerializationException {
+    public DiagnosticInfo decodeDiagnosticInfo() throws UaSerializationException {
         if (depth.get() >= context.getEncodingLimits().getMaxRecursionDepth()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
@@ -244,13 +244,13 @@ public class OpcUaBinaryDecoder implements UaDecoder {
             if (mask == 0) {
                 return null;
             } else {
-                int symbolicId = ((mask & 0x01) == 0x01) ? readInt32() : -1;
-                int namespaceUri = ((mask & 0x02) == 0x02) ? readInt32() : -1;
-                int localizedText = ((mask & 0x04) == 0x04) ? readInt32() : -1;
-                int locale = ((mask & 0x08) == 0x08) ? readInt32() : -1;
-                String additionalInfo = ((mask & 0x10) == 0x10) ? readString() : null;
-                StatusCode innerStatusCode = ((mask & 0x20) == 0x20) ? readStatusCode() : null;
-                DiagnosticInfo innerDiagnosticInfo = ((mask & 0x40) == 0x40) ? readDiagnosticInfo() : null;
+                int symbolicId = ((mask & 0x01) == 0x01) ? decodeInt32() : -1;
+                int namespaceUri = ((mask & 0x02) == 0x02) ? decodeInt32() : -1;
+                int localizedText = ((mask & 0x04) == 0x04) ? decodeInt32() : -1;
+                int locale = ((mask & 0x08) == 0x08) ? decodeInt32() : -1;
+                String additionalInfo = ((mask & 0x10) == 0x10) ? decodeString() : null;
+                StatusCode innerStatusCode = ((mask & 0x20) == 0x20) ? decodeStatusCode() : null;
+                DiagnosticInfo innerDiagnosticInfo = ((mask & 0x40) == 0x40) ? decodeDiagnosticInfo() : null;
 
                 return new DiagnosticInfo(
                     namespaceUri,
@@ -267,37 +267,37 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
     }
 
-    public ExpandedNodeId readExpandedNodeId() throws UaSerializationException {
+    public ExpandedNodeId decodeExpandedNodeId() throws UaSerializationException {
         int flags = buffer.getByte(buffer.readerIndex());
 
-        NodeId nodeId = readNodeId();
+        NodeId nodeId = decodeNodeId();
 
         String namespaceUri = null;
         UInteger serverIndex = UInteger.MIN;
 
         if ((flags & 0x80) == 0x80) {
-            namespaceUri = readString();
+            namespaceUri = decodeString();
         }
 
         if ((flags & 0x40) == 0x40) {
-            serverIndex = readUInt32();
+            serverIndex = decodeUInt32();
         }
 
         return new ExpandedNodeId(nodeId.getNamespaceIndex(), namespaceUri, nodeId.getIdentifier(), serverIndex);
     }
 
-    public ExtensionObject readExtensionObject() throws UaSerializationException {
-        NodeId encodingTypeId = readNodeId();
+    public ExtensionObject decodeExtensionObject() throws UaSerializationException {
+        NodeId encodingTypeId = decodeNodeId();
         int encoding = buffer.readByte();
 
         if (encoding == 0) {
             return new ExtensionObject(ByteString.NULL_VALUE, encodingTypeId);
         } else if (encoding == 1) {
-            ByteString byteString = readByteString();
+            ByteString byteString = decodeByteString();
 
             return new ExtensionObject(byteString, encodingTypeId);
         } else if (encoding == 2) {
-            XmlElement xmlElement = readXmlElement();
+            XmlElement xmlElement = decodeXmlElement();
 
             return new ExtensionObject(xmlElement, encodingTypeId);
         } else {
@@ -307,24 +307,24 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
     }
 
-    public LocalizedText readLocalizedText() throws UaSerializationException {
+    public LocalizedText decodeLocalizedText() throws UaSerializationException {
         int mask = buffer.readByte();
 
         String locale = null;
         String text = null;
 
         if ((mask & 1) == 1) {
-            locale = readString();
+            locale = decodeString();
         }
 
         if ((mask & 2) == 2) {
-            text = readString();
+            text = decodeString();
         }
 
         return new LocalizedText(locale, text);
     }
 
-    public NodeId readNodeId() throws UaSerializationException {
+    public NodeId decodeNodeId() throws UaSerializationException {
         int format = buffer.readByte() & 0x0F;
 
         if (format == 0x00) {
@@ -335,24 +335,24 @@ public class OpcUaBinaryDecoder implements UaDecoder {
             return new NodeId(ushort(buffer.readUnsignedByte()), uint(buffer.readUnsignedShortLE()));
         } else if (format == 0x02) {
             /* Numeric format */
-            return new NodeId(readUInt16(), readUInt32());
+            return new NodeId(decodeUInt16(), decodeUInt32());
         } else if (format == 0x03) {
             /* String format */
-            return new NodeId(readUInt16(), readString());
+            return new NodeId(decodeUInt16(), decodeString());
         } else if (format == 0x04) {
             /* Guid format */
-            return new NodeId(readUInt16(), readGuid());
+            return new NodeId(decodeUInt16(), decodeGuid());
         } else if (format == 0x05) {
             /* Opaque format */
-            return new NodeId(readUInt16(), readByteString());
+            return new NodeId(decodeUInt16(), decodeByteString());
         } else {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid NodeId format: " + format);
         }
     }
 
-    public QualifiedName readQualifiedName() throws UaSerializationException {
-        UShort namespaceIndex = readUInt16();
-        String name = readString();
+    public QualifiedName decodeQualifiedName() throws UaSerializationException {
+        UShort namespaceIndex = decodeUInt16();
+        String name = decodeString();
 
         // invalid QualifiedNames become "null" QualifiedNames
         if (name != null && name.length() > 512) {
@@ -362,15 +362,15 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         return new QualifiedName(namespaceIndex, name);
     }
 
-    public StatusCode readStatusCode() throws UaSerializationException {
-        return new StatusCode(readUInt32());
+    public StatusCode decodeStatusCode() throws UaSerializationException {
+        return new StatusCode(decodeUInt32());
     }
 
-    public String readString() throws UaSerializationException {
-        return readLengthPrefixedString(CHARSET_UTF8);
+    public String decodeString() throws UaSerializationException {
+        return decodeLengthPrefixedString(CHARSET_UTF8);
     }
 
-    public Variant readVariant() throws UaSerializationException {
+    public Variant decodeVariant() throws UaSerializationException {
         if (depth.get() >= context.getEncodingLimits().getMaxRecursionDepth()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
@@ -392,7 +392,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
                 if (arrayEncoded) {
                     Class<?> backingClass = TypeUtil.getBackingClass(typeId);
-                    int length = readInt32();
+                    int length = decodeInt32();
 
                     if (length == -1) {
                         return new Variant(null);
@@ -424,8 +424,8 @@ public class OpcUaBinaryDecoder implements UaDecoder {
     }
 
     @Nullable
-    private String readLengthPrefixedString(Charset charset) {
-        int length = readInt32();
+    private String decodeLengthPrefixedString(Charset charset) {
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -445,7 +445,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
     }
 
-    private String readNullTerminatedString(Charset charset) {
+    private String decodeNullTerminatedString(Charset charset) {
         int indexOfNull = buffer.forEachByte(ByteProcessor.FIND_NUL);
 
         if (indexOfNull == -1) {
@@ -462,14 +462,14 @@ public class OpcUaBinaryDecoder implements UaDecoder {
     }
 
     private int[] decodeDimensions() {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return new int[0];
         } else {
             int[] is = new int[length];
             for (int i = 0; i < length; i++) {
-                is[i] = readInt32();
+                is[i] = decodeInt32();
             }
             return is;
         }
@@ -478,55 +478,55 @@ public class OpcUaBinaryDecoder implements UaDecoder {
     private Object decodeBuiltinType(int typeId) throws UaSerializationException {
         switch (typeId) {
             case 1:
-                return readBoolean();
+                return decodeBoolean();
             case 2:
-                return readSByte();
+                return decodeSByte();
             case 3:
-                return readByte();
+                return decodeByte();
             case 4:
-                return readInt16();
+                return decodeInt16();
             case 5:
-                return readUInt16();
+                return decodeUInt16();
             case 6:
-                return readInt32();
+                return decodeInt32();
             case 7:
-                return readUInt32();
+                return decodeUInt32();
             case 8:
-                return readInt64();
+                return decodeInt64();
             case 9:
-                return readUInt64();
+                return decodeUInt64();
             case 10:
-                return readFloat();
+                return decodeFloat();
             case 11:
-                return readDouble();
+                return decodeDouble();
             case 12:
-                return readString();
+                return decodeString();
             case 13:
-                return readDateTime();
+                return decodeDateTime();
             case 14:
-                return readGuid();
+                return decodeGuid();
             case 15:
-                return readByteString();
+                return decodeByteString();
             case 16:
-                return readXmlElement();
+                return decodeXmlElement();
             case 17:
-                return readNodeId();
+                return decodeNodeId();
             case 18:
-                return readExpandedNodeId();
+                return decodeExpandedNodeId();
             case 19:
-                return readStatusCode();
+                return decodeStatusCode();
             case 20:
-                return readQualifiedName();
+                return decodeQualifiedName();
             case 21:
-                return readLocalizedText();
+                return decodeLocalizedText();
             case 22:
-                return readExtensionObject();
+                return decodeExtensionObject();
             case 23:
-                return readDataValue();
+                return decodeDataValue();
             case 24:
-                return readVariant();
+                return decodeVariant();
             case 25:
-                return readDiagnosticInfo();
+                return decodeDiagnosticInfo();
             default:
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError, "unknown builtin type: " + typeId);
         }
@@ -534,132 +534,132 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Boolean decodeBoolean(String field) throws UaSerializationException {
-        return readBoolean();
+        return decodeBoolean();
     }
 
     @Override
     public Byte decodeSByte(String field) throws UaSerializationException {
-        return readSByte();
+        return decodeSByte();
     }
 
     @Override
     public Short decodeInt16(String field) throws UaSerializationException {
-        return readInt16();
+        return decodeInt16();
     }
 
     @Override
     public Integer decodeInt32(String field) throws UaSerializationException {
-        return readInt32();
+        return decodeInt32();
     }
 
     @Override
     public Long decodeInt64(String field) throws UaSerializationException {
-        return readInt64();
+        return decodeInt64();
     }
 
     @Override
     public UByte decodeByte(String field) throws UaSerializationException {
-        return readByte();
+        return decodeByte();
     }
 
     @Override
     public UShort decodeUInt16(String field) throws UaSerializationException {
-        return readUInt16();
+        return decodeUInt16();
     }
 
     @Override
     public UInteger decodeUInt32(String field) throws UaSerializationException {
-        return readUInt32();
+        return decodeUInt32();
     }
 
     @Override
     public ULong decodeUInt64(String field) throws UaSerializationException {
-        return readUInt64();
+        return decodeUInt64();
     }
 
     @Override
     public Float decodeFloat(String field) throws UaSerializationException {
-        return readFloat();
+        return decodeFloat();
     }
 
     @Override
     public Double decodeDouble(String field) throws UaSerializationException {
-        return readDouble();
+        return decodeDouble();
     }
 
     @Override
     public String decodeString(String field) throws UaSerializationException {
-        return readString();
+        return decodeString();
     }
 
     @Override
     public DateTime decodeDateTime(String field) throws UaSerializationException {
-        return readDateTime();
+        return decodeDateTime();
     }
 
     @Override
     public UUID decodeGuid(String field) throws UaSerializationException {
-        return readGuid();
+        return decodeGuid();
     }
 
     @Override
     public ByteString decodeByteString(String field) throws UaSerializationException {
-        return readByteString();
+        return decodeByteString();
     }
 
     @Override
     public XmlElement decodeXmlElement(String field) throws UaSerializationException {
-        return readXmlElement();
+        return decodeXmlElement();
     }
 
     @Override
     public NodeId decodeNodeId(String field) throws UaSerializationException {
-        return readNodeId();
+        return decodeNodeId();
     }
 
     @Override
     public ExpandedNodeId decodeExpandedNodeId(String field) throws UaSerializationException {
-        return readExpandedNodeId();
+        return decodeExpandedNodeId();
     }
 
     @Override
     public StatusCode decodeStatusCode(String field) throws UaSerializationException {
-        return readStatusCode();
+        return decodeStatusCode();
     }
 
     @Override
     public QualifiedName decodeQualifiedName(String field) throws UaSerializationException {
-        return readQualifiedName();
+        return decodeQualifiedName();
     }
 
     @Override
     public LocalizedText decodeLocalizedText(String field) throws UaSerializationException {
-        return readLocalizedText();
+        return decodeLocalizedText();
     }
 
     @Override
     public ExtensionObject decodeExtensionObject(String field) throws UaSerializationException {
-        return readExtensionObject();
+        return decodeExtensionObject();
     }
 
     @Override
     public DataValue decodeDataValue(String field) throws UaSerializationException {
-        return readDataValue();
+        return decodeDataValue();
     }
 
     @Override
     public Variant decodeVariant(String field) throws UaSerializationException {
-        return readVariant();
+        return decodeVariant();
     }
 
     @Override
     public DiagnosticInfo decodeDiagnosticInfo(String field) throws UaSerializationException {
-        return readDiagnosticInfo();
+        return decodeDiagnosticInfo();
     }
 
     @Override
     public UaMessageType decodeMessage(String field) throws UaSerializationException {
-        NodeId encodingId = readNodeId();
+        NodeId encodingId = decodeNodeId();
 
         DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
@@ -711,7 +711,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Boolean[] decodeBooleanArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -728,7 +728,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Byte[] decodeSByteArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -745,7 +745,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Short[] decodeInt16Array(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -762,7 +762,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Integer[] decodeInt32Array(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -779,7 +779,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Long[] decodeInt64Array(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -796,7 +796,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public UByte[] decodeByteArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -813,7 +813,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public UShort[] decodeUInt16Array(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -830,7 +830,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public UInteger[] decodeUInt32Array(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -847,7 +847,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public ULong[] decodeUInt64Array(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -864,7 +864,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Float[] decodeFloatArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -881,7 +881,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Double[] decodeDoubleArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -898,7 +898,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public String[] decodeStringArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -915,7 +915,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public DateTime[] decodeDateTimeArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -932,7 +932,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public UUID[] decodeGuidArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -949,7 +949,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public ByteString[] decodeByteStringArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -966,7 +966,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public XmlElement[] decodeXmlElementArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -983,7 +983,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public NodeId[] decodeNodeIdArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1000,7 +1000,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public ExpandedNodeId[] decodeExpandedNodeIdArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1017,7 +1017,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public StatusCode[] decodeStatusCodeArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1034,7 +1034,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public QualifiedName[] decodeQualifiedNameArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1051,7 +1051,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public LocalizedText[] decodeLocalizedTextArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1068,7 +1068,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public ExtensionObject[] decodeExtensionObjectArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1085,7 +1085,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public DataValue[] decodeDataValueArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1102,7 +1102,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Variant[] decodeVariantArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1119,7 +1119,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public DiagnosticInfo[] decodeDiagnosticInfoArray(String field) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1141,7 +1141,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Object[] decodeStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;
@@ -1208,7 +1208,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
     public <T> T[] decodeArray(
         String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException {
 
-        int length = readInt32();
+        int length = decodeInt32();
 
         if (length == -1) {
             return null;

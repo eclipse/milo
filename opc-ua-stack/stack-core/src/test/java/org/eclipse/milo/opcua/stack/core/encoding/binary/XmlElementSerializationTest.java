@@ -28,8 +28,8 @@ public class XmlElementSerializationTest extends BinarySerializationFixture {
 
     @Test(dataProvider = "XmlElementProvider", description = "XmlElement is round-trip serializable.")
     public void testXmlElementRoundTrip(XmlElement element) throws Exception {
-        writer.writeXmlElement(element);
-        XmlElement decoded = reader.readXmlElement();
+        writer.encodeXmlElement(element);
+        XmlElement decoded = reader.decodeXmlElement();
 
         assertEquals(decoded, element);
     }

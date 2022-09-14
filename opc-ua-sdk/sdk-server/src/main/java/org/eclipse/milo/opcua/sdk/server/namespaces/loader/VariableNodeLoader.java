@@ -118,7 +118,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12169), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12169), new NodeId(0, 46), new NodeId(0, 120).expanded(), false));
         this.nodeManager.addNode(node);
@@ -131,7 +131,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15958), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15958), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -144,7 +144,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15959), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15959), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -157,7 +157,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15960), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15960), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -170,7 +170,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15961), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15961), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -183,7 +183,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15962), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15962), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -196,7 +196,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15963), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15963), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -209,7 +209,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15964), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15964), new NodeId(0, 46), new NodeId(0, 15957).expanded(), false));
         this.nodeManager.addNode(node);
@@ -729,7 +729,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11490), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11490), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11490), new NodeId(0, 46), new NodeId(0, 11489).expanded(), false));
@@ -743,7 +743,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11491), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11491), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11491), new NodeId(0, 46), new NodeId(0, 11489).expanded(), false));
@@ -757,7 +757,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12872), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12872), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12872), new NodeId(0, 46), new NodeId(0, 12871).expanded(), false));
@@ -771,7 +771,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12747), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12747), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12747), new NodeId(0, 46), new NodeId(0, 12746).expanded(), false));
@@ -785,7 +785,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12748), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12748), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12748), new NodeId(0, 46), new NodeId(0, 12746).expanded(), false));
@@ -799,7 +799,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12884), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12884), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12884), new NodeId(0, 46), new NodeId(0, 12883).expanded(), false));
@@ -901,7 +901,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16297), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16297), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16297), new NodeId(0, 46), new NodeId(0, 16296).expanded(), false));
@@ -915,7 +915,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16298), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16298), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16298), new NodeId(0, 46), new NodeId(0, 16296).expanded(), false));
@@ -929,7 +929,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16300), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16300), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16300), new NodeId(0, 46), new NodeId(0, 16299).expanded(), false));
@@ -2355,7 +2355,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11581), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11581), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11581), new NodeId(0, 46), new NodeId(0, 11580).expanded(), false));
@@ -2369,7 +2369,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11582), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11582), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11582), new NodeId(0, 46), new NodeId(0, 11580).expanded(), false));
@@ -2383,7 +2383,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11584), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11584), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11584), new NodeId(0, 46), new NodeId(0, 11583).expanded(), false));
@@ -2397,7 +2397,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11586), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11586), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11586), new NodeId(0, 46), new NodeId(0, 11585).expanded(), false));
@@ -2411,7 +2411,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11587), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11587), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11587), new NodeId(0, 46), new NodeId(0, 11585).expanded(), false));
@@ -2425,7 +2425,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11589), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11589), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11589), new NodeId(0, 46), new NodeId(0, 11588).expanded(), false));
@@ -2439,7 +2439,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11591), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11591), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11591), new NodeId(0, 46), new NodeId(0, 11590).expanded(), false));
@@ -2453,7 +2453,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11592), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11592), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11592), new NodeId(0, 46), new NodeId(0, 11590).expanded(), false));
@@ -2467,7 +2467,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11594), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11594), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11594), new NodeId(0, 46), new NodeId(0, 11593).expanded(), false));
@@ -2569,7 +2569,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11630), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11630), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11630), new NodeId(0, 46), new NodeId(0, 11629).expanded(), false));
@@ -2583,7 +2583,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11631), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11631), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11631), new NodeId(0, 46), new NodeId(0, 11629).expanded(), false));
@@ -2597,7 +2597,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11633), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11633), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11633), new NodeId(0, 46), new NodeId(0, 11632).expanded(), false));
@@ -2611,7 +2611,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11635), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11635), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11635), new NodeId(0, 46), new NodeId(0, 11634).expanded(), false));
@@ -2625,7 +2625,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11636), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11636), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11636), new NodeId(0, 46), new NodeId(0, 11634).expanded(), false));
@@ -2639,7 +2639,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11638), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11638), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11638), new NodeId(0, 46), new NodeId(0, 11637).expanded(), false));
@@ -2653,7 +2653,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11640), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11640), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11640), new NodeId(0, 46), new NodeId(0, 11639).expanded(), false));
@@ -2667,7 +2667,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11641), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11641), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11641), new NodeId(0, 46), new NodeId(0, 11639).expanded(), false));
@@ -2681,7 +2681,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11643), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11643), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11643), new NodeId(0, 46), new NodeId(0, 11642).expanded(), false));
@@ -5374,7 +5374,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16302), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16302), new NodeId(0, 46), new NodeId(0, 16301).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5387,7 +5387,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16303), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16303), new NodeId(0, 46), new NodeId(0, 16301).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5400,7 +5400,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16305), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16305), new NodeId(0, 46), new NodeId(0, 16304).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5614,7 +5614,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11493), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11493), new NodeId(0, 46), new NodeId(0, 11492).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5627,7 +5627,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11494), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11494), new NodeId(0, 46), new NodeId(0, 11492).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5640,7 +5640,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12874), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12874), new NodeId(0, 46), new NodeId(0, 12873).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5653,7 +5653,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12750), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12750), new NodeId(0, 46), new NodeId(0, 12749).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5666,7 +5666,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12751), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12751), new NodeId(0, 46), new NodeId(0, 12749).expanded(), false));
         this.nodeManager.addNode(node);
@@ -5679,7 +5679,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12887), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12887), new NodeId(0, 46), new NodeId(0, 12886).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6306,7 +6306,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11940), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11940), new NodeId(0, 46), new NodeId(0, 11939).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6319,7 +6319,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13356), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13356), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13356), new NodeId(0, 46), new NodeId(0, 13355).expanded(), false));
@@ -6333,7 +6333,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13357), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13357), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13357), new NodeId(0, 46), new NodeId(0, 13355).expanded(), false));
@@ -6347,7 +6347,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13359), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13359), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13359), new NodeId(0, 46), new NodeId(0, 13358).expanded(), false));
@@ -6361,7 +6361,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13360), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13360), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13360), new NodeId(0, 46), new NodeId(0, 13358).expanded(), false));
@@ -6375,7 +6375,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17719), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17719), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17719), new NodeId(0, 46), new NodeId(0, 17718).expanded(), false));
@@ -6389,7 +6389,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13364), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13364), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13364), new NodeId(0, 46), new NodeId(0, 13363).expanded(), false));
@@ -6403,7 +6403,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13365), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13365), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13365), new NodeId(0, 46), new NodeId(0, 13363).expanded(), false));
@@ -6449,7 +6449,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13373), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13373), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13373), new NodeId(0, 46), new NodeId(0, 13372).expanded(), false));
@@ -6463,7 +6463,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13374), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13374), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13374), new NodeId(0, 46), new NodeId(0, 13372).expanded(), false));
@@ -6477,7 +6477,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13376), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13376), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13376), new NodeId(0, 46), new NodeId(0, 13375).expanded(), false));
@@ -6491,7 +6491,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13378), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13378), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13378), new NodeId(0, 46), new NodeId(0, 13377).expanded(), false));
@@ -6505,7 +6505,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13379), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13379), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13379), new NodeId(0, 46), new NodeId(0, 13377).expanded(), false));
@@ -6519,7 +6519,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13381), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13381), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13381), new NodeId(0, 46), new NodeId(0, 13380).expanded(), false));
@@ -6533,7 +6533,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13383), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13383), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13383), new NodeId(0, 46), new NodeId(0, 13382).expanded(), false));
@@ -6547,7 +6547,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13384), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13384), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13384), new NodeId(0, 46), new NodeId(0, 13382).expanded(), false));
@@ -6561,7 +6561,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13386), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13386), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13386), new NodeId(0, 46), new NodeId(0, 13385).expanded(), false));
@@ -6575,7 +6575,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13388), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13388), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13388), new NodeId(0, 46), new NodeId(0, 13387).expanded(), false));
@@ -6589,7 +6589,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13389), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13389), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13389), new NodeId(0, 46), new NodeId(0, 13387).expanded(), false));
@@ -6603,7 +6603,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13391), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13391), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13391), new NodeId(0, 46), new NodeId(0, 13390).expanded(), false));
@@ -6617,7 +6617,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13392), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13392), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13392), new NodeId(0, 46), new NodeId(0, 13390).expanded(), false));
@@ -6631,7 +6631,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13394), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13394), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13394), new NodeId(0, 46), new NodeId(0, 13393).expanded(), false));
@@ -6645,7 +6645,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13396), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13396), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13396), new NodeId(0, 46), new NodeId(0, 13395).expanded(), false));
@@ -6659,7 +6659,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13397), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13397), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13397), new NodeId(0, 46), new NodeId(0, 13395).expanded(), false));
@@ -6673,7 +6673,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16349), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16349), new NodeId(0, 46), new NodeId(0, 16348).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6686,7 +6686,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16350), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16350), new NodeId(0, 46), new NodeId(0, 16348).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6699,7 +6699,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16352), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16352), new NodeId(0, 46), new NodeId(0, 16351).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6712,7 +6712,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16353), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16353), new NodeId(0, 46), new NodeId(0, 16351).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6725,7 +6725,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16355), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16355), new NodeId(0, 46), new NodeId(0, 16354).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6738,7 +6738,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16357), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16357), new NodeId(0, 46), new NodeId(0, 16356).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6751,7 +6751,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16358), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16358), new NodeId(0, 46), new NodeId(0, 16356).expanded(), false));
         this.nodeManager.addNode(node);
@@ -6772,7 +6772,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15747), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15747), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15747), new NodeId(0, 46), new NodeId(0, 15746).expanded(), false));
@@ -6786,7 +6786,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15748), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15748), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15748), new NodeId(0, 46), new NodeId(0, 15746).expanded(), false));
@@ -6800,7 +6800,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16359), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16359), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16359), new NodeId(0, 46), new NodeId(0, 15749).expanded(), false));
@@ -6814,7 +6814,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15750), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15750), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15750), new NodeId(0, 46), new NodeId(0, 15749).expanded(), false));
@@ -6828,7 +6828,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15752), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15752), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15752), new NodeId(0, 46), new NodeId(0, 15751).expanded(), false));
@@ -6842,7 +6842,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15753), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15753), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15753), new NodeId(0, 46), new NodeId(0, 15751).expanded(), false));
@@ -6873,7 +6873,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15816), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15816), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15816), new NodeId(0, 46), new NodeId(0, 15815).expanded(), false));
@@ -6887,7 +6887,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15818), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15818), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15818), new NodeId(0, 46), new NodeId(0, 15817).expanded(), false));
@@ -6901,7 +6901,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15820), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15820), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15820), new NodeId(0, 46), new NodeId(0, 15819).expanded(), false));
@@ -6915,7 +6915,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15822), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15822), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15822), new NodeId(0, 46), new NodeId(0, 15821).expanded(), false));
@@ -6929,7 +6929,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15824), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15824), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15824), new NodeId(0, 46), new NodeId(0, 15823).expanded(), false));
@@ -6943,7 +6943,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15826), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15826), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15826), new NodeId(0, 46), new NodeId(0, 15825).expanded(), false));
@@ -6957,7 +6957,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15828), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15828), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15828), new NodeId(0, 46), new NodeId(0, 15827).expanded(), false));
@@ -6971,7 +6971,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15830), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15830), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15830), new NodeId(0, 46), new NodeId(0, 15829).expanded(), false));
@@ -6985,7 +6985,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15832), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15832), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15832), new NodeId(0, 46), new NodeId(0, 15831).expanded(), false));
@@ -6999,7 +6999,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15834), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15834), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15834), new NodeId(0, 46), new NodeId(0, 15833).expanded(), false));
@@ -7013,7 +7013,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15836), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15836), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15836), new NodeId(0, 46), new NodeId(0, 15835).expanded(), false));
@@ -7027,7 +7027,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15838), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15838), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15838), new NodeId(0, 46), new NodeId(0, 15837).expanded(), false));
@@ -7041,7 +7041,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15840), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15840), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15840), new NodeId(0, 46), new NodeId(0, 15839).expanded(), false));
@@ -7055,7 +7055,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15842), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15842), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15842), new NodeId(0, 46), new NodeId(0, 15841).expanded(), false));
@@ -7077,7 +7077,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15998), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15998), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15998), new NodeId(0, 46), new NodeId(0, 15997).expanded(), false));
@@ -7091,7 +7091,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15999), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15999), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15999), new NodeId(0, 46), new NodeId(0, 15997).expanded(), false));
@@ -7105,7 +7105,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16001), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16001), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16001), new NodeId(0, 46), new NodeId(0, 16000).expanded(), false));
@@ -7167,7 +7167,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15625), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15625), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15625), new NodeId(0, 46), new NodeId(0, 15624).expanded(), false));
@@ -7181,7 +7181,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15627), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15627), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15627), new NodeId(0, 46), new NodeId(0, 15626).expanded(), false));
@@ -7195,7 +7195,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16177), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16177), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16177), new NodeId(0, 46), new NodeId(0, 16176).expanded(), false));
@@ -7209,7 +7209,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16179), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16179), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16179), new NodeId(0, 46), new NodeId(0, 16178).expanded(), false));
@@ -7223,7 +7223,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16181), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16181), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16181), new NodeId(0, 46), new NodeId(0, 16180).expanded(), false));
@@ -7237,7 +7237,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16183), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16183), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16183), new NodeId(0, 46), new NodeId(0, 16182).expanded(), false));
@@ -7251,7 +7251,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15633), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15633), new NodeId(0, 46), new NodeId(0, 15632).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7299,7 +7299,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15649), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15649), new NodeId(0, 46), new NodeId(0, 15648).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7312,7 +7312,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15651), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15651), new NodeId(0, 46), new NodeId(0, 15650).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7325,7 +7325,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16196), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16196), new NodeId(0, 46), new NodeId(0, 16195).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7338,7 +7338,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16198), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16198), new NodeId(0, 46), new NodeId(0, 16197).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7351,7 +7351,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16200), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16200), new NodeId(0, 46), new NodeId(0, 16199).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7364,7 +7364,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16202), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16202), new NodeId(0, 46), new NodeId(0, 16201).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7419,7 +7419,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15661), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15661), new NodeId(0, 46), new NodeId(0, 15660).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7432,7 +7432,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15663), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15663), new NodeId(0, 46), new NodeId(0, 15662).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7445,7 +7445,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16207), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16207), new NodeId(0, 46), new NodeId(0, 16206).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7458,7 +7458,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16209), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16209), new NodeId(0, 46), new NodeId(0, 16208).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7471,7 +7471,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16211), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16211), new NodeId(0, 46), new NodeId(0, 16210).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7484,7 +7484,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16213), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16213), new NodeId(0, 46), new NodeId(0, 16212).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7539,7 +7539,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15673), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15673), new NodeId(0, 46), new NodeId(0, 15672).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7552,7 +7552,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15675), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15675), new NodeId(0, 46), new NodeId(0, 15674).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7565,7 +7565,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16218), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16218), new NodeId(0, 46), new NodeId(0, 16217).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7578,7 +7578,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16220), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16220), new NodeId(0, 46), new NodeId(0, 16219).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7591,7 +7591,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16222), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16222), new NodeId(0, 46), new NodeId(0, 16221).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7604,7 +7604,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16224), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16224), new NodeId(0, 46), new NodeId(0, 16223).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7659,7 +7659,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15685), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15685), new NodeId(0, 46), new NodeId(0, 15684).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7672,7 +7672,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15687), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15687), new NodeId(0, 46), new NodeId(0, 15686).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7685,7 +7685,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16229), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16229), new NodeId(0, 46), new NodeId(0, 16228).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7698,7 +7698,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16231), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16231), new NodeId(0, 46), new NodeId(0, 16230).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7711,7 +7711,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16233), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16233), new NodeId(0, 46), new NodeId(0, 16232).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7724,7 +7724,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16235), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16235), new NodeId(0, 46), new NodeId(0, 16234).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7779,7 +7779,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16042), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16042), new NodeId(0, 46), new NodeId(0, 16041).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7792,7 +7792,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16044), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16044), new NodeId(0, 46), new NodeId(0, 16043).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7805,7 +7805,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16240), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16240), new NodeId(0, 46), new NodeId(0, 16239).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7818,7 +7818,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16242), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16242), new NodeId(0, 46), new NodeId(0, 16241).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7831,7 +7831,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16244), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16244), new NodeId(0, 46), new NodeId(0, 16243).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7844,7 +7844,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16246), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16246), new NodeId(0, 46), new NodeId(0, 16245).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7899,7 +7899,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15697), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15697), new NodeId(0, 46), new NodeId(0, 15696).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7912,7 +7912,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15699), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15699), new NodeId(0, 46), new NodeId(0, 15698).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7925,7 +7925,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16251), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16251), new NodeId(0, 46), new NodeId(0, 16250).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7938,7 +7938,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16253), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16253), new NodeId(0, 46), new NodeId(0, 16252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7951,7 +7951,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16255), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16255), new NodeId(0, 46), new NodeId(0, 16254).expanded(), false));
         this.nodeManager.addNode(node);
@@ -7964,7 +7964,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16257), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16257), new NodeId(0, 46), new NodeId(0, 16256).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8019,7 +8019,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15721), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15721), new NodeId(0, 46), new NodeId(0, 15720).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8032,7 +8032,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15723), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15723), new NodeId(0, 46), new NodeId(0, 15722).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8045,7 +8045,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16273), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16273), new NodeId(0, 46), new NodeId(0, 16272).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8058,7 +8058,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16275), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16275), new NodeId(0, 46), new NodeId(0, 16274).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8071,7 +8071,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16277), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16277), new NodeId(0, 46), new NodeId(0, 16276).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8084,7 +8084,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16279), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16279), new NodeId(0, 46), new NodeId(0, 16278).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8139,7 +8139,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15709), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15709), new NodeId(0, 46), new NodeId(0, 15708).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8152,7 +8152,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15711), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15711), new NodeId(0, 46), new NodeId(0, 15710).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8165,7 +8165,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16262), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16262), new NodeId(0, 46), new NodeId(0, 16261).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8178,7 +8178,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16264), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16264), new NodeId(0, 46), new NodeId(0, 16263).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8191,7 +8191,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16266), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16266), new NodeId(0, 46), new NodeId(0, 16265).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8204,7 +8204,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16268), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16268), new NodeId(0, 46), new NodeId(0, 16267).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8259,7 +8259,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25573), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25573), new NodeId(0, 46), new NodeId(0, 25572).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8272,7 +8272,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25575), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25575), new NodeId(0, 46), new NodeId(0, 25574).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8285,7 +8285,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25577), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25577), new NodeId(0, 46), new NodeId(0, 25576).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8298,7 +8298,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25579), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25579), new NodeId(0, 46), new NodeId(0, 25578).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8311,7 +8311,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25581), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25581), new NodeId(0, 46), new NodeId(0, 25580).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8324,7 +8324,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25583), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25583), new NodeId(0, 46), new NodeId(0, 25582).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8379,7 +8379,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25592), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25592), new NodeId(0, 46), new NodeId(0, 25591).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8392,7 +8392,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25594), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25594), new NodeId(0, 46), new NodeId(0, 25593).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8405,7 +8405,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25596), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25596), new NodeId(0, 46), new NodeId(0, 25595).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8418,7 +8418,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25598), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25598), new NodeId(0, 46), new NodeId(0, 25597).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8431,7 +8431,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25600), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25600), new NodeId(0, 46), new NodeId(0, 25599).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8444,7 +8444,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25602), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25602), new NodeId(0, 46), new NodeId(0, 25601).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8499,7 +8499,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25611), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25611), new NodeId(0, 46), new NodeId(0, 25610).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8512,7 +8512,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25613), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25613), new NodeId(0, 46), new NodeId(0, 25612).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8525,7 +8525,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25615), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25615), new NodeId(0, 46), new NodeId(0, 25614).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8538,7 +8538,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25617), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25617), new NodeId(0, 46), new NodeId(0, 25616).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8551,7 +8551,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25619), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25619), new NodeId(0, 46), new NodeId(0, 25618).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8564,7 +8564,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25621), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25621), new NodeId(0, 46), new NodeId(0, 25620).expanded(), false));
         this.nodeManager.addNode(node);
@@ -8965,7 +8965,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9018), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9018), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9018), new NodeId(0, 46), new NodeId(0, 9011).expanded(), false));
@@ -8979,7 +8979,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9019), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9019), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9019), new NodeId(0, 46), new NodeId(0, 9011).expanded(), false));
@@ -9052,7 +9052,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9030), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9030), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9030), new NodeId(0, 46), new NodeId(0, 9029).expanded(), false));
@@ -9066,7 +9066,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 3876), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 3876), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 3876), new NodeId(0, 46), new NodeId(0, 3875).expanded(), false));
@@ -9080,7 +9080,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12913), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12913), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12913), new NodeId(0, 46), new NodeId(0, 12912).expanded(), false));
@@ -9141,7 +9141,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9062), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9062), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9062), new NodeId(0, 46), new NodeId(0, 9055).expanded(), false));
@@ -9155,7 +9155,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9063), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9063), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9063), new NodeId(0, 46), new NodeId(0, 9055).expanded(), false));
@@ -9217,7 +9217,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9070), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9070), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9070), new NodeId(0, 46), new NodeId(0, 9069).expanded(), false));
@@ -9231,7 +9231,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24313), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24313), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24313), new NodeId(0, 46), new NodeId(0, 24312).expanded(), false));
@@ -9293,7 +9293,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9100), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9100), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9100), new NodeId(0, 46), new NodeId(0, 9093).expanded(), false));
@@ -9307,7 +9307,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9101), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9101), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9101), new NodeId(0, 46), new NodeId(0, 9093).expanded(), false));
@@ -9350,7 +9350,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9109), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9109), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9109), new NodeId(0, 46), new NodeId(0, 9102).expanded(), false));
@@ -9364,7 +9364,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9110), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9110), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9110), new NodeId(0, 46), new NodeId(0, 9102).expanded(), false));
@@ -9378,7 +9378,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9112), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9112), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9112), new NodeId(0, 46), new NodeId(0, 9111).expanded(), false));
@@ -9392,7 +9392,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9114), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9114), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9114), new NodeId(0, 46), new NodeId(0, 9113).expanded(), false));
@@ -9473,7 +9473,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9167), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9167), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9167), new NodeId(0, 46), new NodeId(0, 9160).expanded(), false));
@@ -9487,7 +9487,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9168), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9168), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9168), new NodeId(0, 46), new NodeId(0, 9160).expanded(), false));
@@ -9538,7 +9538,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9176), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9176), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9176), new NodeId(0, 46), new NodeId(0, 9169).expanded(), false));
@@ -9552,7 +9552,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9177), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9177), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9177), new NodeId(0, 46), new NodeId(0, 9169).expanded(), false));
@@ -9594,7 +9594,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16378), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16378), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16378), new NodeId(0, 46), new NodeId(0, 16371).expanded(), false));
@@ -9608,7 +9608,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16379), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16379), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16379), new NodeId(0, 46), new NodeId(0, 16371).expanded(), false));
@@ -9673,7 +9673,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9214), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9214), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9214), new NodeId(0, 46), new NodeId(0, 9213).expanded(), false));
@@ -9747,7 +9747,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16387), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16387), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16387), new NodeId(0, 46), new NodeId(0, 16380).expanded(), false));
@@ -9761,7 +9761,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16388), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16388), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16388), new NodeId(0, 46), new NodeId(0, 16380).expanded(), false));
@@ -9827,7 +9827,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18197), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18197), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18197), new NodeId(0, 46), new NodeId(0, 18190).expanded(), false));
@@ -9841,7 +9841,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18198), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18198), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18198), new NodeId(0, 46), new NodeId(0, 18190).expanded(), false));
@@ -9871,7 +9871,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24317), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24317), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24317), new NodeId(0, 46), new NodeId(0, 24316).expanded(), false));
@@ -9885,7 +9885,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24319), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24319), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24319), new NodeId(0, 46), new NodeId(0, 24318).expanded(), false));
@@ -9899,7 +9899,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24321), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24321), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24321), new NodeId(0, 46), new NodeId(0, 24320).expanded(), false));
@@ -9913,7 +9913,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24323), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24323), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24323), new NodeId(0, 46), new NodeId(0, 24322).expanded(), false));
@@ -9927,7 +9927,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24325), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24325), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24325), new NodeId(0, 46), new NodeId(0, 24324).expanded(), false));
@@ -9941,7 +9941,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25154), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25154), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25154), new NodeId(0, 46), new NodeId(0, 24744).expanded(), false));
@@ -10135,7 +10135,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16442), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16442), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16442), new NodeId(0, 46), new NodeId(0, 16441).expanded(), false));
@@ -10166,7 +10166,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16462), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16462), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16462), new NodeId(0, 46), new NodeId(0, 16461).expanded(), false));
@@ -10221,7 +10221,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 6098), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 6098), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 6098), new NodeId(0, 46), new NodeId(0, 2930).expanded(), false));
@@ -10235,7 +10235,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 6100), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 6100), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 6100), new NodeId(0, 46), new NodeId(0, 2932).expanded(), false));
@@ -10249,7 +10249,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 6101), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 6101), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 6101), new NodeId(0, 46), new NodeId(0, 2933).expanded(), false));
@@ -10263,7 +10263,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11322), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11322), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11322), new NodeId(0, 46), new NodeId(0, 2935).expanded(), false));
@@ -10277,7 +10277,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11323), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11323), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11323), new NodeId(0, 46), new NodeId(0, 2936).expanded(), false));
@@ -10291,7 +10291,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11324), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11324), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11324), new NodeId(0, 46), new NodeId(0, 2940).expanded(), false));
@@ -10305,7 +10305,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11325), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11325), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11325), new NodeId(0, 46), new NodeId(0, 2942).expanded(), false));
@@ -10319,7 +10319,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11326), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11326), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11326), new NodeId(0, 46), new NodeId(0, 2943).expanded(), false));
@@ -10333,7 +10333,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11327), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11327), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11327), new NodeId(0, 46), new NodeId(0, 2945).expanded(), false));
@@ -10347,7 +10347,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2991), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2991), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2991), new NodeId(0, 46), new NodeId(0, 2949).expanded(), false));
@@ -10361,7 +10361,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24757), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24757), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24757), new NodeId(0, 46), new NodeId(0, 24756).expanded(), false));
@@ -10375,7 +10375,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24759), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24759), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24759), new NodeId(0, 46), new NodeId(0, 24758).expanded(), false));
@@ -10389,7 +10389,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24761), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24761), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24761), new NodeId(0, 46), new NodeId(0, 24760).expanded(), false));
@@ -10531,7 +10531,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9330), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9330), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9330), new NodeId(0, 46), new NodeId(0, 9329).expanded(), false));
@@ -10545,7 +10545,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9332), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9332), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9332), new NodeId(0, 46), new NodeId(0, 9331).expanded(), false));
@@ -10559,7 +10559,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9334), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9334), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9334), new NodeId(0, 46), new NodeId(0, 9333).expanded(), false));
@@ -10573,7 +10573,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 9336), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9336), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 9336), new NodeId(0, 46), new NodeId(0, 9335).expanded(), false));
@@ -10587,7 +10587,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11340), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11340), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11340), new NodeId(0, 46), new NodeId(0, 9337).expanded(), false));
@@ -10601,7 +10601,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11341), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11341), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11341), new NodeId(0, 46), new NodeId(0, 9338).expanded(), false));
@@ -10615,7 +10615,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11342), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11342), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11342), new NodeId(0, 46), new NodeId(0, 9339).expanded(), false));
@@ -10629,7 +10629,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11343), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11343), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11343), new NodeId(0, 46), new NodeId(0, 9340).expanded(), false));
@@ -10754,7 +10754,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10027), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10027), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10027), new NodeId(0, 46), new NodeId(0, 10020).expanded(), false));
@@ -10768,7 +10768,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10028), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10028), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10028), new NodeId(0, 46), new NodeId(0, 10020).expanded(), false));
@@ -10811,7 +10811,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10036), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10036), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10036), new NodeId(0, 46), new NodeId(0, 10029).expanded(), false));
@@ -10825,7 +10825,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10037), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10037), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10037), new NodeId(0, 46), new NodeId(0, 10029).expanded(), false));
@@ -10868,7 +10868,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10045), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10045), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10045), new NodeId(0, 46), new NodeId(0, 10038).expanded(), false));
@@ -10882,7 +10882,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10046), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10046), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10046), new NodeId(0, 46), new NodeId(0, 10038).expanded(), false));
@@ -10925,7 +10925,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10054), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10054), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10054), new NodeId(0, 46), new NodeId(0, 10047).expanded(), false));
@@ -10939,7 +10939,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 10055), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10055), new NodeId(0, 37), new NodeId(0, 80).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 10055), new NodeId(0, 46), new NodeId(0, 10047).expanded(), false));
@@ -11457,7 +11457,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2407), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2407), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2407), new NodeId(0, 46), new NodeId(0, 2406).expanded(), false));
@@ -11471,7 +11471,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2401), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2401), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2401), new NodeId(0, 46), new NodeId(0, 2400).expanded(), false));
@@ -11485,7 +11485,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2403), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2403), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2403), new NodeId(0, 46), new NodeId(0, 2402).expanded(), false));
@@ -11499,7 +11499,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2405), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2405), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2405), new NodeId(0, 46), new NodeId(0, 2404).expanded(), false));
@@ -11513,7 +11513,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2409), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2409), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2409), new NodeId(0, 46), new NodeId(0, 2408).expanded(), false));
@@ -11527,7 +11527,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2411), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2411), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2411), new NodeId(0, 46), new NodeId(0, 2410).expanded(), false));
@@ -11541,7 +11541,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2413), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2413), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2413), new NodeId(0, 46), new NodeId(0, 2412).expanded(), false));
@@ -11555,7 +11555,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2415), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2415), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2415), new NodeId(0, 46), new NodeId(0, 2414).expanded(), false));
@@ -11569,7 +11569,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2417), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2417), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2417), new NodeId(0, 46), new NodeId(0, 2416).expanded(), false));
@@ -11583,7 +11583,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2419), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2419), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2419), new NodeId(0, 46), new NodeId(0, 2418).expanded(), false));
@@ -11597,7 +11597,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2421), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2421), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2421), new NodeId(0, 46), new NodeId(0, 2420).expanded(), false));
@@ -11611,7 +11611,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2423), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2423), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2423), new NodeId(0, 46), new NodeId(0, 2422).expanded(), false));
@@ -11625,7 +11625,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 2425), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2425), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2425), new NodeId(0, 46), new NodeId(0, 2424).expanded(), false));
@@ -12303,7 +12303,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12544), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12544), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12544), new NodeId(0, 46), new NodeId(0, 12543).expanded(), false));
@@ -12317,7 +12317,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12545), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12545), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12545), new NodeId(0, 46), new NodeId(0, 12543).expanded(), false));
@@ -12331,7 +12331,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12705), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12705), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12705), new NodeId(0, 46), new NodeId(0, 12546).expanded(), false));
@@ -12345,7 +12345,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12547), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12547), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12547), new NodeId(0, 46), new NodeId(0, 12546).expanded(), false));
@@ -12359,7 +12359,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12549), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12549), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12549), new NodeId(0, 46), new NodeId(0, 12548).expanded(), false));
@@ -12373,7 +12373,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12551), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12551), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12551), new NodeId(0, 46), new NodeId(0, 12550).expanded(), false));
@@ -12387,7 +12387,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12553), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12553), new NodeId(0, 46), new NodeId(0, 12552).expanded(), false));
         this.nodeManager.addNode(node);
@@ -12456,7 +12456,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13606), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13606), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13606), new NodeId(0, 46), new NodeId(0, 13605).expanded(), false));
@@ -12470,7 +12470,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13607), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13607), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13607), new NodeId(0, 46), new NodeId(0, 13605).expanded(), false));
@@ -12484,7 +12484,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13609), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13609), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13609), new NodeId(0, 46), new NodeId(0, 13608).expanded(), false));
@@ -12498,7 +12498,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13611), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13611), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13611), new NodeId(0, 46), new NodeId(0, 13610).expanded(), false));
@@ -12512,7 +12512,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13612), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13612), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13612), new NodeId(0, 46), new NodeId(0, 13610).expanded(), false));
@@ -12526,7 +12526,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13614), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13614), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13614), new NodeId(0, 46), new NodeId(0, 13613).expanded(), false));
@@ -12540,7 +12540,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13616), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13616), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13616), new NodeId(0, 46), new NodeId(0, 13615).expanded(), false));
@@ -12554,7 +12554,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13617), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13617), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13617), new NodeId(0, 46), new NodeId(0, 13615).expanded(), false));
@@ -12568,7 +12568,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13619), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13619), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13619), new NodeId(0, 46), new NodeId(0, 13618).expanded(), false));
@@ -12590,7 +12590,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13622), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13622), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13622), new NodeId(0, 46), new NodeId(0, 13621).expanded(), false));
@@ -12604,7 +12604,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13623), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13623), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13623), new NodeId(0, 46), new NodeId(0, 13621).expanded(), false));
@@ -12626,7 +12626,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23527), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23527), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23527), new NodeId(0, 46), new NodeId(0, 23526).expanded(), false));
@@ -12820,7 +12820,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19486), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19486), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19486), new NodeId(0, 46), new NodeId(0, 19485).expanded(), false));
@@ -12851,7 +12851,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19506), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19506), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19506), new NodeId(0, 46), new NodeId(0, 19505).expanded(), false));
@@ -13110,7 +13110,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20179), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20179), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20179), new NodeId(0, 46), new NodeId(0, 20178).expanded(), false));
@@ -13141,7 +13141,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20199), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20199), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20199), new NodeId(0, 46), new NodeId(0, 20198).expanded(), false));
@@ -13252,7 +13252,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13822), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13822), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13822), new NodeId(0, 46), new NodeId(0, 13821).expanded(), false));
@@ -13266,7 +13266,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13823), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13823), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13823), new NodeId(0, 46), new NodeId(0, 13821).expanded(), false));
@@ -13280,7 +13280,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13825), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13825), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13825), new NodeId(0, 46), new NodeId(0, 13824).expanded(), false));
@@ -13294,7 +13294,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13827), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13827), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13827), new NodeId(0, 46), new NodeId(0, 13826).expanded(), false));
@@ -13308,7 +13308,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13828), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13828), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13828), new NodeId(0, 46), new NodeId(0, 13826).expanded(), false));
@@ -13322,7 +13322,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13830), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13830), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13830), new NodeId(0, 46), new NodeId(0, 13829).expanded(), false));
@@ -13336,7 +13336,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13832), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13832), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13832), new NodeId(0, 46), new NodeId(0, 13831).expanded(), false));
@@ -13350,7 +13350,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13833), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13833), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13833), new NodeId(0, 46), new NodeId(0, 13831).expanded(), false));
@@ -13364,7 +13364,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13835), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13835), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13835), new NodeId(0, 46), new NodeId(0, 13834).expanded(), false));
@@ -13386,7 +13386,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13838), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13838), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13838), new NodeId(0, 46), new NodeId(0, 13837).expanded(), false));
@@ -13400,7 +13400,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13839), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13839), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13839), new NodeId(0, 46), new NodeId(0, 13837).expanded(), false));
@@ -13454,7 +13454,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13856), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13856), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13856), new NodeId(0, 46), new NodeId(0, 13855).expanded(), false));
@@ -13468,7 +13468,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13857), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13857), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13857), new NodeId(0, 46), new NodeId(0, 13855).expanded(), false));
@@ -13482,7 +13482,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13859), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13859), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13859), new NodeId(0, 46), new NodeId(0, 13858).expanded(), false));
@@ -13496,7 +13496,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13861), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13861), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13861), new NodeId(0, 46), new NodeId(0, 13860).expanded(), false));
@@ -13510,7 +13510,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13862), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13862), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13862), new NodeId(0, 46), new NodeId(0, 13860).expanded(), false));
@@ -13524,7 +13524,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13864), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13864), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13864), new NodeId(0, 46), new NodeId(0, 13863).expanded(), false));
@@ -13538,7 +13538,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13866), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13866), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13866), new NodeId(0, 46), new NodeId(0, 13865).expanded(), false));
@@ -13552,7 +13552,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13867), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13867), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13867), new NodeId(0, 46), new NodeId(0, 13865).expanded(), false));
@@ -13566,7 +13566,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13869), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13869), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13869), new NodeId(0, 46), new NodeId(0, 13868).expanded(), false));
@@ -13588,7 +13588,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13872), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13872), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13872), new NodeId(0, 46), new NodeId(0, 13871).expanded(), false));
@@ -13602,7 +13602,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13873), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13873), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13873), new NodeId(0, 46), new NodeId(0, 13871).expanded(), false));
@@ -13656,7 +13656,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13890), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13890), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13890), new NodeId(0, 46), new NodeId(0, 13889).expanded(), false));
@@ -13670,7 +13670,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13891), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13891), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13891), new NodeId(0, 46), new NodeId(0, 13889).expanded(), false));
@@ -13684,7 +13684,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13893), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13893), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13893), new NodeId(0, 46), new NodeId(0, 13892).expanded(), false));
@@ -13698,7 +13698,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13895), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13895), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13895), new NodeId(0, 46), new NodeId(0, 13894).expanded(), false));
@@ -13712,7 +13712,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13896), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13896), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13896), new NodeId(0, 46), new NodeId(0, 13894).expanded(), false));
@@ -13726,7 +13726,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13898), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13898), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13898), new NodeId(0, 46), new NodeId(0, 13897).expanded(), false));
@@ -13740,7 +13740,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13900), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13900), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13900), new NodeId(0, 46), new NodeId(0, 13899).expanded(), false));
@@ -13754,7 +13754,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13901), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13901), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13901), new NodeId(0, 46), new NodeId(0, 13899).expanded(), false));
@@ -13768,7 +13768,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13903), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13903), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13903), new NodeId(0, 46), new NodeId(0, 13902).expanded(), false));
@@ -13790,7 +13790,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13906), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13906), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13906), new NodeId(0, 46), new NodeId(0, 13905).expanded(), false));
@@ -13804,7 +13804,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13907), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13907), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13907), new NodeId(0, 46), new NodeId(0, 13905).expanded(), false));
@@ -13858,7 +13858,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13924), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13924), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13924), new NodeId(0, 46), new NodeId(0, 13923).expanded(), false));
@@ -13872,7 +13872,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13925), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13925), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13925), new NodeId(0, 46), new NodeId(0, 13923).expanded(), false));
@@ -13886,7 +13886,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13927), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13927), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13927), new NodeId(0, 46), new NodeId(0, 13926).expanded(), false));
@@ -13900,7 +13900,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13929), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13929), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13929), new NodeId(0, 46), new NodeId(0, 13928).expanded(), false));
@@ -13914,7 +13914,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13930), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13930), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13930), new NodeId(0, 46), new NodeId(0, 13928).expanded(), false));
@@ -13928,7 +13928,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13932), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13932), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13932), new NodeId(0, 46), new NodeId(0, 13931).expanded(), false));
@@ -13942,7 +13942,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13934), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13934), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13934), new NodeId(0, 46), new NodeId(0, 13933).expanded(), false));
@@ -13956,7 +13956,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13935), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13935), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13935), new NodeId(0, 46), new NodeId(0, 13933).expanded(), false));
@@ -13970,7 +13970,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13937), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13937), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13937), new NodeId(0, 46), new NodeId(0, 13936).expanded(), false));
@@ -13992,7 +13992,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13940), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13940), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13940), new NodeId(0, 46), new NodeId(0, 13939).expanded(), false));
@@ -14006,7 +14006,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13941), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13941), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13941), new NodeId(0, 46), new NodeId(0, 13939).expanded(), false));
@@ -14060,7 +14060,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13959), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13959), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13959), new NodeId(0, 46), new NodeId(0, 13958).expanded(), false));
@@ -14074,7 +14074,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13960), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13960), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13960), new NodeId(0, 46), new NodeId(0, 13958).expanded(), false));
@@ -14088,7 +14088,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13962), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13962), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13962), new NodeId(0, 46), new NodeId(0, 13961).expanded(), false));
@@ -14102,7 +14102,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13964), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13964), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13964), new NodeId(0, 46), new NodeId(0, 13963).expanded(), false));
@@ -14116,7 +14116,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13965), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13965), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13965), new NodeId(0, 46), new NodeId(0, 13963).expanded(), false));
@@ -14130,7 +14130,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13967), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13967), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13967), new NodeId(0, 46), new NodeId(0, 13966).expanded(), false));
@@ -14144,7 +14144,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13969), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13969), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13969), new NodeId(0, 46), new NodeId(0, 13968).expanded(), false));
@@ -14158,7 +14158,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13970), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13970), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13970), new NodeId(0, 46), new NodeId(0, 13968).expanded(), false));
@@ -14172,7 +14172,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13972), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13972), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13972), new NodeId(0, 46), new NodeId(0, 13971).expanded(), false));
@@ -14194,7 +14194,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13975), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13975), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13975), new NodeId(0, 46), new NodeId(0, 13974).expanded(), false));
@@ -14208,7 +14208,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13976), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13976), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13976), new NodeId(0, 46), new NodeId(0, 13974).expanded(), false));
@@ -14262,7 +14262,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12617), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12617), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12617), new NodeId(0, 46), new NodeId(0, 12616).expanded(), false));
@@ -14276,7 +14276,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12618), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12618), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12618), new NodeId(0, 46), new NodeId(0, 12616).expanded(), false));
@@ -14290,7 +14290,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12732), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12732), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12732), new NodeId(0, 46), new NodeId(0, 12731).expanded(), false));
@@ -14304,7 +14304,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12733), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12733), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12733), new NodeId(0, 46), new NodeId(0, 12731).expanded(), false));
@@ -14318,7 +14318,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12776), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12776), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12776), new NodeId(0, 46), new NodeId(0, 12775).expanded(), false));
@@ -14376,7 +14376,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12648), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12648), new NodeId(0, 46), new NodeId(0, 12647).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14389,7 +14389,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12649), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12649), new NodeId(0, 46), new NodeId(0, 12647).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14402,7 +14402,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12651), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12651), new NodeId(0, 46), new NodeId(0, 12650).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14415,7 +14415,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12653), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12653), new NodeId(0, 46), new NodeId(0, 12652).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14428,7 +14428,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12654), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12654), new NodeId(0, 46), new NodeId(0, 12652).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14441,7 +14441,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12656), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12656), new NodeId(0, 46), new NodeId(0, 12655).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14454,7 +14454,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12658), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12658), new NodeId(0, 46), new NodeId(0, 12657).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14467,7 +14467,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12659), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12659), new NodeId(0, 46), new NodeId(0, 12657).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14480,7 +14480,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12661), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12661), new NodeId(0, 46), new NodeId(0, 12660).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14500,7 +14500,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12664), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12664), new NodeId(0, 46), new NodeId(0, 12663).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14513,7 +14513,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12665), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12665), new NodeId(0, 46), new NodeId(0, 12663).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14526,7 +14526,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14160), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14160), new NodeId(0, 46), new NodeId(0, 12666).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14539,7 +14539,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12667), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12667), new NodeId(0, 46), new NodeId(0, 12666).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14552,7 +14552,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12669), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12669), new NodeId(0, 46), new NodeId(0, 12668).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14565,7 +14565,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12671), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12671), new NodeId(0, 46), new NodeId(0, 12670).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14613,7 +14613,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14096), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14096), new NodeId(0, 46), new NodeId(0, 14095).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14626,7 +14626,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14097), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14097), new NodeId(0, 46), new NodeId(0, 14095).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14639,7 +14639,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14099), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14099), new NodeId(0, 46), new NodeId(0, 14098).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14652,7 +14652,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14101), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14101), new NodeId(0, 46), new NodeId(0, 14100).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14665,7 +14665,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14102), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14102), new NodeId(0, 46), new NodeId(0, 14100).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14678,7 +14678,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14104), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14104), new NodeId(0, 46), new NodeId(0, 14103).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14691,7 +14691,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14106), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14106), new NodeId(0, 46), new NodeId(0, 14105).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14704,7 +14704,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14107), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14107), new NodeId(0, 46), new NodeId(0, 14105).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14717,7 +14717,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14109), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14109), new NodeId(0, 46), new NodeId(0, 14108).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14737,7 +14737,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14112), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14112), new NodeId(0, 46), new NodeId(0, 14111).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14750,7 +14750,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14113), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14113), new NodeId(0, 46), new NodeId(0, 14111).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14763,7 +14763,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14115), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14115), new NodeId(0, 46), new NodeId(0, 14114).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14776,7 +14776,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14116), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14116), new NodeId(0, 46), new NodeId(0, 14114).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14789,7 +14789,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14118), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14118), new NodeId(0, 46), new NodeId(0, 14117).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14802,7 +14802,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14120), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14120), new NodeId(0, 46), new NodeId(0, 14119).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14850,7 +14850,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14130), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14130), new NodeId(0, 46), new NodeId(0, 14129).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14863,7 +14863,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14131), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14131), new NodeId(0, 46), new NodeId(0, 14129).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14876,7 +14876,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14133), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14133), new NodeId(0, 46), new NodeId(0, 14132).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14889,7 +14889,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14135), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14135), new NodeId(0, 46), new NodeId(0, 14134).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14902,7 +14902,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14136), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14136), new NodeId(0, 46), new NodeId(0, 14134).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14915,7 +14915,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14138), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14138), new NodeId(0, 46), new NodeId(0, 14137).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14928,7 +14928,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14140), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14140), new NodeId(0, 46), new NodeId(0, 14139).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14941,7 +14941,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14141), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14141), new NodeId(0, 46), new NodeId(0, 14139).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14954,7 +14954,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14143), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14143), new NodeId(0, 46), new NodeId(0, 14142).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14974,7 +14974,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14146), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14146), new NodeId(0, 46), new NodeId(0, 14145).expanded(), false));
         this.nodeManager.addNode(node);
@@ -14987,7 +14987,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14147), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14147), new NodeId(0, 46), new NodeId(0, 14145).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15000,7 +15000,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14149), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14149), new NodeId(0, 46), new NodeId(0, 14148).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15013,7 +15013,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14150), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14150), new NodeId(0, 46), new NodeId(0, 14148).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15026,7 +15026,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14152), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14152), new NodeId(0, 46), new NodeId(0, 14151).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15039,7 +15039,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14154), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14154), new NodeId(0, 46), new NodeId(0, 14153).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15087,7 +15087,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13738), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13738), new NodeId(0, 46), new NodeId(0, 13737).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15100,7 +15100,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 13739), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 13739), new NodeId(0, 46), new NodeId(0, 13737).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15113,7 +15113,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12738), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12738), new NodeId(0, 46), new NodeId(0, 12737).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15126,7 +15126,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12739), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12739), new NodeId(0, 46), new NodeId(0, 12737).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15139,7 +15139,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12778), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12778), new NodeId(0, 46), new NodeId(0, 12777).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15168,7 +15168,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17523), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17523), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17523), new NodeId(0, 46), new NodeId(0, 17522).expanded(), false));
@@ -15182,7 +15182,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17524), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17524), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17524), new NodeId(0, 46), new NodeId(0, 17522).expanded(), false));
@@ -15228,7 +15228,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17535), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17535), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17535), new NodeId(0, 46), new NodeId(0, 17534).expanded(), false));
@@ -15242,7 +15242,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17536), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17536), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17536), new NodeId(0, 46), new NodeId(0, 17534).expanded(), false));
@@ -15256,7 +15256,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18007), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18007), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18007), new NodeId(0, 46), new NodeId(0, 18006).expanded(), false));
@@ -15366,7 +15366,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14648), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14648), new NodeId(0, 46), new NodeId(0, 14647).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15379,7 +15379,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15577), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15577), new NodeId(0, 46), new NodeId(0, 15904).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15392,7 +15392,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15584), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15584), new NodeId(0, 46), new NodeId(0, 15583).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15405,7 +15405,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15875), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15875), new NodeId(0, 46), new NodeId(0, 15874).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15418,7 +15418,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15641), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15641), new NodeId(0, 46), new NodeId(0, 20408).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15431,7 +15431,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15643), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15643), new NodeId(0, 46), new NodeId(0, 15642).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15444,7 +15444,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15647), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15647), new NodeId(0, 46), new NodeId(0, 15646).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15457,7 +15457,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15655), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15655), new NodeId(0, 46), new NodeId(0, 15654).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15470,7 +15470,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15659), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15659), new NodeId(0, 46), new NodeId(0, 15658).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15483,7 +15483,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15009), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15009), new NodeId(0, 46), new NodeId(0, 15008).expanded(), false));
         this.nodeManager.addNode(node);
@@ -15496,7 +15496,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15908), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15908), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15908), new NodeId(0, 46), new NodeId(0, 15907).expanded(), false));
@@ -15510,7 +15510,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15909), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15909), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15909), new NodeId(0, 46), new NodeId(0, 15907).expanded(), false));
@@ -15524,7 +15524,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15911), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15911), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15911), new NodeId(0, 46), new NodeId(0, 15910).expanded(), false));
@@ -15538,7 +15538,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15912), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15912), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15912), new NodeId(0, 46), new NodeId(0, 15910).expanded(), false));
@@ -15552,7 +15552,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15915), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15915), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15915), new NodeId(0, 46), new NodeId(0, 15914).expanded(), false));
@@ -15566,7 +15566,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15916), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15916), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15916), new NodeId(0, 46), new NodeId(0, 15914).expanded(), false));
@@ -15580,7 +15580,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15918), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15918), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15918), new NodeId(0, 46), new NodeId(0, 15917).expanded(), false));
@@ -15594,7 +15594,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25279), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25279), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25279), new NodeId(0, 46), new NodeId(0, 25278).expanded(), false));
@@ -15608,7 +15608,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25280), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25280), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25280), new NodeId(0, 46), new NodeId(0, 25278).expanded(), false));
@@ -15622,7 +15622,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25282), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25282), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25282), new NodeId(0, 46), new NodeId(0, 25281).expanded(), false));
@@ -15636,7 +15636,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15455), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15455), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15455), new NodeId(0, 46), new NodeId(0, 15454).expanded(), false));
@@ -15650,7 +15650,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15456), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15456), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15456), new NodeId(0, 46), new NodeId(0, 15454).expanded(), false));
@@ -15664,7 +15664,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15458), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15458), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15458), new NodeId(0, 46), new NodeId(0, 15457).expanded(), false));
@@ -15678,7 +15678,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25294), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25294), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25294), new NodeId(0, 46), new NodeId(0, 25293).expanded(), false));
@@ -15692,7 +15692,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25295), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25295), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25295), new NodeId(0, 46), new NodeId(0, 25293).expanded(), false));
@@ -15706,7 +15706,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25297), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25297), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25297), new NodeId(0, 46), new NodeId(0, 25296).expanded(), false));
@@ -15768,7 +15768,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15462), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15462), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15462), new NodeId(0, 46), new NodeId(0, 15461).expanded(), false));
@@ -15782,7 +15782,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15463), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15463), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15463), new NodeId(0, 46), new NodeId(0, 15461).expanded(), false));
@@ -15796,7 +15796,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15465), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15465), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15465), new NodeId(0, 46), new NodeId(0, 15464).expanded(), false));
@@ -15810,7 +15810,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25313), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25313), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25313), new NodeId(0, 46), new NodeId(0, 25312).expanded(), false));
@@ -15824,7 +15824,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25314), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25314), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25314), new NodeId(0, 46), new NodeId(0, 25312).expanded(), false));
@@ -15838,7 +15838,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25316), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25316), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25316), new NodeId(0, 46), new NodeId(0, 25315).expanded(), false));
@@ -16004,7 +16004,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25642), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25642), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25642), new NodeId(0, 46), new NodeId(0, 25641).expanded(), false));
@@ -16018,7 +16018,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25643), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25643), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25643), new NodeId(0, 46), new NodeId(0, 25641).expanded(), false));
@@ -16032,7 +16032,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25645), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25645), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25645), new NodeId(0, 46), new NodeId(0, 25644).expanded(), false));
@@ -16046,7 +16046,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25646), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25646), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25646), new NodeId(0, 46), new NodeId(0, 25644).expanded(), false));
@@ -16060,7 +16060,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25349), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25349), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25349), new NodeId(0, 46), new NodeId(0, 25348).expanded(), false));
@@ -16074,7 +16074,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25350), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25350), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25350), new NodeId(0, 46), new NodeId(0, 25348).expanded(), false));
@@ -16088,7 +16088,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25352), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25352), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25352), new NodeId(0, 46), new NodeId(0, 25351).expanded(), false));
@@ -16102,7 +16102,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25354), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25354), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25354), new NodeId(0, 46), new NodeId(0, 25353).expanded(), false));
@@ -16116,7 +16116,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25355), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25355), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25355), new NodeId(0, 46), new NodeId(0, 25353).expanded(), false));
@@ -16130,7 +16130,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25357), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25357), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25357), new NodeId(0, 46), new NodeId(0, 25356).expanded(), false));
@@ -16208,7 +16208,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25656), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25656), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25656), new NodeId(0, 46), new NodeId(0, 25655).expanded(), false));
@@ -16222,7 +16222,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25657), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25657), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25657), new NodeId(0, 46), new NodeId(0, 25655).expanded(), false));
@@ -16236,7 +16236,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25659), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25659), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25659), new NodeId(0, 46), new NodeId(0, 25658).expanded(), false));
@@ -16250,7 +16250,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25660), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25660), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25660), new NodeId(0, 46), new NodeId(0, 25658).expanded(), false));
@@ -16264,7 +16264,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25367), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25367), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25367), new NodeId(0, 46), new NodeId(0, 25366).expanded(), false));
@@ -16278,7 +16278,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25368), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25368), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25368), new NodeId(0, 46), new NodeId(0, 25366).expanded(), false));
@@ -16292,7 +16292,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25370), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25370), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25370), new NodeId(0, 46), new NodeId(0, 25369).expanded(), false));
@@ -16306,7 +16306,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25372), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25372), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25372), new NodeId(0, 46), new NodeId(0, 25371).expanded(), false));
@@ -16320,7 +16320,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25373), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25373), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25373), new NodeId(0, 46), new NodeId(0, 25371).expanded(), false));
@@ -16334,7 +16334,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25375), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25375), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25375), new NodeId(0, 46), new NodeId(0, 25374).expanded(), false));
@@ -16406,7 +16406,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17297), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17297), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17297), new NodeId(0, 46), new NodeId(0, 17296).expanded(), false));
@@ -16420,7 +16420,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16599), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16599), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16599), new NodeId(0, 46), new NodeId(0, 16598).expanded(), false));
@@ -16434,7 +16434,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16600), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16600), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16600), new NodeId(0, 46), new NodeId(0, 16598).expanded(), false));
@@ -16448,7 +16448,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14433), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14433), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14433), new NodeId(0, 46), new NodeId(0, 14432).expanded(), false));
@@ -16494,7 +16494,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25412), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25412), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25412), new NodeId(0, 46), new NodeId(0, 25411).expanded(), false));
@@ -16508,7 +16508,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25413), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25413), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25413), new NodeId(0, 46), new NodeId(0, 25411).expanded(), false));
@@ -16522,7 +16522,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25415), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25415), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25415), new NodeId(0, 46), new NodeId(0, 25414).expanded(), false));
@@ -16536,7 +16536,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25417), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25417), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25417), new NodeId(0, 46), new NodeId(0, 25416).expanded(), false));
@@ -16550,7 +16550,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25418), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25418), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25418), new NodeId(0, 46), new NodeId(0, 25416).expanded(), false));
@@ -16564,7 +16564,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25420), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25420), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25420), new NodeId(0, 46), new NodeId(0, 25419).expanded(), false));
@@ -16578,7 +16578,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25422), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25422), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25422), new NodeId(0, 46), new NodeId(0, 25421).expanded(), false));
@@ -16592,7 +16592,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25423), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25423), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25423), new NodeId(0, 46), new NodeId(0, 25421).expanded(), false));
@@ -16606,7 +16606,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25425), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25425), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25425), new NodeId(0, 46), new NodeId(0, 25424).expanded(), false));
@@ -16620,7 +16620,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25427), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25427), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25427), new NodeId(0, 46), new NodeId(0, 25426).expanded(), false));
@@ -16634,7 +16634,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25428), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25428), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25428), new NodeId(0, 46), new NodeId(0, 25426).expanded(), false));
@@ -16648,7 +16648,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25430), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25430), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25430), new NodeId(0, 46), new NodeId(0, 25429).expanded(), false));
@@ -16662,7 +16662,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25431), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25431), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25431), new NodeId(0, 46), new NodeId(0, 25429).expanded(), false));
@@ -16789,7 +16789,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18732), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18732), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18732), new NodeId(0, 46), new NodeId(0, 18730).expanded(), false));
@@ -16803,7 +16803,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18733), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18733), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18733), new NodeId(0, 46), new NodeId(0, 18730).expanded(), false));
@@ -16836,7 +16836,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18737), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18737), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18737), new NodeId(0, 46), new NodeId(0, 18735).expanded(), false));
@@ -16850,7 +16850,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18738), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18738), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18738), new NodeId(0, 46), new NodeId(0, 18735).expanded(), false));
@@ -16883,7 +16883,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18742), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18742), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18742), new NodeId(0, 46), new NodeId(0, 18740).expanded(), false));
@@ -16897,7 +16897,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18743), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18743), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18743), new NodeId(0, 46), new NodeId(0, 18740).expanded(), false));
@@ -16930,7 +16930,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18747), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18747), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18747), new NodeId(0, 46), new NodeId(0, 18745).expanded(), false));
@@ -16944,7 +16944,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18748), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18748), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18748), new NodeId(0, 46), new NodeId(0, 18745).expanded(), false));
@@ -16977,7 +16977,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18752), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18752), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18752), new NodeId(0, 46), new NodeId(0, 18750).expanded(), false));
@@ -16991,7 +16991,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18753), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18753), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18753), new NodeId(0, 46), new NodeId(0, 18750).expanded(), false));
@@ -17024,7 +17024,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18757), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18757), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18757), new NodeId(0, 46), new NodeId(0, 18755).expanded(), false));
@@ -17038,7 +17038,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18758), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18758), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18758), new NodeId(0, 46), new NodeId(0, 18755).expanded(), false));
@@ -17061,7 +17061,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18762), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18762), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18762), new NodeId(0, 46), new NodeId(0, 18761).expanded(), false));
@@ -17084,7 +17084,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18764), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18764), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18764), new NodeId(0, 46), new NodeId(0, 18763).expanded(), false));
@@ -17107,7 +17107,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18766), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18766), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18766), new NodeId(0, 46), new NodeId(0, 18765).expanded(), false));
@@ -17130,7 +17130,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18768), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18768), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18768), new NodeId(0, 46), new NodeId(0, 18767).expanded(), false));
@@ -17224,7 +17224,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15216), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15216), new NodeId(0, 46), new NodeId(0, 15215).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17237,7 +17237,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15217), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15217), new NodeId(0, 46), new NodeId(0, 15215).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17250,7 +17250,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15441), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15441), new NodeId(0, 46), new NodeId(0, 15440).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17263,7 +17263,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15442), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15442), new NodeId(0, 46), new NodeId(0, 15440).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17276,7 +17276,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15445), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15445), new NodeId(0, 46), new NodeId(0, 15444).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17289,7 +17289,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15446), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15446), new NodeId(0, 46), new NodeId(0, 15444).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17302,7 +17302,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15448), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15448), new NodeId(0, 46), new NodeId(0, 15447).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17315,7 +17315,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25442), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25442), new NodeId(0, 46), new NodeId(0, 25441).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17328,7 +17328,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25443), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25443), new NodeId(0, 46), new NodeId(0, 25441).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17341,7 +17341,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25445), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25445), new NodeId(0, 46), new NodeId(0, 25444).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17354,7 +17354,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17365), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17365), new NodeId(0, 46), new NodeId(0, 17364).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17367,7 +17367,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17367), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17367), new NodeId(0, 46), new NodeId(0, 17366).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17380,7 +17380,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17368), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17368), new NodeId(0, 46), new NodeId(0, 17366).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17393,7 +17393,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17370), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17370), new NodeId(0, 46), new NodeId(0, 17369).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17434,7 +17434,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25460), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25460), new NodeId(0, 46), new NodeId(0, 25459).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17447,7 +17447,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25461), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25461), new NodeId(0, 46), new NodeId(0, 25459).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17460,7 +17460,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25463), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25463), new NodeId(0, 46), new NodeId(0, 25462).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17473,7 +17473,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25465), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25465), new NodeId(0, 46), new NodeId(0, 25464).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17486,7 +17486,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25466), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25466), new NodeId(0, 46), new NodeId(0, 25464).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17499,7 +17499,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25468), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25468), new NodeId(0, 46), new NodeId(0, 25467).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17512,7 +17512,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25470), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25470), new NodeId(0, 46), new NodeId(0, 25469).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17525,7 +17525,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25471), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25471), new NodeId(0, 46), new NodeId(0, 25469).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17538,7 +17538,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25473), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25473), new NodeId(0, 46), new NodeId(0, 25472).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17551,7 +17551,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25475), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25475), new NodeId(0, 46), new NodeId(0, 25474).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17564,7 +17564,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25476), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25476), new NodeId(0, 46), new NodeId(0, 25474).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17577,7 +17577,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25478), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25478), new NodeId(0, 46), new NodeId(0, 25477).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17590,7 +17590,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25479), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25479), new NodeId(0, 46), new NodeId(0, 25477).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17703,7 +17703,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17426), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17426), new NodeId(0, 46), new NodeId(0, 17424).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17716,7 +17716,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17429), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17429), new NodeId(0, 46), new NodeId(0, 17424).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17746,7 +17746,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17433), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17433), new NodeId(0, 46), new NodeId(0, 17431).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17759,7 +17759,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17434), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17434), new NodeId(0, 46), new NodeId(0, 17431).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17789,7 +17789,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17438), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17438), new NodeId(0, 46), new NodeId(0, 17436).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17802,7 +17802,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17439), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17439), new NodeId(0, 46), new NodeId(0, 17436).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17832,7 +17832,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17443), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17443), new NodeId(0, 46), new NodeId(0, 17441).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17845,7 +17845,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17444), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17444), new NodeId(0, 46), new NodeId(0, 17441).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17875,7 +17875,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17448), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17448), new NodeId(0, 46), new NodeId(0, 17446).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17888,7 +17888,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17449), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17449), new NodeId(0, 46), new NodeId(0, 17446).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17918,7 +17918,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17453), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17453), new NodeId(0, 46), new NodeId(0, 17451).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17931,7 +17931,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17454), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17454), new NodeId(0, 46), new NodeId(0, 17451).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17952,7 +17952,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17459), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17459), new NodeId(0, 46), new NodeId(0, 17458).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17973,7 +17973,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17461), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17461), new NodeId(0, 46), new NodeId(0, 17460).expanded(), false));
         this.nodeManager.addNode(node);
@@ -17994,7 +17994,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17463), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17463), new NodeId(0, 46), new NodeId(0, 17462).expanded(), false));
         this.nodeManager.addNode(node);
@@ -18015,7 +18015,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17466), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17466), new NodeId(0, 46), new NodeId(0, 17464).expanded(), false));
         this.nodeManager.addNode(node);
@@ -18091,7 +18091,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25506), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25506), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25506), new NodeId(0, 46), new NodeId(0, 25505).expanded(), false));
@@ -18105,7 +18105,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25507), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25507), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25507), new NodeId(0, 46), new NodeId(0, 25505).expanded(), false));
@@ -18119,7 +18119,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25509), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25509), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25509), new NodeId(0, 46), new NodeId(0, 25508).expanded(), false));
@@ -18133,7 +18133,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25510), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25510), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25510), new NodeId(0, 46), new NodeId(0, 25508).expanded(), false));
@@ -18147,7 +18147,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25518), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25518), new NodeId(0, 46), new NodeId(0, 25517).expanded(), false));
         this.nodeManager.addNode(node);
@@ -18224,7 +18224,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15483), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15483), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15483), new NodeId(0, 46), new NodeId(0, 15482).expanded(), false));
@@ -18238,7 +18238,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15484), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15484), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15484), new NodeId(0, 46), new NodeId(0, 15482).expanded(), false));
@@ -18252,7 +18252,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15486), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15486), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15486), new NodeId(0, 46), new NodeId(0, 15485).expanded(), false));
@@ -18274,7 +18274,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15492), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15492), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15492), new NodeId(0, 46), new NodeId(0, 15491).expanded(), false));
@@ -18288,7 +18288,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15493), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15493), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15493), new NodeId(0, 46), new NodeId(0, 15491).expanded(), false));
@@ -18302,7 +18302,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15495), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15495), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15495), new NodeId(0, 46), new NodeId(0, 15494).expanded(), false));
@@ -18324,7 +18324,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14556), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14556), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14556), new NodeId(0, 46), new NodeId(0, 14555).expanded(), false));
@@ -18338,7 +18338,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14557), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14557), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14557), new NodeId(0, 46), new NodeId(0, 14555).expanded(), false));
@@ -18352,7 +18352,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14559), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14559), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14559), new NodeId(0, 46), new NodeId(0, 14558).expanded(), false));
@@ -18366,7 +18366,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14560), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14560), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14560), new NodeId(0, 46), new NodeId(0, 14558).expanded(), false));
@@ -18404,7 +18404,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15053), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15053), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15053), new NodeId(0, 46), new NodeId(0, 15052).expanded(), false));
@@ -18418,7 +18418,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15517), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15517), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15517), new NodeId(0, 46), new NodeId(0, 15052).expanded(), false));
@@ -18432,7 +18432,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14480), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14480), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14480), new NodeId(0, 46), new NodeId(0, 14479).expanded(), false));
@@ -18446,7 +18446,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14481), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14481), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14481), new NodeId(0, 46), new NodeId(0, 14479).expanded(), false));
@@ -18460,7 +18460,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14483), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14483), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14483), new NodeId(0, 46), new NodeId(0, 14482).expanded(), false));
@@ -18474,7 +18474,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14484), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14484), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14484), new NodeId(0, 46), new NodeId(0, 14482).expanded(), false));
@@ -18488,7 +18488,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16843), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16843), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16843), new NodeId(0, 46), new NodeId(0, 16842).expanded(), false));
@@ -18502,7 +18502,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16853), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16853), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16853), new NodeId(0, 46), new NodeId(0, 16842).expanded(), false));
@@ -18516,7 +18516,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16882), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16882), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16882), new NodeId(0, 46), new NodeId(0, 16881).expanded(), false));
@@ -18530,7 +18530,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16883), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16883), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16883), new NodeId(0, 46), new NodeId(0, 16881).expanded(), false));
@@ -18544,7 +18544,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14486), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14486), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14486), new NodeId(0, 46), new NodeId(0, 14485).expanded(), false));
@@ -18558,7 +18558,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16894), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16894), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16894), new NodeId(0, 46), new NodeId(0, 16884).expanded(), false));
@@ -18572,7 +18572,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16922), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16922), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16922), new NodeId(0, 46), new NodeId(0, 16884).expanded(), false));
@@ -18586,7 +18586,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16924), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16924), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16924), new NodeId(0, 46), new NodeId(0, 16923).expanded(), false));
@@ -18616,7 +18616,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14494), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14494), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14494), new NodeId(0, 46), new NodeId(0, 14493).expanded(), false));
@@ -18630,7 +18630,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14495), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14495), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14495), new NodeId(0, 46), new NodeId(0, 14493).expanded(), false));
@@ -18644,7 +18644,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14497), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14497), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14497), new NodeId(0, 46), new NodeId(0, 14496).expanded(), false));
@@ -18658,7 +18658,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14498), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14498), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14498), new NodeId(0, 46), new NodeId(0, 14496).expanded(), false));
@@ -18672,7 +18672,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16958), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16958), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16958), new NodeId(0, 46), new NodeId(0, 16935).expanded(), false));
@@ -18686,7 +18686,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16959), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16959), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16959), new NodeId(0, 46), new NodeId(0, 16935).expanded(), false));
@@ -18700,7 +18700,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16961), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16961), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16961), new NodeId(0, 46), new NodeId(0, 16960).expanded(), false));
@@ -18714,7 +18714,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16971), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16971), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16971), new NodeId(0, 46), new NodeId(0, 16960).expanded(), false));
@@ -18728,7 +18728,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14500), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14500), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14500), new NodeId(0, 46), new NodeId(0, 14499).expanded(), false));
@@ -18742,7 +18742,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16995), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16995), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16995), new NodeId(0, 46), new NodeId(0, 16994).expanded(), false));
@@ -18756,7 +18756,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16996), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16996), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16996), new NodeId(0, 46), new NodeId(0, 16994).expanded(), false));
@@ -18770,7 +18770,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17007), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17007), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17007), new NodeId(0, 46), new NodeId(0, 16997).expanded(), false));
@@ -19059,7 +19059,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19258), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19258), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19258), new NodeId(0, 46), new NodeId(0, 19256).expanded(), false));
@@ -19073,7 +19073,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19259), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19259), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19259), new NodeId(0, 46), new NodeId(0, 19256).expanded(), false));
@@ -19106,7 +19106,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19263), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19263), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19263), new NodeId(0, 46), new NodeId(0, 19261).expanded(), false));
@@ -19120,7 +19120,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19264), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19264), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19264), new NodeId(0, 46), new NodeId(0, 19261).expanded(), false));
@@ -19153,7 +19153,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19268), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19268), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19268), new NodeId(0, 46), new NodeId(0, 19266).expanded(), false));
@@ -19167,7 +19167,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19269), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19269), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19269), new NodeId(0, 46), new NodeId(0, 19266).expanded(), false));
@@ -19200,7 +19200,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19273), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19273), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19273), new NodeId(0, 46), new NodeId(0, 19271).expanded(), false));
@@ -19214,7 +19214,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19274), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19274), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19274), new NodeId(0, 46), new NodeId(0, 19271).expanded(), false));
@@ -19247,7 +19247,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19278), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19278), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19278), new NodeId(0, 46), new NodeId(0, 19276).expanded(), false));
@@ -19261,7 +19261,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19279), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19279), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19279), new NodeId(0, 46), new NodeId(0, 19276).expanded(), false));
@@ -19294,7 +19294,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19283), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19283), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19283), new NodeId(0, 46), new NodeId(0, 19281).expanded(), false));
@@ -19308,7 +19308,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19284), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19284), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19284), new NodeId(0, 46), new NodeId(0, 19281).expanded(), false));
@@ -19331,7 +19331,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19288), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19288), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19288), new NodeId(0, 46), new NodeId(0, 19287).expanded(), false));
@@ -19345,7 +19345,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17428), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17428), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17428), new NodeId(0, 46), new NodeId(0, 17427).expanded(), false));
@@ -19359,7 +19359,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17456), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17456), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17456), new NodeId(0, 46), new NodeId(0, 17427).expanded(), false));
@@ -19373,7 +19373,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17507), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17507), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17507), new NodeId(0, 46), new NodeId(0, 17465).expanded(), false));
@@ -19387,7 +19387,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17508), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17508), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17508), new NodeId(0, 46), new NodeId(0, 17465).expanded(), false));
@@ -19401,7 +19401,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14226), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14226), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14226), new NodeId(0, 46), new NodeId(0, 14225).expanded(), false));
@@ -19648,7 +19648,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17829), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17829), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17829), new NodeId(0, 46), new NodeId(0, 17827).expanded(), false));
@@ -19662,7 +19662,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17830), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17830), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17830), new NodeId(0, 46), new NodeId(0, 17827).expanded(), false));
@@ -19695,7 +19695,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17834), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17834), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17834), new NodeId(0, 46), new NodeId(0, 17832).expanded(), false));
@@ -19709,7 +19709,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17835), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17835), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17835), new NodeId(0, 46), new NodeId(0, 17832).expanded(), false));
@@ -19742,7 +19742,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17839), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17839), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17839), new NodeId(0, 46), new NodeId(0, 17837).expanded(), false));
@@ -19756,7 +19756,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17840), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17840), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17840), new NodeId(0, 46), new NodeId(0, 17837).expanded(), false));
@@ -19789,7 +19789,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17844), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17844), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17844), new NodeId(0, 46), new NodeId(0, 17842).expanded(), false));
@@ -19803,7 +19803,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17845), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17845), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17845), new NodeId(0, 46), new NodeId(0, 17842).expanded(), false));
@@ -19836,7 +19836,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17849), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17849), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17849), new NodeId(0, 46), new NodeId(0, 17847).expanded(), false));
@@ -19850,7 +19850,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17850), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17850), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17850), new NodeId(0, 46), new NodeId(0, 17847).expanded(), false));
@@ -19883,7 +19883,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17855), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17855), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17855), new NodeId(0, 46), new NodeId(0, 17853).expanded(), false));
@@ -19897,7 +19897,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17856), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17856), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17856), new NodeId(0, 46), new NodeId(0, 17853).expanded(), false));
@@ -19930,7 +19930,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17871), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17871), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17871), new NodeId(0, 46), new NodeId(0, 17859).expanded(), false));
@@ -19944,7 +19944,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17872), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17872), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17872), new NodeId(0, 46), new NodeId(0, 17859).expanded(), false));
@@ -19977,7 +19977,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17885), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17885), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17885), new NodeId(0, 46), new NodeId(0, 17874).expanded(), false));
@@ -19991,7 +19991,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17892), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17892), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17892), new NodeId(0, 46), new NodeId(0, 17874).expanded(), false));
@@ -20024,7 +20024,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17902), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17902), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17902), new NodeId(0, 46), new NodeId(0, 17900).expanded(), false));
@@ -20038,7 +20038,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17903), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17903), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17903), new NodeId(0, 46), new NodeId(0, 17900).expanded(), false));
@@ -20061,7 +20061,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17920), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17920), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17920), new NodeId(0, 46), new NodeId(0, 17913).expanded(), false));
@@ -20084,7 +20084,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17934), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17934), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17934), new NodeId(0, 46), new NodeId(0, 17927).expanded(), false));
@@ -20098,7 +20098,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17976), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17976), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17976), new NodeId(0, 46), new NodeId(0, 17969).expanded(), false));
@@ -20112,7 +20112,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17987), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17987), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17987), new NodeId(0, 46), new NodeId(0, 17969).expanded(), false));
@@ -20126,7 +20126,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17993), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17993), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17993), new NodeId(0, 46), new NodeId(0, 17992).expanded(), false));
@@ -20325,7 +20325,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21032), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21032), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21032), new NodeId(0, 46), new NodeId(0, 21030).expanded(), false));
@@ -20339,7 +20339,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21033), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21033), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21033), new NodeId(0, 46), new NodeId(0, 21030).expanded(), false));
@@ -20372,7 +20372,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21037), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21037), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21037), new NodeId(0, 46), new NodeId(0, 21035).expanded(), false));
@@ -20386,7 +20386,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21038), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21038), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21038), new NodeId(0, 46), new NodeId(0, 21035).expanded(), false));
@@ -20419,7 +20419,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21042), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21042), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21042), new NodeId(0, 46), new NodeId(0, 21040).expanded(), false));
@@ -20433,7 +20433,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21043), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21043), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21043), new NodeId(0, 46), new NodeId(0, 21040).expanded(), false));
@@ -20466,7 +20466,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21047), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21047), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21047), new NodeId(0, 46), new NodeId(0, 21045).expanded(), false));
@@ -20480,7 +20480,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21048), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21048), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21048), new NodeId(0, 46), new NodeId(0, 21045).expanded(), false));
@@ -20513,7 +20513,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21052), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21052), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21052), new NodeId(0, 46), new NodeId(0, 21050).expanded(), false));
@@ -20527,7 +20527,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21053), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21053), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21053), new NodeId(0, 46), new NodeId(0, 21050).expanded(), false));
@@ -20560,7 +20560,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21057), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21057), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21057), new NodeId(0, 46), new NodeId(0, 21055).expanded(), false));
@@ -20574,7 +20574,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21058), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21058), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21058), new NodeId(0, 46), new NodeId(0, 21055).expanded(), false));
@@ -20607,7 +20607,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21063), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21063), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21063), new NodeId(0, 46), new NodeId(0, 21061).expanded(), false));
@@ -20621,7 +20621,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21064), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21064), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21064), new NodeId(0, 46), new NodeId(0, 21061).expanded(), false));
@@ -20644,7 +20644,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21077), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21077), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21077), new NodeId(0, 46), new NodeId(0, 21076).expanded(), false));
@@ -20667,7 +20667,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21079), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21079), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21079), new NodeId(0, 46), new NodeId(0, 21078).expanded(), false));
@@ -20681,7 +20681,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21083), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21083), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21083), new NodeId(0, 46), new NodeId(0, 21082).expanded(), false));
@@ -20695,7 +20695,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21084), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21084), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21084), new NodeId(0, 46), new NodeId(0, 21082).expanded(), false));
@@ -20709,7 +20709,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21086), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21086), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21086), new NodeId(0, 46), new NodeId(0, 21085).expanded(), false));
@@ -20868,7 +20868,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19567), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19567), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19567), new NodeId(0, 46), new NodeId(0, 19565).expanded(), false));
@@ -20882,7 +20882,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19568), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19568), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19568), new NodeId(0, 46), new NodeId(0, 19565).expanded(), false));
@@ -20915,7 +20915,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19572), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19572), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19572), new NodeId(0, 46), new NodeId(0, 19570).expanded(), false));
@@ -20929,7 +20929,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19573), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19573), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19573), new NodeId(0, 46), new NodeId(0, 19570).expanded(), false));
@@ -20962,7 +20962,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19577), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19577), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19577), new NodeId(0, 46), new NodeId(0, 19575).expanded(), false));
@@ -20976,7 +20976,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19578), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19578), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19578), new NodeId(0, 46), new NodeId(0, 19575).expanded(), false));
@@ -21009,7 +21009,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19582), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19582), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19582), new NodeId(0, 46), new NodeId(0, 19580).expanded(), false));
@@ -21023,7 +21023,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19583), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19583), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19583), new NodeId(0, 46), new NodeId(0, 19580).expanded(), false));
@@ -21056,7 +21056,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19587), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19587), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19587), new NodeId(0, 46), new NodeId(0, 19585).expanded(), false));
@@ -21070,7 +21070,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19588), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19588), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19588), new NodeId(0, 46), new NodeId(0, 19585).expanded(), false));
@@ -21103,7 +21103,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19592), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19592), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19592), new NodeId(0, 46), new NodeId(0, 19590).expanded(), false));
@@ -21117,7 +21117,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19593), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19593), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19593), new NodeId(0, 46), new NodeId(0, 19590).expanded(), false));
@@ -21150,7 +21150,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19598), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19598), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19598), new NodeId(0, 46), new NodeId(0, 19596).expanded(), false));
@@ -21164,7 +21164,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19599), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19599), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19599), new NodeId(0, 46), new NodeId(0, 19596).expanded(), false));
@@ -21387,7 +21387,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19626), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19626), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19626), new NodeId(0, 46), new NodeId(0, 19624).expanded(), false));
@@ -21401,7 +21401,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19627), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19627), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19627), new NodeId(0, 46), new NodeId(0, 19624).expanded(), false));
@@ -21434,7 +21434,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19631), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19631), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19631), new NodeId(0, 46), new NodeId(0, 19629).expanded(), false));
@@ -21448,7 +21448,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19632), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19632), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19632), new NodeId(0, 46), new NodeId(0, 19629).expanded(), false));
@@ -21481,7 +21481,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19636), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19636), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19636), new NodeId(0, 46), new NodeId(0, 19634).expanded(), false));
@@ -21495,7 +21495,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19637), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19637), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19637), new NodeId(0, 46), new NodeId(0, 19634).expanded(), false));
@@ -21528,7 +21528,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19641), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19641), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19641), new NodeId(0, 46), new NodeId(0, 19639).expanded(), false));
@@ -21542,7 +21542,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19642), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19642), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19642), new NodeId(0, 46), new NodeId(0, 19639).expanded(), false));
@@ -21575,7 +21575,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19646), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19646), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19646), new NodeId(0, 46), new NodeId(0, 19644).expanded(), false));
@@ -21589,7 +21589,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19647), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19647), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19647), new NodeId(0, 46), new NodeId(0, 19644).expanded(), false));
@@ -21622,7 +21622,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19651), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19651), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19651), new NodeId(0, 46), new NodeId(0, 19649).expanded(), false));
@@ -21636,7 +21636,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19652), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19652), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19652), new NodeId(0, 46), new NodeId(0, 19649).expanded(), false));
@@ -21669,7 +21669,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19657), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19657), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19657), new NodeId(0, 46), new NodeId(0, 19655).expanded(), false));
@@ -21683,7 +21683,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19658), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19658), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19658), new NodeId(0, 46), new NodeId(0, 19655).expanded(), false));
@@ -21697,7 +21697,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17387), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17387), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17387), new NodeId(0, 46), new NodeId(0, 17386).expanded(), false));
@@ -21711,7 +21711,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17388), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17388), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17388), new NodeId(0, 46), new NodeId(0, 17386).expanded(), false));
@@ -21725,7 +21725,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17390), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17390), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17390), new NodeId(0, 46), new NodeId(0, 17389).expanded(), false));
@@ -21739,7 +21739,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17391), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17391), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17391), new NodeId(0, 46), new NodeId(0, 17389).expanded(), false));
@@ -21761,7 +21761,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15116), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15116), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15116), new NodeId(0, 46), new NodeId(0, 15115).expanded(), false));
@@ -21775,7 +21775,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15117), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15117), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15117), new NodeId(0, 46), new NodeId(0, 15115).expanded(), false));
@@ -21789,7 +21789,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15119), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15119), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15119), new NodeId(0, 46), new NodeId(0, 15118).expanded(), false));
@@ -21803,7 +21803,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15120), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15120), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15120), new NodeId(0, 46), new NodeId(0, 15118).expanded(), false));
@@ -21817,7 +21817,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23798), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23798), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23798), new NodeId(0, 46), new NodeId(0, 23797).expanded(), false));
@@ -21831,7 +21831,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23799), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23799), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23799), new NodeId(0, 46), new NodeId(0, 23797).expanded(), false));
@@ -21845,7 +21845,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23801), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23801), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23801), new NodeId(0, 46), new NodeId(0, 23800).expanded(), false));
@@ -21859,7 +21859,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23803), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23803), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23803), new NodeId(0, 46), new NodeId(0, 23802).expanded(), false));
@@ -21873,7 +21873,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23804), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23804), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23804), new NodeId(0, 46), new NodeId(0, 23802).expanded(), false));
@@ -21887,7 +21887,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23806), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23806), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23806), new NodeId(0, 46), new NodeId(0, 23805).expanded(), false));
@@ -21917,7 +21917,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23812), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23812), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23812), new NodeId(0, 46), new NodeId(0, 23811).expanded(), false));
@@ -21931,7 +21931,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23813), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23813), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23813), new NodeId(0, 46), new NodeId(0, 23811).expanded(), false));
@@ -21945,7 +21945,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23815), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23815), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23815), new NodeId(0, 46), new NodeId(0, 23814).expanded(), false));
@@ -21959,7 +21959,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23817), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23817), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23817), new NodeId(0, 46), new NodeId(0, 23816).expanded(), false));
@@ -21973,7 +21973,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23818), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23818), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23818), new NodeId(0, 46), new NodeId(0, 23816).expanded(), false));
@@ -21987,7 +21987,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23820), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23820), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23820), new NodeId(0, 46), new NodeId(0, 23819).expanded(), false));
@@ -22130,7 +22130,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19694), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19694), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19694), new NodeId(0, 46), new NodeId(0, 19692).expanded(), false));
@@ -22144,7 +22144,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19695), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19695), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19695), new NodeId(0, 46), new NodeId(0, 19692).expanded(), false));
@@ -22177,7 +22177,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19699), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19699), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19699), new NodeId(0, 46), new NodeId(0, 19697).expanded(), false));
@@ -22191,7 +22191,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19700), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19700), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19700), new NodeId(0, 46), new NodeId(0, 19697).expanded(), false));
@@ -22224,7 +22224,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19704), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19704), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19704), new NodeId(0, 46), new NodeId(0, 19702).expanded(), false));
@@ -22238,7 +22238,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19705), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19705), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19705), new NodeId(0, 46), new NodeId(0, 19702).expanded(), false));
@@ -22271,7 +22271,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19709), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19709), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19709), new NodeId(0, 46), new NodeId(0, 19707).expanded(), false));
@@ -22285,7 +22285,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19710), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19710), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19710), new NodeId(0, 46), new NodeId(0, 19707).expanded(), false));
@@ -22318,7 +22318,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19714), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19714), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19714), new NodeId(0, 46), new NodeId(0, 19712).expanded(), false));
@@ -22332,7 +22332,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19715), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19715), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19715), new NodeId(0, 46), new NodeId(0, 19712).expanded(), false));
@@ -22365,7 +22365,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19719), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19719), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19719), new NodeId(0, 46), new NodeId(0, 19717).expanded(), false));
@@ -22379,7 +22379,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19720), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19720), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19720), new NodeId(0, 46), new NodeId(0, 19717).expanded(), false));
@@ -22393,7 +22393,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19724), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19724), new NodeId(0, 46), new NodeId(0, 19723).expanded(), false));
         this.nodeManager.addNode(node);
@@ -22438,7 +22438,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19731), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19731), new NodeId(0, 46), new NodeId(0, 19730).expanded(), false));
         this.nodeManager.addNode(node);
@@ -22460,7 +22460,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19779), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19779), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19779), new NodeId(0, 46), new NodeId(0, 19778).expanded(), false));
@@ -22483,7 +22483,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19781), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19781), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19781), new NodeId(0, 46), new NodeId(0, 19780).expanded(), false));
@@ -22506,7 +22506,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19783), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19783), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19783), new NodeId(0, 46), new NodeId(0, 19782).expanded(), false));
@@ -22529,7 +22529,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19785), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19785), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19785), new NodeId(0, 46), new NodeId(0, 19784).expanded(), false));
@@ -22552,7 +22552,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19833), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19833), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19833), new NodeId(0, 46), new NodeId(0, 19832).expanded(), false));
@@ -22585,7 +22585,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19882), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19882), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19882), new NodeId(0, 46), new NodeId(0, 19880).expanded(), false));
@@ -22599,7 +22599,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19883), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19883), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19883), new NodeId(0, 46), new NodeId(0, 19880).expanded(), false));
@@ -22632,7 +22632,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19887), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19887), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19887), new NodeId(0, 46), new NodeId(0, 19885).expanded(), false));
@@ -22646,7 +22646,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19888), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19888), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19888), new NodeId(0, 46), new NodeId(0, 19885).expanded(), false));
@@ -22679,7 +22679,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19892), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19892), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19892), new NodeId(0, 46), new NodeId(0, 19890).expanded(), false));
@@ -22693,7 +22693,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19893), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19893), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19893), new NodeId(0, 46), new NodeId(0, 19890).expanded(), false));
@@ -22716,7 +22716,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19896), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19896), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19896), new NodeId(0, 46), new NodeId(0, 19895).expanded(), false));
@@ -22739,7 +22739,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19898), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19898), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19898), new NodeId(0, 46), new NodeId(0, 19897).expanded(), false));
@@ -22762,7 +22762,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19900), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19900), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19900), new NodeId(0, 46), new NodeId(0, 19899).expanded(), false));
@@ -22785,7 +22785,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19902), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19902), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19902), new NodeId(0, 46), new NodeId(0, 19901).expanded(), false));
@@ -22818,7 +22818,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19951), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19951), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19951), new NodeId(0, 46), new NodeId(0, 19949).expanded(), false));
@@ -22832,7 +22832,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19952), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19952), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19952), new NodeId(0, 46), new NodeId(0, 19949).expanded(), false));
@@ -22865,7 +22865,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19956), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19956), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19956), new NodeId(0, 46), new NodeId(0, 19954).expanded(), false));
@@ -22879,7 +22879,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19957), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19957), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19957), new NodeId(0, 46), new NodeId(0, 19954).expanded(), false));
@@ -22912,7 +22912,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19961), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19961), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19961), new NodeId(0, 46), new NodeId(0, 19959).expanded(), false));
@@ -22926,7 +22926,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19962), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19962), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19962), new NodeId(0, 46), new NodeId(0, 19959).expanded(), false));
@@ -22949,7 +22949,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19965), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19965), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19965), new NodeId(0, 46), new NodeId(0, 19964).expanded(), false));
@@ -22972,7 +22972,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19967), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19967), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19967), new NodeId(0, 46), new NodeId(0, 19966).expanded(), false));
@@ -23005,7 +23005,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20016), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20016), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20016), new NodeId(0, 46), new NodeId(0, 20014).expanded(), false));
@@ -23019,7 +23019,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20017), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20017), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20017), new NodeId(0, 46), new NodeId(0, 20014).expanded(), false));
@@ -23042,7 +23042,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20020), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20020), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20020), new NodeId(0, 46), new NodeId(0, 20019).expanded(), false));
@@ -23065,7 +23065,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20022), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20022), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20022), new NodeId(0, 46), new NodeId(0, 20021).expanded(), false));
@@ -23088,7 +23088,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20024), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20024), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20024), new NodeId(0, 46), new NodeId(0, 20023).expanded(), false));
@@ -23111,7 +23111,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20026), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20026), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20026), new NodeId(0, 46), new NodeId(0, 20025).expanded(), false));
@@ -23144,7 +23144,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20075), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20075), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20075), new NodeId(0, 46), new NodeId(0, 20073).expanded(), false));
@@ -23158,7 +23158,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20076), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20076), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20076), new NodeId(0, 46), new NodeId(0, 20073).expanded(), false));
@@ -23191,7 +23191,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20080), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20080), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20080), new NodeId(0, 46), new NodeId(0, 20078).expanded(), false));
@@ -23205,7 +23205,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20081), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20081), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20081), new NodeId(0, 46), new NodeId(0, 20078).expanded(), false));
@@ -23228,7 +23228,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20084), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20084), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20084), new NodeId(0, 46), new NodeId(0, 20083).expanded(), false));
@@ -23251,7 +23251,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20086), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20086), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20086), new NodeId(0, 46), new NodeId(0, 20085).expanded(), false));
@@ -23274,7 +23274,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20088), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20088), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20088), new NodeId(0, 46), new NodeId(0, 20087).expanded(), false));
@@ -23297,7 +23297,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20090), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20090), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20090), new NodeId(0, 46), new NodeId(0, 20089).expanded(), false));
@@ -23320,7 +23320,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20092), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20092), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20092), new NodeId(0, 46), new NodeId(0, 20091).expanded(), false));
@@ -23343,7 +23343,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 20094), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20094), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 20094), new NodeId(0, 46), new NodeId(0, 20093).expanded(), false));
@@ -23945,7 +23945,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23460), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23460), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23460), new NodeId(0, 46), new NodeId(0, 23459).expanded(), false));
@@ -23959,7 +23959,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23461), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23461), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23461), new NodeId(0, 46), new NodeId(0, 23459).expanded(), false));
@@ -23973,7 +23973,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23463), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23463), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23463), new NodeId(0, 46), new NodeId(0, 23462).expanded(), false));
@@ -23987,7 +23987,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23464), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23464), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23464), new NodeId(0, 46), new NodeId(0, 23462).expanded(), false));
@@ -24001,7 +24001,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23477), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23477), new NodeId(0, 46), new NodeId(0, 23476).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24014,7 +24014,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23478), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23478), new NodeId(0, 46), new NodeId(0, 23476).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24027,7 +24027,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23486), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23486), new NodeId(0, 46), new NodeId(0, 23485).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24040,7 +24040,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23487), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23487), new NodeId(0, 46), new NodeId(0, 23485).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24053,7 +24053,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23495), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23495), new NodeId(0, 46), new NodeId(0, 23494).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24066,7 +24066,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23496), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23496), new NodeId(0, 46), new NodeId(0, 23494).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24111,7 +24111,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24270), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24270), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24270), new NodeId(0, 46), new NodeId(0, 24269).expanded(), false));
@@ -24125,7 +24125,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24272), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24272), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24272), new NodeId(0, 46), new NodeId(0, 24271).expanded(), false));
@@ -24139,7 +24139,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24274), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24274), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24274), new NodeId(0, 46), new NodeId(0, 24273).expanded(), false));
@@ -24153,7 +24153,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24276), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24276), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24276), new NodeId(0, 46), new NodeId(0, 24275).expanded(), false));
@@ -24167,7 +24167,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24278), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24278), new NodeId(0, 46), new NodeId(0, 24277).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24180,7 +24180,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24280), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24280), new NodeId(0, 46), new NodeId(0, 24279).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24221,7 +24221,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24305), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24305), new NodeId(0, 46), new NodeId(0, 24304).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24234,7 +24234,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24307), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24307), new NodeId(0, 46), new NodeId(0, 24306).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24247,7 +24247,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24309), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24309), new NodeId(0, 46), new NodeId(0, 24308).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24260,7 +24260,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24311), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24311), new NodeId(0, 46), new NodeId(0, 24310).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24330,7 +24330,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24157), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24157), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24157), new NodeId(0, 46), new NodeId(0, 24152).expanded(), false));
@@ -24353,7 +24353,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24164), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24164), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24164), new NodeId(0, 46), new NodeId(0, 24159).expanded(), false));
@@ -24623,7 +24623,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24235), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24235), new NodeId(0, 46), new NodeId(0, 24210).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24636,7 +24636,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24236), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24236), new NodeId(0, 46), new NodeId(0, 24212).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24649,7 +24649,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24237), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24237), new NodeId(0, 46), new NodeId(0, 24214).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24662,7 +24662,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24238), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24238), new NodeId(0, 46), new NodeId(0, 24216).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24675,7 +24675,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24239), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24239), new NodeId(0, 46), new NodeId(0, 24218).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24688,7 +24688,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24240), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24240), new NodeId(0, 46), new NodeId(0, 24220).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24701,7 +24701,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24241), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24241), new NodeId(0, 46), new NodeId(0, 24222).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24714,7 +24714,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24242), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24242), new NodeId(0, 46), new NodeId(0, 24224).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24760,7 +24760,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25252), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25252), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25252), new NodeId(0, 46), new NodeId(0, 25225).expanded(), false));
@@ -24782,7 +24782,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25230), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25230), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25230), new NodeId(0, 46), new NodeId(0, 25229).expanded(), false));
@@ -24796,7 +24796,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25232), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25232), new NodeId(0, 37), new NodeId(0, 78).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25232), new NodeId(0, 46), new NodeId(0, 25231).expanded(), false));
@@ -24810,7 +24810,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7591), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7591), new NodeId(0, 46), new NodeId(0, 256).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24823,7 +24823,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11878), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11878), new NodeId(0, 46), new NodeId(0, 257).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24836,7 +24836,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15030), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15030), new NodeId(0, 46), new NodeId(0, 94).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24849,7 +24849,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15032), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15032), new NodeId(0, 46), new NodeId(0, 15031).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24862,7 +24862,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15407), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15407), new NodeId(0, 46), new NodeId(0, 15406).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24875,7 +24875,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15034), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15034), new NodeId(0, 46), new NodeId(0, 15033).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24888,7 +24888,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15035), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15035), new NodeId(0, 46), new NodeId(0, 95).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24901,7 +24901,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14528), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14528), new NodeId(0, 46), new NodeId(0, 98).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24914,7 +24914,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7597), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7597), new NodeId(0, 46), new NodeId(0, 307).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24927,7 +24927,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7595), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7595), new NodeId(0, 46), new NodeId(0, 302).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24940,7 +24940,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7596), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7596), new NodeId(0, 46), new NodeId(0, 303).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24953,7 +24953,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7598), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7598), new NodeId(0, 46), new NodeId(0, 315).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24966,7 +24966,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11881), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11881), new NodeId(0, 46), new NodeId(0, 348).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24979,7 +24979,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15036), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15036), new NodeId(0, 46), new NodeId(0, 347).expanded(), false));
         this.nodeManager.addNode(node);
@@ -24992,7 +24992,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7605), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7605), new NodeId(0, 46), new NodeId(0, 576).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25005,7 +25005,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11884), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11884), new NodeId(0, 46), new NodeId(0, 11234).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25018,7 +25018,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11885), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11885), new NodeId(0, 46), new NodeId(0, 11293).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25031,7 +25031,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7611), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7611), new NodeId(0, 46), new NodeId(0, 851).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25044,7 +25044,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7612), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7612), new NodeId(0, 46), new NodeId(0, 852).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25057,7 +25057,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12078), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12078), new NodeId(0, 46), new NodeId(0, 12077).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25070,7 +25070,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7614), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7614), new NodeId(0, 46), new NodeId(0, 890).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25091,7 +25091,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7617), new NodeId(0, 46), new NodeId(0, 7619).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7617), new NodeId(0, 46), new NodeId(0, 15037).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7617), new NodeId(0, 47), new NodeId(0, 12770).expanded(), true));
@@ -25258,7 +25258,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7619), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7619), new NodeId(0, 46), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25271,7 +25271,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15037), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15037), new NodeId(0, 46), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25284,7 +25284,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12770), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12770), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25297,7 +25297,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14873), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14873), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25310,7 +25310,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17538), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17538), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25323,7 +25323,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17550), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17550), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25336,7 +25336,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15734), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15734), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25349,7 +25349,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18824), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18824), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25362,7 +25362,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18827), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18827), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25375,7 +25375,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18830), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18830), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25388,7 +25388,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18833), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18833), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25401,7 +25401,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18836), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18836), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25414,7 +25414,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18839), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18839), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25427,7 +25427,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18842), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18842), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25440,7 +25440,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18845), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18845), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25453,7 +25453,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18848), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18848), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25466,7 +25466,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15738), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15738), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25479,7 +25479,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23514), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23514), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25492,7 +25492,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12681), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12681), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25505,7 +25505,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15741), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15741), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25518,7 +25518,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14855), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14855), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25531,7 +25531,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15599), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15599), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25544,7 +25544,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15602), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15602), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25557,7 +25557,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15501), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15501), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25570,7 +25570,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15521), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15521), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25583,7 +25583,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24111), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24111), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25596,7 +25596,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24114), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24114), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25609,7 +25609,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24117), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24117), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25622,7 +25622,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14849), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14849), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25635,7 +25635,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14852), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14852), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25648,7 +25648,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14876), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14876), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25661,7 +25661,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15766), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15766), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25674,7 +25674,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15769), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15769), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25687,7 +25687,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14324), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14324), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25700,7 +25700,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15772), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15772), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25713,7 +25713,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15775), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15775), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25726,7 +25726,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25533), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25533), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25739,7 +25739,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15778), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15778), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25752,7 +25752,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15781), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15781), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25765,7 +25765,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15784), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15784), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25778,7 +25778,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15787), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15787), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25791,7 +25791,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21156), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21156), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25804,7 +25804,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15793), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15793), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25817,7 +25817,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15854), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15854), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25830,7 +25830,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15857), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15857), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25843,7 +25843,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15860), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15860), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25856,7 +25856,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21159), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21159), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25869,7 +25869,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21162), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21162), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25882,7 +25882,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21165), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21165), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25895,7 +25895,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15866), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15866), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25908,7 +25908,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15869), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15869), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25921,7 +25921,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15872), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15872), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25934,7 +25934,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15877), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15877), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25947,7 +25947,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15880), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15880), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25960,7 +25960,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15883), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15883), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25973,7 +25973,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15886), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15886), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25986,7 +25986,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21002), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21002), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -25999,7 +25999,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15889), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15889), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26012,7 +26012,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21168), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21168), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26025,7 +26025,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23870), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23870), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26038,7 +26038,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23873), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23873), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26051,7 +26051,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23876), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23876), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26064,7 +26064,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25536), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25536), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26077,7 +26077,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23879), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23879), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26090,7 +26090,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15895), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15895), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26103,7 +26103,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15898), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15898), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26116,7 +26116,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15919), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15919), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26129,7 +26129,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15922), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15922), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26142,7 +26142,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15925), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15925), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26155,7 +26155,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15931), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15931), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26168,7 +26168,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23882), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23882), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26181,7 +26181,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23885), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23885), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26194,7 +26194,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23888), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23888), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26207,7 +26207,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23897), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23897), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26220,7 +26220,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23900), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23900), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26233,7 +26233,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17469), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17469), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26246,7 +26246,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23909), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23909), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26259,7 +26259,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21171), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21171), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26272,7 +26272,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23912), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23912), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26285,7 +26285,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23915), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23915), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26298,7 +26298,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15524), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15524), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26311,7 +26311,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15940), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15940), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26324,7 +26324,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15943), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15943), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26337,7 +26337,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15946), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15946), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26350,7 +26350,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25539), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25539), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26363,7 +26363,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25542), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25542), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26376,7 +26376,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23502), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23502), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26389,7 +26389,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24293), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24293), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26402,7 +26402,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25240), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25240), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26415,7 +26415,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16131), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16131), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26428,7 +26428,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18178), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18178), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26441,7 +26441,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18181), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18181), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26454,7 +26454,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18184), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18184), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26467,7 +26467,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18187), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18187), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26480,7 +26480,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7650), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7650), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26493,7 +26493,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7656), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7656), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26506,7 +26506,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14870), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14870), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26519,7 +26519,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12767), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12767), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26532,7 +26532,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8914), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8914), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26545,7 +26545,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7665), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7665), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26558,7 +26558,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12213), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12213), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26571,7 +26571,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7662), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7662), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26584,7 +26584,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7668), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7668), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26597,7 +26597,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7782), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7782), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26610,7 +26610,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12902), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12902), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26623,7 +26623,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12905), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12905), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26636,7 +26636,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7698), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7698), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26649,7 +26649,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7671), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7671), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26662,7 +26662,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7674), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7674), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26675,7 +26675,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7677), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7677), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26688,7 +26688,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7680), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7680), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26701,7 +26701,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7683), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7683), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26714,7 +26714,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7728), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7728), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26727,7 +26727,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7731), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7731), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26740,7 +26740,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7734), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7734), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26753,7 +26753,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7737), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7737), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26766,7 +26766,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12718), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12718), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26779,7 +26779,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12721), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12721), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26792,7 +26792,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7686), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7686), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26805,7 +26805,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7929), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7929), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26818,7 +26818,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7932), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7932), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26831,7 +26831,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7935), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7935), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26844,7 +26844,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7938), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7938), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26857,7 +26857,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7941), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7941), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26870,7 +26870,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7944), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7944), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26883,7 +26883,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7947), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7947), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26896,7 +26896,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8004), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8004), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26909,7 +26909,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8067), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8067), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26922,7 +26922,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8073), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8073), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26935,7 +26935,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8076), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8076), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26948,7 +26948,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8172), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8172), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26961,7 +26961,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7692), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7692), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26974,7 +26974,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8208), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8208), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -26987,7 +26987,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11959), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11959), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27000,7 +27000,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11962), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11962), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27013,7 +27013,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8211), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8211), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27026,7 +27026,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8214), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8214), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27039,7 +27039,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8217), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8217), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27052,7 +27052,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8220), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8220), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27065,7 +27065,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8223), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8223), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27078,7 +27078,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8226), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8226), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27091,7 +27091,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 7659), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 7659), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27104,7 +27104,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8229), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8229), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27117,7 +27117,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8232), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8232), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27130,7 +27130,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8235), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8235), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27143,7 +27143,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8238), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8238), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27156,7 +27156,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8241), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8241), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27169,7 +27169,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12183), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12183), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27182,7 +27182,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12186), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12186), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27195,7 +27195,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12091), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12091), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27208,7 +27208,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12094), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12094), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27221,7 +27221,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8247), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8247), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27234,7 +27234,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24035), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24035), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27247,7 +27247,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8244), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8244), new NodeId(0, 47), new NodeId(0, 7617).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27271,7 +27271,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8252), new NodeId(0, 46), new NodeId(0, 8254).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8252), new NodeId(0, 46), new NodeId(0, 15039).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8252), new NodeId(0, 47), new NodeId(0, 12762).expanded(), true));
@@ -27438,7 +27438,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8254), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8254), new NodeId(0, 46), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27451,7 +27451,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15039), new NodeId(0, 40), new NodeId(0, 68).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15039), new NodeId(0, 46), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27464,7 +27464,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12762), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12762), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27477,7 +27477,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14829), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14829), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27490,7 +27490,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17542), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17542), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27503,7 +27503,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17554), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17554), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27516,7 +27516,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16024), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16024), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27529,7 +27529,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18860), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18860), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27542,7 +27542,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18863), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18863), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27555,7 +27555,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18866), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18866), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27568,7 +27568,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18869), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18869), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27581,7 +27581,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19049), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19049), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27594,7 +27594,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19052), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19052), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27607,7 +27607,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19055), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19055), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27620,7 +27620,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19058), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19058), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27633,7 +27633,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 19061), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19061), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27646,7 +27646,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15730), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15730), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27659,7 +27659,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23522), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23522), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27672,7 +27672,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12677), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12677), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27685,7 +27685,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16027), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16027), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27698,7 +27698,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14811), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14811), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27711,7 +27711,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15591), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15591), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27724,7 +27724,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15594), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15594), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27737,7 +27737,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15585), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15585), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27750,7 +27750,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15588), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15588), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27763,7 +27763,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24123), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24123), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27776,7 +27776,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24126), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24126), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27789,7 +27789,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24129), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24129), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27802,7 +27802,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14805), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14805), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27815,7 +27815,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14808), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14808), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27828,7 +27828,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14832), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14832), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27841,7 +27841,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16030), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16030), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27854,7 +27854,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16033), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16033), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27867,7 +27867,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14320), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14320), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27880,7 +27880,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16037), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16037), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27893,7 +27893,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16040), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16040), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27906,7 +27906,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25549), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25549), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27919,7 +27919,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16047), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16047), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27932,7 +27932,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16050), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16050), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27945,7 +27945,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16053), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16053), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27958,7 +27958,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16056), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16056), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27971,7 +27971,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21180), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21180), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27984,7 +27984,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16062), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16062), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -27997,7 +27997,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16065), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16065), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28010,7 +28010,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16068), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16068), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28023,7 +28023,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16071), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16071), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28036,7 +28036,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21183), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21183), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28049,7 +28049,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21186), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21186), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28062,7 +28062,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21189), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21189), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28075,7 +28075,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16077), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16077), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28088,7 +28088,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16080), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16080), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28101,7 +28101,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16083), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16083), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28114,7 +28114,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16086), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16086), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28127,7 +28127,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16089), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16089), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28140,7 +28140,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16092), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16092), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28153,7 +28153,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16095), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16095), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28166,7 +28166,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14835), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14835), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28179,7 +28179,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16098), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16098), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28192,7 +28192,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21192), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21192), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28205,7 +28205,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23938), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23938), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28218,7 +28218,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23941), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23941), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28231,7 +28231,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23944), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23944), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28244,7 +28244,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25552), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25552), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28257,7 +28257,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23947), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23947), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28270,7 +28270,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16104), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16104), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28283,7 +28283,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16107), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16107), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28296,7 +28296,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16110), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16110), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28309,7 +28309,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16113), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16113), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28322,7 +28322,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16116), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16116), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28335,7 +28335,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16119), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16119), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28348,7 +28348,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23950), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23950), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28361,7 +28361,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23953), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23953), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28374,7 +28374,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23956), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23956), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28387,7 +28387,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23965), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23965), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28400,7 +28400,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23968), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23968), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28413,7 +28413,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 17473), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 17473), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28426,7 +28426,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23977), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23977), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28439,7 +28439,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 21195), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 21195), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28452,7 +28452,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23980), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23980), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28465,7 +28465,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23983), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23983), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28478,7 +28478,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 15640), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15640), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28491,7 +28491,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16125), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16125), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28504,7 +28504,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16144), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16144), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28517,7 +28517,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16147), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16147), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28530,7 +28530,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25555), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25555), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28543,7 +28543,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25558), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25558), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28556,7 +28556,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 23508), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 23508), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28569,7 +28569,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24297), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24297), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28582,7 +28582,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 25244), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 25244), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28595,7 +28595,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 16127), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 16127), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28608,7 +28608,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18166), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18166), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28621,7 +28621,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18169), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18169), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28634,7 +28634,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18172), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18172), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28647,7 +28647,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 18175), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 18175), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28660,7 +28660,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8285), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8285), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28673,7 +28673,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8291), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8291), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28686,7 +28686,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 14826), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 14826), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28699,7 +28699,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12759), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12759), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28712,7 +28712,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8918), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8918), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28725,7 +28725,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8300), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8300), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28738,7 +28738,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12201), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12201), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28751,7 +28751,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8297), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8297), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28764,7 +28764,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8303), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8303), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28777,7 +28777,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8417), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8417), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28790,7 +28790,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12894), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12894), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28803,7 +28803,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12897), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12897), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28816,7 +28816,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8333), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8333), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28829,7 +28829,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8306), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8306), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28842,7 +28842,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8309), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8309), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28855,7 +28855,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8312), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8312), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28868,7 +28868,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8315), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8315), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28881,7 +28881,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8318), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8318), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28894,7 +28894,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8363), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8363), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28907,7 +28907,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8366), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8366), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28920,7 +28920,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8369), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8369), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28933,7 +28933,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8372), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8372), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28946,7 +28946,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12712), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12712), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28959,7 +28959,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12715), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12715), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28972,7 +28972,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8321), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8321), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28985,7 +28985,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8564), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8564), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -28998,7 +28998,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8567), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8567), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29011,7 +29011,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8570), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8570), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29024,7 +29024,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8573), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8573), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29037,7 +29037,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8576), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8576), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29050,7 +29050,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8579), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8579), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29063,7 +29063,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8582), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8582), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29076,7 +29076,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8639), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8639), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29089,7 +29089,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8702), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8702), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29102,7 +29102,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8708), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8708), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29115,7 +29115,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8711), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8711), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29128,7 +29128,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8807), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8807), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29141,7 +29141,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8327), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8327), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29154,7 +29154,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8843), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8843), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29167,7 +29167,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11951), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11951), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29180,7 +29180,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 11954), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 11954), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29193,7 +29193,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8846), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8846), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29206,7 +29206,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8849), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8849), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29219,7 +29219,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8852), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8852), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29232,7 +29232,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8855), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8855), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29245,7 +29245,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8858), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8858), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29258,7 +29258,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8861), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8861), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29271,7 +29271,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8294), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8294), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29284,7 +29284,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8864), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8864), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29297,7 +29297,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8867), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8867), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29310,7 +29310,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8870), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8870), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29323,7 +29323,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8873), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8873), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29336,7 +29336,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8876), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8876), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29349,7 +29349,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12175), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12175), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29362,7 +29362,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12178), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12178), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29375,7 +29375,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12083), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12083), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29388,7 +29388,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 12086), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 12086), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29401,7 +29401,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8882), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8882), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29414,7 +29414,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 24039), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 24039), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);
@@ -29427,7 +29427,7 @@ class VariableNodeLoader {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeBytes(Base64.getDecoder().decode(sb.toString()));
         OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context.getServer().getSerializationContext()).setBuffer(buffer);
-        node.setValue(new DataValue(decoder.readVariant()));
+        node.setValue(new DataValue(decoder.decodeVariant()));
         node.addReference(new Reference(new NodeId(0, 8879), new NodeId(0, 40), new NodeId(0, 69).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 8879), new NodeId(0, 47), new NodeId(0, 8252).expanded(), false));
         this.nodeManager.addNode(node);

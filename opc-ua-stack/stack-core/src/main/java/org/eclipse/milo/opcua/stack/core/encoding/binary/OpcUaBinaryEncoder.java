@@ -71,7 +71,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         return this;
     }
 
-    public <T> void writeArray(T[] values, Consumer<T> write) throws UaSerializationException {
+    public <T> void encodeArray(T[] values, Consumer<T> write) throws UaSerializationException {
         if (values == null) {
             buffer.writeIntLE(-1);
         } else {
@@ -82,7 +82,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                 );
             }
 
-            writeInt32(values.length);
+            encodeInt32(values.length);
 
             for (T t : values) {
                 write.accept(t);
@@ -90,7 +90,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeBit(int value) throws UaSerializationException {
+    public void encodeBit(int value) throws UaSerializationException {
         currentByte = currentByte | ((value & 1) << bitCount);
         bitCount++;
 
@@ -101,7 +101,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeBoolean(Boolean value) throws UaSerializationException {
+    public void encodeBoolean(Boolean value) throws UaSerializationException {
         if (value == null) {
             buffer.writeBoolean(false);
         } else {
@@ -109,7 +109,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeSByte(Byte value) throws UaSerializationException {
+    public void encodeSByte(Byte value) throws UaSerializationException {
         if (value == null) {
             buffer.writeByte(0);
         } else {
@@ -117,7 +117,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeByte(UByte value) throws UaSerializationException {
+    public void encodeByte(UByte value) throws UaSerializationException {
         if (value == null) {
             buffer.writeByte(0);
         } else {
@@ -125,7 +125,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeInt16(Short value) throws UaSerializationException {
+    public void encodeInt16(Short value) throws UaSerializationException {
         if (value == null) {
             buffer.writeShortLE(0);
         } else {
@@ -133,7 +133,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeUInt16(UShort value) throws UaSerializationException {
+    public void encodeUInt16(UShort value) throws UaSerializationException {
         if (value == null) {
             buffer.writeShortLE(0);
         } else {
@@ -141,7 +141,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeInt32(Integer value) throws UaSerializationException {
+    public void encodeInt32(Integer value) throws UaSerializationException {
         if (value == null) {
             buffer.writeIntLE(0);
         } else {
@@ -149,7 +149,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeUInt32(UInteger value) throws UaSerializationException {
+    public void encodeUInt32(UInteger value) throws UaSerializationException {
         if (value == null) {
             buffer.writeIntLE(0);
         } else {
@@ -157,7 +157,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeInt64(Long value) throws UaSerializationException {
+    public void encodeInt64(Long value) throws UaSerializationException {
         if (value == null) {
             buffer.writeLongLE(0L);
         } else {
@@ -165,7 +165,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeUInt64(ULong value) throws UaSerializationException {
+    public void encodeUInt64(ULong value) throws UaSerializationException {
         if (value == null) {
             buffer.writeLongLE(0L);
         } else {
@@ -173,7 +173,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeFloat(Float value) throws UaSerializationException {
+    public void encodeFloat(Float value) throws UaSerializationException {
         if (value == null) {
             buffer.writeFloatLE(0f);
         } else {
@@ -181,7 +181,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeDouble(Double value) throws UaSerializationException {
+    public void encodeDouble(Double value) throws UaSerializationException {
         if (value == null) {
             buffer.writeDoubleLE(0d);
         } else {
@@ -189,15 +189,15 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeCharacter(Character value) throws UaSerializationException {
+    public void encodeCharacter(Character value) throws UaSerializationException {
         buffer.writeByte(value & 0xFF);
     }
 
-    public void writeWideChar(Character value) throws UaSerializationException {
+    public void encodeWideChar(Character value) throws UaSerializationException {
         buffer.writeChar(value);
     }
 
-    public void writeUtf8NullTerminatedString(String value) throws UaSerializationException {
+    public void encodeUtf8NullTerminatedString(String value) throws UaSerializationException {
         if (value != null) {
             byte[] bytes = value.getBytes(CHARSET_UTF8);
             for (byte b : bytes) {
@@ -208,15 +208,15 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         buffer.writeByte(0);
     }
 
-    public void writeUtf8CharArray(String value) throws UaSerializationException {
+    public void encodeUtf8CharArray(String value) throws UaSerializationException {
         if (value == null) {
-            writeInt32(-1);
+            encodeInt32(-1);
         } else {
-            writeLengthPrefixedString(value, CHARSET_UTF8);
+            encodeLengthPrefixedString(value, CHARSET_UTF8);
         }
     }
 
-    public void writeUtf16NullTerminatedString(String value) throws UaSerializationException {
+    public void encodeUtf16NullTerminatedString(String value) throws UaSerializationException {
         if (value == null) {
             buffer.writeByte(0);
         } else {
@@ -229,15 +229,15 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeUtf16CharArray(String value) throws UaSerializationException {
+    public void encodeUtf16CharArray(String value) throws UaSerializationException {
         if (value == null) {
-            writeInt32(-1);
+            encodeInt32(-1);
         } else {
-            writeLengthPrefixedString(value, CHARSET_UTF16);
+            encodeLengthPrefixedString(value, CHARSET_UTF16);
         }
     }
 
-    public void writeDateTime(DateTime value) throws UaSerializationException {
+    public void encodeDateTime(DateTime value) throws UaSerializationException {
         if (value == null) {
             buffer.writeLongLE(0L);
         } else {
@@ -245,7 +245,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeByteString(ByteString value) throws UaSerializationException {
+    public void encodeByteString(ByteString value) throws UaSerializationException {
         if (value == null || value.isNull()) {
             buffer.writeIntLE(-1);
         } else {
@@ -258,7 +258,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeGuid(UUID value) throws UaSerializationException {
+    public void encodeGuid(UUID value) throws UaSerializationException {
         if (value == null) {
             buffer.writeZero(16);
         } else {
@@ -275,15 +275,15 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
     // region OPC Built-in Types
 
-    public void writeXmlElement(XmlElement value) throws UaSerializationException {
+    public void encodeXmlElement(XmlElement value) throws UaSerializationException {
         if (value == null || value.isNull()) {
             buffer.writeIntLE(-1);
         } else {
-            writeByteString(new ByteString(value.getFragment().getBytes(StandardCharsets.UTF_8)));
+            encodeByteString(new ByteString(value.getFragment().getBytes(StandardCharsets.UTF_8)));
         }
     }
 
-    public void writeDataValue(DataValue value) throws UaSerializationException {
+    public void encodeDataValue(DataValue value) throws UaSerializationException {
         if (value == null) {
             buffer.writeByte(0);
         } else {
@@ -325,33 +325,33 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             // Value
             if ((mask & 0x01) == 0x01) {
-                writeVariant(value.getValue());
+                encodeVariant(value.getValue());
             }
 
             // StatusCode
             if ((mask & 0x02) == 0x02) {
-                writeStatusCode(value.getStatusCode());
+                encodeStatusCode(value.getStatusCode());
             }
 
             // SourceTimestamp and SourcePicoseconds
             if ((mask & 0x04) == 0x04) {
-                writeDateTime(value.getSourceTime());
+                encodeDateTime(value.getSourceTime());
             }
             if ((mask & 0x10) == 0x10) {
-                writeUInt16(value.getSourcePicoseconds());
+                encodeUInt16(value.getSourcePicoseconds());
             }
 
             // ServerTimestamp and ServerPicoseconds
             if ((mask & 0x08) == 0x08) {
-                writeDateTime(value.getServerTime());
+                encodeDateTime(value.getServerTime());
             }
             if ((mask & 0x20) == 0x20) {
-                writeUInt16(value.getServerPicoseconds());
+                encodeUInt16(value.getServerPicoseconds());
             }
         }
     }
 
-    public void writeDiagnosticInfo(DiagnosticInfo value) throws UaSerializationException {
+    public void encodeDiagnosticInfo(DiagnosticInfo value) throws UaSerializationException {
         if (value == null) {
             buffer.writeByte(0);
         } else {
@@ -367,17 +367,17 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             buffer.writeByte(mask);
 
-            if ((mask & 0x01) == 0x01) writeInt32(value.getSymbolicId());
-            if ((mask & 0x02) == 0x02) writeInt32(value.getNamespaceUri());
-            if ((mask & 0x04) == 0x04) writeInt32(value.getLocalizedText());
-            if ((mask & 0x08) == 0x08) writeInt32(value.getLocale());
-            if ((mask & 0x10) == 0x10) writeString(value.getAdditionalInfo());
-            if ((mask & 0x20) == 0x20) writeStatusCode(value.getInnerStatusCode());
-            if ((mask & 0x40) == 0x40) writeDiagnosticInfo(value.getInnerDiagnosticInfo());
+            if ((mask & 0x01) == 0x01) encodeInt32(value.getSymbolicId());
+            if ((mask & 0x02) == 0x02) encodeInt32(value.getNamespaceUri());
+            if ((mask & 0x04) == 0x04) encodeInt32(value.getLocalizedText());
+            if ((mask & 0x08) == 0x08) encodeInt32(value.getLocale());
+            if ((mask & 0x10) == 0x10) encodeString(value.getAdditionalInfo());
+            if ((mask & 0x20) == 0x20) encodeStatusCode(value.getInnerStatusCode());
+            if ((mask & 0x40) == 0x40) encodeDiagnosticInfo(value.getInnerDiagnosticInfo());
         }
     }
 
-    public void writeExpandedNodeId(ExpandedNodeId value) throws UaSerializationException {
+    public void encodeExpandedNodeId(ExpandedNodeId value) throws UaSerializationException {
         if (value == null) value = ExpandedNodeId.NULL_VALUE;
 
         int flags = 0;
@@ -420,19 +420,19 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             buffer.writeByte(0x03 | flags);
             buffer.writeShortLE(namespaceIndex);
-            writeString(identifier);
+            encodeString(identifier);
         } else if (value.getType() == IdType.Guid) {
             UUID identifier = (UUID) value.getIdentifier();
 
             buffer.writeByte(0x04 | flags);
             buffer.writeShortLE(namespaceIndex);
-            writeGuid(identifier);
+            encodeGuid(identifier);
         } else if (value.getType() == IdType.Opaque) {
             ByteString identifier = (ByteString) value.getIdentifier();
 
             buffer.writeByte(0x05 | flags);
             buffer.writeShortLE(namespaceIndex);
-            writeByteString(identifier);
+            encodeByteString(identifier);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
@@ -440,17 +440,17 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
 
         if (namespaceUri != null && namespaceUri.length() > 0) {
-            writeString(namespaceUri);
+            encodeString(namespaceUri);
         }
 
         if (serverIndex.longValue() > 0) {
-            writeUInt32(serverIndex);
+            encodeUInt32(serverIndex);
         }
     }
 
-    public void writeExtensionObject(ExtensionObject value) throws UaSerializationException {
+    public void encodeExtensionObject(ExtensionObject value) throws UaSerializationException {
         if (value == null || value.getBody() == null) {
-            writeNodeId(NodeId.NULL_VALUE);
+            encodeNodeId(NodeId.NULL_VALUE);
             buffer.writeByte(0); // No body is encoded
         } else {
             Object body = value.getBody();
@@ -459,27 +459,27 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                 case ByteString: {
                     ByteString byteString = (ByteString) body;
 
-                    writeNodeId(value.getEncodingId());
+                    encodeNodeId(value.getEncodingId());
                     buffer.writeByte(1); // Body is binary encoded
-                    writeByteString(byteString);
+                    encodeByteString(byteString);
 
                     break;
                 }
                 case XmlElement: {
                     XmlElement xmlElement = (XmlElement) body;
 
-                    writeNodeId(value.getEncodingId());
+                    encodeNodeId(value.getEncodingId());
                     buffer.writeByte(2);
-                    writeXmlElement(xmlElement);
+                    encodeXmlElement(xmlElement);
 
                     break;
                 }
                 case JsonString: {
                     String jsonString = (String) body;
 
-                    writeNodeId(value.getEncodingId());
+                    encodeNodeId(value.getEncodingId());
                     buffer.writeByte(1);
-                    writeByteString(ByteString.of(jsonString.getBytes(StandardCharsets.UTF_8)));
+                    encodeByteString(ByteString.of(jsonString.getBytes(StandardCharsets.UTF_8)));
 
                     break;
                 }
@@ -490,7 +490,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeLocalizedText(LocalizedText value) throws UaSerializationException {
+    public void encodeLocalizedText(LocalizedText value) throws UaSerializationException {
         if (value == null) value = LocalizedText.NULL_VALUE;
 
         String locale = value.getLocale();
@@ -507,14 +507,14 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         buffer.writeByte(mask);
 
         if (locale != null && !locale.isEmpty()) {
-            writeString(locale);
+            encodeString(locale);
         }
         if (text != null && !text.isEmpty()) {
-            writeString(text);
+            encodeString(text);
         }
     }
 
-    public void writeNodeId(NodeId value) throws UaSerializationException {
+    public void encodeNodeId(NodeId value) throws UaSerializationException {
         if (value == null) value = NodeId.NULL_VALUE;
 
         int namespaceIndex = value.getNamespaceIndex().intValue();
@@ -543,19 +543,19 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             buffer.writeByte(0x03);
             buffer.writeShortLE(namespaceIndex);
-            writeString(identifier);
+            encodeString(identifier);
         } else if (value.getType() == IdType.Guid) {
             UUID identifier = (UUID) value.getIdentifier();
 
             buffer.writeByte(0x04);
             buffer.writeShortLE(namespaceIndex);
-            writeGuid(identifier);
+            encodeGuid(identifier);
         } else if (value.getType() == IdType.Opaque) {
             ByteString identifier = (ByteString) value.getIdentifier();
 
             buffer.writeByte(0x05);
             buffer.writeShortLE(namespaceIndex);
-            writeByteString(identifier);
+            encodeByteString(identifier);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
@@ -563,22 +563,22 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeQualifiedName(QualifiedName value) throws UaSerializationException {
+    public void encodeQualifiedName(QualifiedName value) throws UaSerializationException {
         if (value == null) value = QualifiedName.NULL_VALUE;
 
-        writeUInt16(value.getNamespaceIndex());
-        writeString(value.getName());
+        encodeUInt16(value.getNamespaceIndex());
+        encodeString(value.getName());
     }
 
-    public void writeString(String value) throws UaSerializationException {
+    public void encodeString(String value) throws UaSerializationException {
         if (value == null) {
             buffer.writeIntLE(-1);
         } else {
-            writeLengthPrefixedString(value, CHARSET_UTF8);
+            encodeLengthPrefixedString(value, CHARSET_UTF8);
         }
     }
 
-    public void writeStatusCode(StatusCode value) throws UaSerializationException {
+    public void encodeStatusCode(StatusCode value) throws UaSerializationException {
         if (value == null) {
             buffer.writeIntLE(0);
         } else {
@@ -586,7 +586,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    public void writeVariant(Variant variant) throws UaSerializationException {
+    public void encodeVariant(Variant variant) throws UaSerializationException {
         Object value = variant.getValue();
 
         if (value == null) {
@@ -627,7 +627,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                     for (int i = 0; i < length; i++) {
                         Object o = Array.get(value, i);
 
-                        writeValue(o, typeId, structure, enumeration, optionSet);
+                        encodeValue(o, typeId, structure, enumeration, optionSet);
                     }
                 } else {
                     buffer.writeByte(typeId | 0xC0);
@@ -639,116 +639,116 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                     for (int i = 0; i < length; i++) {
                         Object o = Array.get(flattened, i);
 
-                        writeValue(o, typeId, structure, enumeration, optionSet);
+                        encodeValue(o, typeId, structure, enumeration, optionSet);
                     }
 
-                    writeInt32(dimensions.length);
+                    encodeInt32(dimensions.length);
                     for (int dimension : dimensions) {
-                        writeInt32(dimension);
+                        encodeInt32(dimension);
                     }
                 }
             } else {
                 buffer.writeByte(typeId);
 
-                writeValue(value, typeId, structure, enumeration, optionSet);
+                encodeValue(value, typeId, structure, enumeration, optionSet);
             }
         }
     }
 
     // endregion
 
-    private void writeValue(Object value, int typeId, boolean structure, boolean enumeration, boolean optionSet) {
+    private void encodeValue(Object value, int typeId, boolean structure, boolean enumeration, boolean optionSet) {
         if (structure) {
             UaStructuredType struct = (UaStructuredType) value;
 
             ExtensionObject extensionObject = ExtensionObject.encode(context, struct);
 
-            writeBuiltinType(typeId, extensionObject);
+            encodeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {
-            writeBuiltinType(typeId, ((UaEnumeratedType) value).getValue());
+            encodeBuiltinType(typeId, ((UaEnumeratedType) value).getValue());
         } else if (optionSet) {
-            writeBuiltinType(typeId, ((OptionSetUInteger<?>) value).getValue());
+            encodeBuiltinType(typeId, ((OptionSetUInteger<?>) value).getValue());
         } else {
-            writeBuiltinType(typeId, value);
+            encodeBuiltinType(typeId, value);
         }
     }
 
-    private void writeBuiltinType(int typeId, Object value) throws UaSerializationException {
+    private void encodeBuiltinType(int typeId, Object value) throws UaSerializationException {
         switch (typeId) {
             case 1:
                 encodeBoolean(null, (Boolean) value);
                 break;
             case 2:
-                writeSByte((Byte) value);
+                encodeSByte((Byte) value);
                 break;
             case 3:
-                writeByte((UByte) value);
+                encodeByte((UByte) value);
                 break;
             case 4:
-                writeInt16((Short) value);
+                encodeInt16((Short) value);
                 break;
             case 5:
-                writeUInt16((UShort) value);
+                encodeUInt16((UShort) value);
                 break;
             case 6:
-                writeInt32((Integer) value);
+                encodeInt32((Integer) value);
                 break;
             case 7:
-                writeUInt32((UInteger) value);
+                encodeUInt32((UInteger) value);
                 break;
             case 8:
-                writeInt64((Long) value);
+                encodeInt64((Long) value);
                 break;
             case 9:
-                writeUInt64((ULong) value);
+                encodeUInt64((ULong) value);
                 break;
             case 10:
-                writeFloat((Float) value);
+                encodeFloat((Float) value);
                 break;
             case 11:
-                writeDouble((Double) value);
+                encodeDouble((Double) value);
                 break;
             case 12:
-                writeString((String) value);
+                encodeString((String) value);
                 break;
             case 13:
-                writeDateTime((DateTime) value);
+                encodeDateTime((DateTime) value);
                 break;
             case 14:
-                writeGuid((UUID) value);
+                encodeGuid((UUID) value);
                 break;
             case 15:
-                writeByteString((ByteString) value);
+                encodeByteString((ByteString) value);
                 break;
             case 16:
-                writeXmlElement((XmlElement) value);
+                encodeXmlElement((XmlElement) value);
                 break;
             case 17:
-                writeNodeId((NodeId) value);
+                encodeNodeId((NodeId) value);
                 break;
             case 18:
-                writeExpandedNodeId((ExpandedNodeId) value);
+                encodeExpandedNodeId((ExpandedNodeId) value);
                 break;
             case 19:
-                writeStatusCode((StatusCode) value);
+                encodeStatusCode((StatusCode) value);
                 break;
             case 20:
-                writeQualifiedName((QualifiedName) value);
+                encodeQualifiedName((QualifiedName) value);
                 break;
             case 21:
-                writeLocalizedText((LocalizedText) value);
+                encodeLocalizedText((LocalizedText) value);
                 break;
             case 22:
-                writeExtensionObject((ExtensionObject) value);
+                encodeExtensionObject((ExtensionObject) value);
                 break;
             case 23:
-                writeDataValue((DataValue) value);
+                encodeDataValue((DataValue) value);
                 break;
             case 24:
-                writeVariant((Variant) value);
+                encodeVariant((Variant) value);
                 break;
             case 25:
-                writeDiagnosticInfo((DiagnosticInfo) value);
+                encodeDiagnosticInfo((DiagnosticInfo) value);
                 break;
             default:
                 throw new UaSerializationException(
@@ -765,7 +765,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         }
     }
 
-    private void writeLengthPrefixedString(String value, Charset charset) throws UaSerializationException {
+    private void encodeLengthPrefixedString(String value, Charset charset) throws UaSerializationException {
         byte[] bytes = value.getBytes(charset);
         int length = bytes.length;
 
@@ -778,133 +778,133 @@ public class OpcUaBinaryEncoder implements UaEncoder {
             );
         }
 
-        writeInt32(length);
+        encodeInt32(length);
         buffer.writeBytes(bytes);
     }
 
     @Override
     public void encodeBoolean(String field, Boolean value) throws UaSerializationException {
-        writeBoolean(value);
+        encodeBoolean(value);
     }
 
     @Override
     public void encodeSByte(String field, Byte value) throws UaSerializationException {
-        writeSByte(value);
+        encodeSByte(value);
     }
 
     @Override
     public void encodeInt16(String field, Short value) throws UaSerializationException {
-        writeInt16(value);
+        encodeInt16(value);
     }
 
     @Override
     public void encodeInt32(String field, Integer value) throws UaSerializationException {
-        writeInt32(value);
+        encodeInt32(value);
     }
 
     @Override
     public void encodeInt64(String field, Long value) throws UaSerializationException {
-        writeInt64(value);
+        encodeInt64(value);
     }
 
     @Override
     public void encodeByte(String field, UByte value) throws UaSerializationException {
-        writeByte(value);
+        encodeByte(value);
     }
 
     @Override
     public void encodeUInt16(String field, UShort value) throws UaSerializationException {
-        writeUInt16(value);
+        encodeUInt16(value);
     }
 
     @Override
     public void encodeUInt32(String field, UInteger value) throws UaSerializationException {
-        writeUInt32(value);
+        encodeUInt32(value);
     }
 
     @Override
     public void encodeUInt64(String field, ULong value) throws UaSerializationException {
-        writeUInt64(value);
+        encodeUInt64(value);
     }
 
     @Override
     public void encodeFloat(String field, Float value) throws UaSerializationException {
-        writeFloat(value);
+        encodeFloat(value);
     }
 
     @Override
     public void encodeDouble(String field, Double value) throws UaSerializationException {
-        writeDouble(value);
+        encodeDouble(value);
     }
 
     @Override
     public void encodeString(String field, String value) throws UaSerializationException {
-        writeString(value);
+        encodeString(value);
     }
 
     @Override
     public void encodeDateTime(String field, DateTime value) throws UaSerializationException {
-        writeDateTime(value);
+        encodeDateTime(value);
     }
 
     @Override
     public void encodeGuid(String field, UUID value) throws UaSerializationException {
-        writeGuid(value);
+        encodeGuid(value);
     }
 
     @Override
     public void encodeByteString(String field, ByteString value) throws UaSerializationException {
-        writeByteString(value);
+        encodeByteString(value);
     }
 
     @Override
     public void encodeXmlElement(String field, XmlElement value) throws UaSerializationException {
-        writeXmlElement(value);
+        encodeXmlElement(value);
     }
 
     @Override
     public void encodeNodeId(String field, NodeId value) throws UaSerializationException {
-        writeNodeId(value);
+        encodeNodeId(value);
     }
 
     @Override
     public void encodeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
-        writeExpandedNodeId(value);
+        encodeExpandedNodeId(value);
     }
 
     @Override
     public void encodeStatusCode(String field, StatusCode value) throws UaSerializationException {
-        writeStatusCode(value);
+        encodeStatusCode(value);
     }
 
     @Override
     public void encodeQualifiedName(String field, QualifiedName value) throws UaSerializationException {
-        writeQualifiedName(value);
+        encodeQualifiedName(value);
     }
 
     @Override
     public void encodeLocalizedText(String field, LocalizedText value) throws UaSerializationException {
-        writeLocalizedText(value);
+        encodeLocalizedText(value);
     }
 
     @Override
     public void encodeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
-        writeExtensionObject(value);
+        encodeExtensionObject(value);
     }
 
     @Override
     public void encodeDataValue(String field, DataValue value) throws UaSerializationException {
-        writeDataValue(value);
+        encodeDataValue(value);
     }
 
     @Override
     public void encodeVariant(String field, Variant value) throws UaSerializationException {
-        writeVariant(value);
+        encodeVariant(value);
     }
 
     @Override
     public void encodeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
-        writeDiagnosticInfo(value);
+        encodeDiagnosticInfo(value);
     }
 
     @Override
@@ -928,7 +928,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
             );
         }
 
-        writeNodeId(encodingId);
+        encodeNodeId(encodingId);
 
         codec.encode(context, this, message);
     }
@@ -1100,14 +1100,14 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
     @Override
     public void encodeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
-        writeArray(value, v -> encodeEnum(field, v));
+        encodeArray(value, v -> encodeEnum(field, v));
     }
 
     @Override
     public void encodeStructArray(
         String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
 
-        writeArray(values, o -> encodeStruct(field, o, dataTypeId));
+        encodeArray(values, o -> encodeStruct(field, o, dataTypeId));
     }
 
     @Override
@@ -1140,7 +1140,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                 );
             }
 
-            writeInt32(values.length);
+            encodeInt32(values.length);
 
             for (T t : values) {
                 encoder.accept(field, t);

@@ -29,8 +29,8 @@ public class StringSerializationTest extends BinarySerializationFixture {
 
     @Test(dataProvider = "StringProvider")
     public void testStringRoundTrip(String value) {
-        writer.writeString(value);
-        String decoded = reader.readString();
+        writer.encodeString(value);
+        String decoded = reader.decodeString();
 
         assertEquals(decoded, value);
     }

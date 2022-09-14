@@ -296,10 +296,15 @@ public class BinaryDataTypeDictionaryReader {
                 BuiltinDataTypeInfo.DataTypeInfo dataTypeInfo =
                     BuiltinDataTypeInfo.getDataTypeInfo(description);
 
-                assert dataTypeInfo != null;
-
-                return new StructEncodingInfo(description, dataTypeInfo.dataTypeId, dataTypeInfo.encodingId);
+                if (dataTypeInfo != null) {
+                    return new StructEncodingInfo(description, dataTypeInfo.dataTypeId, dataTypeInfo.encodingId);
+                } else {
+                    // expected for some types
+                    logger.debug("no builtin DataTypeInfo found: " + description);
+                    return null;
+                }
             })
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         return CompletableFuture.completedFuture(structEncodingInfos);

@@ -31,8 +31,8 @@ public class ExtensionObjectSerializationTest extends BinarySerializationFixture
 
     @Test(dataProvider = "getExtensionObjects", description = "ExtensionObject is round-trip serializable.")
     public void testExtensionObjectRoundTrip(ExtensionObject xo) throws Exception {
-        writer.writeExtensionObject(xo);
-        ExtensionObject decoded = reader.readExtensionObject();
+        writer.encodeExtensionObject(xo);
+        ExtensionObject decoded = reader.decodeExtensionObject();
 
         assertEquals(decoded, xo);
     }

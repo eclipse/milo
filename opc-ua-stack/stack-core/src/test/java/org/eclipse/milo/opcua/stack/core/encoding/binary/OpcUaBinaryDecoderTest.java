@@ -33,7 +33,7 @@ public class OpcUaBinaryDecoderTest {
             () ->
                 new OpcUaBinaryDecoder(new TestEncodingContext())
                     .setBuffer(buffer)
-                    .readDiagnosticInfo()
+                    .decodeDiagnosticInfo()
         );
     }
 
@@ -56,7 +56,7 @@ public class OpcUaBinaryDecoderTest {
             () ->
                 new OpcUaBinaryDecoder(new TestEncodingContext())
                     .setBuffer(buffer)
-                    .readVariant()
+                    .decodeVariant()
         );
     }
 
@@ -76,7 +76,7 @@ public class OpcUaBinaryDecoderTest {
             () ->
                 new OpcUaBinaryDecoder(new TestEncodingContext())
                     .setBuffer(buffer)
-                    .readVariant()
+                    .decodeVariant()
         );
     }
 

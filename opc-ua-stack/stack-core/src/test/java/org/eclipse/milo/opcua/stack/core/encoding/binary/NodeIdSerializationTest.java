@@ -48,8 +48,8 @@ public class NodeIdSerializationTest extends BinarySerializationFixture {
 
     @Test(dataProvider = "getNodeIds", description = "NodeId is round-trip serializable.")
     public void testNodeIdRoundTrip(NodeId nodeId) throws Exception {
-        writer.writeNodeId(nodeId);
-        NodeId decoded = reader.readNodeId();
+        writer.encodeNodeId(nodeId);
+        NodeId decoded = reader.decodeNodeId();
 
         assertEquals(decoded, nodeId);
     }
