@@ -13,7 +13,7 @@ package org.eclipse.milo.examples.client;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer2;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -46,7 +46,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         // Add a SessionInitializer that will read any DataTypeDictionary
         // nodes present in the server every time the session is activated
         // and dynamically generate codecs for custom structures.
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer2(StructCodec::new));
+        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(StructCodec::new));
 
         client.connect().get();
 
@@ -54,9 +54,11 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
             0.0,
             TimestampsToReturn.Neither,
             NodeId.parse("ns=2;s=Person1")
+//            NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder")
         ).get();
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
+        assert xo != null;
 
         Object value = xo.decode(client.getDynamicSerializationContext());
 
@@ -68,7 +70,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
     @Override
     public String getEndpointUrl() {
         // Change this if UaCPPServer is running somewhere other than localhost.
-        return "opc.tcp://10.211.55.3:48010";
+        return "opc.tcp://localhost:48010";
     }
 
     @Override

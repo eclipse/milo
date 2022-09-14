@@ -72,9 +72,7 @@ public abstract class AbstractBsdCodecTest {
             )
         );
 
-        var binaryDictionary = new BinaryDataTypeDictionary(
-            typeDictionary.getTargetNamespace()
-        );
+        var binaryDictionary = new BinaryDataTypeDictionary(typeDictionary);
 
         typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().forEach(typeDescription -> {
             if (typeDescription instanceof StructuredType) {

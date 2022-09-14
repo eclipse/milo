@@ -76,7 +76,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
-public class DataTypeDictionaryReader2 {
+public class DataTypeDictionaryReader {
 
     private static final int DEFAULT_FRAGMENT_SIZE = 8192;
     private static final int PARTITION_SIZE = 64;
@@ -88,7 +88,7 @@ public class DataTypeDictionaryReader2 {
     private final UaStackClient stackClient;
     private final OpcUaSession session;
 
-    public DataTypeDictionaryReader2(UaStackClient stackClient, OpcUaSession session) {
+    public DataTypeDictionaryReader(UaStackClient stackClient, OpcUaSession session) {
         this.stackClient = stackClient;
         this.session = session;
     }
@@ -136,11 +136,10 @@ public class DataTypeDictionaryReader2 {
     CompletableFuture<ByteString> readDataTypeDictionaryBytes(NodeId nodeId, int fragmentSize) {
         if (NodeIds.OpcUa_BinarySchema.equals(nodeId)) {
             try (InputStream inputStream =
-                     DataTypeDictionaryReader2.class.getResourceAsStream("/Opc.Ua.Types.bsd")) {
+                     DataTypeDictionaryReader.class.getResourceAsStream("/Opc.Ua.Types.bsd")) {
 
                 assert inputStream != null;
 
-                //noinspection UnstableApiUsage
                 ByteString bs = ByteString.of(ByteStreams.toByteArray(inputStream));
 
                 return completedFuture(bs);
@@ -193,7 +192,7 @@ public class DataTypeDictionaryReader2 {
 
         Preconditions.checkArgument(fragmentSize > 0, "fragmentSize=" + fragmentSize);
 
-        String indexRange = fragmentSize <= 1 ?
+        String indexRange = fragmentSize == 1 ?
             String.valueOf(index) :
             String.format("%d:%d", index, index + fragmentSize - 1);
 

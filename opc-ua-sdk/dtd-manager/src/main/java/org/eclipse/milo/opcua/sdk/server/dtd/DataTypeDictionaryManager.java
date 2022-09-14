@@ -19,21 +19,26 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
+import javax.xml.namespace.QName;
 
+import jakarta.xml.bind.JAXBException;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary;
+import org.eclipse.milo.opcua.sdk.core.dtd.BsdGenerator;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.dtd.DataTypeDictionaryGenerator.DataTypeLocation;
 import org.eclipse.milo.opcua.sdk.server.model.objects.DataTypeEncodingTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDescriptionTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDictionaryType;
@@ -51,10 +56,22 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.opcfoundation.opcua.binaryschema.ByteOrder;
+import org.opcfoundation.opcua.binaryschema.EnumeratedType;
+import org.opcfoundation.opcua.binaryschema.EnumeratedValue;
+import org.opcfoundation.opcua.binaryschema.FieldType;
+import org.opcfoundation.opcua.binaryschema.ImportDirective;
+import org.opcfoundation.opcua.binaryschema.StructuredType;
+import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,21 +87,23 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
     private final Lazy<File> dictionaryFile = new Lazy<>();
 
-    private final Map<NodeId, EnumDescription> enumDescriptions = new ConcurrentHashMap<>();
     private final Map<NodeId, StructureDescription> structureDescriptions = new ConcurrentHashMap<>();
 
-    private final BinaryDataTypeDictionary dictionary;
+    private final BinaryDataTypeDictionary dataTypeDictionary;
 
     private DataTypeDictionaryTypeNode dictionaryNode;
 
+    private final TypeDictionary bsdTypeDictionary;
+
     private final UaNodeContext context;
     private final String namespaceUri;
+
 
     /**
      * Create a BinaryDataTypeDictionaryManager for an {@link OpcUaBinaryDataTypeDictionary} in {@code namespaceUri}.
      * <p>
      * Note that the namespace URI is that of the dictionary, and is not necessarily the same as the namespace the
-     * Nodes created by the manager will reside in, i.e. datatype dictionaries are namespaced independently from the
+     * Nodes created by the manager will reside in, i.e. datatype dictionaries are namespaced independently of the
      * namespaces server Nodes reside in.
      *
      * @param context      a {@link UaNodeContext}. Nodes will be created and added using this context.
@@ -94,7 +113,13 @@ public class DataTypeDictionaryManager implements Lifecycle {
         this.context = context;
         this.namespaceUri = namespaceUri;
 
-        dictionary = new BinaryDataTypeDictionary(namespaceUri);
+        bsdTypeDictionary = new TypeDictionary();
+        bsdTypeDictionary.setTargetNamespace(namespaceUri);
+        bsdTypeDictionary.setDefaultByteOrder(ByteOrder.LITTLE_ENDIAN);
+
+        dataTypeDictionary = new BinaryDataTypeDictionary(bsdTypeDictionary);
+
+        context.getServer().getDataTypeManager().registerTypeDictionary(dataTypeDictionary);
     }
 
     private UaNodeContext getNodeContext() {
@@ -107,7 +132,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
     @Override
     public void startup() {
-        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
+        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dataTypeDictionary);
 
         // Add a DataTypeDictionary Node...
         dictionaryNode = new DataTypeDictionaryTypeNode(
@@ -183,70 +208,37 @@ public class DataTypeDictionaryManager implements Lifecycle {
         nodes.clear();
     }
 
-    public BinaryDataTypeDictionary getDictionary() {
-        return dictionary;
+    public BinaryDataTypeDictionary getDataTypeDictionary() {
+        return dataTypeDictionary;
     }
 
-    public void registerEnumDescription(EnumDescription description) {
-        enumDescriptions.put(description.getDataTypeId(), description);
-
+    public void registerEnum(EnumDescription description) {
         // Note: enumerations don't need DataTypeDescription or DataTypeEncoding nodes.
+        // Add a StructuredType to the BSD TypeDictionary
+        EnumeratedType enumeratedType = createBsdEnumeratedType(description);
+        dataTypeDictionary.addTypeDescription(enumeratedType);
+        bsdTypeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(enumeratedType);
 
         dictionaryFile.reset();
     }
 
-    public void registerOptionSetCodec(
-        BinaryDataTypeCodec codec,
-        String description,
-        NodeId dataTypeId,
-        NodeId binaryEncodingId
-    ) {
-
-        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, NodeIds.OptionSet);
-    }
-
-    public void registerStructureCodec(
-        BinaryDataTypeCodec codec,
-        String description,
-        NodeId dataTypeId,
-        NodeId binaryEncodingId
-    ) {
-
-        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, NodeIds.Structure);
-    }
-
-    public void registerUnionCodec(
-        BinaryDataTypeCodec codec,
-        String description,
-        NodeId dataTypeId,
-        NodeId binaryEncodingId
-    ) {
-
-        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, NodeIds.Union);
-    }
-
-    public void registerStructureCodec(
-        BinaryDataTypeCodec codec,
-        String description,
+    public void registerStructure(
+        String name,
         NodeId dataTypeId,
         NodeId binaryEncodingId,
-        NodeId parentType
+        BinaryDataTypeCodec codec,
+        StructureDescription description
     ) {
 
         BinaryDataTypeDictionary.BinaryType binaryType = new BinaryDataTypeDictionary.BinaryType(
-            description,
+            name,
             dataTypeId,
             binaryEncodingId,
             codec
         );
 
-        dictionary.registerType(binaryType);
+        dataTypeDictionary.registerType(binaryType);
 
-        // TODO figure out a way to not require re-registration every time...
-        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
-    }
-
-    public void registerStructureDescription(StructureDescription description, NodeId binaryEncodingId) {
         structureDescriptions.put(description.getDataTypeId(), description);
 
         // Add a DataTypeDescriptionTypeNode with a ComponentOf reference to
@@ -254,7 +246,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
         DataTypeDescriptionTypeNode descriptionNode = new DataTypeDescriptionTypeNode(
             getNodeContext(),
-            newNodeId(String.format("%s.Description", description.getName())),
+            newNodeId(String.format("%s.Description", description.getName().getName())),
             newQualifiedName(description.getName().getName()),
             LocalizedText.english(description.getName().getName()),
             LocalizedText.NULL_VALUE,
@@ -327,11 +319,24 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
         addNode(dataTypeEncodingNode);
 
+        // Add a StructuredType to the BSD TypeDictionary
+        StructuredType structuredType = createBsdStructuredType(description);
+        dataTypeDictionary.addTypeDescription(structuredType);
+        bsdTypeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(structuredType);
+
         dictionaryFile.reset();
+
+        getNodeContext().getServer().getDataTypeManager().registerType(
+            dataTypeId,
+            codec,
+            binaryEncodingId,
+            null,
+            null
+        );
     }
 
     private File writeDictionaryToFile() throws IOException {
-        String encodedUri = URLEncoder.encode(namespaceUri, StandardCharsets.UTF_8.name());
+        String encodedUri = URLEncoder.encode(namespaceUri, StandardCharsets.UTF_8);
         Path tempFilePath = Files.createTempFile(encodedUri, ".bsd.xml");
 
         try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
@@ -352,28 +357,11 @@ public class DataTypeDictionaryManager implements Lifecycle {
     }
 
     private void writeDictionaryToStream(OutputStream outputStream) throws IOException {
-        DataTypeDictionaryGenerator generator = newDictionaryGenerator(
-            namespaceUri,
-            getNodeContext().getServer().getAddressSpaceManager()
-        );
-
-        enumDescriptions.values().forEach(description -> {
-            try {
-                generator.addEnumDescription(description);
-            } catch (Throwable t) {
-                logger.warn("Failed to add EnumDescription: " + description.getName(), t);
-            }
-        });
-
-        structureDescriptions.values().forEach(description -> {
-            try {
-                generator.addStructureDescription(description);
-            } catch (Throwable t) {
-                logger.warn("Failed to add StructureDescription: " + description.getName(), t);
-            }
-        });
-
-        generator.writeToOutputStream(outputStream);
+        try {
+            BsdGenerator.generate(bsdTypeDictionary, outputStream);
+        } catch (JAXBException e) {
+            throw new IOException(e);
+        }
     }
 
     private UShort getNamespaceIndex() {
@@ -398,73 +386,246 @@ public class DataTypeDictionaryManager implements Lifecycle {
         nodes.add(node);
     }
 
-    private static DataTypeDictionaryGenerator newDictionaryGenerator(
-        String namespaceUri,
-        AddressSpaceManager addressSpaceManager
-    ) {
+    private EnumeratedType createBsdEnumeratedType(EnumDescription description) {
+        QualifiedName name = description.getName();
+        EnumDefinition definition = description.getEnumDefinition();
 
-        Function<NodeId, DataTypeLocation> dataTypeLookup = dataTypeId -> {
+        EnumeratedType enumeratedType = new EnumeratedType();
+        enumeratedType.setName(name.getName());
+        enumeratedType.setLengthInBits(32);
 
-            UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
+        for (EnumField field : definition.getFields()) {
+            EnumeratedValue enumeratedValue = new EnumeratedValue();
+            enumeratedValue.setName(field.getName());
+            enumeratedValue.setValue(field.getValue().intValue());
 
-            checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
+            enumeratedType.getEnumeratedValue().add(enumeratedValue);
+        }
 
-            if (dataTypeId.getNamespaceIndex().intValue() == 0) {
-                long id = ((UInteger) dataTypeId.getIdentifier()).longValue();
-                String uri = id <= 15L ? Namespaces.OPC_UA_BSD : Namespaces.OPC_UA;
-                return new DataTypeLocation(dataTypeNode.getBrowseName().getName(), uri);
-            }
-
-            QualifiedName parentTypeName = dataTypeNode.getReferences()
-                .stream()
-                .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .findFirst()
-                .map(UaNode::getBrowseName)
-                .orElse(QualifiedName.NULL_VALUE);
-
-            if (parentTypeName.equals(new QualifiedName(0, "Enumeration"))) {
-                return new DataTypeLocation(dataTypeNode.getBrowseName().getName(), "");
-            }
-
-            UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
-                .stream()
-                .filter(Reference.HAS_ENCODING_PREDICATE)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .filter(n -> n.getBrowseName().equals(new QualifiedName(0, "Default Binary")))
-                .findFirst()
-                .orElse(null);
-
-            checkNotNull(dataTypeEncodingNode, "dataTypeEncodingNode for dataTypeId=" + dataTypeId);
-
-            UaNode dataTypeDescriptionNode = dataTypeEncodingNode.getReferences()
-                .stream()
-                .filter(Reference.HAS_DESCRIPTION_PREDICATE)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .findFirst()
-                .orElse(null);
-
-            checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
-
-            String dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
-
-            UaNode dictionaryNode = dataTypeDescriptionNode.getReferences().stream()
-                .filter(Reference.COMPONENT_OF_PREDICATE)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .findFirst()
-                .orElse(null);
-
-            checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
-
-            String dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI)
-                .orElse(null);
-
-            checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
-
-            return new DataTypeLocation(dataTypeName, dictionaryNamespaceUri);
-        };
-
-        return new DataTypeDictionaryGenerator(namespaceUri, dataTypeLookup);
+        return enumeratedType;
     }
 
+    private StructuredType createBsdStructuredType(StructureDescription description) {
+        QualifiedName name = description.getName();
+
+        StructureDefinition definition = description.getStructureDefinition();
+        StructureType structureType = definition.getStructureType();
+
+        StructuredType structuredType = new StructuredType();
+        structuredType.setName(name.getName());
+
+        // Create a combined list of StructuredFields from all parent types
+        LinkedList<StructureDefinition> definitions = new LinkedList<>();
+        definitions.addFirst(definition);
+
+        NodeId baseDataTypeId = definition.getBaseDataType();
+
+        while (baseDataTypeId != null && baseDataTypeId.isNotNull() &&
+            !NodeIds.Structure.equals(baseDataTypeId) &&
+            !NodeIds.Union.equals(baseDataTypeId)
+        ) {
+
+            StructureDescription baseDescription = structureDescriptions.get(baseDataTypeId);
+            StructureDefinition baseDefinition = baseDescription.getStructureDefinition();
+
+            definitions.addFirst(baseDefinition);
+
+            baseDataTypeId = baseDefinition.getBaseDataType();
+        }
+
+        LinkedHashMap<String, StructureField> allFields = new LinkedHashMap<>();
+
+        for (StructureDefinition d : definitions) {
+            for (StructureField f : d.getFields()) {
+                allFields.put(f.getName(), f);
+            }
+        }
+
+        List<StructureField> fields = new ArrayList<>(allFields.values());
+
+        if (structureType == StructureType.StructureWithOptionalFields) {
+            int optionalFieldCount = 0;
+
+            for (StructureField field : fields) {
+                if (field.getIsOptional()) {
+                    optionalFieldCount++;
+
+                    FieldType fieldType = new FieldType();
+                    fieldType.setName(field.getName() + "Present");
+                    fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+
+                    structuredType.getField().add(fieldType);
+                }
+            }
+
+            if (optionalFieldCount > 0) {
+                int reservedFieldCount = (optionalFieldCount + 31) / 32;
+
+                for (int i = 0; i < reservedFieldCount; i++) {
+                    long reservedBits = 32 - optionalFieldCount;
+                    optionalFieldCount -= 32;
+
+                    FieldType fieldType = new FieldType();
+                    fieldType.setLength(reservedBits);
+                    fieldType.setName("Reserved" + i);
+                    fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+
+                    structuredType.getField().add(fieldType);
+                }
+            }
+        } else if (structureType == StructureType.Union) {
+            FieldType fieldType = new FieldType();
+            fieldType.setName("SwitchField");
+            fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "UInt32"));
+
+            structuredType.getField().add(fieldType);
+        }
+
+        long switchValue = 0L;
+
+        for (StructureField field : fields) {
+            String fieldName = field.getName();
+            NodeId fieldDataTypeId = field.getDataType();
+
+            QualifiedTypeName qualifiedTypeName = getDataTypeLocation(fieldDataTypeId);
+
+            String dataTypeName = qualifiedTypeName.dataTypeName;
+            String dictionaryNamespaceUri = qualifiedTypeName.dictionaryNamespaceUri;
+
+            if (!dictionaryNamespaceUri.isEmpty()) {
+                boolean registeredNamespace = bsdTypeDictionary.getImport().stream().anyMatch(
+                    id ->
+                        Objects.equals(id.getNamespace(), dictionaryNamespaceUri)
+                );
+                if (!registeredNamespace) {
+                    ImportDirective importDirective = new ImportDirective();
+                    importDirective.setNamespace(dictionaryNamespaceUri);
+                    bsdTypeDictionary.getImport().add(importDirective);
+                }
+            }
+
+            FieldType fieldType = new FieldType();
+            fieldType.setName(fieldName);
+            if (dictionaryNamespaceUri.isEmpty()) {
+                fieldType.setTypeName(new QName(namespaceUri, dataTypeName));
+            } else {
+                fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            }
+
+            if (structureType == StructureType.StructureWithOptionalFields) {
+                if (field.getIsOptional()) {
+                    fieldType.setSwitchField(fieldName + "Present");
+                }
+            } else if (structureType == StructureType.Union) {
+                fieldType.setSwitchField("SwitchField");
+                fieldType.setSwitchValue(++switchValue);
+            }
+
+            if (field.getValueRank() >= 1) {
+                // Fixed-dimension array... specify a LengthField
+                FieldType lengthFieldType = new FieldType();
+                lengthFieldType.setName(fieldName + "Length");
+                lengthFieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Int32"));
+
+                if (structureType == StructureType.StructureWithOptionalFields) {
+                    if (field.getIsOptional()) {
+                        lengthFieldType.setSwitchField(fieldName + "Present");
+                    }
+                } else if (structureType == StructureType.Union) {
+                    fieldType.setSwitchField("SwitchField");
+                    fieldType.setSwitchValue(switchValue);
+                }
+
+                structuredType.getField().add(lengthFieldType);
+
+                fieldType.setLengthField(fieldName + "Length");
+            } else if (field.getValueRank() != -1) {
+                // Not scalar, not fixed-dimension, not supported
+                throw new IllegalArgumentException(
+                    "cannot encode field \"" + fieldName + "\" " +
+                        "with ValueRank: %s" + field.getValueRank()
+                );
+            }
+
+            structuredType.getField().add(fieldType);
+        }
+
+        return structuredType;
+    }
+
+    private QualifiedTypeName getDataTypeLocation(NodeId dataTypeId) {
+        AddressSpaceManager addressSpaceManager = context.getServer().getAddressSpaceManager();
+
+        UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
+
+        checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
+
+        if (dataTypeId.getNamespaceIndex().intValue() == 0) {
+            long id = ((UInteger) dataTypeId.getIdentifier()).longValue();
+            String uri = id <= 15L ? Namespaces.OPC_UA_BSD : Namespaces.OPC_UA;
+            return new QualifiedTypeName(uri, dataTypeNode.getBrowseName().getName());
+        }
+
+        QualifiedName parentTypeName = dataTypeNode.getReferences()
+            .stream()
+            .filter(Reference.SUBTYPE_OF)
+            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .findFirst()
+            .map(UaNode::getBrowseName)
+            .orElse(QualifiedName.NULL_VALUE);
+
+        if (parentTypeName.equals(new QualifiedName(0, "Enumeration"))) {
+            return new QualifiedTypeName("", dataTypeNode.getBrowseName().getName());
+        }
+
+        UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
+            .stream()
+            .filter(Reference.HAS_ENCODING_PREDICATE)
+            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .filter(n -> n.getBrowseName().equals(new QualifiedName(0, "Default Binary")))
+            .findFirst()
+            .orElse(null);
+
+        checkNotNull(dataTypeEncodingNode, "dataTypeEncodingNode for dataTypeId=" + dataTypeId);
+
+        UaNode dataTypeDescriptionNode = dataTypeEncodingNode.getReferences()
+            .stream()
+            .filter(Reference.HAS_DESCRIPTION_PREDICATE)
+            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .findFirst()
+            .orElse(null);
+
+        checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
+
+        String dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
+
+        UaNode dictionaryNode = dataTypeDescriptionNode.getReferences().stream()
+            .filter(Reference.COMPONENT_OF_PREDICATE)
+            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .findFirst()
+            .orElse(null);
+
+        checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
+
+        String dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI)
+            .orElse(null);
+
+        checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
+
+        return new QualifiedTypeName(dictionaryNamespaceUri, dataTypeName);
+    }
+
+    /**
+     * Pair of DataType name and the namespace URI of the DataTypeDictionary it's defined in.
+     */
+    public static class QualifiedTypeName {
+        final String dictionaryNamespaceUri;
+        final String dataTypeName;
+
+        public QualifiedTypeName(String dictionaryNamespaceUri, String dataTypeName) {
+            this.dictionaryNamespaceUri = dictionaryNamespaceUri;
+            this.dataTypeName = dataTypeName;
+        }
+    }
+    
 }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.Map;
@@ -50,6 +60,12 @@ public class DefaultDataTypeManager implements DataTypeManager {
      */
     private final Map<QualifiedName, Map<NodeId, NodeId>> encodingIdsByEncodingName =
         new ConcurrentHashMap<>();
+
+    /**
+     * K = String of Namespace URI
+     * V = DataTypeDictionary
+     */
+    private final Map<String, DataTypeDictionary2> dataTypeDictionaries = new ConcurrentHashMap<>();
 
     @Override
     public void registerType(
@@ -110,20 +126,21 @@ public class DefaultDataTypeManager implements DataTypeManager {
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
-//    @Override
-//    public void registerBinaryTypeDictionary(OpcUaBinaryDataTypeDictionary dataTypeDictionary) {
-//        binaryDictionariesByNamespaceUri.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
-//
-//        dataTypeDictionary.getEnumCodecInfos().forEach(
-//            info ->
-//                registerEnumType(info.dataTypeId, info.codec)
-//        );
-//
-//        dataTypeDictionary.getStructCodecInfos().forEach(
-//            info ->
-//                registerType(info.dataTypeId, info.codec, info.encodingId, null, null)
-//        );
-//    }
+    @Override
+    public @Nullable DataTypeDictionary2 getTypeDictionary(String namespaceUri) {
+        return dataTypeDictionaries.get(namespaceUri);
+    }
+
+    @Override
+    public void registerTypeDictionary(DataTypeDictionary2 dictionary) {
+        dataTypeDictionaries.put(dictionary.getNamespaceUri(), dictionary);
+
+        // TODO should this be done by the caller instead? we don't actually know which encodingId to use.
+        dictionary.getTypes().forEach(
+            type ->
+                registerType(type.getDataTypeId(), type.getCodec(), type.getEncodingId(), null, null)
+        );
+    }
 
     private void putCodecForEncoding(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
         Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.computeIfAbsent(

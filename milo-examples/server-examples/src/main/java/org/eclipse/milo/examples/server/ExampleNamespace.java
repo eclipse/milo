@@ -807,24 +807,13 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         });
 
         // Populate the OPC UA 1.04+ DataTypeDefinition attribute
-        dataTypeNode.setDataTypeDefinition(definition);
-
-        // Register Codecs for each supported encoding with DataTypeManager
-//        getNodeContext().getServer().getDataTypeManager().registerEnumType(
-//            dataTypeId,
-//            new CustomEnumType.Codec()
-//        );
+//        dataTypeNode.setDataTypeDefinition(definition);
 
         // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
         // DataTypeDictionary from the server. We describe the type using StructureDefinition
         // or EnumDefinition and register it with the dictionary manager.
         // The dictionary manager will add all the necessary nodes to the AddressSpace and
         // generate the required dictionary bsd.xml file.
-//        dictionaryManager.registerEnumCodec(
-//            new CustomEnumType.Codec().asBinaryCodec(),
-//            "CustomEnumType",
-//            dataTypeId
-//        );
 
         EnumDescription description = new EnumDescription(
             dataTypeId,
@@ -833,7 +822,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             ubyte(BuiltinDataType.Int32.getTypeId())
         );
 
-        dictionaryManager.registerEnumDescription(description);
+        dictionaryManager.registerEnum(description);
     }
 
     private void registerCustomStructType() throws Exception {
@@ -911,7 +900,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         );
 
         // Populate the OPC UA 1.04+ DataTypeDefinition attribute
-        dataTypeNode.setDataTypeDefinition(definition);
+//        dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
         getNodeContext().getServer().getDataTypeManager().registerType(
@@ -927,20 +916,19 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // or EnumDefinition and register it with the dictionary manager.
         // The dictionary manager will add all the necessary nodes to the AddressSpace and
         // generate the required dictionary bsd.xml file.
-        dictionaryManager.registerStructureCodec(
-            BinaryDataTypeCodec.from(new CustomStructType.Codec()),
-            "CustomStructType",
-            dataTypeId,
-            binaryEncodingId
-        );
-
         StructureDescription description = new StructureDescription(
             dataTypeId,
             new QualifiedName(getNamespaceIndex(), "CustomStructType"),
             definition
         );
 
-        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+        dictionaryManager.registerStructure(
+            "CustomStructType",
+            dataTypeId,
+            binaryEncodingId,
+            BinaryDataTypeCodec.from(new CustomStructType.Codec()),
+            description
+        );
     }
 
     private void registerCustomUnionType() throws Exception {
@@ -997,7 +985,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             fields
         );
 
-        dataTypeNode.setDataTypeDefinition(definition);
+//        dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
         getNodeContext().getServer().getDataTypeManager().registerType(
@@ -1008,20 +996,19 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             null
         );
 
-        dictionaryManager.registerUnionCodec(
-            BinaryDataTypeCodec.from(new CustomUnionType.Codec()),
-            "CustomUnionType",
-            dataTypeId,
-            binaryEncodingId
-        );
-
         StructureDescription description = new StructureDescription(
             dataTypeId,
             new QualifiedName(getNamespaceIndex(), "CustomUnionType"),
             definition
         );
 
-        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+        dictionaryManager.registerStructure(
+            "CustomUnionType",
+            dataTypeId,
+            binaryEncodingId,
+            BinaryDataTypeCodec.from(new CustomUnionType.Codec()),
+            description
+        );
     }
 
     private void addCustomEnumTypeVariable(UaFolderNode rootFolder) throws Exception {

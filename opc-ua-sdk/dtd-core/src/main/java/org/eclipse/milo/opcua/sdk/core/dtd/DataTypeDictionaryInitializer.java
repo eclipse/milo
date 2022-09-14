@@ -1,8 +1,19 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.core.dtd;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 
 public abstract class DataTypeDictionaryInitializer {
 
@@ -13,25 +24,18 @@ public abstract class DataTypeDictionaryInitializer {
             dataTypeManager.getTypeDictionary(BINARY_DICTIONARY_URI);
 
         if (binaryDictionary == null) {
-            binaryDictionary = new BinaryDataTypeDictionary(BINARY_DICTIONARY_URI);
+            try {
+                TypeDictionary typeDictionary = BsdParser.parseBuiltinTypeDictionary();
+
+                binaryDictionary = new BinaryDataTypeDictionary(typeDictionary);
+
+                initializeStructs(namespaceTable, binaryDictionary);
+
+                dataTypeManager.registerTypeDictionary(binaryDictionary);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-
-        initialize(namespaceTable, dataTypeManager, binaryDictionary);
-    }
-
-    public void initialize(
-        NamespaceTable namespaceTable,
-        DataTypeManager dataTypeManager,
-        DataTypeDictionary2 binaryDictionary
-    ) {
-
-        try {
-            initializeStructs(namespaceTable, binaryDictionary);
-        } catch (Exception e) {
-            throw new RuntimeException("DataTypeDictionary initialization failed", e);
-        }
-
-        dataTypeManager.registerTypeDictionary(binaryDictionary);
     }
 
     protected abstract void initializeStructs(

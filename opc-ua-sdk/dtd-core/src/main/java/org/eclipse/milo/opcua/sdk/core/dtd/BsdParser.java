@@ -34,4 +34,12 @@ public class BsdParser {
         return (TypeDictionary) context.createUnmarshaller().unmarshal(inputStream);
     }
 
+    public static TypeDictionary parseBuiltinTypeDictionary() throws JAXBException {
+        InputStream inputStream = BsdParser.class
+            .getClassLoader()
+            .getResourceAsStream("Opc.Ua.Types.bsd.xml");
+
+        return parse(inputStream);
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,8 +46,8 @@ class DataTypeDictionaryReaderTest {
     private final UaStackClientConfig config = Mockito.mock(UaStackClientConfig.class);
     private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
 
-    private final DataTypeDictionaryReader2 dictionaryReader =
-        new DataTypeDictionaryReader2(stackClient, session);
+    private final DataTypeDictionaryReader dictionaryReader =
+        new DataTypeDictionaryReader(stackClient, session);
 
     @BeforeEach
     void setUp() {

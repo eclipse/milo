@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionaryReader2.TypeDictionaryInfo;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionaryReader.TypeDictionaryInfo;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary;
@@ -30,13 +30,13 @@ import org.opcfoundation.opcua.binaryschema.StructuredType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataTypeDictionarySessionInitializer2 implements SessionFsm.SessionInitializer {
+public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionInitializer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CodecFactory codecFactory;
 
-    public DataTypeDictionarySessionInitializer2(CodecFactory codecFactory) {
+    public DataTypeDictionarySessionInitializer(CodecFactory codecFactory) {
         this.codecFactory = codecFactory;
     }
 
@@ -60,7 +60,7 @@ public class DataTypeDictionarySessionInitializer2 implements SessionFsm.Session
     }
 
     private CompletableFuture<Unit> initialize(UaStackClient client, OpcUaSession session, DataTypeTree dataTypeTree) {
-        var dictionaryReader = new DataTypeDictionaryReader2(client, session);
+        var dictionaryReader = new DataTypeDictionaryReader(client, session);
 
         return dictionaryReader.readDataTypeDictionaries()
             .thenAccept(typeDictionaryInfos -> {
@@ -68,7 +68,7 @@ public class DataTypeDictionarySessionInitializer2 implements SessionFsm.Session
 
                     for (TypeDictionaryInfo typeDictionaryInfo : typeDictionaryInfos) {
                         var dictionary = new BinaryDataTypeDictionary(
-                            typeDictionaryInfo.typeDictionary.getTargetNamespace()
+                            typeDictionaryInfo.typeDictionary
                         );
 
                         Map<String, StructuredType> structuredTypes = new HashMap<>();

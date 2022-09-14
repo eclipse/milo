@@ -56,6 +56,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
         Variant variant = value.getValue();
         ExtensionObject xo = (ExtensionObject) variant.getValue();
+        assert xo != null;
 
         CustomStructType decoded = (CustomStructType) xo.decode(
             client.getStaticSerializationContext()
@@ -84,6 +85,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
         variant = value.getValue();
         xo = (ExtensionObject) variant.getValue();
+        assert xo != null;
 
         decoded = (CustomStructType) xo.decode(
             client.getStaticSerializationContext()
