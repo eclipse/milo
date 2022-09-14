@@ -1,13 +1,313 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.types.structured.*;
+import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AdditionalParametersType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AggregateConfiguration;
+import org.eclipse.milo.opcua.stack.core.types.structured.AggregateFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.AggregateFilterResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.AliasNameDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.Annotation;
+import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.AttributeOperand;
+import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrokerConnectionTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrokerDataSetReaderTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrokerDataSetWriterTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrokerWriterGroupTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePath;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathTarget;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ComplexNumberType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ConfigurationVersionDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElement;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElementResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CurrencyUnitType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeNotification;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataSetMetaDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataSetReaderDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataSetWriterDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.DatagramConnectionTransport2DataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DatagramConnectionTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DatagramDataSetReaderTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DatagramWriterGroupTransport2DataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DatagramWriterGroupTransportDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DecimalDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteAtTimeDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteEventDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteRawModifiedDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DiscoveryConfiguration;
+import org.eclipse.milo.opcua.stack.core.types.structured.DoubleComplexNumberType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
+import org.eclipse.milo.opcua.stack.core.types.structured.ElementOperand;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointUrlListDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EphemeralKeyType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventNotificationList;
+import org.eclipse.milo.opcua.stack.core.types.structured.FieldMetaData;
+import org.eclipse.milo.opcua.stack.core.types.structured.FieldTargetDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.GenericAttributeValue;
+import org.eclipse.milo.opcua.stack.core.types.structured.GenericAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryData;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEvent;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryModifiedData;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.InstanceNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.IssuedIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.JsonDataSetReaderMessageDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.JsonDataSetWriterMessageDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.JsonWriterGroupMessageDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.KeyValuePair;
+import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
+import org.eclipse.milo.opcua.stack.core.types.structured.MdnsDiscoveryConfiguration;
+import org.eclipse.milo.opcua.stack.core.types.structured.MethodAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.MethodNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModelChangeStructureDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModificationInfo;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemNotification;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilterResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
+import org.eclipse.milo.opcua.stack.core.types.structured.NetworkAddressUrlDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.NetworkGroupDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.Node;
+import org.eclipse.milo.opcua.stack.core.types.structured.NodeAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.NodeReference;
+import org.eclipse.milo.opcua.stack.core.types.structured.NodeTypeDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.NotificationData;
+import org.eclipse.milo.opcua.stack.core.types.structured.NotificationMessage;
+import org.eclipse.milo.opcua.stack.core.types.structured.ObjectAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.ObjectNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ObjectTypeAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.ObjectTypeNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ParsingResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.PortableNodeId;
+import org.eclipse.milo.opcua.stack.core.types.structured.PortableQualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.structured.PriorityMappingEntryType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnostic2DataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PubSubConfiguration2DataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PubSubConfigurationDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PubSubConfigurationRefDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PubSubConfigurationValueDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PubSubConnectionDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PubSubKeyPushTargetDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishedDataItemsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishedDataSetCustomSourceDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishedDataSetDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishedEventsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishedVariableDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryDataDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryDataSet;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.Range;
+import org.eclipse.milo.opcua.stack.core.types.structured.RationalNumber;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadAnnotationDataDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadAtTimeDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadEventDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadProcessedDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRawModifiedDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReaderGroupDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReceiveQosPriorityDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RedundantServerDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceTypeAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceTypeNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Response;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
+import org.eclipse.milo.opcua.stack.core.types.structured.RelativePath;
+import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
+import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SecurityGroupDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SemanticChangeStructureDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
+import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SessionlessInvokeRequestType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SessionlessInvokeResponseType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
+import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
+import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
+import org.eclipse.milo.opcua.stack.core.types.structured.SimpleTypeDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.StandaloneSubscribedDataSetDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.StandaloneSubscribedDataSetRefDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.StatusChangeNotification;
+import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
+import org.eclipse.milo.opcua.stack.core.types.structured.SubscribedDataSetMirrorDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
+import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TargetVariablesDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDCartesianCoordinates;
+import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDFrame;
+import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDOrientation;
+import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDVector;
+import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransmitQosPriorityDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TrustListDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TypeNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.UABinaryFileDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.UadpDataSetReaderMessageDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.UadpDataSetWriterMessageDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.UadpWriterGroupMessageDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.UnsignedRationalNumber;
+import org.eclipse.milo.opcua.stack.core.types.structured.UpdateDataDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.UpdateEventDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.UpdateStructureDataDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserManagementDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.types.structured.VariableAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.VariableNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.VariableTypeAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.VariableTypeNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ViewAttributes;
+import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.ViewNode;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriterGroupDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 
+// TODO regenerate
 public class DataTypeInitializer {
     public void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) {
         try {
             registerStructCodecs(namespaceTable, dataTypeManager);
-//            registerEnumCodecs(namespaceTable, dataTypeManager);
         } catch (Exception e) {
             throw new RuntimeException("DataType initialization failed", e);
         }
@@ -2054,167 +2354,4 @@ public class DataTypeInitializer {
         );
     }
 
-//    private void registerEnumCodecs(NamespaceTable namespaceTable, DataTypeManager dataTypeManager)
-//        throws Exception {
-//        dataTypeManager.registerEnumType(
-//            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new NamingRuleType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new OpenFileMode.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new IdentityCriteriaType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new TrustListMasks.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new PubSubState.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new OverrideValueHandling.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new DataSetOrderingType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new BrokerTransportQualityOfService.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new DiagnosticsLevel.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new PubSubDiagnosticsCounterClassification.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new Duplex.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new InterfaceAdminStatus.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new InterfaceOperStatus.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new NegotiationStatus.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new TsnFailureCode.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new TsnStreamState.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new TsnTalkerStatus.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new TsnListenerStatus.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new IdType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new NodeClass.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new StructureType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new ApplicationType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new MessageSecurityMode.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new UserTokenType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new SecurityTokenRequestType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new NodeAttributesMask.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new FilterOperator.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new HistoryUpdateType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new PerformUpdateType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new RedundancySupport.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new ServerState.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new AxisScaleEnumeration.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new ExceptionDeviationFormat.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new BrowseDirection.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new BrowseResultMask.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new TimestampsToReturn.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new MonitoringMode.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new DataChangeTrigger.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new DeadbandType.Codec()
-//        );
-//        dataTypeManager.registerEnumType(
-//            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-//            new ModelChangeStructureVerbMask.Codec()
-//        );
-//    }
 }

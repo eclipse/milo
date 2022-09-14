@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.function.Function;
 
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;

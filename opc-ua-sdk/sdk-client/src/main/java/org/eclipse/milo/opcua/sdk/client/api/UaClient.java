@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,8 +22,8 @@ import org.eclipse.milo.opcua.sdk.client.api.services.SubscriptionServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.ViewServices;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
 public interface UaClient extends AttributeServices,
     MethodServices, MonitoredItemServices, NodeManagementServices, SubscriptionServices, ViewServices {

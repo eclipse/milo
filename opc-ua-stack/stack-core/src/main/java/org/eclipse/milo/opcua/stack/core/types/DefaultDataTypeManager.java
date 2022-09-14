@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
@@ -153,7 +153,8 @@ public class DefaultDataTypeManager implements DataTypeManager {
     }
 
     /**
-     * Create a {@link DefaultDataTypeManager} and initialize it with the built-in DataTypes.
+     * Create a {@link DefaultDataTypeManager} and initialize it by registering all built-in
+     * DataTypes.
      *
      * @param namespaceTable a {@link NamespaceTable}.
      * @return a {@link DataTypeManager} pre-initialized wth the built-in DataTypes.
