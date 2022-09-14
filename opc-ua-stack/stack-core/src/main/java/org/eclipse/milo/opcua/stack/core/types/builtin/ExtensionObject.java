@@ -15,10 +15,8 @@ import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.jetbrains.annotations.NotNull;
@@ -93,12 +91,31 @@ public final class ExtensionObject {
 
     public Object decode(EncodingContext context) throws UaSerializationException {
         switch (bodyType) {
-            case ByteString:
+            case ByteString: {
                 return decode(context, OpcUaDefaultBinaryEncoding.getInstance());
-            case XmlElement:
-                return decode(context, OpcUaDefaultXmlEncoding.getInstance());
-            case JsonString:
-                return decode(context, OpcUaDefaultJsonEncoding.getInstance());
+            }
+            case XmlElement: {
+                DataTypeEncoding encoding = context.getEncodingManager()
+                    .getEncoding(DataTypeEncoding.XML_ENCODING_NAME);
+                if (encoding != null) {
+                    return decode(context, encoding);
+                } else {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "encoding not registered: " + DataTypeEncoding.XML_ENCODING_NAME);
+                }
+            }
+            case JsonString: {
+                DataTypeEncoding encoding = context.getEncodingManager()
+                    .getEncoding(DataTypeEncoding.JSON_ENCODING_NAME);
+                if (encoding != null) {
+                    return decode(context, encoding);
+                } else {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "encoding not registered: " + DataTypeEncoding.JSON_ENCODING_NAME);
+                }
+            }
             default:
                 throw new IllegalStateException("BodyType: " + bodyType);
         }
@@ -181,24 +198,6 @@ public final class ExtensionObject {
     ) throws UaSerializationException {
 
         return encode(context, object, encodingId, OpcUaDefaultBinaryEncoding.getInstance());
-    }
-
-    public static ExtensionObject encodeDefaultXml(
-        EncodingContext context,
-        Object object,
-        NodeId encodingId
-    ) throws UaSerializationException {
-
-        return encode(context, object, encodingId, OpcUaDefaultXmlEncoding.getInstance());
-    }
-
-    public static ExtensionObject encodeDefaultJson(
-        EncodingContext context,
-        Object object,
-        NodeId encodingId
-    ) throws UaSerializationException {
-
-        return encode(context, object, encodingId, OpcUaDefaultJsonEncoding.getInstance());
     }
 
     public static ExtensionObject encode(

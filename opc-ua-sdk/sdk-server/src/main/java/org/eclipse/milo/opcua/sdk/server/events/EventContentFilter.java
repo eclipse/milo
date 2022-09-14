@@ -244,7 +244,7 @@ public class EventContentFilter {
         StatusCode[] operandStatusCodes = new StatusCode[xos.length];
 
         for (int i = 0; i < xos.length; i++) {
-            Object operand = xos[i].decodeOrNull(context.getServer().getSerializationContext());
+            Object operand = xos[i].decodeOrNull(context.getServer().getEncodingContext());
 
             if (operand instanceof FilterOperand) {
                 operands[i] = (FilterOperand) operand;
@@ -336,7 +336,7 @@ public class EventContentFilter {
         }
 
         FilterOperand[] filterOperands = decodeOperands(
-            context.getServer().getSerializationContext(),
+            context.getServer().getEncodingContext(),
             element.getFilterOperands()
         );
 

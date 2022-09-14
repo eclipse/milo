@@ -441,7 +441,7 @@ public class ProgramDiagnostic2TypeNode extends BaseDataVariableTypeNode impleme
     @Override
     public void setLastMethodInputArguments(Argument[] value) throws UaException {
         BaseDataVariableTypeNode node = getLastMethodInputArgumentsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -473,7 +473,7 @@ public class ProgramDiagnostic2TypeNode extends BaseDataVariableTypeNode impleme
     @Override
     public CompletableFuture<StatusCode> writeLastMethodInputArgumentsAsync(
         Argument[] lastMethodInputArguments) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), lastMethodInputArguments);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), lastMethodInputArguments);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodInputArgumentsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -509,7 +509,7 @@ public class ProgramDiagnostic2TypeNode extends BaseDataVariableTypeNode impleme
     @Override
     public void setLastMethodOutputArguments(Argument[] value) throws UaException {
         BaseDataVariableTypeNode node = getLastMethodOutputArgumentsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -541,7 +541,7 @@ public class ProgramDiagnostic2TypeNode extends BaseDataVariableTypeNode impleme
     @Override
     public CompletableFuture<StatusCode> writeLastMethodOutputArgumentsAsync(
         Argument[] lastMethodOutputArguments) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), lastMethodOutputArguments);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), lastMethodOutputArguments);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodOutputArgumentsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -12,10 +12,9 @@ package org.eclipse.milo.opcua.stack.core.encoding.xml;
 
 import java.io.StringReader;
 
-import org.eclipse.milo.opcua.stack.core.encoding.TestEncodingContext;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OpcUaXmlDecoderTest {
     @Test

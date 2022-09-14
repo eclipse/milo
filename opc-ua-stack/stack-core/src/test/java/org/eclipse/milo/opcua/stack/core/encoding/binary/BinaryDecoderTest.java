@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.TestEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;

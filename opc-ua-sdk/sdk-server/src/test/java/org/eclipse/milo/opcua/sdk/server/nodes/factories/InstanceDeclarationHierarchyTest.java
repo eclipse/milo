@@ -68,7 +68,7 @@ public class InstanceDeclarationHierarchyTest {
 
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
-        Mockito.when(server.getSerializationContext()).thenReturn(new TestEncodingContext());
+        Mockito.when(server.getEncodingContext()).thenReturn(new TestEncodingContext());
 
         UaNodeContext context = new UaNodeContext() {
             @Override

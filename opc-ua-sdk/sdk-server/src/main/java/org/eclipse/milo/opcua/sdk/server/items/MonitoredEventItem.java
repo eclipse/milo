@@ -220,7 +220,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Override
     public ExtensionObject getFilterResult() {
-        return ExtensionObject.encode(server.getSerializationContext(), filterResult);
+        return ExtensionObject.encode(server.getEncodingContext(), filterResult);
     }
 
     @Override

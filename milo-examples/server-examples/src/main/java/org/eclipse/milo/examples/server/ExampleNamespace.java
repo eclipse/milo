@@ -1061,7 +1061,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         );
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            getServer().getSerializationContext(),
+            getServer().getEncodingContext(),
             value,
             binaryEncodingId
         );
@@ -1097,7 +1097,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         CustomUnionType value = CustomUnionType.ofBar("hello");
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            getServer().getSerializationContext(),
+            getServer().getEncodingContext(),
             value,
             binaryEncodingId
         );

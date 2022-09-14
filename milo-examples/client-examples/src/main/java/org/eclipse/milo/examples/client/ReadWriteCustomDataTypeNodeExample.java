@@ -16,7 +16,7 @@ import org.eclipse.milo.examples.server.types.CustomEnumType;
 import org.eclipse.milo.examples.server.types.CustomStructType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -59,7 +59,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         assert xo != null;
 
         CustomStructType decoded = (CustomStructType) xo.decode(
-            client.getStaticSerializationContext()
+            client.getStaticEncodingContext()
         );
         logger.info("Decoded={}", decoded);
 
@@ -71,7 +71,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             CustomEnumType.Field1
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
-            client.getStaticSerializationContext(),
+            client.getStaticEncodingContext(),
             modified,
             xo.getEncodingId(),
             OpcUaDefaultBinaryEncoding.getInstance()
@@ -88,7 +88,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         assert xo != null;
 
         decoded = (CustomStructType) xo.decode(
-            client.getStaticSerializationContext()
+            client.getStaticEncodingContext()
         );
         logger.info("Decoded={}", decoded);
 

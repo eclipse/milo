@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -214,7 +214,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                 ServerStatusTypeNode serverStatusNode = (ServerStatusTypeNode) ctx.getNode();
 
                 ExtensionObject xo = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     new ServerStatusDataType(
                         serverStatusNode.getStartTime(),
                         DateTime.now(),

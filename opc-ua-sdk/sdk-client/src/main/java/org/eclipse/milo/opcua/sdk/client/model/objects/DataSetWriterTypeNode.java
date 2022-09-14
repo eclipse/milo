@@ -247,7 +247,7 @@ public class DataSetWriterTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public void setDataSetWriterProperties(KeyValuePair[] value) throws UaException {
         PropertyTypeNode node = getDataSetWriterPropertiesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -279,7 +279,7 @@ public class DataSetWriterTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public CompletableFuture<StatusCode> writeDataSetWriterPropertiesAsync(
         KeyValuePair[] dataSetWriterProperties) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), dataSetWriterProperties);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), dataSetWriterProperties);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDataSetWriterPropertiesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

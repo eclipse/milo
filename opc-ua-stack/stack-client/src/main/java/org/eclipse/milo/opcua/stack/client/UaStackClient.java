@@ -236,7 +236,7 @@ public class UaStackClient {
      * @return a "static" {@link EncodingContext} instance.
      * @see #getStaticDataTypeManager()
      */
-    public EncodingContext getStaticSerializationContext() {
+    public EncodingContext getStaticEncodingContext() {
         return staticEncodingContext;
     }
 
@@ -248,7 +248,7 @@ public class UaStackClient {
      * @return a "dynamic" {@link EncodingContext}.
      * @see #getDynamicDataTypeManager()
      */
-    public EncodingContext getDynamicSerializationContext() {
+    public EncodingContext getDynamicEncodingContext() {
         return dynamicEncodingContext;
     }
 

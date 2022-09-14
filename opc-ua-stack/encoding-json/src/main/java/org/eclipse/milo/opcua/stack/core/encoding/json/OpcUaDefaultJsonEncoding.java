@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.types;
+package org.eclipse.milo.opcua.stack.core.encoding.json;
 
 import java.io.StringWriter;
 
@@ -16,8 +16,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder;
-import org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonEncoder;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -37,7 +36,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
     private OpcUaDefaultJsonEncoding() {}
 
     @Override
-    public QualifiedName getName() {
+    public QualifiedName getEncodingName() {
         return ENCODING_NAME;
     }
 

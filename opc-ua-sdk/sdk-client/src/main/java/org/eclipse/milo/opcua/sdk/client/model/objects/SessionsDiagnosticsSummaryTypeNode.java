@@ -54,7 +54,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value) throws UaException {
         SessionDiagnosticsArrayTypeNode node = getSessionDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -87,7 +87,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public CompletableFuture<StatusCode> writeSessionDiagnosticsArrayAsync(
         SessionDiagnosticsDataType[] sessionDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), sessionDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), sessionDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -125,7 +125,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     public void setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value) throws
         UaException {
         SessionSecurityDiagnosticsArrayTypeNode node = getSessionSecurityDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -160,7 +160,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsArrayAsync(
         SessionSecurityDiagnosticsDataType[] sessionSecurityDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), sessionSecurityDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), sessionSecurityDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

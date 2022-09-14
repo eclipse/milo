@@ -60,7 +60,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
         assert xo != null;
 
-        Object value = xo.decode(client.getDynamicSerializationContext());
+        Object value = xo.decode(client.getDynamicEncodingContext());
 
         logger.info("value: {}", value);
 

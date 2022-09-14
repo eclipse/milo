@@ -54,7 +54,7 @@ public class ExpressionGuardVariableTypeNode extends GuardVariableTypeNode imple
     @Override
     public void setExpression(ContentFilter value) throws UaException {
         PropertyTypeNode node = getExpressionNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class ExpressionGuardVariableTypeNode extends GuardVariableTypeNode imple
 
     @Override
     public CompletableFuture<StatusCode> writeExpressionAsync(ContentFilter expression) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), expression);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), expression);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getExpressionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

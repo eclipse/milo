@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -78,7 +78,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
 
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject xo = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics()
                     .getSessionDiagnosticsDataType()
             );
@@ -95,7 +95,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         }));
         node.getClientDescriptionNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getClientDescription()
             );
             return new DataValue(new Variant(value));
@@ -148,7 +148,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         );
         node.getTotalRequestCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getTotalRequestCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
@@ -161,35 +161,35 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         );
         node.getReadCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getReadCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getHistoryReadCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getHistoryReadCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getWriteCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getWriteCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getHistoryUpdateCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getHistoryUpdateCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getCallCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getCallCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
@@ -197,7 +197,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getCreateMonitoredItemsCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getCreateMonitoredItemsCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -206,7 +206,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getModifyMonitoredItemsCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getModifyMonitoredItemsCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -214,14 +214,14 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         );
         node.getSetMonitoringModeCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getSetMonitoringModeCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getSetTriggeringCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getSetTriggeringCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
@@ -229,7 +229,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getDeleteMonitoredItemsCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getDeleteMonitoredItemsCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -238,7 +238,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getCreateSubscriptionCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getCreateSubscriptionCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -247,7 +247,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getModifySubscriptionCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getModifySubscriptionCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -255,21 +255,21 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         );
         node.getSetPublishingModeCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getSetPublishingModeCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getPublishCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getPublishCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getRepublishCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getRepublishCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
@@ -277,7 +277,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getTransferSubscriptionsCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getTransferSubscriptionsCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -286,7 +286,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getDeleteSubscriptionsCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getDeleteSubscriptionsCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -294,42 +294,42 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         );
         node.getAddNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getAddNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getAddReferencesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getAddReferencesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getDeleteNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getDeleteNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getDeleteReferencesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getDeleteReferencesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getBrowseCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getBrowseCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getBrowseNextCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getBrowseNextCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
@@ -337,7 +337,7 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         node.getTranslateBrowsePathsToNodeIdsCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
                 ExtensionObject value = ExtensionObject.encode(
-                    server.getSerializationContext(),
+                    server.getEncodingContext(),
                     session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().getServiceCounter()
                 );
                 return new DataValue(new Variant(value));
@@ -345,28 +345,28 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
         );
         node.getQueryFirstCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getQueryFirstCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getQueryNextCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getQueryNextCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getRegisterNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getRegisterNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
         node.getUnregisterNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 session.getSessionDiagnostics().getUnregisterNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));

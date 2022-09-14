@@ -1144,24 +1144,24 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
 
             Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
             DataTypeDefinition dataTypeDefinition = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(11),
                 DataTypeDefinition.class
             );
@@ -1208,17 +1208,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1273,17 +1273,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1335,17 +1335,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1397,17 +1397,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1464,17 +1464,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1545,17 +1545,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1611,17 +1611,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
-                client.getStaticSerializationContext(),
+                client.getStaticEncodingContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );

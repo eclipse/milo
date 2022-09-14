@@ -117,7 +117,7 @@ public class PubSubConnectionTypeNode extends BaseObjectTypeNode implements PubS
     @Override
     public void setConnectionProperties(KeyValuePair[] value) throws UaException {
         PropertyTypeNode node = getConnectionPropertiesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -149,7 +149,7 @@ public class PubSubConnectionTypeNode extends BaseObjectTypeNode implements PubS
     @Override
     public CompletableFuture<StatusCode> writeConnectionPropertiesAsync(
         KeyValuePair[] connectionProperties) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), connectionProperties);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), connectionProperties);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getConnectionPropertiesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -133,7 +133,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 getSubscriptions()
                     .stream()
                     .map(s ->

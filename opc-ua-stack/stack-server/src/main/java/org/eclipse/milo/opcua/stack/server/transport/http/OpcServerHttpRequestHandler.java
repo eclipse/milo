@@ -136,7 +136,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
         keyPair.ifPresent(secureChannel::setKeyPair);
 
-        OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(stackServer.getSerializationContext());
+        OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(stackServer.getEncodingContext());
         decoder.setBuffer(httpRequest.content());
 
         try {
@@ -179,7 +179,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         ByteBuf contentBuffer = BufferUtil.pooledBuffer();
 
         // TODO switch on transport profile for binary vs xml encoding
-        OpcUaBinaryEncoder binaryEncoder = new OpcUaBinaryEncoder(stackServer.getSerializationContext());
+        OpcUaBinaryEncoder binaryEncoder = new OpcUaBinaryEncoder(stackServer.getEncodingContext());
         binaryEncoder.setBuffer(contentBuffer);
         binaryEncoder.encodeMessage(null, response);
 
@@ -219,7 +219,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         ByteBuf contentBuffer = BufferUtil.pooledBuffer();
 
         // TODO switch on transport profile for binary vs xml encoding
-        OpcUaBinaryEncoder binaryEncoder = new OpcUaBinaryEncoder(stackServer.getSerializationContext());
+        OpcUaBinaryEncoder binaryEncoder = new OpcUaBinaryEncoder(stackServer.getEncodingContext());
         binaryEncoder.setBuffer(contentBuffer);
         binaryEncoder.encodeMessage(null, serviceFault);
 

@@ -22,24 +22,6 @@ import org.jetbrains.annotations.Nullable;
 public class DefaultDataTypeManager implements DataTypeManager {
 
     /**
-     * QualifiedName of the OPC UA Binary encoding.
-     */
-    private static final QualifiedName BINARY_ENCODING_NAME =
-        new QualifiedName(0, "Default Binary");
-
-    /**
-     * QualifiedName of the OPC UA XML encoding.
-     */
-    private static final QualifiedName XML_ENCODING_NAME =
-        new QualifiedName(0, "Default XML");
-
-    /**
-     * QualifiedName of the OPC UA JSON encoding.
-     */
-    private static final QualifiedName JSON_ENCODING_NAME =
-        new QualifiedName(0, "Default JSON");
-
-    /**
      * K = NodeId of DataType Encoding
      * V = DataTypeCodec
      */
@@ -77,18 +59,18 @@ public class DefaultDataTypeManager implements DataTypeManager {
     ) {
 
         if (binaryEncodingId != null && binaryEncodingId.isNotNull()) {
-            putCodecForEncoding(BINARY_ENCODING_NAME, dataTypeId, codec);
-            putEncodingIdForEncoding(BINARY_ENCODING_NAME, dataTypeId, binaryEncodingId);
+            putCodecForEncoding(DataTypeEncoding.BINARY_ENCODING_NAME, dataTypeId, codec);
+            putEncodingIdForEncoding(DataTypeEncoding.BINARY_ENCODING_NAME, dataTypeId, binaryEncodingId);
             codecsByEncodingId.put(binaryEncodingId, codec);
         }
         if (xmlEncodingId != null && xmlEncodingId.isNotNull()) {
-            putCodecForEncoding(XML_ENCODING_NAME, dataTypeId, codec);
-            putEncodingIdForEncoding(XML_ENCODING_NAME, dataTypeId, xmlEncodingId);
+            putCodecForEncoding(DataTypeEncoding.XML_ENCODING_NAME, dataTypeId, codec);
+            putEncodingIdForEncoding(DataTypeEncoding.XML_ENCODING_NAME, dataTypeId, xmlEncodingId);
             codecsByEncodingId.put(xmlEncodingId, codec);
         }
         if (jsonEncodingId != null && jsonEncodingId.isNotNull()) {
-            putCodecForEncoding(JSON_ENCODING_NAME, dataTypeId, codec);
-            putEncodingIdForEncoding(JSON_ENCODING_NAME, dataTypeId, jsonEncodingId);
+            putCodecForEncoding(DataTypeEncoding.JSON_ENCODING_NAME, dataTypeId, codec);
+            putEncodingIdForEncoding(DataTypeEncoding.JSON_ENCODING_NAME, dataTypeId, jsonEncodingId);
             codecsByEncodingId.put(jsonEncodingId, codec);
         }
     }
@@ -107,21 +89,21 @@ public class DefaultDataTypeManager implements DataTypeManager {
 
     @Override
     public @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId) {
-        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(BINARY_ENCODING_NAME);
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(DataTypeEncoding.BINARY_ENCODING_NAME);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
     @Override
     public @Nullable NodeId getXmlEncodingId(NodeId dataTypeId) {
-        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(XML_ENCODING_NAME);
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(DataTypeEncoding.XML_ENCODING_NAME);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
     @Override
     public @Nullable NodeId getJsonEncodingId(NodeId dataTypeId) {
-        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(JSON_ENCODING_NAME);
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(DataTypeEncoding.JSON_ENCODING_NAME);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }

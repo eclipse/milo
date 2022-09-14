@@ -55,7 +55,7 @@ public class ThreeDFrameTypeNode extends FrameTypeNode implements ThreeDFrameTyp
     @Override
     public void setCartesianCoordinates(ThreeDCartesianCoordinates value) throws UaException {
         ThreeDCartesianCoordinatesTypeNode node = getCartesianCoordinatesNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -87,7 +87,7 @@ public class ThreeDFrameTypeNode extends FrameTypeNode implements ThreeDFrameTyp
     @Override
     public CompletableFuture<StatusCode> writeCartesianCoordinatesAsync(
         ThreeDCartesianCoordinates cartesianCoordinates) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), cartesianCoordinates);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), cartesianCoordinates);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCartesianCoordinatesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -123,7 +123,7 @@ public class ThreeDFrameTypeNode extends FrameTypeNode implements ThreeDFrameTyp
     @Override
     public void setOrientation(ThreeDOrientation value) throws UaException {
         ThreeDOrientationTypeNode node = getOrientationNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -154,7 +154,7 @@ public class ThreeDFrameTypeNode extends FrameTypeNode implements ThreeDFrameTyp
 
     @Override
     public CompletableFuture<StatusCode> writeOrientationAsync(ThreeDOrientation orientation) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), orientation);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), orientation);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getOrientationNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

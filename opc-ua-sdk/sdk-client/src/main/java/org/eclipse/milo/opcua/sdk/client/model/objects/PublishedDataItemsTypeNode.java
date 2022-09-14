@@ -52,7 +52,7 @@ public class PublishedDataItemsTypeNode extends PublishedDataSetTypeNode impleme
     @Override
     public void setPublishedData(PublishedVariableDataType[] value) throws UaException {
         PropertyTypeNode node = getPublishedDataNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -84,7 +84,7 @@ public class PublishedDataItemsTypeNode extends PublishedDataSetTypeNode impleme
     @Override
     public CompletableFuture<StatusCode> writePublishedDataAsync(
         PublishedVariableDataType[] publishedData) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), publishedData);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), publishedData);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getPublishedDataNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

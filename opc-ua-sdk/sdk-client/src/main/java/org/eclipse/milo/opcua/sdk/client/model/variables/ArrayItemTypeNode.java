@@ -56,7 +56,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     @Override
     public void setInstrumentRange(Range value) throws UaException {
         PropertyTypeNode node = getInstrumentRangeNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -87,7 +87,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<StatusCode> writeInstrumentRangeAsync(Range instrumentRange) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), instrumentRange);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), instrumentRange);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getInstrumentRangeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -122,7 +122,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     @Override
     public void setEuRange(Range value) throws UaException {
         PropertyTypeNode node = getEuRangeNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -153,7 +153,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<StatusCode> writeEuRangeAsync(Range euRange) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), euRange);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), euRange);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEuRangeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -188,7 +188,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     @Override
     public void setEngineeringUnits(EUInformation value) throws UaException {
         PropertyTypeNode node = getEngineeringUnitsNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -219,7 +219,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<StatusCode> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), engineeringUnits);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), engineeringUnits);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEngineeringUnitsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

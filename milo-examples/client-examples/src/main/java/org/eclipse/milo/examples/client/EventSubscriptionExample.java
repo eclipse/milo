@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -101,7 +101,7 @@ public class EventSubscriptionExample implements ClientExample {
         MonitoringParameters parameters = new MonitoringParameters(
             clientHandle,
             0.0,
-            ExtensionObject.encode(client.getStaticSerializationContext(), eventFilter),
+            ExtensionObject.encode(client.getStaticEncodingContext(), eventFilter),
             uint(10),
             true
         );

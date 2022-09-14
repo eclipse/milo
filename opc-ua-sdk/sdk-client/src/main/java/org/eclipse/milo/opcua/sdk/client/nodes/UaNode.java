@@ -1383,7 +1383,7 @@ public abstract class UaNode implements Node {
             }
         } else if (o instanceof ExtensionObject) {
             ExtensionObject xo = (ExtensionObject) o;
-            Object decoded = xo.decode(client.getStaticSerializationContext());
+            Object decoded = xo.decode(client.getStaticEncodingContext());
             return clazz.cast(decoded);
         } else if (o instanceof ExtensionObject[]) {
             ExtensionObject[] xos = (ExtensionObject[]) o;
@@ -1394,7 +1394,7 @@ public abstract class UaNode implements Node {
             for (int i = 0; i < xos.length; i++) {
                 ExtensionObject xo = xos[i];
 
-                Object decoded = xo.decode(client.getStaticSerializationContext());
+                Object decoded = xo.decode(client.getStaticEncodingContext());
 
                 Array.set(array, i, componentType.cast(decoded));
             }

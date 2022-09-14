@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.types;
+package org.eclipse.milo.opcua.stack.core.encoding.binary;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -17,8 +17,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
-import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -41,7 +40,7 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
     private OpcUaDefaultBinaryEncoding() {}
 
     @Override
-    public QualifiedName getName() {
+    public QualifiedName getEncodingName() {
         return ENCODING_NAME;
     }
 

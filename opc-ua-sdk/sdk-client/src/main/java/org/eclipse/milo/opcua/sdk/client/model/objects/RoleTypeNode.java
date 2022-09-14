@@ -53,7 +53,7 @@ public class RoleTypeNode extends BaseObjectTypeNode implements RoleType {
     @Override
     public void setIdentities(IdentityMappingRuleType[] value) throws UaException {
         PropertyTypeNode node = getIdentitiesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -84,7 +84,7 @@ public class RoleTypeNode extends BaseObjectTypeNode implements RoleType {
 
     @Override
     public CompletableFuture<StatusCode> writeIdentitiesAsync(IdentityMappingRuleType[] identities) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), identities);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), identities);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getIdentitiesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -311,7 +311,7 @@ public class RoleTypeNode extends BaseObjectTypeNode implements RoleType {
     @Override
     public void setEndpoints(EndpointType[] value) throws UaException {
         PropertyTypeNode node = getEndpointsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -342,7 +342,7 @@ public class RoleTypeNode extends BaseObjectTypeNode implements RoleType {
 
     @Override
     public CompletableFuture<StatusCode> writeEndpointsAsync(EndpointType[] endpoints) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), endpoints);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), endpoints);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEndpointsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

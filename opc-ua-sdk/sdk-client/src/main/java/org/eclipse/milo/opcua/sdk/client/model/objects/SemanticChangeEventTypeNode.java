@@ -52,7 +52,7 @@ public class SemanticChangeEventTypeNode extends BaseEventTypeNode implements Se
     @Override
     public void setChanges(SemanticChangeStructureDataType[] value) throws UaException {
         PropertyTypeNode node = getChangesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -84,7 +84,7 @@ public class SemanticChangeEventTypeNode extends BaseEventTypeNode implements Se
     @Override
     public CompletableFuture<StatusCode> writeChangesAsync(
         SemanticChangeStructureDataType[] changes) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), changes);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), changes);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getChangesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

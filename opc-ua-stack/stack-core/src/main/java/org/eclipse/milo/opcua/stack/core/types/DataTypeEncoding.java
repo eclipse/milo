@@ -19,7 +19,22 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public interface DataTypeEncoding {
 
-    QualifiedName getName();
+    /**
+     * QualifiedName of the OPC UA Binary encoding.
+     */
+    QualifiedName BINARY_ENCODING_NAME = new QualifiedName(0, "Default Binary");
+
+    /**
+     * QualifiedName of the OPC UA XML encoding.
+     */
+    QualifiedName XML_ENCODING_NAME = new QualifiedName(0, "Default XML");
+
+    /**
+     * QualifiedName of the OPC UA JSON encoding.
+     */
+    QualifiedName JSON_ENCODING_NAME = new QualifiedName(0, "Default JSON");
+
+    QualifiedName getEncodingName();
 
     Object encode(
         EncodingContext context,

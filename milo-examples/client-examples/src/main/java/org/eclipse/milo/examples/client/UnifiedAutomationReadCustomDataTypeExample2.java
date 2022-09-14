@@ -103,12 +103,12 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
         assert xo != null;
 
-        return (DynamicStruct) xo.decode(client.getDynamicSerializationContext());
+        return (DynamicStruct) xo.decode(client.getDynamicEncodingContext());
     }
 
     private static StatusCode writeValue(OpcUaClient client, NodeId nodeId, DynamicStruct value) throws Exception {
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            client.getDynamicSerializationContext(),
+            client.getDynamicEncodingContext(),
             value,
             value.getDataType().getBinaryEncodingId()
         );

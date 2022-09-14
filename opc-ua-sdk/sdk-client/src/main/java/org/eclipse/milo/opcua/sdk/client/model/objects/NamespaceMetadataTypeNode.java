@@ -531,7 +531,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     @Override
     public void setDefaultRolePermissions(RolePermissionType[] value) throws UaException {
         PropertyTypeNode node = getDefaultRolePermissionsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -563,7 +563,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     @Override
     public CompletableFuture<StatusCode> writeDefaultRolePermissionsAsync(
         RolePermissionType[] defaultRolePermissions) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), defaultRolePermissions);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), defaultRolePermissions);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDefaultRolePermissionsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -598,7 +598,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     @Override
     public void setDefaultUserRolePermissions(RolePermissionType[] value) throws UaException {
         PropertyTypeNode node = getDefaultUserRolePermissionsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -630,7 +630,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     @Override
     public CompletableFuture<StatusCode> writeDefaultUserRolePermissionsAsync(
         RolePermissionType[] defaultUserRolePermissions) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), defaultUserRolePermissions);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), defaultUserRolePermissions);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDefaultUserRolePermissionsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

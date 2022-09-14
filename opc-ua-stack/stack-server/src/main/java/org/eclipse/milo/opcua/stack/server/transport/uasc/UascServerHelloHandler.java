@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -183,7 +183,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         SerializationQueue serializationQueue = new SerializationQueue(
             stackServer.getConfig().getExecutor(),
             parameters,
-            stackServer.getSerializationContext()
+            stackServer.getEncodingContext()
         );
 
         ctx.pipeline().addLast(new UascServerAsymmetricHandler(stackServer, transportProfile, serializationQueue));

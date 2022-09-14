@@ -54,7 +54,7 @@ public class VectorTypeNode extends BaseDataVariableTypeNode implements VectorTy
     @Override
     public void setVectorUnit(EUInformation value) throws UaException {
         PropertyTypeNode node = getVectorUnitNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class VectorTypeNode extends BaseDataVariableTypeNode implements VectorTy
 
     @Override
     public CompletableFuture<StatusCode> writeVectorUnitAsync(EUInformation vectorUnit) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), vectorUnit);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), vectorUnit);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getVectorUnitNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

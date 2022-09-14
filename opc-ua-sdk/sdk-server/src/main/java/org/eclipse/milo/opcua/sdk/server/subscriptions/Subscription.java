@@ -36,7 +36,7 @@ import org.eclipse.milo.opcua.sdk.server.diagnostics.SubscriptionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -129,7 +129,7 @@ public class Subscription {
 
         subscriptionDiagnostics = new SubscriptionDiagnostics(this);
 
-        encodingContext = subscriptionManager.getServer().getSerializationContext();
+        encodingContext = subscriptionManager.getServer().getEncodingContext();
 
         setPublishingInterval(publishingInterval);
         setMaxKeepAliveCount(maxKeepAliveCount);

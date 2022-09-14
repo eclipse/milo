@@ -46,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -104,9 +105,6 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 public class SubscriptionManager {
 
     static final AttributeKey<StatusCode[]> KEY_ACK_RESULTS = AttributeKey.valueOf("ackResults");
-
-    private static final QualifiedName DEFAULT_BINARY_ENCODING = new QualifiedName(0, "DefaultBinary");
-    private static final QualifiedName DEFAULT_XML_ENCODING = new QualifiedName(0, "DefaultXML");
 
     private static final AtomicLong SUBSCRIPTION_IDS = new AtomicLong(0L);
 
@@ -451,8 +449,9 @@ public class SubscriptionManager {
                 throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
             }
 
-            if (!dataEncoding.equals(DEFAULT_BINARY_ENCODING) &&
-                !dataEncoding.equals(DEFAULT_XML_ENCODING)) {
+            // TODO this should check with EncodingManager instead
+            if (!dataEncoding.equals(DataTypeEncoding.BINARY_ENCODING_NAME) &&
+                !dataEncoding.equals(DataTypeEncoding.XML_ENCODING_NAME)) {
 
                 throw new UaException(StatusCodes.Bad_DataEncodingUnsupported);
             }
@@ -470,7 +469,7 @@ public class SubscriptionManager {
 
             Object filterObject = request.getRequestedParameters()
                 .getFilter()
-                .decode(server.getSerializationContext());
+                .decode(server.getEncodingContext());
 
             MonitoringFilter filter = validateEventItemFilter(filterObject, attributeGroup);
 
@@ -546,7 +545,7 @@ public class SubscriptionManager {
 
                 if (filterXo != null && !filterXo.isNull()) {
                     Object filterObject = filterXo
-                        .decode(server.getSerializationContext());
+                        .decode(server.getEncodingContext());
 
                     filter = validateDataItemFilter(filterObject, attributeId, attributeGroup);
                 }
@@ -787,7 +786,7 @@ public class SubscriptionManager {
         if (attributeId.equals(AttributeId.EventNotifier.uid())) {
             Object filterObject = request.getRequestedParameters()
                 .getFilter()
-                .decode(server.getSerializationContext());
+                .decode(server.getEncodingContext());
 
             MonitoringFilter filter = validateEventItemFilter(filterObject, attributeGroup);
 
@@ -820,7 +819,7 @@ public class SubscriptionManager {
 
                 if (filterXo != null && !filterXo.isNull()) {
                     Object filterObject = filterXo
-                        .decode(server.getSerializationContext());
+                        .decode(server.getEncodingContext());
 
                     filter = validateDataItemFilter(filterObject, attributeId, attributeGroup);
                 }

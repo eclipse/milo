@@ -79,7 +79,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
         switch (transportProfile) {
             case HTTPS_UABINARY: {
                 OpcUaBinaryEncoder encoder =
-                    new OpcUaBinaryEncoder(client.getStaticSerializationContext());
+                    new OpcUaBinaryEncoder(client.getStaticEncodingContext());
                 encoder.setBuffer(content);
                 encoder.encodeMessage(null, transportRequest.getRequest());
                 break;
@@ -142,7 +142,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                     }
 
                     OpcUaBinaryDecoder decoder =
-                        new OpcUaBinaryDecoder(client.getStaticSerializationContext());
+                        new OpcUaBinaryDecoder(client.getStaticEncodingContext());
                     decoder.setBuffer(content);
                     responseMessage = (UaResponseMessageType) decoder.decodeMessage(null);
                     break;

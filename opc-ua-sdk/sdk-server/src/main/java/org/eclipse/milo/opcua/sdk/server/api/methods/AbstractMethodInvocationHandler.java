@@ -87,7 +87,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                             } else {
                                 if (NodeIds.Structure.equals(type) && value instanceof ExtensionObject) {
                                     EncodingContext encodingContext =
-                                        getNode().getNodeContext().getServer().getSerializationContext();
+                                        getNode().getNodeContext().getServer().getEncodingContext();
 
                                     try {
                                         Object decoded = ((ExtensionObject) value).decode(encodingContext);

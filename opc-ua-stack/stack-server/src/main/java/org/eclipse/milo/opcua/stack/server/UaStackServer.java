@@ -259,7 +259,7 @@ public class UaStackServer {
         return dataTypeManager;
     }
 
-    public EncodingContext getSerializationContext() {
+    public EncodingContext getEncodingContext() {
         return encodingContext;
     }
 

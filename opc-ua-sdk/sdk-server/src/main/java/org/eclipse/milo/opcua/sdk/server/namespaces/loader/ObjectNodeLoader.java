@@ -95,6 +95,7 @@ import org.eclipse.milo.opcua.sdk.server.model.objects.WriterGroupTransportTypeN
 import org.eclipse.milo.opcua.sdk.server.model.objects.WriterGroupTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -120,9 +121,11 @@ class ObjectNodeLoader {
     }
 
     void loadNode1() {
-        var node = new BaseObjectTypeNode(this.context, new NodeId(0, 3063), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3063), new NodeId(0, 40), new NodeId(0, 58).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new BaseObjectTypeNode(this.context, new NodeId(0, 3063), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 3063), new NodeId(0, 40), new NodeId(0, 58).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode2() {
@@ -4571,2283 +4574,2891 @@ class ObjectNodeLoader {
     }
 
     void loadNode448() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12758), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 38), new NodeId(0, 12756).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 39), new NodeId(0, 12762).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12758), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 38), new NodeId(0, 12756).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 39), new NodeId(0, 12762).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode449() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14802), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14802), new NodeId(0, 38), new NodeId(0, 14533).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14802), new NodeId(0, 39), new NodeId(0, 14829).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14802), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14802), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14802), new NodeId(0, 38), new NodeId(0, 14533).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14802), new NodeId(0, 39), new NodeId(0, 14829).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14802), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode450() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17541), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 17541), new NodeId(0, 38), new NodeId(0, 16313).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 17541), new NodeId(0, 39), new NodeId(0, 17542).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 17541), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17541), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 17541), new NodeId(0, 38), new NodeId(0, 16313).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 17541), new NodeId(0, 39), new NodeId(0, 17542).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 17541), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode451() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17553), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 17553), new NodeId(0, 38), new NodeId(0, 17548).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 17553), new NodeId(0, 39), new NodeId(0, 17554).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 17553), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17553), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 17553), new NodeId(0, 38), new NodeId(0, 17548).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 17553), new NodeId(0, 39), new NodeId(0, 17554).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 17553), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode452() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15949), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15949), new NodeId(0, 38), new NodeId(0, 15528).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15949), new NodeId(0, 39), new NodeId(0, 16024).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15949), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15949), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15949), new NodeId(0, 38), new NodeId(0, 15528).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15949), new NodeId(0, 39), new NodeId(0, 16024).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15949), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode453() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18851), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18851), new NodeId(0, 38), new NodeId(0, 18806).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18851), new NodeId(0, 39), new NodeId(0, 18860).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18851), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18851), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18851), new NodeId(0, 38), new NodeId(0, 18806).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18851), new NodeId(0, 39), new NodeId(0, 18860).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18851), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode454() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18852), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18852), new NodeId(0, 38), new NodeId(0, 18807).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18852), new NodeId(0, 39), new NodeId(0, 18863).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18852), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18852), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18852), new NodeId(0, 38), new NodeId(0, 18807).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18852), new NodeId(0, 39), new NodeId(0, 18863).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18852), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode455() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18853), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18853), new NodeId(0, 38), new NodeId(0, 18808).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18853), new NodeId(0, 39), new NodeId(0, 18866).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18853), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18853), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18853), new NodeId(0, 38), new NodeId(0, 18808).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18853), new NodeId(0, 39), new NodeId(0, 18866).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18853), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode456() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18854), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18854), new NodeId(0, 38), new NodeId(0, 18809).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18854), new NodeId(0, 39), new NodeId(0, 18869).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18854), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18854), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18854), new NodeId(0, 38), new NodeId(0, 18809).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18854), new NodeId(0, 39), new NodeId(0, 18869).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18854), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode457() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18855), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18855), new NodeId(0, 38), new NodeId(0, 18810).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18855), new NodeId(0, 39), new NodeId(0, 19049).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18855), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18855), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18855), new NodeId(0, 38), new NodeId(0, 18810).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18855), new NodeId(0, 39), new NodeId(0, 19049).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18855), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode458() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18856), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18856), new NodeId(0, 38), new NodeId(0, 18811).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18856), new NodeId(0, 39), new NodeId(0, 19052).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18856), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18856), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18856), new NodeId(0, 38), new NodeId(0, 18811).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18856), new NodeId(0, 39), new NodeId(0, 19052).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18856), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode459() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18857), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18857), new NodeId(0, 38), new NodeId(0, 18812).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18857), new NodeId(0, 39), new NodeId(0, 19055).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18857), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18857), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18857), new NodeId(0, 38), new NodeId(0, 18812).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18857), new NodeId(0, 39), new NodeId(0, 19055).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18857), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode460() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18858), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18858), new NodeId(0, 38), new NodeId(0, 18813).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18858), new NodeId(0, 39), new NodeId(0, 19058).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18858), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18858), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18858), new NodeId(0, 38), new NodeId(0, 18813).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18858), new NodeId(0, 39), new NodeId(0, 19058).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18858), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode461() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18859), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 18859), new NodeId(0, 38), new NodeId(0, 18814).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 18859), new NodeId(0, 39), new NodeId(0, 19061).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 18859), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 18859), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 18859), new NodeId(0, 38), new NodeId(0, 18814).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 18859), new NodeId(0, 39), new NodeId(0, 19061).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 18859), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode462() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15728), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15728), new NodeId(0, 38), new NodeId(0, 15634).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15728), new NodeId(0, 39), new NodeId(0, 15730).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15728), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15728), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15728), new NodeId(0, 38), new NodeId(0, 15634).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15728), new NodeId(0, 39), new NodeId(0, 15730).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15728), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode463() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23520), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23520), new NodeId(0, 38), new NodeId(0, 23498).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23520), new NodeId(0, 39), new NodeId(0, 23522).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23520), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23520), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23520), new NodeId(0, 38), new NodeId(0, 23498).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23520), new NodeId(0, 39), new NodeId(0, 23522).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23520), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode464() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12676), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 38), new NodeId(0, 12554).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 39), new NodeId(0, 12677).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12676), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 38), new NodeId(0, 12554).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 39), new NodeId(0, 12677).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode465() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15950), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15950), new NodeId(0, 38), new NodeId(0, 15534).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15950), new NodeId(0, 39), new NodeId(0, 16027).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15950), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15950), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15950), new NodeId(0, 38), new NodeId(0, 15534).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15950), new NodeId(0, 39), new NodeId(0, 16027).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15950), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode466() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14796), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14796), new NodeId(0, 38), new NodeId(0, 14525).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14796), new NodeId(0, 39), new NodeId(0, 14811).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14796), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14796), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14796), new NodeId(0, 38), new NodeId(0, 14525).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14796), new NodeId(0, 39), new NodeId(0, 14811).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14796), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode467() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15589), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15589), new NodeId(0, 38), new NodeId(0, 15487).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15589), new NodeId(0, 39), new NodeId(0, 15591).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15589), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15589), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15589), new NodeId(0, 38), new NodeId(0, 15487).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15589), new NodeId(0, 39), new NodeId(0, 15591).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15589), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode468() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15590), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15590), new NodeId(0, 38), new NodeId(0, 15488).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15590), new NodeId(0, 39), new NodeId(0, 15594).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15590), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15590), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15590), new NodeId(0, 38), new NodeId(0, 15488).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15590), new NodeId(0, 39), new NodeId(0, 15594).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15590), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode469() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15529), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15529), new NodeId(0, 38), new NodeId(0, 15005).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15529), new NodeId(0, 39), new NodeId(0, 15585).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15529), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15529), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15529), new NodeId(0, 38), new NodeId(0, 15005).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15529), new NodeId(0, 39), new NodeId(0, 15585).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15529), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode470() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15531), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15531), new NodeId(0, 38), new NodeId(0, 15006).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15531), new NodeId(0, 39), new NodeId(0, 15588).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15531), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15531), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15531), new NodeId(0, 38), new NodeId(0, 15006).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15531), new NodeId(0, 39), new NodeId(0, 15588).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15531), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode471() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24120), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24120), new NodeId(0, 38), new NodeId(0, 24105).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24120), new NodeId(0, 39), new NodeId(0, 24123).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 24120), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24120), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24120), new NodeId(0, 38), new NodeId(0, 24105).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24120), new NodeId(0, 39), new NodeId(0, 24123).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 24120), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode472() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24121), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24121), new NodeId(0, 38), new NodeId(0, 24106).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24121), new NodeId(0, 39), new NodeId(0, 24126).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 24121), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24121), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24121), new NodeId(0, 38), new NodeId(0, 24106).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24121), new NodeId(0, 39), new NodeId(0, 24126).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 24121), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode473() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24122), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24122), new NodeId(0, 38), new NodeId(0, 24107).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24122), new NodeId(0, 39), new NodeId(0, 24129).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 24122), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24122), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24122), new NodeId(0, 38), new NodeId(0, 24107).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24122), new NodeId(0, 39), new NodeId(0, 24129).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 24122), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode474() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14794), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14794), new NodeId(0, 38), new NodeId(0, 14523).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14794), new NodeId(0, 39), new NodeId(0, 14805).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14794), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14794), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14794), new NodeId(0, 38), new NodeId(0, 14523).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14794), new NodeId(0, 39), new NodeId(0, 14805).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14794), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode475() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14795), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14795), new NodeId(0, 38), new NodeId(0, 14524).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14795), new NodeId(0, 39), new NodeId(0, 14808).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14795), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14795), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14795), new NodeId(0, 38), new NodeId(0, 14524).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14795), new NodeId(0, 39), new NodeId(0, 14808).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14795), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode476() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14803), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14803), new NodeId(0, 38), new NodeId(0, 14593).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14803), new NodeId(0, 39), new NodeId(0, 14832).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14803), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14803), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14803), new NodeId(0, 38), new NodeId(0, 14593).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14803), new NodeId(0, 39), new NodeId(0, 14832).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14803), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode477() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15951), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15951), new NodeId(0, 38), new NodeId(0, 15578).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15951), new NodeId(0, 39), new NodeId(0, 16030).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15951), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15951), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15951), new NodeId(0, 38), new NodeId(0, 15578).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15951), new NodeId(0, 39), new NodeId(0, 16030).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15951), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode478() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15952), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15952), new NodeId(0, 38), new NodeId(0, 15580).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15952), new NodeId(0, 39), new NodeId(0, 16033).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15952), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15952), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15952), new NodeId(0, 38), new NodeId(0, 15580).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15952), new NodeId(0, 39), new NodeId(0, 16033).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15952), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode479() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14319), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14319), new NodeId(0, 38), new NodeId(0, 14273).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14319), new NodeId(0, 39), new NodeId(0, 14320).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14319), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14319), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14319), new NodeId(0, 38), new NodeId(0, 14273).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14319), new NodeId(0, 39), new NodeId(0, 14320).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14319), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode480() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15953), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15953), new NodeId(0, 38), new NodeId(0, 15581).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15953), new NodeId(0, 39), new NodeId(0, 16037).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15953), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15953), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15953), new NodeId(0, 38), new NodeId(0, 15581).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15953), new NodeId(0, 39), new NodeId(0, 16037).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15953), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode481() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15954), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15954), new NodeId(0, 38), new NodeId(0, 15582).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15954), new NodeId(0, 39), new NodeId(0, 16040).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15954), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15954), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15954), new NodeId(0, 38), new NodeId(0, 15582).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15954), new NodeId(0, 39), new NodeId(0, 16040).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15954), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode482() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25545), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25545), new NodeId(0, 38), new NodeId(0, 25269).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25545), new NodeId(0, 39), new NodeId(0, 25549).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 25545), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25545), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25545), new NodeId(0, 38), new NodeId(0, 25269).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25545), new NodeId(0, 39), new NodeId(0, 25549).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 25545), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode483() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15955), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15955), new NodeId(0, 38), new NodeId(0, 15597).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15955), new NodeId(0, 39), new NodeId(0, 16047).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15955), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15955), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15955), new NodeId(0, 38), new NodeId(0, 15597).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15955), new NodeId(0, 39), new NodeId(0, 16047).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15955), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode484() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15956), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15956), new NodeId(0, 38), new NodeId(0, 15598).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15956), new NodeId(0, 39), new NodeId(0, 16050).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15956), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15956), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15956), new NodeId(0, 38), new NodeId(0, 15598).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15956), new NodeId(0, 39), new NodeId(0, 16050).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15956), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode485() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15987), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15987), new NodeId(0, 38), new NodeId(0, 15605).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15987), new NodeId(0, 39), new NodeId(0, 16053).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15987), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15987), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15987), new NodeId(0, 38), new NodeId(0, 15605).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15987), new NodeId(0, 39), new NodeId(0, 16053).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15987), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode486() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15988), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15988), new NodeId(0, 38), new NodeId(0, 15609).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15988), new NodeId(0, 39), new NodeId(0, 16056).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15988), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15988), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15988), new NodeId(0, 38), new NodeId(0, 15609).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15988), new NodeId(0, 39), new NodeId(0, 16056).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15988), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode487() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21174), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21174), new NodeId(0, 38), new NodeId(0, 15480).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21174), new NodeId(0, 39), new NodeId(0, 21180).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 21174), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21174), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21174), new NodeId(0, 38), new NodeId(0, 15480).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21174), new NodeId(0, 39), new NodeId(0, 21180).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 21174), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode488() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15990), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15990), new NodeId(0, 38), new NodeId(0, 15611).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15990), new NodeId(0, 39), new NodeId(0, 16062).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15990), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15990), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15990), new NodeId(0, 38), new NodeId(0, 15611).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15990), new NodeId(0, 39), new NodeId(0, 16062).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15990), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode489() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15991), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15991), new NodeId(0, 38), new NodeId(0, 15616).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15991), new NodeId(0, 39), new NodeId(0, 16065).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15991), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15991), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15991), new NodeId(0, 38), new NodeId(0, 15616).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15991), new NodeId(0, 39), new NodeId(0, 16065).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15991), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode490() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15992), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15992), new NodeId(0, 38), new NodeId(0, 15617).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15992), new NodeId(0, 39), new NodeId(0, 16068).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15992), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15992), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15992), new NodeId(0, 38), new NodeId(0, 15617).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15992), new NodeId(0, 39), new NodeId(0, 16068).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15992), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode491() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15993), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15993), new NodeId(0, 38), new NodeId(0, 15618).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15993), new NodeId(0, 39), new NodeId(0, 16071).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15993), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15993), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15993), new NodeId(0, 38), new NodeId(0, 15618).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15993), new NodeId(0, 39), new NodeId(0, 16071).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15993), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode492() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21175), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21175), new NodeId(0, 38), new NodeId(0, 15502).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21175), new NodeId(0, 39), new NodeId(0, 21183).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 21175), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21175), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21175), new NodeId(0, 38), new NodeId(0, 15502).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21175), new NodeId(0, 39), new NodeId(0, 21183).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 21175), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode493() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21176), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21176), new NodeId(0, 38), new NodeId(0, 15510).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21176), new NodeId(0, 39), new NodeId(0, 21186).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 21176), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21176), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21176), new NodeId(0, 38), new NodeId(0, 15510).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21176), new NodeId(0, 39), new NodeId(0, 21186).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 21176), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode494() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21177), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21177), new NodeId(0, 38), new NodeId(0, 15520).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21177), new NodeId(0, 39), new NodeId(0, 21189).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 21177), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21177), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21177), new NodeId(0, 38), new NodeId(0, 15520).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21177), new NodeId(0, 39), new NodeId(0, 21189).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 21177), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode495() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15995), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15995), new NodeId(0, 38), new NodeId(0, 15621).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15995), new NodeId(0, 39), new NodeId(0, 16077).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15995), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15995), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15995), new NodeId(0, 38), new NodeId(0, 15621).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15995), new NodeId(0, 39), new NodeId(0, 16077).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15995), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode496() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15996), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15996), new NodeId(0, 38), new NodeId(0, 15622).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15996), new NodeId(0, 39), new NodeId(0, 16080).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15996), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15996), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15996), new NodeId(0, 38), new NodeId(0, 15622).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15996), new NodeId(0, 39), new NodeId(0, 16080).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15996), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode497() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16007), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16007), new NodeId(0, 38), new NodeId(0, 15623).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16007), new NodeId(0, 39), new NodeId(0, 16083).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16007), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16007), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16007), new NodeId(0, 38), new NodeId(0, 15623).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16007), new NodeId(0, 39), new NodeId(0, 16083).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16007), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode498() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16008), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16008), new NodeId(0, 38), new NodeId(0, 15628).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16008), new NodeId(0, 39), new NodeId(0, 16086).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16008), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16008), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16008), new NodeId(0, 38), new NodeId(0, 15628).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16008), new NodeId(0, 39), new NodeId(0, 16086).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16008), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode499() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16009), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16009), new NodeId(0, 38), new NodeId(0, 15629).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16009), new NodeId(0, 39), new NodeId(0, 16089).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16009), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16009), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16009), new NodeId(0, 38), new NodeId(0, 15629).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16009), new NodeId(0, 39), new NodeId(0, 16089).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16009), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode500() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16010), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16010), new NodeId(0, 38), new NodeId(0, 15630).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16010), new NodeId(0, 39), new NodeId(0, 16092).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16010), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16010), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16010), new NodeId(0, 38), new NodeId(0, 15630).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16010), new NodeId(0, 39), new NodeId(0, 16092).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16010), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode501() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16011), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16011), new NodeId(0, 38), new NodeId(0, 15631).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16011), new NodeId(0, 39), new NodeId(0, 16095).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16011), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16011), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16011), new NodeId(0, 38), new NodeId(0, 15631).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16011), new NodeId(0, 39), new NodeId(0, 16095).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16011), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode502() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14804), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14804), new NodeId(0, 38), new NodeId(0, 14744).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14804), new NodeId(0, 39), new NodeId(0, 14835).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14804), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14804), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14804), new NodeId(0, 38), new NodeId(0, 14744).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14804), new NodeId(0, 39), new NodeId(0, 14835).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14804), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode503() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16012), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16012), new NodeId(0, 38), new NodeId(0, 15635).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16012), new NodeId(0, 39), new NodeId(0, 16098).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16012), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16012), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16012), new NodeId(0, 38), new NodeId(0, 15635).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16012), new NodeId(0, 39), new NodeId(0, 16098).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16012), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode504() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21178), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21178), new NodeId(0, 38), new NodeId(0, 15530).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21178), new NodeId(0, 39), new NodeId(0, 21192).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 21178), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21178), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21178), new NodeId(0, 38), new NodeId(0, 15530).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21178), new NodeId(0, 39), new NodeId(0, 21192).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 21178), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode505() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23919), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23919), new NodeId(0, 38), new NodeId(0, 23599).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23919), new NodeId(0, 39), new NodeId(0, 23938).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23919), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23919), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23919), new NodeId(0, 38), new NodeId(0, 23599).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23919), new NodeId(0, 39), new NodeId(0, 23938).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23919), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode506() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23920), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23920), new NodeId(0, 38), new NodeId(0, 23600).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23920), new NodeId(0, 39), new NodeId(0, 23941).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23920), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23920), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23920), new NodeId(0, 38), new NodeId(0, 23600).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23920), new NodeId(0, 39), new NodeId(0, 23941).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23920), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode507() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23921), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23921), new NodeId(0, 38), new NodeId(0, 23601).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23921), new NodeId(0, 39), new NodeId(0, 23944).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23921), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23921), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23921), new NodeId(0, 38), new NodeId(0, 23601).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23921), new NodeId(0, 39), new NodeId(0, 23944).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23921), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode508() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25546), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25546), new NodeId(0, 38), new NodeId(0, 25270).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25546), new NodeId(0, 39), new NodeId(0, 25552).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 25546), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25546), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25546), new NodeId(0, 38), new NodeId(0, 25270).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25546), new NodeId(0, 39), new NodeId(0, 25552).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 25546), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode509() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23922), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23922), new NodeId(0, 38), new NodeId(0, 23602).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23922), new NodeId(0, 39), new NodeId(0, 23947).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23922), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23922), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23922), new NodeId(0, 38), new NodeId(0, 23602).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23922), new NodeId(0, 39), new NodeId(0, 23947).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23922), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode510() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16014), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16014), new NodeId(0, 38), new NodeId(0, 15645).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16014), new NodeId(0, 39), new NodeId(0, 16104).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16014), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16014), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16014), new NodeId(0, 38), new NodeId(0, 15645).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16014), new NodeId(0, 39), new NodeId(0, 16104).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16014), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode511() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16015), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16015), new NodeId(0, 38), new NodeId(0, 15652).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16015), new NodeId(0, 39), new NodeId(0, 16107).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16015), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16015), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16015), new NodeId(0, 38), new NodeId(0, 15652).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16015), new NodeId(0, 39), new NodeId(0, 16107).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16015), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode512() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16016), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16016), new NodeId(0, 38), new NodeId(0, 15653).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16016), new NodeId(0, 39), new NodeId(0, 16110).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16016), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16016), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16016), new NodeId(0, 38), new NodeId(0, 15653).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16016), new NodeId(0, 39), new NodeId(0, 16110).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16016), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode513() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16017), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16017), new NodeId(0, 38), new NodeId(0, 15657).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16017), new NodeId(0, 39), new NodeId(0, 16113).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16017), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16017), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16017), new NodeId(0, 38), new NodeId(0, 15657).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16017), new NodeId(0, 39), new NodeId(0, 16113).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16017), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode514() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16018), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16018), new NodeId(0, 38), new NodeId(0, 15664).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16018), new NodeId(0, 39), new NodeId(0, 16116).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16018), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16018), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16018), new NodeId(0, 38), new NodeId(0, 15664).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16018), new NodeId(0, 39), new NodeId(0, 16116).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16018), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode515() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16019), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16019), new NodeId(0, 38), new NodeId(0, 15665).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16019), new NodeId(0, 39), new NodeId(0, 16119).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16019), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16019), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16019), new NodeId(0, 38), new NodeId(0, 15665).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16019), new NodeId(0, 39), new NodeId(0, 16119).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16019), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode516() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23923), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23923), new NodeId(0, 38), new NodeId(0, 23603).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23923), new NodeId(0, 39), new NodeId(0, 23950).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23923), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23923), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23923), new NodeId(0, 38), new NodeId(0, 23603).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23923), new NodeId(0, 39), new NodeId(0, 23950).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23923), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode517() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23924), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23924), new NodeId(0, 38), new NodeId(0, 23604).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23924), new NodeId(0, 39), new NodeId(0, 23953).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23924), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23924), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23924), new NodeId(0, 38), new NodeId(0, 23604).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23924), new NodeId(0, 39), new NodeId(0, 23953).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23924), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode518() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23925), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23925), new NodeId(0, 38), new NodeId(0, 23605).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23925), new NodeId(0, 39), new NodeId(0, 23956).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23925), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23925), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23925), new NodeId(0, 38), new NodeId(0, 23605).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23925), new NodeId(0, 39), new NodeId(0, 23956).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23925), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode519() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23928), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23928), new NodeId(0, 38), new NodeId(0, 23608).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23928), new NodeId(0, 39), new NodeId(0, 23965).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23928), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23928), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23928), new NodeId(0, 38), new NodeId(0, 23608).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23928), new NodeId(0, 39), new NodeId(0, 23965).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23928), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode520() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23929), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23929), new NodeId(0, 38), new NodeId(0, 23609).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23929), new NodeId(0, 39), new NodeId(0, 23968).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23929), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23929), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23929), new NodeId(0, 38), new NodeId(0, 23609).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23929), new NodeId(0, 39), new NodeId(0, 23968).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23929), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode521() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17472), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 17472), new NodeId(0, 38), new NodeId(0, 17467).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 17472), new NodeId(0, 39), new NodeId(0, 17473).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 17472), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17472), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 17472), new NodeId(0, 38), new NodeId(0, 17467).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 17472), new NodeId(0, 39), new NodeId(0, 17473).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 17472), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode522() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23932), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23932), new NodeId(0, 38), new NodeId(0, 23612).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23932), new NodeId(0, 39), new NodeId(0, 23977).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23932), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23932), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23932), new NodeId(0, 38), new NodeId(0, 23612).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23932), new NodeId(0, 39), new NodeId(0, 23977).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23932), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode523() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21179), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21179), new NodeId(0, 38), new NodeId(0, 15532).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21179), new NodeId(0, 39), new NodeId(0, 21195).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 21179), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21179), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21179), new NodeId(0, 38), new NodeId(0, 15532).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21179), new NodeId(0, 39), new NodeId(0, 21195).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 21179), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode524() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23933), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23933), new NodeId(0, 38), new NodeId(0, 23613).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23933), new NodeId(0, 39), new NodeId(0, 23980).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23933), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23933), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23933), new NodeId(0, 38), new NodeId(0, 23613).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23933), new NodeId(0, 39), new NodeId(0, 23980).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23933), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode525() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23934), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23934), new NodeId(0, 38), new NodeId(0, 23614).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23934), new NodeId(0, 39), new NodeId(0, 23983).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23934), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23934), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23934), new NodeId(0, 38), new NodeId(0, 23614).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23934), new NodeId(0, 39), new NodeId(0, 23983).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23934), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode526() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15579), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15579), new NodeId(0, 38), new NodeId(0, 15007).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15579), new NodeId(0, 39), new NodeId(0, 15640).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 15579), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15579), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15579), new NodeId(0, 38), new NodeId(0, 15007).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15579), new NodeId(0, 39), new NodeId(0, 15640).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 15579), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode527() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16021), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16021), new NodeId(0, 38), new NodeId(0, 15667).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16021), new NodeId(0, 39), new NodeId(0, 16125).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16021), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16021), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16021), new NodeId(0, 38), new NodeId(0, 15667).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16021), new NodeId(0, 39), new NodeId(0, 16125).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16021), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode528() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16022), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16022), new NodeId(0, 38), new NodeId(0, 15669).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16022), new NodeId(0, 39), new NodeId(0, 16144).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16022), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16022), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16022), new NodeId(0, 38), new NodeId(0, 15669).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16022), new NodeId(0, 39), new NodeId(0, 16144).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16022), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode529() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16023), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16023), new NodeId(0, 38), new NodeId(0, 15670).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16023), new NodeId(0, 39), new NodeId(0, 16147).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16023), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16023), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16023), new NodeId(0, 38), new NodeId(0, 15670).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16023), new NodeId(0, 39), new NodeId(0, 16147).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16023), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode530() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25547), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25547), new NodeId(0, 38), new NodeId(0, 25519).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25547), new NodeId(0, 39), new NodeId(0, 25555).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 25547), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25547), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25547), new NodeId(0, 38), new NodeId(0, 25519).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25547), new NodeId(0, 39), new NodeId(0, 25555).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 25547), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode531() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25548), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25548), new NodeId(0, 38), new NodeId(0, 25520).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25548), new NodeId(0, 39), new NodeId(0, 25558).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 25548), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25548), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25548), new NodeId(0, 38), new NodeId(0, 25520).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25548), new NodeId(0, 39), new NodeId(0, 25558).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 25548), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode532() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23505), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23505), new NodeId(0, 38), new NodeId(0, 23468).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23505), new NodeId(0, 39), new NodeId(0, 23508).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 23505), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23505), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23505), new NodeId(0, 38), new NodeId(0, 23468).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23505), new NodeId(0, 39), new NodeId(0, 23508).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 23505), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode533() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24296), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24296), new NodeId(0, 38), new NodeId(0, 24281).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24296), new NodeId(0, 39), new NodeId(0, 24297).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 24296), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24296), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24296), new NodeId(0, 38), new NodeId(0, 24281).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24296), new NodeId(0, 39), new NodeId(0, 24297).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 24296), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode534() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25243), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25243), new NodeId(0, 38), new NodeId(0, 25220).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25243), new NodeId(0, 39), new NodeId(0, 25244).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 25243), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25243), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25243), new NodeId(0, 38), new NodeId(0, 25220).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25243), new NodeId(0, 39), new NodeId(0, 25244).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 25243), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode535() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16126), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16126), new NodeId(0, 38), new NodeId(0, 96).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16126), new NodeId(0, 39), new NodeId(0, 16127).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 16126), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16126), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16126), new NodeId(0, 38), new NodeId(0, 96).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16126), new NodeId(0, 39), new NodeId(0, 16127).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 16126), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode536() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14797), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14797), new NodeId(0, 38), new NodeId(0, 97).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14797), new NodeId(0, 39), new NodeId(0, 18166).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14797), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14797), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14797), new NodeId(0, 38), new NodeId(0, 97).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14797), new NodeId(0, 39), new NodeId(0, 18166).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14797), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode537() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14800), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14800), new NodeId(0, 38), new NodeId(0, 101).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14800), new NodeId(0, 39), new NodeId(0, 18169).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14800), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14800), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14800), new NodeId(0, 38), new NodeId(0, 101).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14800), new NodeId(0, 39), new NodeId(0, 18169).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14800), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode538() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14798), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14798), new NodeId(0, 38), new NodeId(0, 99).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14798), new NodeId(0, 39), new NodeId(0, 18172).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14798), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14798), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14798), new NodeId(0, 38), new NodeId(0, 99).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14798), new NodeId(0, 39), new NodeId(0, 18172).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14798), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode539() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14799), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14799), new NodeId(0, 38), new NodeId(0, 100).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14799), new NodeId(0, 39), new NodeId(0, 18175).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14799), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14799), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14799), new NodeId(0, 38), new NodeId(0, 100).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14799), new NodeId(0, 39), new NodeId(0, 18175).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14799), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode540() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 297), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 38), new NodeId(0, 296).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 39), new NodeId(0, 8285).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 297), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 38), new NodeId(0, 296).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 39), new NodeId(0, 8285).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode541() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 7616), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 38), new NodeId(0, 7594).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 39), new NodeId(0, 8291).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 7616), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 38), new NodeId(0, 7594).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 39), new NodeId(0, 8291).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode542() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14801), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14801), new NodeId(0, 38), new NodeId(0, 102).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 14801), new NodeId(0, 39), new NodeId(0, 14826).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 14801), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 14801), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 14801), new NodeId(0, 38), new NodeId(0, 102).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 14801), new NodeId(0, 39), new NodeId(0, 14826).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 14801), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode543() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12757), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 38), new NodeId(0, 12755).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 39), new NodeId(0, 12759).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12757), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 38), new NodeId(0, 12755).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 39), new NodeId(0, 12759).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode544() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 8913), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 38), new NodeId(0, 8912).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 39), new NodeId(0, 8918).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 8913), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 38), new NodeId(0, 8912).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 39), new NodeId(0, 8918).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode545() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 309), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 38), new NodeId(0, 308).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 39), new NodeId(0, 8300).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 309), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 38), new NodeId(0, 308).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 39), new NodeId(0, 8300).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode546() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12195), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 38), new NodeId(0, 12189).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 39), new NodeId(0, 12201).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12195), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 38), new NodeId(0, 12189).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 39), new NodeId(0, 12201).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode547() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 305), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 38), new NodeId(0, 304).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 39), new NodeId(0, 8297).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 305), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 38), new NodeId(0, 304).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 39), new NodeId(0, 8297).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode548() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 313), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 38), new NodeId(0, 312).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 39), new NodeId(0, 8303).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 313), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 38), new NodeId(0, 312).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 39), new NodeId(0, 8303).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode549() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 433), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 38), new NodeId(0, 432).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 39), new NodeId(0, 8417).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 433), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 38), new NodeId(0, 432).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 39), new NodeId(0, 8417).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode550() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12892), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 38), new NodeId(0, 12890).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 39), new NodeId(0, 12894).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12892), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 38), new NodeId(0, 12890).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 39), new NodeId(0, 12894).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode551() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12893), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 38), new NodeId(0, 12891).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 39), new NodeId(0, 12897).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12893), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 38), new NodeId(0, 12891).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 39), new NodeId(0, 12897).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode552() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 345), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 38), new NodeId(0, 344).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 39), new NodeId(0, 8333).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 345), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 38), new NodeId(0, 344).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 39), new NodeId(0, 8333).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode553() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 317), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 38), new NodeId(0, 316).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 39), new NodeId(0, 8306).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 317), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 38), new NodeId(0, 316).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 39), new NodeId(0, 8306).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode554() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 320), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 38), new NodeId(0, 319).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 39), new NodeId(0, 8309).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 320), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 38), new NodeId(0, 319).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 39), new NodeId(0, 8309).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode555() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 323), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 38), new NodeId(0, 322).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 39), new NodeId(0, 8312).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 323), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 38), new NodeId(0, 322).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 39), new NodeId(0, 8312).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode556() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 326), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 38), new NodeId(0, 325).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 39), new NodeId(0, 8315).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 326), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 38), new NodeId(0, 325).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 39), new NodeId(0, 8315).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode557() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 939), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 38), new NodeId(0, 938).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 39), new NodeId(0, 8318).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 939), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 38), new NodeId(0, 938).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 39), new NodeId(0, 8318).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode558() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 377), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 38), new NodeId(0, 376).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 39), new NodeId(0, 8363).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 377), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 38), new NodeId(0, 376).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 39), new NodeId(0, 8363).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode559() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 380), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 38), new NodeId(0, 379).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 39), new NodeId(0, 8366).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 380), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 38), new NodeId(0, 379).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 39), new NodeId(0, 8366).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode560() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 383), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 38), new NodeId(0, 382).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 39), new NodeId(0, 8369).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 383), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 38), new NodeId(0, 382).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 39), new NodeId(0, 8369).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode561() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 386), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 38), new NodeId(0, 385).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 39), new NodeId(0, 8372).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 386), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 38), new NodeId(0, 385).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 39), new NodeId(0, 8372).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode562() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 538), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 38), new NodeId(0, 537).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 39), new NodeId(0, 12712).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 538), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 38), new NodeId(0, 537).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 39), new NodeId(0, 12712).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode563() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 541), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 38), new NodeId(0, 540).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 39), new NodeId(0, 12715).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 541), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 38), new NodeId(0, 540).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 39), new NodeId(0, 12715).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode564() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 332), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 38), new NodeId(0, 331).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 39), new NodeId(0, 8321).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 332), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 38), new NodeId(0, 331).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 39), new NodeId(0, 8321).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode565() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 584), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 38), new NodeId(0, 583).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 39), new NodeId(0, 8564).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 584), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 38), new NodeId(0, 583).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 39), new NodeId(0, 8564).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode566() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 587), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 38), new NodeId(0, 586).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 39), new NodeId(0, 8567).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 587), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 38), new NodeId(0, 586).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 39), new NodeId(0, 8567).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode567() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 590), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 38), new NodeId(0, 589).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 39), new NodeId(0, 8570).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 590), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 38), new NodeId(0, 589).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 39), new NodeId(0, 8570).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode568() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 593), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 38), new NodeId(0, 592).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 39), new NodeId(0, 8573).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 593), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 38), new NodeId(0, 592).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 39), new NodeId(0, 8573).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode569() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 596), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 38), new NodeId(0, 595).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 39), new NodeId(0, 8576).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 596), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 38), new NodeId(0, 595).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 39), new NodeId(0, 8576).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode570() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 599), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 38), new NodeId(0, 598).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 39), new NodeId(0, 8579).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 599), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 38), new NodeId(0, 598).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 39), new NodeId(0, 8579).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode571() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 602), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 38), new NodeId(0, 601).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 39), new NodeId(0, 8582).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 602), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 38), new NodeId(0, 601).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 39), new NodeId(0, 8582).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode572() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 660), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 38), new NodeId(0, 659).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 39), new NodeId(0, 8639).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 660), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 38), new NodeId(0, 659).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 39), new NodeId(0, 8639).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode573() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 720), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 38), new NodeId(0, 719).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 39), new NodeId(0, 8702).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 720), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 38), new NodeId(0, 719).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 39), new NodeId(0, 8702).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode574() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 726), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 38), new NodeId(0, 725).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 39), new NodeId(0, 8708).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 726), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 38), new NodeId(0, 725).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 39), new NodeId(0, 8708).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode575() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 949), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 38), new NodeId(0, 948).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 39), new NodeId(0, 8711).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 949), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 38), new NodeId(0, 948).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 39), new NodeId(0, 8711).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode576() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 921), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 38), new NodeId(0, 920).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 39), new NodeId(0, 8807).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 921), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 38), new NodeId(0, 920).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 39), new NodeId(0, 8807).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode577() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 339), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 38), new NodeId(0, 338).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 39), new NodeId(0, 8327).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 339), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 38), new NodeId(0, 338).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 39), new NodeId(0, 8327).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode578() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 854), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 38), new NodeId(0, 853).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 39), new NodeId(0, 8843).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 854), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 38), new NodeId(0, 853).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 39), new NodeId(0, 8843).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode579() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11949), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 38), new NodeId(0, 11943).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 39), new NodeId(0, 11951).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11949), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 38), new NodeId(0, 11943).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 39), new NodeId(0, 11951).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode580() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11950), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 38), new NodeId(0, 11944).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 39), new NodeId(0, 11954).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11950), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 38), new NodeId(0, 11944).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 39), new NodeId(0, 11954).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode581() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 857), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 38), new NodeId(0, 856).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 39), new NodeId(0, 8846).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 857), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 38), new NodeId(0, 856).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 39), new NodeId(0, 8846).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode582() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 860), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 38), new NodeId(0, 859).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 39), new NodeId(0, 8849).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 860), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 38), new NodeId(0, 859).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 39), new NodeId(0, 8849).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode583() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 863), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 38), new NodeId(0, 862).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 39), new NodeId(0, 8852).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 863), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 38), new NodeId(0, 862).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 39), new NodeId(0, 8852).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode584() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 866), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 38), new NodeId(0, 865).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 39), new NodeId(0, 8855).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 866), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 38), new NodeId(0, 865).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 39), new NodeId(0, 8855).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode585() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 869), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 38), new NodeId(0, 868).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 39), new NodeId(0, 8858).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 869), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 38), new NodeId(0, 868).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 39), new NodeId(0, 8858).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode586() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 872), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 38), new NodeId(0, 871).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 39), new NodeId(0, 8861).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 872), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 38), new NodeId(0, 871).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 39), new NodeId(0, 8861).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode587() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 300), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 38), new NodeId(0, 299).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 39), new NodeId(0, 8294).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 300), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 38), new NodeId(0, 299).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 39), new NodeId(0, 8294).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode588() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 875), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 38), new NodeId(0, 874).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 39), new NodeId(0, 8864).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 875), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 38), new NodeId(0, 874).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 39), new NodeId(0, 8864).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode589() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 878), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 38), new NodeId(0, 877).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 39), new NodeId(0, 8867).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 878), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 38), new NodeId(0, 877).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 39), new NodeId(0, 8867).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode590() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 898), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 38), new NodeId(0, 897).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 39), new NodeId(0, 8870).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 898), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 38), new NodeId(0, 897).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 39), new NodeId(0, 8870).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode591() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 885), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 38), new NodeId(0, 884).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 39), new NodeId(0, 8873).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 885), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 38), new NodeId(0, 884).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 39), new NodeId(0, 8873).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode592() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 888), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 38), new NodeId(0, 887).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 39), new NodeId(0, 8876).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 888), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 38), new NodeId(0, 887).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 39), new NodeId(0, 8876).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode593() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12173), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 38), new NodeId(0, 12171).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 39), new NodeId(0, 12175).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12173), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 38), new NodeId(0, 12171).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 39), new NodeId(0, 12175).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode594() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12174), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 38), new NodeId(0, 12172).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 39), new NodeId(0, 12178).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12174), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 38), new NodeId(0, 12172).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 39), new NodeId(0, 12178).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode595() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12081), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 38), new NodeId(0, 12079).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 39), new NodeId(0, 12083).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12081), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 38), new NodeId(0, 12079).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 39), new NodeId(0, 12083).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode596() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12082), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 38), new NodeId(0, 12080).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 39), new NodeId(0, 12086).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12082), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 38), new NodeId(0, 12080).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 39), new NodeId(0, 12086).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode597() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 895), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 38), new NodeId(0, 894).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 39), new NodeId(0, 8882).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 895), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 38), new NodeId(0, 894).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 39), new NodeId(0, 8882).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode598() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24038), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24038), new NodeId(0, 38), new NodeId(0, 24033).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24038), new NodeId(0, 39), new NodeId(0, 24039).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 24038), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24038), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24038), new NodeId(0, 38), new NodeId(0, 24033).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24038), new NodeId(0, 39), new NodeId(0, 24039).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 24038), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode599() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 892), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 38), new NodeId(0, 891).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 39), new NodeId(0, 8879).expanded(), true));
-        node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.XML_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 892), new QualifiedName(0, "Default XML"), new LocalizedText("", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 38), new NodeId(0, 891).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 39), new NodeId(0, 8879).expanded(), true));
+            node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode600() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15085), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15085), new NodeId(0, 38), new NodeId(0, 12756).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15085), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15085), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15085), new NodeId(0, 38), new NodeId(0, 12756).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15085), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode601() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15041), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15041), new NodeId(0, 38), new NodeId(0, 14533).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15041), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15041), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15041), new NodeId(0, 38), new NodeId(0, 14533).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15041), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode602() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17547), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 17547), new NodeId(0, 38), new NodeId(0, 16313).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 17547), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17547), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 17547), new NodeId(0, 38), new NodeId(0, 16313).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 17547), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode603() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17557), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 17557), new NodeId(0, 38), new NodeId(0, 17548).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 17557), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17557), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 17557), new NodeId(0, 38), new NodeId(0, 17548).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 17557), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode604() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16150), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16150), new NodeId(0, 38), new NodeId(0, 15528).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16150), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16150), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16150), new NodeId(0, 38), new NodeId(0, 15528).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16150), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode605() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19064), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19064), new NodeId(0, 38), new NodeId(0, 18806).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19064), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19064), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19064), new NodeId(0, 38), new NodeId(0, 18806).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19064), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode606() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19065), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19065), new NodeId(0, 38), new NodeId(0, 18807).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19065), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19065), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19065), new NodeId(0, 38), new NodeId(0, 18807).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19065), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode607() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19066), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19066), new NodeId(0, 38), new NodeId(0, 18808).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19066), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19066), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19066), new NodeId(0, 38), new NodeId(0, 18808).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19066), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode608() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19067), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19067), new NodeId(0, 38), new NodeId(0, 18809).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19067), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19067), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19067), new NodeId(0, 38), new NodeId(0, 18809).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19067), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode609() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19068), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19068), new NodeId(0, 38), new NodeId(0, 18810).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19068), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19068), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19068), new NodeId(0, 38), new NodeId(0, 18810).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19068), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode610() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19069), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19069), new NodeId(0, 38), new NodeId(0, 18811).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19069), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19069), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19069), new NodeId(0, 38), new NodeId(0, 18811).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19069), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode611() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19070), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19070), new NodeId(0, 38), new NodeId(0, 18812).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19070), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19070), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19070), new NodeId(0, 38), new NodeId(0, 18812).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19070), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode612() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19071), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19071), new NodeId(0, 38), new NodeId(0, 18813).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19071), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19071), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19071), new NodeId(0, 38), new NodeId(0, 18813).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19071), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode613() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19072), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 19072), new NodeId(0, 38), new NodeId(0, 18814).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 19072), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 19072), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 19072), new NodeId(0, 38), new NodeId(0, 18814).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 19072), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode614() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15042), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15042), new NodeId(0, 38), new NodeId(0, 15634).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15042), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15042), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15042), new NodeId(0, 38), new NodeId(0, 15634).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15042), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode615() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23528), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23528), new NodeId(0, 38), new NodeId(0, 23498).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23528), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23528), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23528), new NodeId(0, 38), new NodeId(0, 23498).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23528), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode616() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15044), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15044), new NodeId(0, 38), new NodeId(0, 12554).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15044), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15044), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15044), new NodeId(0, 38), new NodeId(0, 12554).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15044), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode617() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16151), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16151), new NodeId(0, 38), new NodeId(0, 15534).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16151), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16151), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16151), new NodeId(0, 38), new NodeId(0, 15534).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16151), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode618() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15057), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15057), new NodeId(0, 38), new NodeId(0, 14525).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15057), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15057), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15057), new NodeId(0, 38), new NodeId(0, 14525).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15057), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode619() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15058), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15058), new NodeId(0, 38), new NodeId(0, 15487).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15058), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15058), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15058), new NodeId(0, 38), new NodeId(0, 15487).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15058), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode620() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15059), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15059), new NodeId(0, 38), new NodeId(0, 15488).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15059), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15059), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15059), new NodeId(0, 38), new NodeId(0, 15488).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15059), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode621() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15700), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15700), new NodeId(0, 38), new NodeId(0, 15005).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15700), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15700), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15700), new NodeId(0, 38), new NodeId(0, 15005).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15700), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode622() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15714), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15714), new NodeId(0, 38), new NodeId(0, 15006).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15714), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15714), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15714), new NodeId(0, 38), new NodeId(0, 15006).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15714), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode623() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24132), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24132), new NodeId(0, 38), new NodeId(0, 24105).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24132), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24132), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24132), new NodeId(0, 38), new NodeId(0, 24105).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24132), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode624() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24133), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24133), new NodeId(0, 38), new NodeId(0, 24106).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24133), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24133), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24133), new NodeId(0, 38), new NodeId(0, 24106).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24133), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode625() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24134), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24134), new NodeId(0, 38), new NodeId(0, 24107).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24134), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24134), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24134), new NodeId(0, 38), new NodeId(0, 24107).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24134), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode626() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15050), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15050), new NodeId(0, 38), new NodeId(0, 14523).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15050), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15050), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15050), new NodeId(0, 38), new NodeId(0, 14523).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15050), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode627() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15051), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15051), new NodeId(0, 38), new NodeId(0, 14524).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15051), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15051), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15051), new NodeId(0, 38), new NodeId(0, 14524).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15051), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode628() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15049), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15049), new NodeId(0, 38), new NodeId(0, 14593).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15049), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15049), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15049), new NodeId(0, 38), new NodeId(0, 14593).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15049), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode629() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16152), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16152), new NodeId(0, 38), new NodeId(0, 15578).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16152), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16152), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16152), new NodeId(0, 38), new NodeId(0, 15578).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16152), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode630() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16153), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16153), new NodeId(0, 38), new NodeId(0, 15580).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16153), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16153), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16153), new NodeId(0, 38), new NodeId(0, 15580).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16153), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode631() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15060), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15060), new NodeId(0, 38), new NodeId(0, 14273).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15060), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15060), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15060), new NodeId(0, 38), new NodeId(0, 14273).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15060), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode632() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16154), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16154), new NodeId(0, 38), new NodeId(0, 15581).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16154), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16154), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16154), new NodeId(0, 38), new NodeId(0, 15581).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16154), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode633() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16155), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16155), new NodeId(0, 38), new NodeId(0, 15582).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16155), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16155), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16155), new NodeId(0, 38), new NodeId(0, 15582).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16155), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode634() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25561), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25561), new NodeId(0, 38), new NodeId(0, 25269).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25561), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25561), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25561), new NodeId(0, 38), new NodeId(0, 25269).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25561), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode635() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16156), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16156), new NodeId(0, 38), new NodeId(0, 15597).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16156), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16156), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16156), new NodeId(0, 38), new NodeId(0, 15597).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16156), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode636() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16157), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16157), new NodeId(0, 38), new NodeId(0, 15598).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16157), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16157), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16157), new NodeId(0, 38), new NodeId(0, 15598).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16157), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode637() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16158), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16158), new NodeId(0, 38), new NodeId(0, 15605).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16158), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16158), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16158), new NodeId(0, 38), new NodeId(0, 15605).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16158), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode638() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16159), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16159), new NodeId(0, 38), new NodeId(0, 15609).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16159), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16159), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16159), new NodeId(0, 38), new NodeId(0, 15609).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16159), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode639() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21198), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21198), new NodeId(0, 38), new NodeId(0, 15480).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21198), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21198), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21198), new NodeId(0, 38), new NodeId(0, 15480).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21198), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode640() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16161), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16161), new NodeId(0, 38), new NodeId(0, 15611).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16161), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16161), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16161), new NodeId(0, 38), new NodeId(0, 15611).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16161), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode641() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16280), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16280), new NodeId(0, 38), new NodeId(0, 15616).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16280), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16280), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16280), new NodeId(0, 38), new NodeId(0, 15616).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16280), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode642() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16281), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16281), new NodeId(0, 38), new NodeId(0, 15617).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16281), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16281), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16281), new NodeId(0, 38), new NodeId(0, 15617).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16281), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode643() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16282), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16282), new NodeId(0, 38), new NodeId(0, 15618).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16282), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16282), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16282), new NodeId(0, 38), new NodeId(0, 15618).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16282), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode644() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21199), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21199), new NodeId(0, 38), new NodeId(0, 15502).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21199), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21199), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21199), new NodeId(0, 38), new NodeId(0, 15502).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21199), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode645() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21200), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21200), new NodeId(0, 38), new NodeId(0, 15510).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21200), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21200), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21200), new NodeId(0, 38), new NodeId(0, 15510).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21200), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode646() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21201), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21201), new NodeId(0, 38), new NodeId(0, 15520).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21201), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21201), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21201), new NodeId(0, 38), new NodeId(0, 15520).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21201), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode647() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16284), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16284), new NodeId(0, 38), new NodeId(0, 15621).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16284), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16284), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16284), new NodeId(0, 38), new NodeId(0, 15621).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16284), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode648() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16285), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16285), new NodeId(0, 38), new NodeId(0, 15622).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16285), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16285), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16285), new NodeId(0, 38), new NodeId(0, 15622).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16285), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode649() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16286), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16286), new NodeId(0, 38), new NodeId(0, 15623).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16286), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16286), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16286), new NodeId(0, 38), new NodeId(0, 15623).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16286), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode650() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16287), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16287), new NodeId(0, 38), new NodeId(0, 15628).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16287), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16287), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16287), new NodeId(0, 38), new NodeId(0, 15628).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16287), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode651() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16288), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16288), new NodeId(0, 38), new NodeId(0, 15629).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16288), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16288), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16288), new NodeId(0, 38), new NodeId(0, 15629).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16288), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode652() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16308), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16308), new NodeId(0, 38), new NodeId(0, 15630).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16308), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16308), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16308), new NodeId(0, 38), new NodeId(0, 15630).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16308), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode653() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16310), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16310), new NodeId(0, 38), new NodeId(0, 15631).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16310), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16310), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16310), new NodeId(0, 38), new NodeId(0, 15631).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16310), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode654() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15061), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15061), new NodeId(0, 38), new NodeId(0, 14744).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15061), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15061), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15061), new NodeId(0, 38), new NodeId(0, 14744).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15061), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode655() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16311), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16311), new NodeId(0, 38), new NodeId(0, 15635).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16311), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16311), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16311), new NodeId(0, 38), new NodeId(0, 15635).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16311), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode656() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21202), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21202), new NodeId(0, 38), new NodeId(0, 15530).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21202), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21202), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21202), new NodeId(0, 38), new NodeId(0, 15530).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21202), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode657() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23987), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23987), new NodeId(0, 38), new NodeId(0, 23599).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23987), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23987), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23987), new NodeId(0, 38), new NodeId(0, 23599).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23987), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode658() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23988), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23988), new NodeId(0, 38), new NodeId(0, 23600).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23988), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23988), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23988), new NodeId(0, 38), new NodeId(0, 23600).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23988), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode659() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23989), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23989), new NodeId(0, 38), new NodeId(0, 23601).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23989), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23989), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23989), new NodeId(0, 38), new NodeId(0, 23601).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23989), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode660() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25562), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25562), new NodeId(0, 38), new NodeId(0, 25270).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25562), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25562), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25562), new NodeId(0, 38), new NodeId(0, 25270).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25562), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode661() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23990), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23990), new NodeId(0, 38), new NodeId(0, 23602).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23990), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23990), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23990), new NodeId(0, 38), new NodeId(0, 23602).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23990), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode662() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16323), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16323), new NodeId(0, 38), new NodeId(0, 15645).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16323), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16323), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16323), new NodeId(0, 38), new NodeId(0, 15645).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16323), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode663() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16391), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16391), new NodeId(0, 38), new NodeId(0, 15652).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16391), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16391), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16391), new NodeId(0, 38), new NodeId(0, 15652).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16391), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode664() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16392), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16392), new NodeId(0, 38), new NodeId(0, 15653).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16392), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16392), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16392), new NodeId(0, 38), new NodeId(0, 15653).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16392), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode665() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16393), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16393), new NodeId(0, 38), new NodeId(0, 15657).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16393), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16393), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16393), new NodeId(0, 38), new NodeId(0, 15657).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16393), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode666() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16394), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16394), new NodeId(0, 38), new NodeId(0, 15664).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16394), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16394), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16394), new NodeId(0, 38), new NodeId(0, 15664).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16394), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode667() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16404), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16404), new NodeId(0, 38), new NodeId(0, 15665).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16404), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16404), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16404), new NodeId(0, 38), new NodeId(0, 15665).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16404), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode668() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23991), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23991), new NodeId(0, 38), new NodeId(0, 23603).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23991), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23991), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23991), new NodeId(0, 38), new NodeId(0, 23603).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23991), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode669() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23992), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23992), new NodeId(0, 38), new NodeId(0, 23604).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23992), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23992), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23992), new NodeId(0, 38), new NodeId(0, 23604).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23992), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode670() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23993), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23993), new NodeId(0, 38), new NodeId(0, 23605).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23993), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23993), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23993), new NodeId(0, 38), new NodeId(0, 23605).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23993), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode671() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23996), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23996), new NodeId(0, 38), new NodeId(0, 23608).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23996), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23996), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23996), new NodeId(0, 38), new NodeId(0, 23608).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23996), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode672() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23997), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23997), new NodeId(0, 38), new NodeId(0, 23609).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23997), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23997), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23997), new NodeId(0, 38), new NodeId(0, 23609).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23997), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode673() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17476), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 17476), new NodeId(0, 38), new NodeId(0, 17467).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 17476), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 17476), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 17476), new NodeId(0, 38), new NodeId(0, 17467).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 17476), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode674() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24000), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24000), new NodeId(0, 38), new NodeId(0, 23612).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24000), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24000), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24000), new NodeId(0, 38), new NodeId(0, 23612).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24000), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode675() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21203), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 21203), new NodeId(0, 38), new NodeId(0, 15532).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 21203), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 21203), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 21203), new NodeId(0, 38), new NodeId(0, 15532).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 21203), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode676() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24001), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24001), new NodeId(0, 38), new NodeId(0, 23613).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24001), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24001), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24001), new NodeId(0, 38), new NodeId(0, 23613).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24001), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode677() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24002), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24002), new NodeId(0, 38), new NodeId(0, 23614).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24002), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24002), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24002), new NodeId(0, 38), new NodeId(0, 23614).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24002), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode678() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15726), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15726), new NodeId(0, 38), new NodeId(0, 15007).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15726), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15726), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15726), new NodeId(0, 38), new NodeId(0, 15007).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15726), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode679() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16524), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16524), new NodeId(0, 38), new NodeId(0, 15667).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16524), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16524), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16524), new NodeId(0, 38), new NodeId(0, 15667).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16524), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode680() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16525), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16525), new NodeId(0, 38), new NodeId(0, 15669).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16525), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16525), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16525), new NodeId(0, 38), new NodeId(0, 15669).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16525), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode681() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16526), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 16526), new NodeId(0, 38), new NodeId(0, 15670).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 16526), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 16526), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 16526), new NodeId(0, 38), new NodeId(0, 15670).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 16526), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode682() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25563), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25563), new NodeId(0, 38), new NodeId(0, 25519).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25563), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25563), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25563), new NodeId(0, 38), new NodeId(0, 25519).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25563), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode683() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25564), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25564), new NodeId(0, 38), new NodeId(0, 25520).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25564), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25564), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25564), new NodeId(0, 38), new NodeId(0, 25520).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25564), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode684() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23511), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 23511), new NodeId(0, 38), new NodeId(0, 23468).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 23511), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 23511), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 23511), new NodeId(0, 38), new NodeId(0, 23468).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 23511), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode685() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24300), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24300), new NodeId(0, 38), new NodeId(0, 24281).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24300), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24300), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24300), new NodeId(0, 38), new NodeId(0, 24281).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24300), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode686() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25247), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 25247), new NodeId(0, 38), new NodeId(0, 25220).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 25247), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 25247), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 25247), new NodeId(0, 38), new NodeId(0, 25220).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 25247), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode687() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15062), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15062), new NodeId(0, 38), new NodeId(0, 96).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15062), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15062), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15062), new NodeId(0, 38), new NodeId(0, 96).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15062), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode688() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15063), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15063), new NodeId(0, 38), new NodeId(0, 97).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15063), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15063), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15063), new NodeId(0, 38), new NodeId(0, 97).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15063), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode689() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15065), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15065), new NodeId(0, 38), new NodeId(0, 101).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15065), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15065), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15065), new NodeId(0, 38), new NodeId(0, 101).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15065), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode690() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15066), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15066), new NodeId(0, 38), new NodeId(0, 99).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15066), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15066), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15066), new NodeId(0, 38), new NodeId(0, 99).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15066), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode691() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15067), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15067), new NodeId(0, 38), new NodeId(0, 100).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15067), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15067), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15067), new NodeId(0, 38), new NodeId(0, 100).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15067), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode692() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15081), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15081), new NodeId(0, 38), new NodeId(0, 296).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15081), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15081), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15081), new NodeId(0, 38), new NodeId(0, 296).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15081), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode693() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15082), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15082), new NodeId(0, 38), new NodeId(0, 7594).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15082), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15082), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15082), new NodeId(0, 38), new NodeId(0, 7594).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15082), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode694() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15083), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15083), new NodeId(0, 38), new NodeId(0, 102).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15083), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15083), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15083), new NodeId(0, 38), new NodeId(0, 102).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15083), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode695() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15084), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15084), new NodeId(0, 38), new NodeId(0, 12755).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15084), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15084), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15084), new NodeId(0, 38), new NodeId(0, 12755).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15084), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode696() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15086), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15086), new NodeId(0, 38), new NodeId(0, 8912).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15086), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15086), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15086), new NodeId(0, 38), new NodeId(0, 8912).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15086), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode697() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15087), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15087), new NodeId(0, 38), new NodeId(0, 308).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15087), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15087), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15087), new NodeId(0, 38), new NodeId(0, 308).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15087), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode698() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15095), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15095), new NodeId(0, 38), new NodeId(0, 12189).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15095), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15095), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15095), new NodeId(0, 38), new NodeId(0, 12189).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15095), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode699() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15098), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15098), new NodeId(0, 38), new NodeId(0, 304).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15098), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15098), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15098), new NodeId(0, 38), new NodeId(0, 304).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15098), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode700() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15099), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15099), new NodeId(0, 38), new NodeId(0, 312).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15099), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15099), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15099), new NodeId(0, 38), new NodeId(0, 312).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15099), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode701() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15102), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15102), new NodeId(0, 38), new NodeId(0, 432).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15102), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15102), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15102), new NodeId(0, 38), new NodeId(0, 432).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15102), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode702() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15105), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15105), new NodeId(0, 38), new NodeId(0, 12890).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15105), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15105), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15105), new NodeId(0, 38), new NodeId(0, 12890).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15105), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode703() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15106), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15106), new NodeId(0, 38), new NodeId(0, 12891).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15106), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15106), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15106), new NodeId(0, 38), new NodeId(0, 12891).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15106), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode704() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15136), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15136), new NodeId(0, 38), new NodeId(0, 344).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15136), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15136), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15136), new NodeId(0, 38), new NodeId(0, 344).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15136), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode705() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15140), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15140), new NodeId(0, 38), new NodeId(0, 316).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15140), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15140), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15140), new NodeId(0, 38), new NodeId(0, 316).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15140), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode706() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15141), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15141), new NodeId(0, 38), new NodeId(0, 319).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15141), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15141), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15141), new NodeId(0, 38), new NodeId(0, 319).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15141), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode707() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15142), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15142), new NodeId(0, 38), new NodeId(0, 322).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15142), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15142), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15142), new NodeId(0, 38), new NodeId(0, 322).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15142), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode708() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15143), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15143), new NodeId(0, 38), new NodeId(0, 325).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15143), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15143), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15143), new NodeId(0, 38), new NodeId(0, 325).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15143), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode709() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15144), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15144), new NodeId(0, 38), new NodeId(0, 938).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15144), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15144), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15144), new NodeId(0, 38), new NodeId(0, 938).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15144), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode710() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15165), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15165), new NodeId(0, 38), new NodeId(0, 376).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15165), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15165), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15165), new NodeId(0, 38), new NodeId(0, 376).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15165), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode711() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15169), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15169), new NodeId(0, 38), new NodeId(0, 379).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15169), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15169), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15169), new NodeId(0, 38), new NodeId(0, 379).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15169), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode712() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15172), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15172), new NodeId(0, 38), new NodeId(0, 382).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15172), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15172), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15172), new NodeId(0, 38), new NodeId(0, 382).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15172), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode713() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15175), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15175), new NodeId(0, 38), new NodeId(0, 385).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15175), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15175), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15175), new NodeId(0, 38), new NodeId(0, 385).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15175), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode714() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15188), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15188), new NodeId(0, 38), new NodeId(0, 537).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15188), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15188), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15188), new NodeId(0, 38), new NodeId(0, 537).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15188), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode715() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15189), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15189), new NodeId(0, 38), new NodeId(0, 540).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15189), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15189), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15189), new NodeId(0, 38), new NodeId(0, 540).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15189), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode716() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15199), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15199), new NodeId(0, 38), new NodeId(0, 331).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15199), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15199), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15199), new NodeId(0, 38), new NodeId(0, 331).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15199), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode717() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15204), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15204), new NodeId(0, 38), new NodeId(0, 583).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15204), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15204), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15204), new NodeId(0, 38), new NodeId(0, 583).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15204), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode718() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15205), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15205), new NodeId(0, 38), new NodeId(0, 586).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15205), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15205), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15205), new NodeId(0, 38), new NodeId(0, 586).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15205), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode719() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15206), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15206), new NodeId(0, 38), new NodeId(0, 589).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15206), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15206), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15206), new NodeId(0, 38), new NodeId(0, 589).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15206), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode720() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15207), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15207), new NodeId(0, 38), new NodeId(0, 592).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15207), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15207), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15207), new NodeId(0, 38), new NodeId(0, 592).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15207), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode721() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15208), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15208), new NodeId(0, 38), new NodeId(0, 595).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15208), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15208), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15208), new NodeId(0, 38), new NodeId(0, 595).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15208), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode722() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15209), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15209), new NodeId(0, 38), new NodeId(0, 598).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15209), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15209), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15209), new NodeId(0, 38), new NodeId(0, 598).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15209), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode723() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15210), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15210), new NodeId(0, 38), new NodeId(0, 601).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15210), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15210), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15210), new NodeId(0, 38), new NodeId(0, 601).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15210), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode724() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15273), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15273), new NodeId(0, 38), new NodeId(0, 659).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15273), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15273), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15273), new NodeId(0, 38), new NodeId(0, 659).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15273), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode725() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15293), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15293), new NodeId(0, 38), new NodeId(0, 719).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15293), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15293), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15293), new NodeId(0, 38), new NodeId(0, 719).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15293), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode726() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15295), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15295), new NodeId(0, 38), new NodeId(0, 725).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15295), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15295), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15295), new NodeId(0, 38), new NodeId(0, 725).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15295), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode727() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15304), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15304), new NodeId(0, 38), new NodeId(0, 948).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15304), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15304), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15304), new NodeId(0, 38), new NodeId(0, 948).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15304), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode728() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15349), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15349), new NodeId(0, 38), new NodeId(0, 920).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15349), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15349), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15349), new NodeId(0, 38), new NodeId(0, 920).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15349), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode729() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15361), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15361), new NodeId(0, 38), new NodeId(0, 338).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15361), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15361), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15361), new NodeId(0, 38), new NodeId(0, 338).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15361), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode730() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15362), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15362), new NodeId(0, 38), new NodeId(0, 853).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15362), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15362), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15362), new NodeId(0, 38), new NodeId(0, 853).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15362), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode731() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15363), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15363), new NodeId(0, 38), new NodeId(0, 11943).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15363), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15363), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15363), new NodeId(0, 38), new NodeId(0, 11943).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15363), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode732() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15364), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15364), new NodeId(0, 38), new NodeId(0, 11944).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15364), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15364), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15364), new NodeId(0, 38), new NodeId(0, 11944).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15364), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode733() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15365), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15365), new NodeId(0, 38), new NodeId(0, 856).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15365), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15365), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15365), new NodeId(0, 38), new NodeId(0, 856).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15365), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode734() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15366), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15366), new NodeId(0, 38), new NodeId(0, 859).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15366), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15366), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15366), new NodeId(0, 38), new NodeId(0, 859).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15366), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode735() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15367), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15367), new NodeId(0, 38), new NodeId(0, 862).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15367), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15367), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15367), new NodeId(0, 38), new NodeId(0, 862).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15367), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode736() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15368), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15368), new NodeId(0, 38), new NodeId(0, 865).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15368), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15368), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15368), new NodeId(0, 38), new NodeId(0, 865).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15368), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode737() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15369), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15369), new NodeId(0, 38), new NodeId(0, 868).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15369), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15369), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15369), new NodeId(0, 38), new NodeId(0, 868).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15369), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode738() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15370), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15370), new NodeId(0, 38), new NodeId(0, 871).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15370), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15370), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15370), new NodeId(0, 38), new NodeId(0, 871).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15370), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode739() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15371), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15371), new NodeId(0, 38), new NodeId(0, 299).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15371), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15371), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15371), new NodeId(0, 38), new NodeId(0, 299).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15371), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode740() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15372), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15372), new NodeId(0, 38), new NodeId(0, 874).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15372), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15372), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15372), new NodeId(0, 38), new NodeId(0, 874).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15372), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode741() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15373), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15373), new NodeId(0, 38), new NodeId(0, 877).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15373), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15373), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15373), new NodeId(0, 38), new NodeId(0, 877).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15373), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode742() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15374), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15374), new NodeId(0, 38), new NodeId(0, 897).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15374), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15374), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15374), new NodeId(0, 38), new NodeId(0, 897).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15374), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode743() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15375), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15375), new NodeId(0, 38), new NodeId(0, 884).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15375), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15375), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15375), new NodeId(0, 38), new NodeId(0, 884).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15375), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode744() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15376), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15376), new NodeId(0, 38), new NodeId(0, 887).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15376), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15376), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15376), new NodeId(0, 38), new NodeId(0, 887).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15376), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode745() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15377), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15377), new NodeId(0, 38), new NodeId(0, 12171).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15377), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15377), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15377), new NodeId(0, 38), new NodeId(0, 12171).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15377), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode746() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15378), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15378), new NodeId(0, 38), new NodeId(0, 12172).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15378), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15378), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15378), new NodeId(0, 38), new NodeId(0, 12172).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15378), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode747() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15379), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15379), new NodeId(0, 38), new NodeId(0, 12079).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15379), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15379), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15379), new NodeId(0, 38), new NodeId(0, 12079).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15379), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode748() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15380), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15380), new NodeId(0, 38), new NodeId(0, 12080).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15380), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15380), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15380), new NodeId(0, 38), new NodeId(0, 12080).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15380), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode749() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15381), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15381), new NodeId(0, 38), new NodeId(0, 894).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15381), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15381), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15381), new NodeId(0, 38), new NodeId(0, 894).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15381), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode750() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24042), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 24042), new NodeId(0, 38), new NodeId(0, 24033).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 24042), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 24042), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 24042), new NodeId(0, 38), new NodeId(0, 24033).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 24042), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void loadNode751() {
-        var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15382), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15382), new NodeId(0, 38), new NodeId(0, 891).expanded(), false));
-        node.addReference(new Reference(new NodeId(0, 15382), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
-        this.nodeManager.addNode(node);
+        if (context.getServer().getEncodingManager().hasEncoding(DataTypeEncoding.JSON_ENCODING_NAME)) {
+            var node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 15382), new QualifiedName(0, "Default JSON"), new LocalizedText("", "Default JSON"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), UByte.valueOf(0));
+            node.addReference(new Reference(new NodeId(0, 15382), new NodeId(0, 38), new NodeId(0, 891).expanded(), false));
+            node.addReference(new Reference(new NodeId(0, 15382), new NodeId(0, 40), new NodeId(0, 76).expanded(), true));
+            this.nodeManager.addNode(node);
+        }
     }
 
     void load() throws Exception {

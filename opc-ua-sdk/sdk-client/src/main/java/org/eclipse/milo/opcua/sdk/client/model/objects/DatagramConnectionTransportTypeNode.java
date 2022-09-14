@@ -246,7 +246,7 @@ public class DatagramConnectionTransportTypeNode extends ConnectionTransportType
     @Override
     public void setDatagramQos(QosDataType[] value) throws UaException {
         PropertyTypeNode node = getDatagramQosNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -277,7 +277,7 @@ public class DatagramConnectionTransportTypeNode extends ConnectionTransportType
 
     @Override
     public CompletableFuture<StatusCode> writeDatagramQosAsync(QosDataType[] datagramQos) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), datagramQos);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), datagramQos);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDatagramQosNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -27,7 +27,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.UaMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;

@@ -25,6 +25,15 @@ public interface EncodingContext {
     DataTypeManager getDataTypeManager();
 
     /**
+     * Get the {@link EncodingManager}.
+     *
+     * @return the {@link EncodingManager}.
+     */
+    default EncodingManager getEncodingManager() {
+        return null; // TODO
+    }
+
+    /**
      * Get the {@link EncodingLimits}.
      *
      * @return the {@link EncodingLimits}.

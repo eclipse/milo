@@ -263,7 +263,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     @Override
     public void setBuildInfo(BuildInfo value) throws UaException {
         BuildInfoTypeNode node = getBuildInfoNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -294,7 +294,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<StatusCode> writeBuildInfoAsync(BuildInfo buildInfo) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), buildInfo);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), buildInfo);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBuildInfoNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

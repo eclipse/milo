@@ -931,7 +931,7 @@ public class SessionFsmFactory {
                 buildClientSignature(client.getConfig(), csrNonce),
                 new SignedSoftwareCertificate[0],
                 client.getConfig().getSessionLocaleIds(),
-                ExtensionObject.encode(client.getStaticSerializationContext(), userIdentityToken),
+                ExtensionObject.encode(client.getStaticEncodingContext(), userIdentityToken),
                 userTokenSignature
             );
 

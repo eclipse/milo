@@ -54,7 +54,7 @@ public class PublishedDataSetTypeNode extends BaseObjectTypeNode implements Publ
     @Override
     public void setConfigurationVersion(ConfigurationVersionDataType value) throws UaException {
         PropertyTypeNode node = getConfigurationVersionNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -86,7 +86,7 @@ public class PublishedDataSetTypeNode extends BaseObjectTypeNode implements Publ
     @Override
     public CompletableFuture<StatusCode> writeConfigurationVersionAsync(
         ConfigurationVersionDataType configurationVersion) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), configurationVersion);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), configurationVersion);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getConfigurationVersionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -121,7 +121,7 @@ public class PublishedDataSetTypeNode extends BaseObjectTypeNode implements Publ
     @Override
     public void setDataSetMetaData(DataSetMetaDataType value) throws UaException {
         PropertyTypeNode node = getDataSetMetaDataNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -153,7 +153,7 @@ public class PublishedDataSetTypeNode extends BaseObjectTypeNode implements Publ
     @Override
     public CompletableFuture<StatusCode> writeDataSetMetaDataAsync(
         DataSetMetaDataType dataSetMetaData) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), dataSetMetaData);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), dataSetMetaData);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDataSetMetaDataNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

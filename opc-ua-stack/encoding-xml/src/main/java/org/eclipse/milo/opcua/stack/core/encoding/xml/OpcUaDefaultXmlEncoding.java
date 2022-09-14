@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.types;
+package org.eclipse.milo.opcua.stack.core.encoding.xml;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,8 +18,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.xml.OpcUaXmlDecoder;
-import org.eclipse.milo.opcua.stack.core.encoding.xml.OpcUaXmlEncoder;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
@@ -39,7 +38,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public QualifiedName getName() {
+    public QualifiedName getEncodingName() {
         return ENCODING_NAME;
     }
 

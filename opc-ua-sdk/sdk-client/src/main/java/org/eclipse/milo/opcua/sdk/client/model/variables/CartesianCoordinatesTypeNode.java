@@ -54,7 +54,7 @@ public class CartesianCoordinatesTypeNode extends BaseDataVariableTypeNode imple
     @Override
     public void setLengthUnit(EUInformation value) throws UaException {
         PropertyTypeNode node = getLengthUnitNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class CartesianCoordinatesTypeNode extends BaseDataVariableTypeNode imple
 
     @Override
     public CompletableFuture<StatusCode> writeLengthUnitAsync(EUInformation lengthUnit) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), lengthUnit);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), lengthUnit);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLengthUnitNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
