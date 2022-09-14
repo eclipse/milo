@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.dtd.DataTypeDictionaryManager;
+import org.eclipse.milo.opcua.sdk.server.dtd.BinaryDataTypeDictionaryManager;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
@@ -135,7 +135,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
     private final Random random = new Random();
 
-    private final DataTypeDictionaryManager dictionaryManager;
+    private final BinaryDataTypeDictionaryManager dictionaryManager;
 
     private final SubscriptionModel subscriptionModel;
 
@@ -143,7 +143,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         super(server, NAMESPACE_URI);
 
         subscriptionModel = new SubscriptionModel(server, this);
-        dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
+        dictionaryManager = new BinaryDataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
 
         getLifecycleManager().addLifecycle(dictionaryManager);
         getLifecycleManager().addLifecycle(subscriptionModel);

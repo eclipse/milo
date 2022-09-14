@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.sun.istack.Nullable;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.opcfoundation.opcua.binaryschema.TypeDescription;
 import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 
-public class BinaryDataTypeDictionary implements DataTypeDictionary2 {
+public class BinaryDataTypeDictionary implements DataTypeDictionary {
 
     private final Map<String, TypeDescription> typeDescriptions = new ConcurrentHashMap<>();
     private final Map<String, Type> types = new ConcurrentHashMap<>();
@@ -74,7 +74,7 @@ public class BinaryDataTypeDictionary implements DataTypeDictionary2 {
         typeDescriptions.put(typeDescription.getName(), typeDescription);
     }
 
-    public static class BinaryType implements DataTypeDictionary2.Type {
+    public static class BinaryType implements DataTypeDictionary.Type {
 
         public final String description;
         public final NodeId dataTypeId;

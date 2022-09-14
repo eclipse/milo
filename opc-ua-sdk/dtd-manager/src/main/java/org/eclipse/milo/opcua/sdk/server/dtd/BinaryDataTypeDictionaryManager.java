@@ -47,7 +47,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -79,7 +78,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class DataTypeDictionaryManager implements Lifecycle {
+public class BinaryDataTypeDictionaryManager implements Lifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -100,7 +99,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
 
     /**
-     * Create a BinaryDataTypeDictionaryManager for an {@link OpcUaBinaryDataTypeDictionary} in {@code namespaceUri}.
+     * Create a DataTypeDictionaryManager for a {@link BinaryDataTypeDictionary} in {@code namespaceUri}.
      * <p>
      * Note that the namespace URI is that of the dictionary, and is not necessarily the same as the namespace the
      * Nodes created by the manager will reside in, i.e. datatype dictionaries are namespaced independently of the
@@ -109,7 +108,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
      * @param context      a {@link UaNodeContext}. Nodes will be created and added using this context.
      * @param namespaceUri the namespace URI of the dictionary.
      */
-    public DataTypeDictionaryManager(UaNodeContext context, String namespaceUri) {
+    public BinaryDataTypeDictionaryManager(UaNodeContext context, String namespaceUri) {
         this.context = context;
         this.namespaceUri = namespaceUri;
 
@@ -118,25 +117,19 @@ public class DataTypeDictionaryManager implements Lifecycle {
         bsdTypeDictionary.setDefaultByteOrder(ByteOrder.LITTLE_ENDIAN);
 
         dataTypeDictionary = new BinaryDataTypeDictionary(bsdTypeDictionary);
-
-        context.getServer().getDataTypeManager().registerTypeDictionary(dataTypeDictionary);
-    }
-
-    private UaNodeContext getNodeContext() {
-        return context;
     }
 
     private UaNodeManager getNodeManager() {
-        return (UaNodeManager) getNodeContext().getNodeManager();
+        return (UaNodeManager) context.getNodeManager();
     }
 
     @Override
     public void startup() {
-        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dataTypeDictionary);
+        context.getServer().getDataTypeManager().registerTypeDictionary(dataTypeDictionary);
 
         // Add a DataTypeDictionary Node...
         dictionaryNode = new DataTypeDictionaryTypeNode(
-            getNodeContext(),
+            context,
             newNodeId(namespaceUri),
             newQualifiedName(namespaceUri),
             LocalizedText.english(namespaceUri),
@@ -245,7 +238,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         // dictionaryNode.
 
         DataTypeDescriptionTypeNode descriptionNode = new DataTypeDescriptionTypeNode(
-            getNodeContext(),
+            context,
             newNodeId(String.format("%s.Description", description.getName().getName())),
             newQualifiedName(description.getName().getName()),
             LocalizedText.english(description.getName().getName()),
@@ -284,7 +277,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         // descriptionNode and an EncodingOf reference to the DataTypeNode.
 
         DataTypeEncodingTypeNode dataTypeEncodingNode = new DataTypeEncodingTypeNode(
-            getNodeContext(),
+            context,
             binaryEncodingId,
             new QualifiedName(0, "Default Binary"),
             LocalizedText.english("Default Binary"),
@@ -326,7 +319,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
         dictionaryFile.reset();
 
-        getNodeContext().getServer().getDataTypeManager().registerType(
+        context.getServer().getDataTypeManager().registerType(
             dataTypeId,
             codec,
             binaryEncodingId,
@@ -365,7 +358,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
     }
 
     private UShort getNamespaceIndex() {
-        return getNodeContext().getNamespaceTable().getIndex(namespaceUri);
+        return context.getNamespaceTable().getIndex(namespaceUri);
     }
 
     private NodeId newNodeId(String id) {
@@ -627,5 +620,5 @@ public class DataTypeDictionaryManager implements Lifecycle {
             this.dataTypeName = dataTypeName;
         }
     }
-    
+
 }

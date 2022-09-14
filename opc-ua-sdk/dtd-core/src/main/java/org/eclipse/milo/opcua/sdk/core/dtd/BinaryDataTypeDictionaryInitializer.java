@@ -1,13 +1,13 @@
 package org.eclipse.milo.opcua.sdk.core.dtd;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
 
 public class BinaryDataTypeDictionaryInitializer extends DataTypeDictionaryInitializer {
     @Override
     protected void initializeStructs(NamespaceTable namespaceTable,
-                                     DataTypeDictionary2 binaryDictionary) throws Exception {
+                                     DataTypeDictionary binaryDictionary) throws Exception {
         binaryDictionary.registerType(new BinaryDataTypeDictionary.BinaryType(
             "KeyValuePair",
             KeyValuePair.TYPE_ID.toNodeIdOrThrow(namespaceTable),

@@ -13,7 +13,7 @@ package org.eclipse.milo.examples.client;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -46,7 +46,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         // Add a SessionInitializer that will read any DataTypeDictionary
         // nodes present in the server every time the session is activated
         // and dynamically generate codecs for custom structures.
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(StructCodec::new));
+        client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
 
         client.connect().get();
 

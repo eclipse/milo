@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.core.dtd;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 
@@ -20,7 +20,7 @@ public abstract class DataTypeDictionaryInitializer {
     private static final String BINARY_DICTIONARY_URI = "http://opcfoundation.org/UA/";
 
     public void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) {
-        DataTypeDictionary2 binaryDictionary =
+        DataTypeDictionary binaryDictionary =
             dataTypeManager.getTypeDictionary(BINARY_DICTIONARY_URI);
 
         if (binaryDictionary == null) {
@@ -32,6 +32,12 @@ public abstract class DataTypeDictionaryInitializer {
                 initializeStructs(namespaceTable, binaryDictionary);
 
                 dataTypeManager.registerTypeDictionary(binaryDictionary);
+
+                binaryDictionary.getTypes().forEach(
+                    type ->
+                        dataTypeManager.registerType(
+                            type.getDataTypeId(), type.getCodec(), type.getEncodingId(), null, null)
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -40,7 +46,7 @@ public abstract class DataTypeDictionaryInitializer {
 
     protected abstract void initializeStructs(
         NamespaceTable namespaceTable,
-        DataTypeDictionary2 binaryDictionary
+        DataTypeDictionary binaryDictionary
     ) throws Exception;
 
 }

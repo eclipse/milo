@@ -37,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -885,7 +885,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
             DataTypeCodec codec = null;
 
-            DataTypeDictionary2 dictionary = context.getDataTypeManager()
+            DataTypeDictionary dictionary = context.getDataTypeManager()
                 .getTypeDictionary(Namespaces.OPC_UA_XSD);
 
             if (dictionary != null) {

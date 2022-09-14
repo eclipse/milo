@@ -65,7 +65,7 @@ public class DefaultDataTypeManager implements DataTypeManager {
      * K = String of Namespace URI
      * V = DataTypeDictionary
      */
-    private final Map<String, DataTypeDictionary2> dataTypeDictionaries = new ConcurrentHashMap<>();
+    private final Map<String, DataTypeDictionary> dataTypeDictionaries = new ConcurrentHashMap<>();
 
     @Override
     public void registerType(
@@ -127,19 +127,13 @@ public class DefaultDataTypeManager implements DataTypeManager {
     }
 
     @Override
-    public @Nullable DataTypeDictionary2 getTypeDictionary(String namespaceUri) {
+    public @Nullable DataTypeDictionary getTypeDictionary(String namespaceUri) {
         return dataTypeDictionaries.get(namespaceUri);
     }
 
     @Override
-    public void registerTypeDictionary(DataTypeDictionary2 dictionary) {
+    public void registerTypeDictionary(DataTypeDictionary dictionary) {
         dataTypeDictionaries.put(dictionary.getNamespaceUri(), dictionary);
-
-        // TODO should this be done by the caller instead? we don't actually know which encodingId to use.
-        dictionary.getTypes().forEach(
-            type ->
-                registerType(type.getDataTypeId(), type.getCodec(), type.getEncodingId(), null, null)
-        );
     }
 
     private void putCodecForEncoding(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {

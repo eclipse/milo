@@ -21,7 +21,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -90,12 +90,17 @@ public abstract class AbstractBsdCodecTest {
         });
 
         dataTypeManager.registerTypeDictionary(binaryDictionary);
+
+        binaryDictionary.getTypes().forEach(
+            type ->
+                dataTypeManager.registerType(type.getDataTypeId(), type.getCodec(), type.getEncodingId(), null, null)
+        );
     }
 
     protected abstract BinaryDataTypeCodec createCodec(StructuredType structuredType);
 
     protected BinaryDataTypeCodec getCodec(String name) {
-        DataTypeDictionary2 dictionary = dataTypeManager.getTypeDictionary(BSD_CODEC_TEST_NAMESPACE);
+        DataTypeDictionary dictionary = dataTypeManager.getTypeDictionary(BSD_CODEC_TEST_NAMESPACE);
         assertNotNull(dictionary);
         DataTypeCodec codec = dictionary.getCodec(name);
         assertNotNull(codec);

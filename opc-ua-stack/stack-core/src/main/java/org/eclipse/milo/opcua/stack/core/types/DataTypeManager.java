@@ -35,8 +35,8 @@ public interface DataTypeManager {
 
     @Nullable NodeId getJsonEncodingId(NodeId dataTypeId);
 
-    @Nullable DataTypeDictionary2 getTypeDictionary(String namespaceUri);
+    @Nullable DataTypeDictionary getTypeDictionary(String namespaceUri);
 
-    void registerTypeDictionary(DataTypeDictionary2 dictionary);
+    void registerTypeDictionary(DataTypeDictionary dictionary);
 
 }

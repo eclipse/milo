@@ -40,14 +40,14 @@ import org.mockito.Mockito;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class DataTypeDictionaryReaderTest {
+class BinaryDataTypeDictionaryReaderTest {
 
     private final UaStackClient stackClient = Mockito.mock(UaStackClient.class);
     private final UaStackClientConfig config = Mockito.mock(UaStackClientConfig.class);
     private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
 
-    private final DataTypeDictionaryReader dictionaryReader =
-        new DataTypeDictionaryReader(stackClient, session);
+    private final BinaryDataTypeDictionaryReader dictionaryReader =
+        new BinaryDataTypeDictionaryReader(stackClient, session);
 
     @BeforeEach
     void setUp() {

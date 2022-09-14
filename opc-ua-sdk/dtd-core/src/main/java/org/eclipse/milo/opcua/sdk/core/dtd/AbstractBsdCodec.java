@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -105,7 +105,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
 
                     members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value, typeName));
                 } else {
-                    Object value = decode(context, typeNamespace, typeName, decoder);
+                    Object value = decode(context, fieldName, typeNamespace, typeName, decoder);
 
                     members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value, typeName));
                 }
@@ -143,7 +143,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                             }
                         } else {
                             for (int i = 0; i < length; i++) {
-                                Object value = decode(context, typeNamespace, typeName, decoder);
+                                Object value = decode(context, fieldName, typeNamespace, typeName, decoder);
 
                                 values[i] = value;
                             }
@@ -169,7 +169,9 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
         Object structure
     ) throws UaSerializationException {
 
-        LinkedHashMap<String, MemberT> members = new LinkedHashMap<>(getMembers((StructureT) structure));
+        //noinspection unchecked
+        LinkedHashMap<String, MemberT> members =
+            new LinkedHashMap<>(getMembers((StructureT) structure));
 
         PeekingIterator<FieldType> fieldIterator = Iterators
             .peekingIterator(structuredType.getField().iterator());
@@ -214,7 +216,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
             if (typeNamespaceIsUa && (writer = getWriter(typeName)) != null) {
                 writer.accept(encoder, scalarValue);
             } else {
-                encode(context, typeNamespace, typeName, scalarValue, encoder);
+                encode(context, field.getName(), typeNamespace, typeName, scalarValue, encoder);
             }
         } else {
             if (field.isIsLengthInBytes()) {
@@ -257,7 +259,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                         }
                     } else {
                         for (Object value : valueArray) {
-                            encode(context, typeNamespace, typeName, value, encoder);
+                            encode(context, field.getName(), typeNamespace, typeName, value, encoder);
                         }
                     }
                 }
@@ -267,12 +269,13 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
 
     private Object decode(
         SerializationContext context,
+        String fieldName,
         String namespaceUri,
         String description,
         OpcUaBinaryStreamDecoder decoder
     ) throws UaSerializationException {
 
-        DataTypeDictionary2 dictionary =
+        DataTypeDictionary dictionary =
             context.getDataTypeManager().getTypeDictionary(namespaceUri);
 
         if (dictionary instanceof BinaryDataTypeDictionary) {
@@ -293,8 +296,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                     );
                 }
             } else if (typeDescription instanceof EnumeratedType) {
-                // TODO fieldName?
-                return decoder.readEnum(null);
+                return decoder.readEnum(fieldName);
             } else {
                 throw new UaSerializationException(
                     StatusCodes.Bad_DecodingError,
@@ -305,20 +307,21 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 String.format(
-                    "no OpcUaBinaryDataTypeDictionary registered for under namespaceUri=%s", namespaceUri)
+                    "no BinaryDataTypeDictionary registered for under namespaceUri=%s", namespaceUri)
             );
         }
     }
 
     private void encode(
         SerializationContext context,
+        String fieldName,
         String namespaceUri,
         String description,
         Object value,
         OpcUaBinaryStreamEncoder encoder
     ) throws UaSerializationException {
 
-        DataTypeDictionary2 dictionary =
+        DataTypeDictionary dictionary =
             context.getDataTypeManager().getTypeDictionary(namespaceUri);
 
         if (dictionary instanceof BinaryDataTypeDictionary) {
@@ -339,8 +342,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                     );
                 }
             } else if (typeDescription instanceof EnumeratedType) {
-                // TODO fieldName?
-                encoder.writeEnum(null, new UaEnumeratedType() {
+                encoder.writeEnum(fieldName, new UaEnumeratedType() {
                     @Override
                     public ExpandedNodeId getTypeId() {
                         return ExpandedNodeId.NULL_VALUE;
@@ -361,7 +363,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 String.format(
-                    "no OpcUaBinaryDataTypeDictionary registered for under namespaceUri=%s", namespaceUri)
+                    "no BinaryDataTypeDictionary registered for under namespaceUri=%s", namespaceUri)
             );
         }
     }

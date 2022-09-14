@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.jetbrains.annotations.Nullable;
 
+// TODO does this need to be regenerated for 1.05?
 abstract class BuiltinDataTypeInfo {
     private static final Map<String, DataTypeInfo> DATA_TYPE_INFO_MAP = ImmutableMap.<String, DataTypeInfo>builder()
         .put("AddNodesItem", new DataTypeInfo(NodeId.parse("ns=0;i=376"), NodeId.parse("ns=0;i=378")))

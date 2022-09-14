@@ -14,15 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionaryReader.TypeDictionaryInfo;
+import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionaryReader.TypeDictionaryInfo;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary.BinaryType;
-import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -30,13 +27,13 @@ import org.opcfoundation.opcua.binaryschema.StructuredType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionInitializer {
+public class BinaryDataTypeDictionarySessionInitializer implements SessionFsm.SessionInitializer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CodecFactory codecFactory;
 
-    public DataTypeDictionarySessionInitializer(CodecFactory codecFactory) {
+    public BinaryDataTypeDictionarySessionInitializer(CodecFactory codecFactory) {
         this.codecFactory = codecFactory;
     }
 
@@ -44,23 +41,7 @@ public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionI
     public CompletableFuture<Unit> initialize(UaStackClient client, OpcUaSession session) {
         logger.debug("SessionInitializer: DataTypeDictionary");
 
-        String treeKey = DataTypeTreeSessionInitializer.SESSION_ATTRIBUTE_KEY;
-
-        Object dataTypeTree = session.getAttribute(treeKey);
-
-        if (dataTypeTree instanceof DataTypeTree) {
-            return initialize(client, session, (DataTypeTree) dataTypeTree);
-        } else {
-            return DataTypeTreeBuilder.buildAsync(client, session).thenCompose(tree -> {
-                session.setAttribute(treeKey, tree);
-
-                return initialize(client, session, tree);
-            });
-        }
-    }
-
-    private CompletableFuture<Unit> initialize(UaStackClient client, OpcUaSession session, DataTypeTree dataTypeTree) {
-        var dictionaryReader = new DataTypeDictionaryReader(client, session);
+        var dictionaryReader = new BinaryDataTypeDictionaryReader(client, session);
 
         return dictionaryReader.readDataTypeDictionaries()
             .thenAccept(typeDictionaryInfos -> {
@@ -95,6 +76,12 @@ public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionI
                         });
 
                         dataTypeManager.registerTypeDictionary(dictionary);
+
+                        dictionary.getTypes().forEach(
+                            type ->
+                                dataTypeManager.registerType(
+                                    type.getDataTypeId(), type.getCodec(), type.getEncodingId(), null, null)
+                        );
                     }
                 }
             )
