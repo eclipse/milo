@@ -350,7 +350,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
 
                     @Override
                     public int getValue() {
-                        return (Integer) value;
+                        return ((Number) value).intValue();
                     }
                 });
             } else {
