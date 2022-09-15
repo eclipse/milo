@@ -27,6 +27,11 @@ public class TestEncodingContext implements EncodingContext {
     }
 
     @Override
+    public EncodingManager getEncodingManager() {
+        return DefaultEncodingManager.createAndInitialize();
+    }
+
+    @Override
     public EncodingLimits getEncodingLimits() {
         return EncodingLimits.DEFAULT;
     }

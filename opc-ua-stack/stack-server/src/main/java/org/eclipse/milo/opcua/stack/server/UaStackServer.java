@@ -35,7 +35,9 @@ import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
@@ -128,6 +130,9 @@ public class UaStackServer {
     private final DataTypeManager dataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
+    private final EncodingManager encodingManager =
+        DefaultEncodingManager.createAndInitialize();
+
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
 
@@ -151,6 +156,11 @@ public class UaStackServer {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return dataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
             }
 
             @Override
@@ -257,6 +267,10 @@ public class UaStackServer {
 
     public DataTypeManager getDataTypeManager() {
         return dataTypeManager;
+    }
+
+    public EncodingManager getEncodingManager() {
+        return encodingManager;
     }
 
     public EncodingContext getEncodingContext() {

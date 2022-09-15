@@ -29,9 +29,7 @@ public interface EncodingContext {
      *
      * @return the {@link EncodingManager}.
      */
-    default EncodingManager getEncodingManager() {
-        return null; // TODO
-    }
+    EncodingManager getEncodingManager();
 
     /**
      * Get the {@link EncodingLimits}.

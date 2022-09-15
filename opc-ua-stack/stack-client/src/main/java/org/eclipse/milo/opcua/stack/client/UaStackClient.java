@@ -25,7 +25,9 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
@@ -62,6 +64,9 @@ public class UaStackClient {
     private final DataTypeManager dynamicDataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
+    private final EncodingManager encodingManager =
+        DefaultEncodingManager.createAndInitialize();
+
     private final EncodingContext staticEncodingContext;
     private final EncodingContext dynamicEncodingContext;
 
@@ -91,6 +96,11 @@ public class UaStackClient {
             }
 
             @Override
+            public EncodingManager getEncodingManager() {
+                return null;
+            }
+
+            @Override
             public EncodingLimits getEncodingLimits() {
                 return config.getEncodingLimits();
             }
@@ -110,6 +120,11 @@ public class UaStackClient {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return dynamicDataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
             }
 
             @Override

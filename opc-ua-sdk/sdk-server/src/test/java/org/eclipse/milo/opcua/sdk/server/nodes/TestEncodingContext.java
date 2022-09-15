@@ -13,7 +13,9 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 
@@ -22,6 +24,11 @@ public class TestEncodingContext implements EncodingContext {
     @Override
     public DataTypeManager getDataTypeManager() {
         return OpcUaDataTypeManager.getInstance();
+    }
+
+    @Override
+    public EncodingManager getEncodingManager() {
+        return DefaultEncodingManager.createAndInitialize();
     }
 
     @Override

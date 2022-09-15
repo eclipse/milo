@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
@@ -90,8 +89,6 @@ public class OpcUaServer {
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
-
-    private final EncodingManager encodingManager = DefaultEncodingManager.createAndInitialize();
 
     private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
 
@@ -193,7 +190,7 @@ public class OpcUaServer {
     }
 
     public EncodingManager getEncodingManager() {
-        return encodingManager;
+        return stackServer.getEncodingManager();
     }
 
     public NamespaceTable getNamespaceTable() {
