@@ -28,7 +28,7 @@ public class TestEncodingContext implements EncodingContext {
 
     @Override
     public EncodingManager getEncodingManager() {
-        return DefaultEncodingManager.createAndInitialize();
+        return OpcUaEncodingManager.getInstance();
     }
 
     @Override

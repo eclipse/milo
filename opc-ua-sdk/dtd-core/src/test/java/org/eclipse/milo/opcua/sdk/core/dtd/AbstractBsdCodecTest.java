@@ -18,9 +18,9 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
@@ -38,7 +38,7 @@ public abstract class AbstractBsdCodecTest {
     private static final String BSD_CODEC_TEST_NAMESPACE = "https://github.com/eclipse/milo";
 
     private final DataTypeManager dataTypeManager = OpcUaDataTypeManager.getInstance();
-    private final EncodingManager encodingManager = DefaultEncodingManager.createAndInitialize();
+    private final EncodingManager encodingManager = OpcUaEncodingManager.getInstance();
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
 

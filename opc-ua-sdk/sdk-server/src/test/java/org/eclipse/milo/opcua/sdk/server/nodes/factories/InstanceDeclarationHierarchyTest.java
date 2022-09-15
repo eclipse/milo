@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.mockito.Mockito;
@@ -70,7 +70,7 @@ public class InstanceDeclarationHierarchyTest {
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
         Mockito.when(server.getEncodingContext()).thenReturn(new TestEncodingContext());
-        Mockito.when(server.getEncodingManager()).thenReturn(DefaultEncodingManager.createAndInitialize());
+        Mockito.when(server.getEncodingManager()).thenReturn(OpcUaEncodingManager.getInstance());
 
         UaNodeContext context = new UaNodeContext() {
             @Override
