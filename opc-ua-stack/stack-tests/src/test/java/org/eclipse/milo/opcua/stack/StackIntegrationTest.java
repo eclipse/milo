@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,7 @@
 
 package org.eclipse.milo.opcua.stack;
 
-import java.security.KeyPair;
 import java.security.Security;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,8 +28,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
-import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
@@ -60,9 +56,7 @@ public abstract class StackIntegrationTest extends SecurityFixture {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private int tcpBindPort = new Random().nextInt(64000) + 1000;
-    private int httpsBindPort = new Random().nextInt(64000) + 1000;
-
+    private final int tcpBindPort = new Random().nextInt(64000) + 1000;
     protected UaStackClient stackClient;
     protected UaStackServer stackServer;
 
@@ -71,13 +65,6 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         super.setUp();
 
         int tcpBindPort = getTcpBindPort();
-        int httpsBindPort = getHttpsBindPort();
-
-        KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
-
-        X509Certificate httpsCertificate = new SelfSignedHttpsCertificateBuilder(httpsKeyPair)
-            .setCommonName("localhost")
-            .build();
 
         List<String> bindAddresses = new ArrayList<>();
         bindAddresses.add("localhost");
@@ -114,25 +101,6 @@ public abstract class StackIntegrationTest extends SecurityFixture {
                         .setTransportProfile(TransportProfile.TCP_UASC_UABINARY)
                         .build()
                 );
-
-                // HTTPS Transport Endpoints
-                endpointConfigurations.add(
-                    base.copy()
-                        .setBindPort(httpsBindPort)
-                        .setSecurityPolicy(SecurityPolicy.None)
-                        .setSecurityMode(MessageSecurityMode.None)
-                        .setTransportProfile(TransportProfile.HTTPS_UABINARY)
-                        .build()
-                );
-
-                endpointConfigurations.add(
-                    base.copy()
-                        .setBindPort(httpsBindPort)
-                        .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
-                        .setSecurityMode(MessageSecurityMode.SignAndEncrypt)
-                        .setTransportProfile(TransportProfile.HTTPS_UABINARY)
-                        .build()
-                );
             }
         }
 
@@ -141,8 +109,6 @@ public abstract class StackIntegrationTest extends SecurityFixture {
                 .setEndpoints(endpointConfigurations)
                 .setCertificateManager(serverCertificateManager)
                 .setCertificateValidator(serverCertificateValidator)
-                .setHttpsKeyPair(httpsKeyPair)
-                .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
         ).build();
 
         stackServer = new UaStackServer(serverConfig);
@@ -195,28 +161,11 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         return tcpBindPort;
     }
 
-    protected int getHttpsBindPort() {
-        return httpsBindPort;
-    }
-
     protected String getDiscoveryUrl() {
         return String.format("opc.tcp://localhost:%d/test", getTcpBindPort());
     }
 
     public static class TestTcpStackIntegrationTest extends StackIntegrationTest {
-
-        @Test
-        public void test() {
-        }
-
-    }
-
-    public static class TestHttpStackIntegrationTest extends StackIntegrationTest {
-
-        @Override
-        protected String getDiscoveryUrl() {
-            return String.format("opc.https://localhost:%d/test", getHttpsBindPort());
-        }
 
         @Test
         public void test() {
