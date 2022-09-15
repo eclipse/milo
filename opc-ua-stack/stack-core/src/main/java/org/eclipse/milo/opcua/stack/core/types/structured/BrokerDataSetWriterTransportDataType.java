@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransportDataType implements UaStructure {
+public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15669");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15729");
@@ -123,26 +133,26 @@ public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransport
         }
 
         @Override
-        public BrokerDataSetWriterTransportDataType decode(SerializationContext context,
-                                                           UaDecoder decoder) {
-            String queueName = decoder.readString("QueueName");
-            String resourceUri = decoder.readString("ResourceUri");
-            String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
-            BrokerTransportQualityOfService requestedDeliveryGuarantee = (BrokerTransportQualityOfService) decoder.readEnum("RequestedDeliveryGuarantee", BrokerTransportQualityOfService.class);
-            String metaDataQueueName = decoder.readString("MetaDataQueueName");
-            Double metaDataUpdateTime = decoder.readDouble("MetaDataUpdateTime");
+        public BrokerDataSetWriterTransportDataType decodeType(EncodingContext context,
+                                                               UaDecoder decoder) {
+            String queueName = decoder.decodeString("QueueName");
+            String resourceUri = decoder.decodeString("ResourceUri");
+            String authenticationProfileUri = decoder.decodeString("AuthenticationProfileUri");
+            BrokerTransportQualityOfService requestedDeliveryGuarantee = BrokerTransportQualityOfService.from(decoder.decodeEnum("RequestedDeliveryGuarantee"));
+            String metaDataQueueName = decoder.decodeString("MetaDataQueueName");
+            Double metaDataUpdateTime = decoder.decodeDouble("MetaDataUpdateTime");
             return new BrokerDataSetWriterTransportDataType(queueName, resourceUri, authenticationProfileUri, requestedDeliveryGuarantee, metaDataQueueName, metaDataUpdateTime);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           BrokerDataSetWriterTransportDataType value) {
-            encoder.writeString("QueueName", value.getQueueName());
-            encoder.writeString("ResourceUri", value.getResourceUri());
-            encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
-            encoder.writeEnum("RequestedDeliveryGuarantee", value.getRequestedDeliveryGuarantee());
-            encoder.writeString("MetaDataQueueName", value.getMetaDataQueueName());
-            encoder.writeDouble("MetaDataUpdateTime", value.getMetaDataUpdateTime());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               BrokerDataSetWriterTransportDataType value) {
+            encoder.encodeString("QueueName", value.getQueueName());
+            encoder.encodeString("ResourceUri", value.getResourceUri());
+            encoder.encodeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
+            encoder.encodeEnum("RequestedDeliveryGuarantee", value.getRequestedDeliveryGuarantee());
+            encoder.encodeString("MetaDataQueueName", value.getMetaDataQueueName());
+            encoder.encodeDouble("MetaDataUpdateTime", value.getMetaDataUpdateTime());
         }
     }
 }

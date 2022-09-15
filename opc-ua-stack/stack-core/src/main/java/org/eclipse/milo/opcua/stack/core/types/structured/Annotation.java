@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class Annotation extends Structure implements UaStructure {
+public class Annotation extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=891");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=893");
@@ -97,18 +107,18 @@ public class Annotation extends Structure implements UaStructure {
         }
 
         @Override
-        public Annotation decode(SerializationContext context, UaDecoder decoder) {
-            String message = decoder.readString("Message");
-            String userName = decoder.readString("UserName");
-            DateTime annotationTime = decoder.readDateTime("AnnotationTime");
+        public Annotation decodeType(EncodingContext context, UaDecoder decoder) {
+            String message = decoder.decodeString("Message");
+            String userName = decoder.decodeString("UserName");
+            DateTime annotationTime = decoder.decodeDateTime("AnnotationTime");
             return new Annotation(message, userName, annotationTime);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, Annotation value) {
-            encoder.writeString("Message", value.getMessage());
-            encoder.writeString("UserName", value.getUserName());
-            encoder.writeDateTime("AnnotationTime", value.getAnnotationTime());
+        public void encodeType(EncodingContext context, UaEncoder encoder, Annotation value) {
+            encoder.encodeString("Message", value.getMessage());
+            encoder.encodeString("UserName", value.getUserName());
+            encoder.encodeDateTime("AnnotationTime", value.getAnnotationTime());
         }
     }
 }

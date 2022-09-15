@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.client.DataTypeCodecSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicEnum;
@@ -49,6 +50,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         // DataTypeTree reads DataTypeDefinition attributes while traversing the type hierarchy
         // and, by default, registers codecs with the client's dynamic DataTypeManager.
         client.addSessionInitializer(new DataTypeTreeSessionInitializer());
+        client.addSessionInitializer(new DataTypeCodecSessionInitializer());
 
         client.connect().get();
 
@@ -99,13 +101,14 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         ).get();
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
+        assert xo != null;
 
-        return (DynamicStruct) xo.decode(client.getDynamicSerializationContext());
+        return (DynamicStruct) xo.decode(client.getDynamicEncodingContext());
     }
 
     private static StatusCode writeValue(OpcUaClient client, NodeId nodeId, DynamicStruct value) throws Exception {
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            client.getDynamicSerializationContext(),
+            client.getDynamicEncodingContext(),
             value,
             value.getDataType().getBinaryEncodingId()
         );

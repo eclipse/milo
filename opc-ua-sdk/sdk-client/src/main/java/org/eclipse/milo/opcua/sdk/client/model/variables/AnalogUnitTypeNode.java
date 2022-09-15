@@ -54,7 +54,7 @@ public class AnalogUnitTypeNode extends BaseAnalogTypeNode implements AnalogUnit
     @Override
     public void setEngineeringUnits(EUInformation value) throws UaException {
         PropertyTypeNode node = getEngineeringUnitsNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class AnalogUnitTypeNode extends BaseAnalogTypeNode implements AnalogUnit
 
     @Override
     public CompletableFuture<StatusCode> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), engineeringUnits);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), engineeringUnits);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEngineeringUnitsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

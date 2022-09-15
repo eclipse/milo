@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class SessionSecurityDiagnosticsDataType extends Structure implements UaStructure {
+public class SessionSecurityDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=868");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=870");
@@ -149,32 +159,32 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         }
 
         @Override
-        public SessionSecurityDiagnosticsDataType decode(SerializationContext context,
-                                                         UaDecoder decoder) {
-            NodeId sessionId = decoder.readNodeId("SessionId");
-            String clientUserIdOfSession = decoder.readString("ClientUserIdOfSession");
-            String[] clientUserIdHistory = decoder.readStringArray("ClientUserIdHistory");
-            String authenticationMechanism = decoder.readString("AuthenticationMechanism");
-            String encoding = decoder.readString("Encoding");
-            String transportProtocol = decoder.readString("TransportProtocol");
-            MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            ByteString clientCertificate = decoder.readByteString("ClientCertificate");
+        public SessionSecurityDiagnosticsDataType decodeType(EncodingContext context,
+                                                             UaDecoder decoder) {
+            NodeId sessionId = decoder.decodeNodeId("SessionId");
+            String clientUserIdOfSession = decoder.decodeString("ClientUserIdOfSession");
+            String[] clientUserIdHistory = decoder.decodeStringArray("ClientUserIdHistory");
+            String authenticationMechanism = decoder.decodeString("AuthenticationMechanism");
+            String encoding = decoder.decodeString("Encoding");
+            String transportProtocol = decoder.decodeString("TransportProtocol");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            ByteString clientCertificate = decoder.decodeByteString("ClientCertificate");
             return new SessionSecurityDiagnosticsDataType(sessionId, clientUserIdOfSession, clientUserIdHistory, authenticationMechanism, encoding, transportProtocol, securityMode, securityPolicyUri, clientCertificate);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SessionSecurityDiagnosticsDataType value) {
-            encoder.writeNodeId("SessionId", value.getSessionId());
-            encoder.writeString("ClientUserIdOfSession", value.getClientUserIdOfSession());
-            encoder.writeStringArray("ClientUserIdHistory", value.getClientUserIdHistory());
-            encoder.writeString("AuthenticationMechanism", value.getAuthenticationMechanism());
-            encoder.writeString("Encoding", value.getEncoding());
-            encoder.writeString("TransportProtocol", value.getTransportProtocol());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeByteString("ClientCertificate", value.getClientCertificate());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               SessionSecurityDiagnosticsDataType value) {
+            encoder.encodeNodeId("SessionId", value.getSessionId());
+            encoder.encodeString("ClientUserIdOfSession", value.getClientUserIdOfSession());
+            encoder.encodeStringArray("ClientUserIdHistory", value.getClientUserIdHistory());
+            encoder.encodeString("AuthenticationMechanism", value.getAuthenticationMechanism());
+            encoder.encodeString("Encoding", value.getEncoding());
+            encoder.encodeString("TransportProtocol", value.getTransportProtocol());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeByteString("ClientCertificate", value.getClientCertificate());
         }
     }
 }

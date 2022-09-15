@@ -24,10 +24,8 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -143,7 +141,7 @@ public final class DataTypeTreeBuilder {
             client.getConfig().getRequestTimeout()
         );
 
-        CompletableFuture<UaResponseMessage> readFuture = client.sendRequest(
+        CompletableFuture<UaResponseMessageType> readFuture = client.sendRequest(
             new ReadRequest(
                 requestHeader,
                 0.0,
@@ -161,8 +159,10 @@ public final class DataTypeTreeBuilder {
             DataValue dataValue = response.getResults()[0];
             String[] namespaceUris = (String[]) dataValue.getValue().getValue();
             NamespaceTable namespaceTable = new NamespaceTable();
-            for (String namespaceUri : namespaceUris) {
-                namespaceTable.add(namespaceUri);
+            if (namespaceUris != null) {
+                for (String namespaceUri : namespaceUris) {
+                    namespaceTable.add(namespaceUri);
+                }
             }
             return namespaceTable;
         });
@@ -219,11 +219,11 @@ public final class DataTypeTreeBuilder {
                             NodeId jsonEncodingId = null;
 
                             for (ReferenceDescription r : encodingReferences) {
-                                if (r.getBrowseName().equals(OpcUaDefaultBinaryEncoding.ENCODING_NAME)) {
+                                if (r.getBrowseName().equals(DataTypeEncoding.BINARY_ENCODING_NAME)) {
                                     binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                                } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
+                                } else if (r.getBrowseName().equals(DataTypeEncoding.XML_ENCODING_NAME)) {
                                     xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                                } else if (r.getBrowseName().equals(OpcUaDefaultJsonEncoding.ENCODING_NAME)) {
+                                } else if (r.getBrowseName().equals(DataTypeEncoding.JSON_ENCODING_NAME)) {
                                     jsonEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
                                 }
                             }
@@ -312,7 +312,7 @@ public final class DataTypeTreeBuilder {
                 Object o = value.getValue().getValue();
                 if (o instanceof ExtensionObject) {
                     Object decoded = ((ExtensionObject) o).decode(
-                        client.getStaticSerializationContext()
+                        client.getStaticEncodingContext()
                     );
 
                     return (DataTypeDefinition) decoded;

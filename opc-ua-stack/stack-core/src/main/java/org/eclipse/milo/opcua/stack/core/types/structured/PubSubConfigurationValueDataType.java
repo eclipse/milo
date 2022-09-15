@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PubSubConfigurationValueDataType extends Structure implements UaStructure {
+public class PubSubConfigurationValueDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=25520");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=25532");
@@ -98,20 +108,20 @@ public class PubSubConfigurationValueDataType extends Structure implements UaStr
         }
 
         @Override
-        public PubSubConfigurationValueDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
-            PubSubConfigurationRefDataType configurationElement = (PubSubConfigurationRefDataType) decoder.readStruct("ConfigurationElement", PubSubConfigurationRefDataType.TYPE_ID);
-            String name = decoder.readString("Name");
-            Variant identifier = decoder.readVariant("Identifier");
+        public PubSubConfigurationValueDataType decodeType(EncodingContext context,
+                                                           UaDecoder decoder) {
+            PubSubConfigurationRefDataType configurationElement = (PubSubConfigurationRefDataType) decoder.decodeStruct("ConfigurationElement", PubSubConfigurationRefDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Variant identifier = decoder.decodeVariant("Identifier");
             return new PubSubConfigurationValueDataType(configurationElement, name, identifier);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConfigurationValueDataType value) {
-            encoder.writeStruct("ConfigurationElement", value.getConfigurationElement(), PubSubConfigurationRefDataType.TYPE_ID);
-            encoder.writeString("Name", value.getName());
-            encoder.writeVariant("Identifier", value.getIdentifier());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PubSubConfigurationValueDataType value) {
+            encoder.encodeStruct("ConfigurationElement", value.getConfigurationElement(), PubSubConfigurationRefDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeVariant("Identifier", value.getIdentifier());
         }
     }
 }

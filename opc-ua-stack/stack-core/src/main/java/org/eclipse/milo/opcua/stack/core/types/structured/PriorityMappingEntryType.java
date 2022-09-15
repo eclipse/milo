@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PriorityMappingEntryType extends Structure implements UaStructure {
+public class PriorityMappingEntryType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=25220");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=25239");
@@ -106,21 +116,21 @@ public class PriorityMappingEntryType extends Structure implements UaStructure {
         }
 
         @Override
-        public PriorityMappingEntryType decode(SerializationContext context, UaDecoder decoder) {
-            String mappingUri = decoder.readString("MappingUri");
-            String priorityLabel = decoder.readString("PriorityLabel");
-            UByte priorityValuePcp = decoder.readByte("PriorityValue_PCP");
-            UInteger priorityValueDscp = decoder.readUInt32("PriorityValue_DSCP");
+        public PriorityMappingEntryType decodeType(EncodingContext context, UaDecoder decoder) {
+            String mappingUri = decoder.decodeString("MappingUri");
+            String priorityLabel = decoder.decodeString("PriorityLabel");
+            UByte priorityValuePcp = decoder.decodeByte("PriorityValue_PCP");
+            UInteger priorityValueDscp = decoder.decodeUInt32("PriorityValue_DSCP");
             return new PriorityMappingEntryType(mappingUri, priorityLabel, priorityValuePcp, priorityValueDscp);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PriorityMappingEntryType value) {
-            encoder.writeString("MappingUri", value.getMappingUri());
-            encoder.writeString("PriorityLabel", value.getPriorityLabel());
-            encoder.writeByte("PriorityValue_PCP", value.getPriorityValuePcp());
-            encoder.writeUInt32("PriorityValue_DSCP", value.getPriorityValueDscp());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PriorityMappingEntryType value) {
+            encoder.encodeString("MappingUri", value.getMappingUri());
+            encoder.encodeString("PriorityLabel", value.getPriorityLabel());
+            encoder.encodeByte("PriorityValue_PCP", value.getPriorityValuePcp());
+            encoder.encodeUInt32("PriorityValue_DSCP", value.getPriorityValueDscp());
         }
     }
 }

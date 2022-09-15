@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,8 +17,8 @@ import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -30,12 +30,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class ServiceRequest extends DefaultAttributeMap {
 
-    private final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
+    private final CompletableFuture<UaResponseMessageType> future = new CompletableFuture<>();
 
     private final long receivedAtNanos = System.nanoTime();
 
     private final UaStackServer server;
-    private final UaRequestMessage request;
+    private final UaRequestMessageType request;
     private final EndpointDescription endpoint;
     private final long secureChannelId;
     private final InetAddress clientAddress;
@@ -43,7 +43,7 @@ public class ServiceRequest extends DefaultAttributeMap {
 
     public ServiceRequest(
         UaStackServer server,
-        UaRequestMessage request,
+        UaRequestMessageType request,
         EndpointDescription endpoint,
         long secureChannelId,
         InetAddress clientAddress,
@@ -87,11 +87,11 @@ public class ServiceRequest extends DefaultAttributeMap {
         return secureChannelId;
     }
 
-    public UaRequestMessage getRequest() {
+    public UaRequestMessageType getRequest() {
         return request;
     }
 
-    public CompletableFuture<UaResponseMessage> getFuture() {
+    public CompletableFuture<UaResponseMessageType> getFuture() {
         return future;
     }
 
@@ -99,7 +99,7 @@ public class ServiceRequest extends DefaultAttributeMap {
         return receivedAtNanos;
     }
 
-    public void setResponse(UaResponseMessage response) {
+    public void setResponse(UaResponseMessageType response) {
         future.complete(response);
     }
 
@@ -165,7 +165,7 @@ public class ServiceRequest extends DefaultAttributeMap {
     }
 
     private void updateDiagnosticCounters(
-        @SuppressWarnings("unused") @Nullable UaResponseMessage r,
+        @SuppressWarnings("unused") @Nullable UaResponseMessageType r,
         @Nullable Throwable ex
     ) {
 

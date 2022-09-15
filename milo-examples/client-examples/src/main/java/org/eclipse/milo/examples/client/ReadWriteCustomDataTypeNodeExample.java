@@ -16,11 +16,10 @@ import org.eclipse.milo.examples.server.types.CustomEnumType;
 import org.eclipse.milo.examples.server.types.CustomStructType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +56,10 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
         Variant variant = value.getValue();
         ExtensionObject xo = (ExtensionObject) variant.getValue();
+        assert xo != null;
 
         CustomStructType decoded = (CustomStructType) xo.decode(
-            client.getStaticSerializationContext()
+            client.getStaticEncodingContext()
         );
         logger.info("Decoded={}", decoded);
 
@@ -71,7 +71,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             CustomEnumType.Field1
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
-            client.getStaticSerializationContext(),
+            client.getStaticEncodingContext(),
             modified,
             xo.getEncodingId(),
             OpcUaDefaultBinaryEncoding.getInstance()
@@ -85,9 +85,10 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
         variant = value.getValue();
         xo = (ExtensionObject) variant.getValue();
+        assert xo != null;
 
         decoded = (CustomStructType) xo.decode(
-            client.getStaticSerializationContext()
+            client.getStaticEncodingContext()
         );
         logger.info("Decoded={}", decoded);
 
@@ -106,16 +107,12 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         // Register codec with the client's DataTypeManager instance.
         // We need to register it by both its encodingId and its dataTypeId because it may be
         // looked up by either depending on the context.
-
-        client.getStaticDataTypeManager().registerCodec(
-            binaryEncodingId,
-            new CustomStructType.Codec().asBinaryCodec()
-        );
-
-        client.getStaticDataTypeManager().registerCodec(
-            new QualifiedName(dataTypeId.getNamespaceIndex(), "CustomStructType"),
+        client.getStaticDataTypeManager().registerType(
             dataTypeId,
-            new CustomStructType.Codec().asBinaryCodec()
+            new CustomStructType.Codec(),
+            binaryEncodingId,
+            null,
+            null
         );
     }
 

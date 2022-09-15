@@ -244,7 +244,7 @@ public class AuditClientUpdateMethodResultEventTypeNode extends AuditClientEvent
     @Override
     public void setInputArguments(Argument[] value) throws UaException {
         PropertyTypeNode node = getInputArgumentsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -275,7 +275,7 @@ public class AuditClientUpdateMethodResultEventTypeNode extends AuditClientEvent
 
     @Override
     public CompletableFuture<StatusCode> writeInputArgumentsAsync(Argument[] inputArguments) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), inputArguments);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), inputArguments);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getInputArgumentsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -310,7 +310,7 @@ public class AuditClientUpdateMethodResultEventTypeNode extends AuditClientEvent
     @Override
     public void setOutputArguments(Argument[] value) throws UaException {
         PropertyTypeNode node = getOutputArgumentsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -341,7 +341,7 @@ public class AuditClientUpdateMethodResultEventTypeNode extends AuditClientEvent
 
     @Override
     public CompletableFuture<StatusCode> writeOutputArgumentsAsync(Argument[] outputArguments) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), outputArguments);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), outputArguments);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getOutputArgumentsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

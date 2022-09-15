@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,8 +18,8 @@ import java.util.UUID;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
@@ -58,9 +58,9 @@ public final class Variant {
     public Optional<ExpandedNodeId> getDataType() {
         if (value == null) return Optional.empty();
 
-        if (value instanceof UaStructure) {
-            return Optional.of(((UaStructure) value).getTypeId());
-        } else if (value instanceof UaEnumeration) {
+        if (value instanceof UaStructuredType) {
+            return Optional.of(((UaStructuredType) value).getTypeId());
+        } else if (value instanceof UaEnumeratedType) {
             return Optional.of(NodeIds.Int32.expanded());
         } else {
             Class<?> clazz = value.getClass().isArray() ?

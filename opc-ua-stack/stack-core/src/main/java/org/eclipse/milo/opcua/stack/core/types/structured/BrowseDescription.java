@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class BrowseDescription extends Structure implements UaStructure {
+public class BrowseDescription extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=514");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=516");
@@ -122,24 +132,25 @@ public class BrowseDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public BrowseDescription decode(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            BrowseDirection browseDirection = (BrowseDirection) decoder.readEnum("BrowseDirection", BrowseDirection.class);
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
-            UInteger nodeClassMask = decoder.readUInt32("NodeClassMask");
-            UInteger resultMask = decoder.readUInt32("ResultMask");
+        public BrowseDescription decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            BrowseDirection browseDirection = BrowseDirection.from(decoder.decodeEnum("BrowseDirection"));
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
+            UInteger nodeClassMask = decoder.decodeUInt32("NodeClassMask");
+            UInteger resultMask = decoder.decodeUInt32("ResultMask");
             return new BrowseDescription(nodeId, browseDirection, referenceTypeId, includeSubtypes, nodeClassMask, resultMask);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseDescription value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeEnum("BrowseDirection", value.getBrowseDirection());
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
-            encoder.writeUInt32("NodeClassMask", value.getNodeClassMask());
-            encoder.writeUInt32("ResultMask", value.getResultMask());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               BrowseDescription value) {
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeEnum("BrowseDirection", value.getBrowseDirection());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
+            encoder.encodeUInt32("NodeClassMask", value.getNodeClassMask());
+            encoder.encodeUInt32("ResultMask", value.getResultMask());
         }
     }
 }

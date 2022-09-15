@@ -52,7 +52,7 @@ public class StandaloneSubscribedDataSetTypeNode extends BaseObjectTypeNode impl
     @Override
     public void setDataSetMetaData(DataSetMetaDataType value) throws UaException {
         PropertyTypeNode node = getDataSetMetaDataNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -84,7 +84,7 @@ public class StandaloneSubscribedDataSetTypeNode extends BaseObjectTypeNode impl
     @Override
     public CompletableFuture<StatusCode> writeDataSetMetaDataAsync(
         DataSetMetaDataType dataSetMetaData) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), dataSetMetaData);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), dataSetMetaData);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDataSetMetaDataNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

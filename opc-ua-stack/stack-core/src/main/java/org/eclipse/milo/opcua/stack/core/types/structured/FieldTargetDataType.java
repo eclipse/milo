@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.UUID;
@@ -6,11 +16,11 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -27,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class FieldTargetDataType extends Structure implements UaStructure {
+public class FieldTargetDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14744");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=14848");
@@ -134,26 +144,27 @@ public class FieldTargetDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public FieldTargetDataType decode(SerializationContext context, UaDecoder decoder) {
-            UUID dataSetFieldId = decoder.readGuid("DataSetFieldId");
-            String receiverIndexRange = decoder.readString("ReceiverIndexRange");
-            NodeId targetNodeId = decoder.readNodeId("TargetNodeId");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String writeIndexRange = decoder.readString("WriteIndexRange");
-            OverrideValueHandling overrideValueHandling = (OverrideValueHandling) decoder.readEnum("OverrideValueHandling", OverrideValueHandling.class);
-            Variant overrideValue = decoder.readVariant("OverrideValue");
+        public FieldTargetDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            UUID dataSetFieldId = decoder.decodeGuid("DataSetFieldId");
+            String receiverIndexRange = decoder.decodeString("ReceiverIndexRange");
+            NodeId targetNodeId = decoder.decodeNodeId("TargetNodeId");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String writeIndexRange = decoder.decodeString("WriteIndexRange");
+            OverrideValueHandling overrideValueHandling = OverrideValueHandling.from(decoder.decodeEnum("OverrideValueHandling"));
+            Variant overrideValue = decoder.decodeVariant("OverrideValue");
             return new FieldTargetDataType(dataSetFieldId, receiverIndexRange, targetNodeId, attributeId, writeIndexRange, overrideValueHandling, overrideValue);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, FieldTargetDataType value) {
-            encoder.writeGuid("DataSetFieldId", value.getDataSetFieldId());
-            encoder.writeString("ReceiverIndexRange", value.getReceiverIndexRange());
-            encoder.writeNodeId("TargetNodeId", value.getTargetNodeId());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("WriteIndexRange", value.getWriteIndexRange());
-            encoder.writeEnum("OverrideValueHandling", value.getOverrideValueHandling());
-            encoder.writeVariant("OverrideValue", value.getOverrideValue());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               FieldTargetDataType value) {
+            encoder.encodeGuid("DataSetFieldId", value.getDataSetFieldId());
+            encoder.encodeString("ReceiverIndexRange", value.getReceiverIndexRange());
+            encoder.encodeNodeId("TargetNodeId", value.getTargetNodeId());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("WriteIndexRange", value.getWriteIndexRange());
+            encoder.encodeEnum("OverrideValueHandling", value.getOverrideValueHandling());
+            encoder.encodeVariant("OverrideValue", value.getOverrideValue());
         }
     }
 }

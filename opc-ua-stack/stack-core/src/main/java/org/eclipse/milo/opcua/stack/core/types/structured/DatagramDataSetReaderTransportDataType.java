@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class DatagramDataSetReaderTransportDataType extends DataSetReaderTransportDataType implements UaStructure {
+public class DatagramDataSetReaderTransportDataType extends DataSetReaderTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23614");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=23866");
@@ -105,22 +115,22 @@ public class DatagramDataSetReaderTransportDataType extends DataSetReaderTranspo
         }
 
         @Override
-        public DatagramDataSetReaderTransportDataType decode(SerializationContext context,
-                                                             UaDecoder decoder) {
-            NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
-            String qosCategory = decoder.readString("QosCategory");
-            ReceiveQosDataType[] datagramQos = (ReceiveQosDataType[]) decoder.readStructArray("DatagramQos", ReceiveQosDataType.TYPE_ID);
-            String topic = decoder.readString("Topic");
+        public DatagramDataSetReaderTransportDataType decodeType(EncodingContext context,
+                                                                 UaDecoder decoder) {
+            NetworkAddressDataType address = (NetworkAddressDataType) decoder.decodeStruct("Address", NetworkAddressDataType.TYPE_ID);
+            String qosCategory = decoder.decodeString("QosCategory");
+            ReceiveQosDataType[] datagramQos = (ReceiveQosDataType[]) decoder.decodeStructArray("DatagramQos", ReceiveQosDataType.TYPE_ID);
+            String topic = decoder.decodeString("Topic");
             return new DatagramDataSetReaderTransportDataType(address, qosCategory, datagramQos, topic);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramDataSetReaderTransportDataType value) {
-            encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
-            encoder.writeString("QosCategory", value.getQosCategory());
-            encoder.writeStructArray("DatagramQos", value.getDatagramQos(), ReceiveQosDataType.TYPE_ID);
-            encoder.writeString("Topic", value.getTopic());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               DatagramDataSetReaderTransportDataType value) {
+            encoder.encodeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
+            encoder.encodeString("QosCategory", value.getQosCategory());
+            encoder.encodeStructArray("DatagramQos", value.getDatagramQos(), ReceiveQosDataType.TYPE_ID);
+            encoder.encodeString("Topic", value.getTopic());
         }
     }
 }

@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -21,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class DecimalDataType extends Structure implements UaStructure {
+public class DecimalDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=17861");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=17863");
@@ -86,16 +96,16 @@ public class DecimalDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public DecimalDataType decode(SerializationContext context, UaDecoder decoder) {
-            Short scale = decoder.readInt16("Scale");
-            ByteString value = decoder.readByteString("Value");
+        public DecimalDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            Short scale = decoder.decodeInt16("Scale");
+            ByteString value = decoder.decodeByteString("Value");
             return new DecimalDataType(scale, value);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DecimalDataType value) {
-            encoder.writeInt16("Scale", value.getScale());
-            encoder.writeByteString("Value", value.getValue());
+        public void encodeType(EncodingContext context, UaEncoder encoder, DecimalDataType value) {
+            encoder.encodeInt16("Scale", value.getScale());
+            encoder.encodeByteString("Value", value.getValue());
         }
     }
 }

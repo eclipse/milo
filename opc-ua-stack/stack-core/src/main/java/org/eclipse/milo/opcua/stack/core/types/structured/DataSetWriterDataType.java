@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class DataSetWriterDataType extends Structure implements UaStructure {
+public class DataSetWriterDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15597");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15682");
@@ -148,31 +158,31 @@ public class DataSetWriterDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public DataSetWriterDataType decode(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            UShort dataSetWriterId = decoder.readUInt16("DataSetWriterId");
-            DataSetFieldContentMask dataSetFieldContentMask = new DataSetFieldContentMask(decoder.readUInt32("DataSetFieldContentMask"));
-            UInteger keyFrameCount = decoder.readUInt32("KeyFrameCount");
-            String dataSetName = decoder.readString("DataSetName");
-            KeyValuePair[] dataSetWriterProperties = (KeyValuePair[]) decoder.readStructArray("DataSetWriterProperties", KeyValuePair.TYPE_ID);
-            DataSetWriterTransportDataType transportSettings = (DataSetWriterTransportDataType) decoder.readStruct("TransportSettings", DataSetWriterTransportDataType.TYPE_ID);
-            DataSetWriterMessageDataType messageSettings = (DataSetWriterMessageDataType) decoder.readStruct("MessageSettings", DataSetWriterMessageDataType.TYPE_ID);
+        public DataSetWriterDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            UShort dataSetWriterId = decoder.decodeUInt16("DataSetWriterId");
+            DataSetFieldContentMask dataSetFieldContentMask = new DataSetFieldContentMask(decoder.decodeUInt32("DataSetFieldContentMask"));
+            UInteger keyFrameCount = decoder.decodeUInt32("KeyFrameCount");
+            String dataSetName = decoder.decodeString("DataSetName");
+            KeyValuePair[] dataSetWriterProperties = (KeyValuePair[]) decoder.decodeStructArray("DataSetWriterProperties", KeyValuePair.TYPE_ID);
+            DataSetWriterTransportDataType transportSettings = (DataSetWriterTransportDataType) decoder.decodeStruct("TransportSettings", DataSetWriterTransportDataType.TYPE_ID);
+            DataSetWriterMessageDataType messageSettings = (DataSetWriterMessageDataType) decoder.decodeStruct("MessageSettings", DataSetWriterMessageDataType.TYPE_ID);
             return new DataSetWriterDataType(name, enabled, dataSetWriterId, dataSetFieldContentMask, keyFrameCount, dataSetName, dataSetWriterProperties, transportSettings, messageSettings);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DataSetWriterDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeUInt16("DataSetWriterId", value.getDataSetWriterId());
-            encoder.writeUInt32("DataSetFieldContentMask", value.getDataSetFieldContentMask().getValue());
-            encoder.writeUInt32("KeyFrameCount", value.getKeyFrameCount());
-            encoder.writeString("DataSetName", value.getDataSetName());
-            encoder.writeStructArray("DataSetWriterProperties", value.getDataSetWriterProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), DataSetWriterTransportDataType.TYPE_ID);
-            encoder.writeStruct("MessageSettings", value.getMessageSettings(), DataSetWriterMessageDataType.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               DataSetWriterDataType value) {
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeUInt16("DataSetWriterId", value.getDataSetWriterId());
+            encoder.encodeUInt32("DataSetFieldContentMask", value.getDataSetFieldContentMask().getValue());
+            encoder.encodeUInt32("KeyFrameCount", value.getKeyFrameCount());
+            encoder.encodeString("DataSetName", value.getDataSetName());
+            encoder.encodeStructArray("DataSetWriterProperties", value.getDataSetWriterProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), DataSetWriterTransportDataType.TYPE_ID);
+            encoder.encodeStruct("MessageSettings", value.getMessageSettings(), DataSetWriterMessageDataType.TYPE_ID);
         }
     }
 }

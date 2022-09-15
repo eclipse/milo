@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class FindServersOnNetworkResponse extends Structure implements UaResponseMessage {
+public class FindServersOnNetworkResponse extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12191");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=12209");
@@ -98,19 +108,20 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
         }
 
         @Override
-        public FindServersOnNetworkResponse decode(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            DateTime lastCounterResetTime = decoder.readDateTime("LastCounterResetTime");
-            ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.readStructArray("Servers", ServerOnNetwork.TYPE_ID);
+        public FindServersOnNetworkResponse decodeType(EncodingContext context,
+                                                       UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            DateTime lastCounterResetTime = decoder.decodeDateTime("LastCounterResetTime");
+            ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.decodeStructArray("Servers", ServerOnNetwork.TYPE_ID);
             return new FindServersOnNetworkResponse(responseHeader, lastCounterResetTime, servers);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           FindServersOnNetworkResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeDateTime("LastCounterResetTime", value.getLastCounterResetTime());
-            encoder.writeStructArray("Servers", value.getServers(), ServerOnNetwork.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               FindServersOnNetworkResponse value) {
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeDateTime("LastCounterResetTime", value.getLastCounterResetTime());
+            encoder.encodeStructArray("Servers", value.getServers(), ServerOnNetwork.TYPE_ID);
         }
     }
 }

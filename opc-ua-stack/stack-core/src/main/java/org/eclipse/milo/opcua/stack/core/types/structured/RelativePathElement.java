@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class RelativePathElement extends Structure implements UaStructure {
+public class RelativePathElement extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=537");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=539");
@@ -106,20 +116,21 @@ public class RelativePathElement extends Structure implements UaStructure {
         }
 
         @Override
-        public RelativePathElement decode(SerializationContext context, UaDecoder decoder) {
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isInverse = decoder.readBoolean("IsInverse");
-            Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
-            QualifiedName targetName = decoder.readQualifiedName("TargetName");
+        public RelativePathElement decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isInverse = decoder.decodeBoolean("IsInverse");
+            Boolean includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
+            QualifiedName targetName = decoder.decodeQualifiedName("TargetName");
             return new RelativePathElement(referenceTypeId, isInverse, includeSubtypes, targetName);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RelativePathElement value) {
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsInverse", value.getIsInverse());
-            encoder.writeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
-            encoder.writeQualifiedName("TargetName", value.getTargetName());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               RelativePathElement value) {
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsInverse", value.getIsInverse());
+            encoder.encodeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
+            encoder.encodeQualifiedName("TargetName", value.getTargetName());
         }
     }
 }

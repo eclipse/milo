@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataType implements UaStructure {
+public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15652");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15717");
@@ -106,22 +116,22 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public UadpDataSetWriterMessageDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
-            UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
-            UShort configuredSize = decoder.readUInt16("ConfiguredSize");
-            UShort networkMessageNumber = decoder.readUInt16("NetworkMessageNumber");
-            UShort dataSetOffset = decoder.readUInt16("DataSetOffset");
+        public UadpDataSetWriterMessageDataType decodeType(EncodingContext context,
+                                                           UaDecoder decoder) {
+            UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
+            UShort configuredSize = decoder.decodeUInt16("ConfiguredSize");
+            UShort networkMessageNumber = decoder.decodeUInt16("NetworkMessageNumber");
+            UShort dataSetOffset = decoder.decodeUInt16("DataSetOffset");
             return new UadpDataSetWriterMessageDataType(dataSetMessageContentMask, configuredSize, networkMessageNumber, dataSetOffset);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UadpDataSetWriterMessageDataType value) {
-            encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
-            encoder.writeUInt16("ConfiguredSize", value.getConfiguredSize());
-            encoder.writeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
-            encoder.writeUInt16("DataSetOffset", value.getDataSetOffset());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               UadpDataSetWriterMessageDataType value) {
+            encoder.encodeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
+            encoder.encodeUInt16("ConfiguredSize", value.getConfiguredSize());
+            encoder.encodeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
+            encoder.encodeUInt16("DataSetOffset", value.getDataSetOffset());
         }
     }
 }

@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PubSubConfigurationRefDataType extends Structure implements UaStructure {
+public class PubSubConfigurationRefDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=25519");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=25531");
@@ -106,21 +116,22 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         }
 
         @Override
-        public PubSubConfigurationRefDataType decode(SerializationContext context, UaDecoder decoder) {
-            PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.readUInt32("ConfigurationMask"));
-            UShort elementIndex = decoder.readUInt16("ElementIndex");
-            UShort connectionIndex = decoder.readUInt16("ConnectionIndex");
-            UShort groupIndex = decoder.readUInt16("GroupIndex");
+        public PubSubConfigurationRefDataType decodeType(EncodingContext context,
+                                                         UaDecoder decoder) {
+            PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.decodeUInt32("ConfigurationMask"));
+            UShort elementIndex = decoder.decodeUInt16("ElementIndex");
+            UShort connectionIndex = decoder.decodeUInt16("ConnectionIndex");
+            UShort groupIndex = decoder.decodeUInt16("GroupIndex");
             return new PubSubConfigurationRefDataType(configurationMask, elementIndex, connectionIndex, groupIndex);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConfigurationRefDataType value) {
-            encoder.writeUInt32("ConfigurationMask", value.getConfigurationMask().getValue());
-            encoder.writeUInt16("ElementIndex", value.getElementIndex());
-            encoder.writeUInt16("ConnectionIndex", value.getConnectionIndex());
-            encoder.writeUInt16("GroupIndex", value.getGroupIndex());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PubSubConfigurationRefDataType value) {
+            encoder.encodeUInt32("ConfigurationMask", value.getConfigurationMask().getValue());
+            encoder.encodeUInt16("ElementIndex", value.getElementIndex());
+            encoder.encodeUInt16("ConnectionIndex", value.getConnectionIndex());
+            encoder.encodeUInt16("GroupIndex", value.getGroupIndex());
         }
     }
 }

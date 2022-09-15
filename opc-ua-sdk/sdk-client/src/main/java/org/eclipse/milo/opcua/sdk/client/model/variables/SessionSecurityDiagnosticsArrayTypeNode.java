@@ -55,7 +55,7 @@ public class SessionSecurityDiagnosticsArrayTypeNode extends BaseDataVariableTyp
     public void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value) throws
         UaException {
         SessionSecurityDiagnosticsTypeNode node = getSessionSecurityDiagnosticsNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -89,7 +89,7 @@ public class SessionSecurityDiagnosticsArrayTypeNode extends BaseDataVariableTyp
     @Override
     public CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsAsync(
         SessionSecurityDiagnosticsDataType sessionSecurityDiagnostics) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), sessionSecurityDiagnostics);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), sessionSecurityDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,18 +13,18 @@ package org.eclipse.milo.examples.server.types;
 import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Union;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class CustomUnionType extends Union implements UaStructure {
+public class CustomUnionType extends Union implements UaStructuredType {
 
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse(String.format(
         "nsu=%s;s=%s",
@@ -107,17 +107,17 @@ public class CustomUnionType extends Union implements UaStructure {
         }
 
         @Override
-        public CustomUnionType decode(SerializationContext context, UaDecoder decoder) {
-            UInteger switchValue = decoder.readUInt32("SwitchValue");
+        public CustomUnionType decodeType(EncodingContext context, UaDecoder decoder) {
+            UInteger switchValue = decoder.decodeUInt32("SwitchValue");
             switch (switchValue.intValue()) {
                 case 0:
                     return CustomUnionType.ofNull();
                 case 1: {
-                    UInteger foo = decoder.readUInt32("foo");
+                    UInteger foo = decoder.decodeUInt32("foo");
                     return CustomUnionType.ofFoo(foo);
                 }
                 case 2: {
-                    String bar = decoder.readString("bar");
+                    String bar = decoder.decodeString("bar");
                     return CustomUnionType.ofBar(bar);
                 }
                 default:
@@ -129,17 +129,17 @@ public class CustomUnionType extends Union implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CustomUnionType value) {
-            encoder.writeUInt32("SwitchValue", uint(value.type.ordinal()));
+        public void encodeType(EncodingContext context, UaEncoder encoder, CustomUnionType value) {
+            encoder.encodeUInt32("SwitchValue", uint(value.type.ordinal()));
             switch (value.type) {
                 case Null:
                     break;
                 case Foo: {
-                    encoder.writeUInt32("foo", value.asFoo());
+                    encoder.encodeUInt32("foo", value.asFoo());
                     break;
                 }
                 case Bar: {
-                    encoder.writeString("bar", value.asBar());
+                    encoder.encodeString("bar", value.asBar());
                     break;
                 }
                 default:

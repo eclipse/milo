@@ -56,7 +56,7 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     @Override
     public void setSessionDiagnostics(SessionDiagnosticsDataType value) throws UaException {
         SessionDiagnosticsVariableTypeNode node = getSessionDiagnosticsNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -88,7 +88,7 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     @Override
     public CompletableFuture<StatusCode> writeSessionDiagnosticsAsync(
         SessionDiagnosticsDataType sessionDiagnostics) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), sessionDiagnostics);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), sessionDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -125,7 +125,7 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     public void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value) throws
         UaException {
         SessionSecurityDiagnosticsTypeNode node = getSessionSecurityDiagnosticsNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -159,7 +159,7 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     @Override
     public CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsAsync(
         SessionSecurityDiagnosticsDataType sessionSecurityDiagnostics) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), sessionSecurityDiagnostics);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), sessionSecurityDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -196,7 +196,7 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) throws
         UaException {
         SubscriptionDiagnosticsArrayTypeNode node = getSubscriptionDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -230,7 +230,7 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     @Override
     public CompletableFuture<StatusCode> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), subscriptionDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), subscriptionDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

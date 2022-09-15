@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,8 +21,8 @@ import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +61,12 @@ public abstract class AbstractTransport implements UaTransport {
     public abstract CompletableFuture<Channel> channel();
 
     @Override
-    public CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
+    public CompletableFuture<UaResponseMessageType> sendRequest(UaRequestMessageType request) {
         return channel().thenCompose(channel -> sendRequest(request, channel, true));
     }
 
-    protected CompletableFuture<UaResponseMessage> sendRequest(
-        UaRequestMessage request,
+    protected CompletableFuture<UaResponseMessageType> sendRequest(
+        UaRequestMessageType request,
         Channel channel,
         boolean firstAttempt) {
 
@@ -88,7 +88,7 @@ public abstract class AbstractTransport implements UaTransport {
 
                     config.getScheduledExecutor().schedule(
                         () -> config.getExecutor().execute(() -> {
-                            CompletableFuture<UaResponseMessage> sendAgain =
+                            CompletableFuture<UaResponseMessageType> sendAgain =
                                 channel().thenCompose(ch -> sendRequest(request, ch, false));
 
                             sendAgain.whenComplete((r, ex) -> {

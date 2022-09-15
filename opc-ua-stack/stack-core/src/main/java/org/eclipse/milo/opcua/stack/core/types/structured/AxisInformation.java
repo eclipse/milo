@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class AxisInformation extends Structure implements UaStructure {
+public class AxisInformation extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12079");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=12089");
@@ -114,22 +124,22 @@ public class AxisInformation extends Structure implements UaStructure {
         }
 
         @Override
-        public AxisInformation decode(SerializationContext context, UaDecoder decoder) {
-            EUInformation engineeringUnits = (EUInformation) decoder.readStruct("EngineeringUnits", EUInformation.TYPE_ID);
-            Range euRange = (Range) decoder.readStruct("EURange", Range.TYPE_ID);
-            LocalizedText title = decoder.readLocalizedText("Title");
-            AxisScaleEnumeration axisScaleType = (AxisScaleEnumeration) decoder.readEnum("AxisScaleType", AxisScaleEnumeration.class);
-            Double[] axisSteps = decoder.readDoubleArray("AxisSteps");
+        public AxisInformation decodeType(EncodingContext context, UaDecoder decoder) {
+            EUInformation engineeringUnits = (EUInformation) decoder.decodeStruct("EngineeringUnits", EUInformation.TYPE_ID);
+            Range euRange = (Range) decoder.decodeStruct("EURange", Range.TYPE_ID);
+            LocalizedText title = decoder.decodeLocalizedText("Title");
+            AxisScaleEnumeration axisScaleType = AxisScaleEnumeration.from(decoder.decodeEnum("AxisScaleType"));
+            Double[] axisSteps = decoder.decodeDoubleArray("AxisSteps");
             return new AxisInformation(engineeringUnits, euRange, title, axisScaleType, axisSteps);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AxisInformation value) {
-            encoder.writeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
-            encoder.writeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
-            encoder.writeLocalizedText("Title", value.getTitle());
-            encoder.writeEnum("AxisScaleType", value.getAxisScaleType());
-            encoder.writeDoubleArray("AxisSteps", value.getAxisSteps());
+        public void encodeType(EncodingContext context, UaEncoder encoder, AxisInformation value) {
+            encoder.encodeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
+            encoder.encodeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
+            encoder.encodeLocalizedText("Title", value.getTitle());
+            encoder.encodeEnum("AxisScaleType", value.getAxisScaleType());
+            encoder.encodeDoubleArray("AxisSteps", value.getAxisSteps());
         }
     }
 }

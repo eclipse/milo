@@ -634,7 +634,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     @Override
     public void setLastMethodReturnStatus(StatusResult value) throws UaException {
         PropertyTypeNode node = getLastMethodReturnStatusNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -666,7 +666,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     @Override
     public CompletableFuture<StatusCode> writeLastMethodReturnStatusAsync(
         StatusResult lastMethodReturnStatus) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), lastMethodReturnStatus);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), lastMethodReturnStatus);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodReturnStatusNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

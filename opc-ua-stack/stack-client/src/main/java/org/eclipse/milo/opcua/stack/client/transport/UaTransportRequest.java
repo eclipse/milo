@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,31 +13,31 @@ package org.eclipse.milo.opcua.stack.client.transport;
 import java.util.concurrent.CompletableFuture;
 
 import io.netty.util.Timeout;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.jetbrains.annotations.Nullable;
 
 public class UaTransportRequest {
 
     private volatile Timeout timeout;
 
-    private final UaRequestMessage request;
-    private final CompletableFuture<UaResponseMessage> future;
+    private final UaRequestMessageType request;
+    private final CompletableFuture<UaResponseMessageType> future;
 
-    public UaTransportRequest(UaRequestMessage request) {
+    public UaTransportRequest(UaRequestMessageType request) {
         this(request, new CompletableFuture<>());
     }
 
-    public UaTransportRequest(UaRequestMessage request, CompletableFuture<UaResponseMessage> future) {
+    public UaTransportRequest(UaRequestMessageType request, CompletableFuture<UaResponseMessageType> future) {
         this.request = request;
         this.future = future;
     }
 
-    public UaRequestMessage getRequest() {
+    public UaRequestMessageType getRequest() {
         return request;
     }
 
-    public CompletableFuture<UaResponseMessage> getFuture() {
+    public CompletableFuture<UaResponseMessageType> getFuture() {
         return future;
     }
 

@@ -52,7 +52,7 @@ public class AuditAddNodesEventTypeNode extends AuditNodeManagementEventTypeNode
     @Override
     public void setNodesToAdd(AddNodesItem[] value) throws UaException {
         PropertyTypeNode node = getNodesToAddNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -83,7 +83,7 @@ public class AuditAddNodesEventTypeNode extends AuditNodeManagementEventTypeNode
 
     @Override
     public CompletableFuture<StatusCode> writeNodesToAddAsync(AddNodesItem[] nodesToAdd) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), nodesToAdd);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), nodesToAdd);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getNodesToAddNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

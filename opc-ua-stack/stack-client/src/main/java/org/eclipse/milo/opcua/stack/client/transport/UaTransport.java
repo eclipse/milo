@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@ package org.eclipse.milo.opcua.stack.client.transport;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
 public interface UaTransport {
 
@@ -38,11 +38,11 @@ public interface UaTransport {
     CompletableFuture<UaTransport> disconnect();
 
     /**
-     * Send a {@link UaRequestMessage}, returning a {@link CompletableFuture} representing the result of the operation.
+     * Send a {@link UaRequestMessageType}, returning a {@link CompletableFuture} representing the result of the operation.
      *
-     * @param request the {@link UaRequestMessage} to send.
+     * @param request the {@link UaRequestMessageType} to send.
      * @return a {@link CompletableFuture} representing the result of the operation.
      */
-    CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request);
+    CompletableFuture<UaResponseMessageType> sendRequest(UaRequestMessageType request);
 
 }

@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class TransferResult extends Structure implements UaStructure {
+public class TransferResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=836");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=838");
@@ -89,16 +99,16 @@ public class TransferResult extends Structure implements UaStructure {
         }
 
         @Override
-        public TransferResult decode(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            UInteger[] availableSequenceNumbers = decoder.readUInt32Array("AvailableSequenceNumbers");
+        public TransferResult decodeType(EncodingContext context, UaDecoder decoder) {
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            UInteger[] availableSequenceNumbers = decoder.decodeUInt32Array("AvailableSequenceNumbers");
             return new TransferResult(statusCode, availableSequenceNumbers);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TransferResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
+        public void encodeType(EncodingContext context, UaEncoder encoder, TransferResult value) {
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
         }
     }
 }

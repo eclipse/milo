@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ParsingResult extends Structure implements UaStructure {
+public class ParsingResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=610");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=612");
@@ -99,18 +109,18 @@ public class ParsingResult extends Structure implements UaStructure {
         }
 
         @Override
-        public ParsingResult decode(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] dataStatusCodes = decoder.readStatusCodeArray("DataStatusCodes");
-            DiagnosticInfo[] dataDiagnosticInfos = decoder.readDiagnosticInfoArray("DataDiagnosticInfos");
+        public ParsingResult decodeType(EncodingContext context, UaDecoder decoder) {
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            StatusCode[] dataStatusCodes = decoder.decodeStatusCodeArray("DataStatusCodes");
+            DiagnosticInfo[] dataDiagnosticInfos = decoder.decodeDiagnosticInfoArray("DataDiagnosticInfos");
             return new ParsingResult(statusCode, dataStatusCodes, dataDiagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ParsingResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeStatusCodeArray("DataStatusCodes", value.getDataStatusCodes());
-            encoder.writeDiagnosticInfoArray("DataDiagnosticInfos", value.getDataDiagnosticInfos());
+        public void encodeType(EncodingContext context, UaEncoder encoder, ParsingResult value) {
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeStatusCodeArray("DataStatusCodes", value.getDataStatusCodes());
+            encoder.encodeDiagnosticInfoArray("DataDiagnosticInfos", value.getDataDiagnosticInfos());
         }
     }
 }

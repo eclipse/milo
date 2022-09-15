@@ -52,7 +52,7 @@ public class TargetVariablesTypeNode extends SubscribedDataSetTypeNode implement
     @Override
     public void setTargetVariables(FieldTargetDataType[] value) throws UaException {
         PropertyTypeNode node = getTargetVariablesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -84,7 +84,7 @@ public class TargetVariablesTypeNode extends SubscribedDataSetTypeNode implement
     @Override
     public CompletableFuture<StatusCode> writeTargetVariablesAsync(
         FieldTargetDataType[] targetVariables) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), targetVariables);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), targetVariables);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTargetVariablesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

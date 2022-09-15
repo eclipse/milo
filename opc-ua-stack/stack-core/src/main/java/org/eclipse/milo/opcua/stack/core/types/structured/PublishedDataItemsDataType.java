@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PublishedDataItemsDataType extends PublishedDataSetSourceDataType implements UaStructure {
+public class PublishedDataItemsDataType extends PublishedDataSetSourceDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15581");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15679");
@@ -80,15 +90,15 @@ public class PublishedDataItemsDataType extends PublishedDataSetSourceDataType i
         }
 
         @Override
-        public PublishedDataItemsDataType decode(SerializationContext context, UaDecoder decoder) {
-            PublishedVariableDataType[] publishedData = (PublishedVariableDataType[]) decoder.readStructArray("PublishedData", PublishedVariableDataType.TYPE_ID);
+        public PublishedDataItemsDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            PublishedVariableDataType[] publishedData = (PublishedVariableDataType[]) decoder.decodeStructArray("PublishedData", PublishedVariableDataType.TYPE_ID);
             return new PublishedDataItemsDataType(publishedData);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedDataItemsDataType value) {
-            encoder.writeStructArray("PublishedData", value.getPublishedData(), PublishedVariableDataType.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PublishedDataItemsDataType value) {
+            encoder.encodeStructArray("PublishedData", value.getPublishedData(), PublishedVariableDataType.TYPE_ID);
         }
     }
 }

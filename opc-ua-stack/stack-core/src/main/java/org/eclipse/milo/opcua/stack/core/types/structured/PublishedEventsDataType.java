@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PublishedEventsDataType extends PublishedDataSetSourceDataType implements UaStructure {
+public class PublishedEventsDataType extends PublishedDataSetSourceDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15582");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15681");
@@ -97,19 +107,19 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
         }
 
         @Override
-        public PublishedEventsDataType decode(SerializationContext context, UaDecoder decoder) {
-            NodeId eventNotifier = decoder.readNodeId("EventNotifier");
-            SimpleAttributeOperand[] selectedFields = (SimpleAttributeOperand[]) decoder.readStructArray("SelectedFields", SimpleAttributeOperand.TYPE_ID);
-            ContentFilter filter = (ContentFilter) decoder.readStruct("Filter", ContentFilter.TYPE_ID);
+        public PublishedEventsDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId eventNotifier = decoder.decodeNodeId("EventNotifier");
+            SimpleAttributeOperand[] selectedFields = (SimpleAttributeOperand[]) decoder.decodeStructArray("SelectedFields", SimpleAttributeOperand.TYPE_ID);
+            ContentFilter filter = (ContentFilter) decoder.decodeStruct("Filter", ContentFilter.TYPE_ID);
             return new PublishedEventsDataType(eventNotifier, selectedFields, filter);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedEventsDataType value) {
-            encoder.writeNodeId("EventNotifier", value.getEventNotifier());
-            encoder.writeStructArray("SelectedFields", value.getSelectedFields(), SimpleAttributeOperand.TYPE_ID);
-            encoder.writeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PublishedEventsDataType value) {
+            encoder.encodeNodeId("EventNotifier", value.getEventNotifier());
+            encoder.encodeStructArray("SelectedFields", value.getSelectedFields(), SimpleAttributeOperand.TYPE_ID);
+            encoder.encodeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);
         }
     }
 }

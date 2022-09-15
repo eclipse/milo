@@ -202,6 +202,26 @@ public class DataTypeTree {
         }
     }
 
+    public boolean isEnumType(NodeId dataTypeId) {
+        return isSubtypeOf(dataTypeId, NodeIds.Enumeration);
+    }
+
+    public boolean isStructType(NodeId dataTypeId) {
+        return isSubtypeOf(dataTypeId, NodeIds.Structure);
+    }
+
+    public boolean isSubtypeOf(NodeId dataTypeId, NodeId superDataTypeId) {
+        Tree<DataType> tree = getTreeNode(dataTypeId);
+        if (tree == null) return false;
+
+        Tree<DataType> parentTree = tree.getParent();
+        if (parentTree == null) return false;
+
+        NodeId parentDataTypeId = parentTree.getValue().getNodeId();
+
+        return parentDataTypeId.equals(superDataTypeId) || isSubtypeOf(parentDataTypeId, superDataTypeId);
+    }
+
     /**
      * Get the underlying {@link Tree} structure.
      *

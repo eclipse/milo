@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class EventFilterResult extends MonitoringFilterResult implements UaStructure {
+public class EventFilterResult extends MonitoringFilterResult implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=734");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=736");
@@ -99,18 +109,19 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
         }
 
         @Override
-        public EventFilterResult decode(SerializationContext context, UaDecoder decoder) {
-            StatusCode[] selectClauseResults = decoder.readStatusCodeArray("SelectClauseResults");
-            DiagnosticInfo[] selectClauseDiagnosticInfos = decoder.readDiagnosticInfoArray("SelectClauseDiagnosticInfos");
-            ContentFilterResult whereClauseResult = (ContentFilterResult) decoder.readStruct("WhereClauseResult", ContentFilterResult.TYPE_ID);
+        public EventFilterResult decodeType(EncodingContext context, UaDecoder decoder) {
+            StatusCode[] selectClauseResults = decoder.decodeStatusCodeArray("SelectClauseResults");
+            DiagnosticInfo[] selectClauseDiagnosticInfos = decoder.decodeDiagnosticInfoArray("SelectClauseDiagnosticInfos");
+            ContentFilterResult whereClauseResult = (ContentFilterResult) decoder.decodeStruct("WhereClauseResult", ContentFilterResult.TYPE_ID);
             return new EventFilterResult(selectClauseResults, selectClauseDiagnosticInfos, whereClauseResult);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EventFilterResult value) {
-            encoder.writeStatusCodeArray("SelectClauseResults", value.getSelectClauseResults());
-            encoder.writeDiagnosticInfoArray("SelectClauseDiagnosticInfos", value.getSelectClauseDiagnosticInfos());
-            encoder.writeStruct("WhereClauseResult", value.getWhereClauseResult(), ContentFilterResult.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               EventFilterResult value) {
+            encoder.encodeStatusCodeArray("SelectClauseResults", value.getSelectClauseResults());
+            encoder.encodeDiagnosticInfoArray("SelectClauseDiagnosticInfos", value.getSelectClauseDiagnosticInfos());
+            encoder.encodeStruct("WhereClauseResult", value.getWhereClauseResult(), ContentFilterResult.TYPE_ID);
         }
     }
 }

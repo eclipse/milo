@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class SecurityGroupDataType extends Structure implements UaStructure {
+public class SecurityGroupDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23601");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=23853");
@@ -147,31 +157,31 @@ public class SecurityGroupDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public SecurityGroupDataType decode(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            String[] securityGroupFolder = decoder.readStringArray("SecurityGroupFolder");
-            Double keyLifetime = decoder.readDouble("KeyLifetime");
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            UInteger maxFutureKeyCount = decoder.readUInt32("MaxFutureKeyCount");
-            UInteger maxPastKeyCount = decoder.readUInt32("MaxPastKeyCount");
-            String securityGroupId = decoder.readString("SecurityGroupId");
-            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
-            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.readStructArray("GroupProperties", KeyValuePair.TYPE_ID);
+        public SecurityGroupDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String name = decoder.decodeString("Name");
+            String[] securityGroupFolder = decoder.decodeStringArray("SecurityGroupFolder");
+            Double keyLifetime = decoder.decodeDouble("KeyLifetime");
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            UInteger maxFutureKeyCount = decoder.decodeUInt32("MaxFutureKeyCount");
+            UInteger maxPastKeyCount = decoder.decodeUInt32("MaxPastKeyCount");
+            String securityGroupId = decoder.decodeString("SecurityGroupId");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.decodeStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.decodeStructArray("GroupProperties", KeyValuePair.TYPE_ID);
             return new SecurityGroupDataType(name, securityGroupFolder, keyLifetime, securityPolicyUri, maxFutureKeyCount, maxPastKeyCount, securityGroupId, rolePermissions, groupProperties);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SecurityGroupDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeStringArray("SecurityGroupFolder", value.getSecurityGroupFolder());
-            encoder.writeDouble("KeyLifetime", value.getKeyLifetime());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeUInt32("MaxFutureKeyCount", value.getMaxFutureKeyCount());
-            encoder.writeUInt32("MaxPastKeyCount", value.getMaxPastKeyCount());
-            encoder.writeString("SecurityGroupId", value.getSecurityGroupId());
-            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
-            encoder.writeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               SecurityGroupDataType value) {
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeStringArray("SecurityGroupFolder", value.getSecurityGroupFolder());
+            encoder.encodeDouble("KeyLifetime", value.getKeyLifetime());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeUInt32("MaxFutureKeyCount", value.getMaxFutureKeyCount());
+            encoder.encodeUInt32("MaxPastKeyCount", value.getMaxPastKeyCount());
+            encoder.encodeString("SecurityGroupId", value.getSecurityGroupId());
+            encoder.encodeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
         }
     }
 }

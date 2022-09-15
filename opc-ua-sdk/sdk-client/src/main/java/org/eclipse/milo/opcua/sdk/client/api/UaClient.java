@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,8 +22,8 @@ import org.eclipse.milo.opcua.sdk.client.api.services.SubscriptionServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.ViewServices;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
 public interface UaClient extends AttributeServices,
     MethodServices, MonitoredItemServices, NodeManagementServices, SubscriptionServices, ViewServices {
@@ -63,11 +63,11 @@ public interface UaClient extends AttributeServices,
     UaSubscriptionManager getSubscriptionManager();
 
     /**
-     * Send a {@link UaRequestMessage}.
+     * Send a {@link UaRequestMessageType}.
      *
      * @param request the request to send.
      * @return a {@link CompletableFuture} holding the response.
      */
-    <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request);
+    <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request);
 
 }

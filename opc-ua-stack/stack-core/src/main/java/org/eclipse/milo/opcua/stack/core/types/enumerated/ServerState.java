@@ -1,10 +1,16 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.6">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.6</a>
  */
-public enum ServerState implements UaEnumeration {
+public enum ServerState implements UaEnumeratedType {
     Running(0),
 
     Failed(1),
@@ -42,8 +48,9 @@ public enum ServerState implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=852");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable ServerState from(int value) {
@@ -82,20 +89,7 @@ public enum ServerState implements UaEnumeration {
         });
     }
 
-    public static final class Codec extends GenericDataTypeCodec<ServerState> {
-        @Override
-        public Class<ServerState> getType() {
-            return ServerState.class;
-        }
-
-        @Override
-        public ServerState decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, ServerState.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ServerState value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=852");
     }
 }

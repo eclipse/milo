@@ -25,12 +25,14 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -51,7 +53,7 @@ public class UaStackClient {
 
     private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
-    private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = new ConcurrentHashMap<>();
+    private final Map<UInteger, CompletableFuture<UaResponseMessageType>> pending = new ConcurrentHashMap<>();
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
@@ -62,8 +64,11 @@ public class UaStackClient {
     private final DataTypeManager dynamicDataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
-    private final SerializationContext staticSerializationContext;
-    private final SerializationContext dynamicSerializationContext;
+    private final EncodingManager encodingManager =
+        DefaultEncodingManager.createAndInitialize();
+
+    private final EncodingContext staticEncodingContext;
+    private final EncodingContext dynamicEncodingContext;
 
     private final UaTransport transport;
     private final ExecutionQueue deliveryQueue;
@@ -84,10 +89,15 @@ public class UaStackClient {
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
 
-        staticSerializationContext = new SerializationContext() {
+        staticEncodingContext = new EncodingContext() {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return staticDataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return null;
             }
 
             @Override
@@ -106,10 +116,15 @@ public class UaStackClient {
             }
         };
 
-        dynamicSerializationContext = new SerializationContext() {
+        dynamicEncodingContext = new EncodingContext() {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return dynamicDataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
             }
 
             @Override
@@ -229,27 +244,27 @@ public class UaStackClient {
     }
 
     /**
-     * Get a "static" {@link SerializationContext} instance.
+     * Get a "static" {@link EncodingContext} instance.
      * <p>
-     * This {@link SerializationContext} instance returns the client's static {@link DataTypeManager}.
+     * This {@link EncodingContext} instance returns the client's static {@link DataTypeManager}.
      *
-     * @return a "static" {@link SerializationContext} instance.
+     * @return a "static" {@link EncodingContext} instance.
      * @see #getStaticDataTypeManager()
      */
-    public SerializationContext getStaticSerializationContext() {
-        return staticSerializationContext;
+    public EncodingContext getStaticEncodingContext() {
+        return staticEncodingContext;
     }
 
     /**
-     * Get a "dynamic" {@link SerializationContext}.
+     * Get a "dynamic" {@link EncodingContext}.
      * <p>
-     * This {@link SerializationContext} instance returns the client's dynamic {@link DataTypeManager}.
+     * This {@link EncodingContext} instance returns the client's dynamic {@link DataTypeManager}.
      *
-     * @return a "dynamic" {@link SerializationContext}.
+     * @return a "dynamic" {@link EncodingContext}.
      * @see #getDynamicDataTypeManager()
      */
-    public SerializationContext getDynamicSerializationContext() {
-        return dynamicSerializationContext;
+    public EncodingContext getDynamicEncodingContext() {
+        return dynamicEncodingContext;
     }
 
     /**
@@ -297,22 +312,22 @@ public class UaStackClient {
     }
 
     /**
-     * Send a {@link UaRequestMessage} to the connected server.
+     * Send a {@link UaRequestMessageType} to the connected server.
      * <p>
      * The {@link RequestHeader} of {@code request} must have a unique request handle. Use the
-     * {@code newRequestHeader} helper functions to create headers for {@link UaRequestMessage}s.
+     * {@code newRequestHeader} helper functions to create headers for {@link UaRequestMessageType}s.
      *
-     * @param request the {@link UaRequestMessage} to send.
-     * @return a {@link CompletableFuture} containing the eventual {@link UaResponseMessage} from the server.
+     * @param request the {@link UaRequestMessageType} to send.
+     * @return a {@link CompletableFuture} containing the eventual {@link UaResponseMessageType} from the server.
      * @see #newRequestHeader()
      * @see #newRequestHeader(NodeId)
      * @see #newRequestHeader(NodeId, UInteger)
      */
-    public CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
+    public CompletableFuture<UaResponseMessageType> sendRequest(UaRequestMessageType request) {
         RequestHeader requestHeader = request.getRequestHeader();
         UInteger requestHandle = requestHeader.getRequestHandle();
 
-        final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
+        final CompletableFuture<UaResponseMessageType> future = new CompletableFuture<>();
         pending.put(requestHandle, future);
 
         transport.sendRequest(request).whenComplete((response, ex) -> {
@@ -331,15 +346,15 @@ public class UaStackClient {
      * 1. the transport future is completed on its serialization queue thread, which we want to get off of ASAP.
      * 2. the futures need to be completed serially, in the order received from the server.
      *
-     * @param request  the original {@link UaRequestMessage}.
-     * @param response the {@link UaResponseMessage}.
+     * @param request  the original {@link UaRequestMessageType}.
+     * @param response the {@link UaResponseMessageType}.
      * @param future   the {@link CompletableFuture} awaiting completion.
      */
     private void deliverResponse(
-        UaRequestMessage request,
-        @Nullable UaResponseMessage response,
+        UaRequestMessageType request,
+        @Nullable UaResponseMessageType response,
         @Nullable Throwable failure,
-        CompletableFuture<UaResponseMessage> future
+        CompletableFuture<UaResponseMessageType> future
     ) {
 
         deliveryQueue.submit(() -> {

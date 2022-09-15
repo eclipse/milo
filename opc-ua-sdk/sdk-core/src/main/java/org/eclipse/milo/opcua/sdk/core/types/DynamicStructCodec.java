@@ -10,16 +10,21 @@
 
 package org.eclipse.milo.opcua.sdk.core.types;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -43,14 +48,37 @@ import org.jetbrains.annotations.NotNull;
 
 public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
-    private final StructureDefinition structureDefinition;
+    private final Map<StructureField, Object> fieldHints = new ConcurrentHashMap<>();
+
+    private final Map<NodeId, Function<Integer, DynamicEnum>> enumFactories = new ConcurrentHashMap<>();
 
     private final DataType dataType;
+    private final StructureDefinition structureDefinition;
 
-    public DynamicStructCodec(DataType dataType) {
+    public DynamicStructCodec(DataTypeTree dataTypeTree, DataType dataType) {
         this.dataType = dataType;
-
         this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();
+
+        assert structureDefinition != null;
+
+        for (StructureField field : structureDefinition.getFields()) {
+            NodeId dataTypeId = field.getDataType();
+
+            Object hint;
+            if (BuiltinDataType.isBuiltin(dataTypeId)) {
+                hint = BuiltinDataType.fromNodeId(dataTypeId);
+            } else if (dataTypeTree.isEnumType(dataTypeId)) {
+                hint = TypeHint.ENUM;
+
+                DataType enumDataType = dataTypeTree.getDataType(dataTypeId);
+                enumFactories.put(dataTypeId, DynamicEnum.newInstanceFactory(enumDataType));
+            } else if (dataTypeTree.isStructType(dataTypeId)) {
+                hint = TypeHint.STRUCT;
+            } else {
+                hint = dataTypeTree.getBuiltinType(dataTypeId);
+            }
+            fieldHints.put(field, hint);
+        }
     }
 
     @Override
@@ -59,7 +87,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     @Override
-    public DynamicStruct decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
+    public DynamicStruct decodeType(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
         switch (structureDefinition.getStructureType()) {
             case Structure:
             case StructureWithOptionalFields:
@@ -76,8 +104,8 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
 
     @Override
-    public void encode(
-        SerializationContext context,
+    public void encodeType(
+        EncodingContext context,
         UaEncoder encoder,
         DynamicStruct value
     ) throws UaSerializationException {
@@ -105,42 +133,16 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
         long switchField = 0xFFFFFFFFL;
         if (structureDefinition.getStructureType() == StructureType.StructureWithOptionalFields) {
-            switchField = decoder.readUInt32("SwitchField").longValue();
+            switchField = decoder.decodeUInt32("SwitchField").longValue();
         }
 
         for (int i = 0; i < fields.length; i++) {
             StructureField field = fields[i];
 
             if (!field.getIsOptional() || ((switchField >>> i) & 1) == 1) {
-                String fieldName = field.getName();
-                NodeId dataTypeId = field.getDataType();
-                BuiltinDataType builtinDataType = BuiltinDataType.fromNodeId(dataTypeId);
+                Object value = decodeFieldValue(decoder, field);
 
-                // Note: shall be scalar or fixed dimension
-                Integer valueRank = field.getValueRank();
-                if (valueRank == -1) {
-                    Object value;
-                    if (builtinDataType == null) {
-                        value = decoder.readStruct(fieldName, dataTypeId);
-                    } else {
-                        value = decodeBuiltinDataType(decoder, fieldName, builtinDataType);
-                    }
-                    members.put(fieldName, value);
-                } else if (valueRank == 1) {
-                    Object value;
-                    if (builtinDataType == null) {
-                        value = decoder.readStructArray(fieldName, dataTypeId);
-                    } else {
-                        value = decodeBuiltinDataTypeArray(decoder, fieldName, builtinDataType);
-                    }
-                    members.put(fieldName, value);
-                } else if (valueRank > 1) {
-                    // TODO special matrix encoding for multi-dimensional array structure fields
-                    throw new RuntimeException("not implemented");
-                } else {
-                    throw new UaSerializationException(
-                        StatusCodes.Bad_DecodingError, "illegal ValueRank: " + valueRank);
-                }
+                members.put(field.getName(), value);
             }
         }
 
@@ -148,7 +150,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     private @NotNull DynamicUnion decodeUnion(UaDecoder decoder) {
-        int switchField = decoder.readUInt32("SwitchField").intValue();
+        int switchField = decoder.decodeUInt32("SwitchField").intValue();
 
         StructureField[] fields = structureDefinition.getFields();
 
@@ -156,35 +158,10 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
             return DynamicUnion.ofNull(dataType);
         } else if (switchField <= fields.length) {
             StructureField field = fields[switchField - 1];
-            String fieldName = field.getName();
-            NodeId dataTypeId = field.getDataType();
-            BuiltinDataType builtinDataType = BuiltinDataType.fromNodeId(dataTypeId);
 
-            // Note: shall be scalar or fixed dimension
-            Integer valueRank = field.getValueRank();
-            if (valueRank == -1) {
-                Object value;
-                if (builtinDataType == null) {
-                    value = decoder.readStruct(fieldName, dataTypeId);
-                } else {
-                    value = decodeBuiltinDataType(decoder, fieldName, builtinDataType);
-                }
-                return DynamicUnion.of(dataType, fieldName, value);
-            } else if (valueRank == 1) {
-                Object value;
-                if (builtinDataType == null) {
-                    value = decoder.readStructArray(fieldName, dataTypeId);
-                } else {
-                    value = decodeBuiltinDataTypeArray(decoder, fieldName, builtinDataType);
-                }
-                return DynamicUnion.of(dataType, fieldName, value);
-            } else if (valueRank > 1) {
-                // TODO special matrix encoding for multi-dimensional array structure fields
-                throw new RuntimeException("not implemented");
-            } else {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_DecodingError, "illegal ValueRank: " + valueRank);
-            }
+            Object value = decodeFieldValue(decoder, field);
+
+            return DynamicUnion.of(dataType, field.getName(), value);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
@@ -206,7 +183,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                     switchField |= (1L << i);
                 }
             }
-            encoder.writeUInt32("SwitchField", UInteger.valueOf(switchField));
+            encoder.encodeUInt32("SwitchField", UInteger.valueOf(switchField));
         }
 
         for (int i = 0; i < fields.length; i++) {
@@ -224,14 +201,14 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         StructureField[] fields = structureDefinition.getFields();
 
         if (struct.getMembers().isEmpty()) {
-            encoder.writeUInt32("SwitchValue", UInteger.valueOf(0));
+            encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));
         } else {
             for (int i = 0; i < fields.length; i++) {
                 StructureField field = fields[i];
                 String fieldName = field.getName();
 
                 if (struct.getMembers().containsKey(fieldName)) {
-                    encoder.writeUInt32("SwitchValue", UInteger.valueOf(i + 1));
+                    encoder.encodeUInt32("SwitchValue", UInteger.valueOf(i + 1));
 
                     Object value = struct.getMembers().get(fieldName);
 
@@ -248,24 +225,112 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         }
     }
 
-    private void encodeFieldValue(UaEncoder encoder, StructureField field, Object value) {
+    private Object decodeFieldValue(UaDecoder decoder, StructureField field) {
         String fieldName = field.getName();
         NodeId dataTypeId = field.getDataType();
-        BuiltinDataType builtinDataType = BuiltinDataType.fromNodeId(dataTypeId);
 
         // Note: shall be scalar or fixed dimension
         Integer valueRank = field.getValueRank();
         if (valueRank == -1) {
-            if (builtinDataType == null) {
-                encoder.writeStruct(fieldName, value, dataTypeId);
+            Object value;
+
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                value = decodeBuiltinDataType(decoder, fieldName, (BuiltinDataType) hint);
             } else {
-                encodeBuiltinDataType(encoder, fieldName, builtinDataType, value);
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM: {
+                        Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                        Integer enumValue = decoder.decodeEnum(fieldName);
+                        value = factory.apply(enumValue);
+                        break;
+                    }
+                    case STRUCT:
+                        value = decoder.decodeStruct(fieldName, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
+            }
+
+            return value;
+        } else if (valueRank == 1) {
+            Object value;
+
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                value = decodeBuiltinDataTypeArray(decoder, fieldName, (BuiltinDataType) hint);
+            } else {
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM: {
+                        Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                        Integer[] enumValues = decoder.decodeEnumArray(fieldName);
+                        value = Arrays.stream(enumValues).map(factory).toArray(DynamicEnum[]::new);
+                        break;
+                    }
+                    case STRUCT:
+                        value = decoder.decodeStructArray(fieldName, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
+            }
+
+            return value;
+        } else if (valueRank > 1) {
+            // TODO special matrix encoding for multi-dimensional array structure fields
+            throw new RuntimeException("not implemented");
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError, "illegal ValueRank: " + valueRank);
+        }
+    }
+
+    private void encodeFieldValue(UaEncoder encoder, StructureField field, Object value) {
+        String fieldName = field.getName();
+        NodeId dataTypeId = field.getDataType();
+
+        // Note: shall be scalar or fixed dimension
+        Integer valueRank = field.getValueRank();
+        if (valueRank == -1) {
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                encodeBuiltinDataType(encoder, fieldName, (BuiltinDataType) hint, value);
+            } else {
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM:
+                        encoder.encodeEnum(fieldName, (UaEnumeratedType) value);
+                        break;
+                    case STRUCT:
+                        encoder.encodeStruct(fieldName, value, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
             }
         } else if (valueRank == 1) {
-            if (builtinDataType == null) {
-                encoder.writeStructArray(fieldName, (Object[]) value, dataTypeId);
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                encodeBuiltinDataTypeArray(encoder, fieldName, (BuiltinDataType) hint, value);
             } else {
-                encodeBuiltinDataTypeArray(encoder, fieldName, builtinDataType, value);
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM:
+                        encoder.encodeEnumArray(fieldName, (UaEnumeratedType[]) value);
+                        break;
+                    case STRUCT:
+                        encoder.encodeStructArray(fieldName, (Object[]) value, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
             }
         } else if (valueRank > 1) {
             // TODO special matrix encoding for multi-dimensional array structure fields
@@ -284,55 +349,55 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
         switch (builtinDataType) {
             case Boolean:
-                return decoder.readBoolean(fieldName);
+                return decoder.decodeBoolean(fieldName);
             case SByte:
-                return decoder.readSByte(fieldName);
+                return decoder.decodeSByte(fieldName);
             case Byte:
-                return decoder.readByte(fieldName);
+                return decoder.decodeByte(fieldName);
             case Int16:
-                return decoder.readInt16(fieldName);
+                return decoder.decodeInt16(fieldName);
             case UInt16:
-                return decoder.readUInt16(fieldName);
+                return decoder.decodeUInt16(fieldName);
             case Int32:
-                return decoder.readInt32(fieldName);
+                return decoder.decodeInt32(fieldName);
             case UInt32:
-                return decoder.readUInt32(fieldName);
+                return decoder.decodeUInt32(fieldName);
             case Int64:
-                return decoder.readInt64(fieldName);
+                return decoder.decodeInt64(fieldName);
             case UInt64:
-                return decoder.readUInt64(fieldName);
+                return decoder.decodeUInt64(fieldName);
             case Float:
-                return decoder.readFloat(fieldName);
+                return decoder.decodeFloat(fieldName);
             case Double:
-                return decoder.readDouble(fieldName);
+                return decoder.decodeDouble(fieldName);
             case String:
-                return decoder.readString(fieldName);
+                return decoder.decodeString(fieldName);
             case DateTime:
-                return decoder.readDateTime(fieldName);
+                return decoder.decodeDateTime(fieldName);
             case Guid:
-                return decoder.readGuid(fieldName);
+                return decoder.decodeGuid(fieldName);
             case ByteString:
-                return decoder.readByteString(fieldName);
+                return decoder.decodeByteString(fieldName);
             case XmlElement:
-                return decoder.readXmlElement(fieldName);
+                return decoder.decodeXmlElement(fieldName);
             case NodeId:
-                return decoder.readNodeId(fieldName);
+                return decoder.decodeNodeId(fieldName);
             case ExpandedNodeId:
-                return decoder.readExpandedNodeId(fieldName);
+                return decoder.decodeExpandedNodeId(fieldName);
             case StatusCode:
-                return decoder.readStatusCode(fieldName);
+                return decoder.decodeStatusCode(fieldName);
             case QualifiedName:
-                return decoder.readQualifiedName(fieldName);
+                return decoder.decodeQualifiedName(fieldName);
             case LocalizedText:
-                return decoder.readLocalizedText(fieldName);
+                return decoder.decodeLocalizedText(fieldName);
             case ExtensionObject:
-                return decoder.readExtensionObject(fieldName);
+                return decoder.decodeExtensionObject(fieldName);
             case DataValue:
-                return decoder.readDataValue(fieldName);
+                return decoder.decodeDataValue(fieldName);
             case Variant:
-                return decoder.readVariant(fieldName);
+                return decoder.decodeVariant(fieldName);
             case DiagnosticInfo:
-                return decoder.readDiagnosticInfo(fieldName);
+                return decoder.decodeDiagnosticInfo(fieldName);
             default:
                 // Shouldn't happen
                 throw new RuntimeException("unhandled BuiltinDataType: " + builtinDataType);
@@ -347,55 +412,55 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
         switch (builtinDataType) {
             case Boolean:
-                return decoder.readBooleanArray(fieldName);
+                return decoder.decodeBooleanArray(fieldName);
             case SByte:
-                return decoder.readSByteArray(fieldName);
+                return decoder.decodeSByteArray(fieldName);
             case Byte:
-                return decoder.readByteArray(fieldName);
+                return decoder.decodeByteArray(fieldName);
             case Int16:
-                return decoder.readInt16Array(fieldName);
+                return decoder.decodeInt16Array(fieldName);
             case UInt16:
-                return decoder.readUInt16Array(fieldName);
+                return decoder.decodeUInt16Array(fieldName);
             case Int32:
-                return decoder.readInt32Array(fieldName);
+                return decoder.decodeInt32Array(fieldName);
             case UInt32:
-                return decoder.readUInt32Array(fieldName);
+                return decoder.decodeUInt32Array(fieldName);
             case Int64:
-                return decoder.readInt64Array(fieldName);
+                return decoder.decodeInt64Array(fieldName);
             case UInt64:
-                return decoder.readUInt64Array(fieldName);
+                return decoder.decodeUInt64Array(fieldName);
             case Float:
-                return decoder.readFloatArray(fieldName);
+                return decoder.decodeFloatArray(fieldName);
             case Double:
-                return decoder.readDoubleArray(fieldName);
+                return decoder.decodeDoubleArray(fieldName);
             case String:
-                return decoder.readStringArray(fieldName);
+                return decoder.decodeStringArray(fieldName);
             case DateTime:
-                return decoder.readDateTimeArray(fieldName);
+                return decoder.decodeDateTimeArray(fieldName);
             case Guid:
-                return decoder.readGuidArray(fieldName);
+                return decoder.decodeGuidArray(fieldName);
             case ByteString:
-                return decoder.readByteStringArray(fieldName);
+                return decoder.decodeByteStringArray(fieldName);
             case XmlElement:
-                return decoder.readXmlElementArray(fieldName);
+                return decoder.decodeXmlElementArray(fieldName);
             case NodeId:
-                return decoder.readNodeIdArray(fieldName);
+                return decoder.decodeNodeIdArray(fieldName);
             case ExpandedNodeId:
-                return decoder.readExpandedNodeIdArray(fieldName);
+                return decoder.decodeExpandedNodeIdArray(fieldName);
             case StatusCode:
-                return decoder.readStatusCodeArray(fieldName);
+                return decoder.decodeStatusCodeArray(fieldName);
             case QualifiedName:
-                return decoder.readQualifiedNameArray(fieldName);
+                return decoder.decodeQualifiedNameArray(fieldName);
             case LocalizedText:
-                return decoder.readLocalizedTextArray(fieldName);
+                return decoder.decodeLocalizedTextArray(fieldName);
             case ExtensionObject:
-                return decoder.readExtensionObjectArray(fieldName);
+                return decoder.decodeExtensionObjectArray(fieldName);
             case DataValue:
-                return decoder.readDataValueArray(fieldName);
+                return decoder.decodeDataValueArray(fieldName);
             case Variant:
-                return decoder.readVariantArray(fieldName);
+                return decoder.decodeVariantArray(fieldName);
             case DiagnosticInfo:
-                return decoder.readDiagnosticInfoArray(fieldName);
+                return decoder.decodeDiagnosticInfoArray(fieldName);
             default:
                 // Shouldn't happen
                 throw new RuntimeException("unhandled BuiltinDataType: " + builtinDataType);
@@ -411,79 +476,79 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
         switch (builtinDataType) {
             case Boolean:
-                encoder.writeBoolean(fieldName, (Boolean) value);
+                encoder.encodeBoolean(fieldName, (Boolean) value);
                 break;
             case SByte:
-                encoder.writeSByte(fieldName, (Byte) value);
+                encoder.encodeSByte(fieldName, (Byte) value);
                 break;
             case Byte:
-                encoder.writeByte(fieldName, (UByte) value);
+                encoder.encodeByte(fieldName, (UByte) value);
                 break;
             case Int16:
-                encoder.writeInt16(fieldName, (Short) value);
+                encoder.encodeInt16(fieldName, (Short) value);
                 break;
             case UInt16:
-                encoder.writeUInt16(fieldName, (UShort) value);
+                encoder.encodeUInt16(fieldName, (UShort) value);
                 break;
             case Int32:
-                encoder.writeInt32(fieldName, (Integer) value);
+                encoder.encodeInt32(fieldName, (Integer) value);
                 break;
             case UInt32:
-                encoder.writeUInt32(fieldName, (UInteger) value);
+                encoder.encodeUInt32(fieldName, (UInteger) value);
                 break;
             case Int64:
-                encoder.writeInt64(fieldName, (Long) value);
+                encoder.encodeInt64(fieldName, (Long) value);
                 break;
             case UInt64:
-                encoder.writeUInt64(fieldName, (ULong) value);
+                encoder.encodeUInt64(fieldName, (ULong) value);
                 break;
             case Float:
-                encoder.writeFloat(fieldName, (Float) value);
+                encoder.encodeFloat(fieldName, (Float) value);
                 break;
             case Double:
-                encoder.writeDouble(fieldName, (Double) value);
+                encoder.encodeDouble(fieldName, (Double) value);
                 break;
             case String:
-                encoder.writeString(fieldName, (String) value);
+                encoder.encodeString(fieldName, (String) value);
                 break;
             case DateTime:
-                encoder.writeDateTime(fieldName, (DateTime) value);
+                encoder.encodeDateTime(fieldName, (DateTime) value);
                 break;
             case Guid:
-                encoder.writeGuid(fieldName, (UUID) value);
+                encoder.encodeGuid(fieldName, (UUID) value);
                 break;
             case ByteString:
-                encoder.writeByteString(fieldName, (ByteString) value);
+                encoder.encodeByteString(fieldName, (ByteString) value);
                 break;
             case XmlElement:
-                encoder.writeXmlElement(fieldName, (XmlElement) value);
+                encoder.encodeXmlElement(fieldName, (XmlElement) value);
                 break;
             case NodeId:
-                encoder.writeNodeId(fieldName, (NodeId) value);
+                encoder.encodeNodeId(fieldName, (NodeId) value);
                 break;
             case ExpandedNodeId:
-                encoder.writeExpandedNodeId(fieldName, (ExpandedNodeId) value);
+                encoder.encodeExpandedNodeId(fieldName, (ExpandedNodeId) value);
                 break;
             case StatusCode:
-                encoder.writeStatusCode(fieldName, (StatusCode) value);
+                encoder.encodeStatusCode(fieldName, (StatusCode) value);
                 break;
             case QualifiedName:
-                encoder.writeQualifiedName(fieldName, (QualifiedName) value);
+                encoder.encodeQualifiedName(fieldName, (QualifiedName) value);
                 break;
             case LocalizedText:
-                encoder.writeLocalizedText(fieldName, (LocalizedText) value);
+                encoder.encodeLocalizedText(fieldName, (LocalizedText) value);
                 break;
             case ExtensionObject:
-                encoder.writeExtensionObject(fieldName, (ExtensionObject) value);
+                encoder.encodeExtensionObject(fieldName, (ExtensionObject) value);
                 break;
             case DataValue:
-                encoder.writeDataValue(fieldName, (DataValue) value);
+                encoder.encodeDataValue(fieldName, (DataValue) value);
                 break;
             case Variant:
-                encoder.writeVariant(fieldName, (Variant) value);
+                encoder.encodeVariant(fieldName, (Variant) value);
                 break;
             case DiagnosticInfo:
-                encoder.writeDiagnosticInfo(fieldName, (DiagnosticInfo) value);
+                encoder.encodeDiagnosticInfo(fieldName, (DiagnosticInfo) value);
                 break;
             default:
                 // Shouldn't happen
@@ -500,84 +565,86 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
         switch (builtinDataType) {
             case Boolean:
-                encoder.writeBooleanArray(fieldName, (Boolean[]) value);
+                encoder.encodeBooleanArray(fieldName, (Boolean[]) value);
                 break;
             case SByte:
-                encoder.writeSByteArray(fieldName, (Byte[]) value);
+                encoder.encodeSByteArray(fieldName, (Byte[]) value);
                 break;
             case Byte:
-                encoder.writeByteArray(fieldName, (UByte[]) value);
+                encoder.encodeByteArray(fieldName, (UByte[]) value);
                 break;
             case Int16:
-                encoder.writeInt16Array(fieldName, (Short[]) value);
+                encoder.encodeInt16Array(fieldName, (Short[]) value);
                 break;
             case UInt16:
-                encoder.writeUInt16Array(fieldName, (UShort[]) value);
+                encoder.encodeUInt16Array(fieldName, (UShort[]) value);
                 break;
             case Int32:
-                encoder.writeInt32Array(fieldName, (Integer[]) value);
+                encoder.encodeInt32Array(fieldName, (Integer[]) value);
                 break;
             case UInt32:
-                encoder.writeUInt32Array(fieldName, (UInteger[]) value);
+                encoder.encodeUInt32Array(fieldName, (UInteger[]) value);
                 break;
             case Int64:
-                encoder.writeInt64Array(fieldName, (Long[]) value);
+                encoder.encodeInt64Array(fieldName, (Long[]) value);
                 break;
             case UInt64:
-                encoder.writeUInt64Array(fieldName, (ULong[]) value);
+                encoder.encodeUInt64Array(fieldName, (ULong[]) value);
                 break;
             case Float:
-                encoder.writeFloatArray(fieldName, (Float[]) value);
+                encoder.encodeFloatArray(fieldName, (Float[]) value);
                 break;
             case Double:
-                encoder.writeDoubleArray(fieldName, (Double[]) value);
+                encoder.encodeDoubleArray(fieldName, (Double[]) value);
                 break;
             case String:
-                encoder.writeStringArray(fieldName, (String[]) value);
+                encoder.encodeStringArray(fieldName, (String[]) value);
                 break;
             case DateTime:
-                encoder.writeDateTimeArray(fieldName, (DateTime[]) value);
+                encoder.encodeDateTimeArray(fieldName, (DateTime[]) value);
                 break;
             case Guid:
-                encoder.writeGuidArray(fieldName, (UUID[]) value);
+                encoder.encodeGuidArray(fieldName, (UUID[]) value);
                 break;
             case ByteString:
-                encoder.writeByteStringArray(fieldName, (ByteString[]) value);
+                encoder.encodeByteStringArray(fieldName, (ByteString[]) value);
                 break;
             case XmlElement:
-                encoder.writeXmlElementArray(fieldName, (XmlElement[]) value);
+                encoder.encodeXmlElementArray(fieldName, (XmlElement[]) value);
                 break;
             case NodeId:
-                encoder.writeNodeIdArray(fieldName, (NodeId[]) value);
+                encoder.encodeNodeIdArray(fieldName, (NodeId[]) value);
                 break;
             case ExpandedNodeId:
-                encoder.writeExpandedNodeIdArray(fieldName, (ExpandedNodeId[]) value);
+                encoder.encodeExpandedNodeIdArray(fieldName, (ExpandedNodeId[]) value);
                 break;
             case StatusCode:
-                encoder.writeStatusCodeArray(fieldName, (StatusCode[]) value);
+                encoder.encodeStatusCodeArray(fieldName, (StatusCode[]) value);
                 break;
             case QualifiedName:
-                encoder.writeQualifiedNameArray(fieldName, (QualifiedName[]) value);
+                encoder.encodeQualifiedNameArray(fieldName, (QualifiedName[]) value);
                 break;
             case LocalizedText:
-                encoder.writeLocalizedTextArray(fieldName, (LocalizedText[]) value);
+                encoder.encodeLocalizedTextArray(fieldName, (LocalizedText[]) value);
                 break;
             case ExtensionObject:
-                encoder.writeExtensionObjectArray(fieldName, (ExtensionObject[]) value);
+                encoder.encodeExtensionObjectArray(fieldName, (ExtensionObject[]) value);
                 break;
             case DataValue:
-                encoder.writeDataValueArray(fieldName, (DataValue[]) value);
+                encoder.encodeDataValueArray(fieldName, (DataValue[]) value);
                 break;
             case Variant:
-                encoder.writeVariantArray(fieldName, (Variant[]) value);
+                encoder.encodeVariantArray(fieldName, (Variant[]) value);
                 break;
             case DiagnosticInfo:
-                encoder.writeDiagnosticInfoArray(fieldName, (DiagnosticInfo[]) value);
+                encoder.encodeDiagnosticInfoArray(fieldName, (DiagnosticInfo[]) value);
                 break;
             default:
                 // Shouldn't happen
                 throw new RuntimeException("unhandled BuiltinDataType: " + builtinDataType);
         }
     }
+
+    private enum TypeHint {ENUM, STRUCT}
 
 }

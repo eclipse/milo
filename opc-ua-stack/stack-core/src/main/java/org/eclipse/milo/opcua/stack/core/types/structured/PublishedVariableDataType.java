@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PublishedVariableDataType extends Structure implements UaStructure {
+public class PublishedVariableDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14273");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=14323");
@@ -140,29 +150,29 @@ public class PublishedVariableDataType extends Structure implements UaStructure 
         }
 
         @Override
-        public PublishedVariableDataType decode(SerializationContext context, UaDecoder decoder) {
-            NodeId publishedVariable = decoder.readNodeId("PublishedVariable");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            Double samplingIntervalHint = decoder.readDouble("SamplingIntervalHint");
-            UInteger deadbandType = decoder.readUInt32("DeadbandType");
-            Double deadbandValue = decoder.readDouble("DeadbandValue");
-            String indexRange = decoder.readString("IndexRange");
-            Variant substituteValue = decoder.readVariant("SubstituteValue");
-            QualifiedName[] metaDataProperties = decoder.readQualifiedNameArray("MetaDataProperties");
+        public PublishedVariableDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId publishedVariable = decoder.decodeNodeId("PublishedVariable");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            Double samplingIntervalHint = decoder.decodeDouble("SamplingIntervalHint");
+            UInteger deadbandType = decoder.decodeUInt32("DeadbandType");
+            Double deadbandValue = decoder.decodeDouble("DeadbandValue");
+            String indexRange = decoder.decodeString("IndexRange");
+            Variant substituteValue = decoder.decodeVariant("SubstituteValue");
+            QualifiedName[] metaDataProperties = decoder.decodeQualifiedNameArray("MetaDataProperties");
             return new PublishedVariableDataType(publishedVariable, attributeId, samplingIntervalHint, deadbandType, deadbandValue, indexRange, substituteValue, metaDataProperties);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedVariableDataType value) {
-            encoder.writeNodeId("PublishedVariable", value.getPublishedVariable());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeDouble("SamplingIntervalHint", value.getSamplingIntervalHint());
-            encoder.writeUInt32("DeadbandType", value.getDeadbandType());
-            encoder.writeDouble("DeadbandValue", value.getDeadbandValue());
-            encoder.writeString("IndexRange", value.getIndexRange());
-            encoder.writeVariant("SubstituteValue", value.getSubstituteValue());
-            encoder.writeQualifiedNameArray("MetaDataProperties", value.getMetaDataProperties());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PublishedVariableDataType value) {
+            encoder.encodeNodeId("PublishedVariable", value.getPublishedVariable());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeDouble("SamplingIntervalHint", value.getSamplingIntervalHint());
+            encoder.encodeUInt32("DeadbandType", value.getDeadbandType());
+            encoder.encodeDouble("DeadbandValue", value.getDeadbandValue());
+            encoder.encodeString("IndexRange", value.getIndexRange());
+            encoder.encodeVariant("SubstituteValue", value.getSubstituteValue());
+            encoder.encodeQualifiedNameArray("MetaDataProperties", value.getMetaDataProperties());
         }
     }
 }

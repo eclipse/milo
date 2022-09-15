@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataType implements UaStructure {
+public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23600");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=23852");
@@ -105,22 +115,22 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
         }
 
         @Override
-        public StandaloneSubscribedDataSetDataType decode(SerializationContext context,
-                                                          UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            String[] dataSetFolder = decoder.readStringArray("DataSetFolder");
-            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.readStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
-            SubscribedDataSetDataType subscribedDataSet = (SubscribedDataSetDataType) decoder.readStruct("SubscribedDataSet", SubscribedDataSetDataType.TYPE_ID);
+        public StandaloneSubscribedDataSetDataType decodeType(EncodingContext context,
+                                                              UaDecoder decoder) {
+            String name = decoder.decodeString("Name");
+            String[] dataSetFolder = decoder.decodeStringArray("DataSetFolder");
+            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.decodeStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
+            SubscribedDataSetDataType subscribedDataSet = (SubscribedDataSetDataType) decoder.decodeStruct("SubscribedDataSet", SubscribedDataSetDataType.TYPE_ID);
             return new StandaloneSubscribedDataSetDataType(name, dataSetFolder, dataSetMetaData, subscribedDataSet);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           StandaloneSubscribedDataSetDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeStringArray("DataSetFolder", value.getDataSetFolder());
-            encoder.writeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
-            encoder.writeStruct("SubscribedDataSet", value.getSubscribedDataSet(), SubscribedDataSetDataType.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               StandaloneSubscribedDataSetDataType value) {
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeStringArray("DataSetFolder", value.getDataSetFolder());
+            encoder.encodeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
+            encoder.encodeStruct("SubscribedDataSet", value.getSubscribedDataSet(), SubscribedDataSetDataType.TYPE_ID);
         }
     }
 }

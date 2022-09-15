@@ -246,7 +246,7 @@ public class PubSubKeyPushTargetTypeNode extends BaseObjectTypeNode implements P
     @Override
     public void setUserTokenType(UserTokenPolicy value) throws UaException {
         PropertyTypeNode node = getUserTokenTypeNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -277,7 +277,7 @@ public class PubSubKeyPushTargetTypeNode extends BaseObjectTypeNode implements P
 
     @Override
     public CompletableFuture<StatusCode> writeUserTokenTypeAsync(UserTokenPolicy userTokenType) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), userTokenType);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), userTokenType);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUserTokenTypeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

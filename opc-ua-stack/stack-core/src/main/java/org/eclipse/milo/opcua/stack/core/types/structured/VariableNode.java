@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class VariableNode extends InstanceNode implements UaStructure {
+public class VariableNode extends InstanceNode implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=267");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=269");
@@ -164,52 +174,52 @@ public class VariableNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public VariableNode decode(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            NodeClass nodeClass = (NodeClass) decoder.readEnum("NodeClass", NodeClass.class);
-            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            UInteger writeMask = decoder.readUInt32("WriteMask");
-            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
-            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.readStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
-            UShort accessRestrictions = decoder.readUInt16("AccessRestrictions");
-            ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
-            Variant value = decoder.readVariant("Value");
-            NodeId dataType = decoder.readNodeId("DataType");
-            Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
-            UByte accessLevel = decoder.readByte("AccessLevel");
-            UByte userAccessLevel = decoder.readByte("UserAccessLevel");
-            Double minimumSamplingInterval = decoder.readDouble("MinimumSamplingInterval");
-            Boolean historizing = decoder.readBoolean("Historizing");
-            UInteger accessLevelEx = decoder.readUInt32("AccessLevelEx");
+        public VariableNode decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.decodeEnum("NodeClass"));
+            QualifiedName browseName = decoder.decodeQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            UInteger writeMask = decoder.decodeUInt32("WriteMask");
+            UInteger userWriteMask = decoder.decodeUInt32("UserWriteMask");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.decodeStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.decodeStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
+            UShort accessRestrictions = decoder.decodeUInt16("AccessRestrictions");
+            ReferenceNode[] references = (ReferenceNode[]) decoder.decodeStructArray("References", ReferenceNode.TYPE_ID);
+            Variant value = decoder.decodeVariant("Value");
+            NodeId dataType = decoder.decodeNodeId("DataType");
+            Integer valueRank = decoder.decodeInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.decodeUInt32Array("ArrayDimensions");
+            UByte accessLevel = decoder.decodeByte("AccessLevel");
+            UByte userAccessLevel = decoder.decodeByte("UserAccessLevel");
+            Double minimumSamplingInterval = decoder.decodeDouble("MinimumSamplingInterval");
+            Boolean historizing = decoder.decodeBoolean("Historizing");
+            UInteger accessLevelEx = decoder.decodeUInt32("AccessLevelEx");
             return new VariableNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, VariableNode value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeEnum("NodeClass", value.getNodeClass());
-            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeUInt32("WriteMask", value.getWriteMask());
-            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
-            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
-            encoder.writeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
-            encoder.writeUInt16("AccessRestrictions", value.getAccessRestrictions());
-            encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
-            encoder.writeVariant("Value", value.getValue());
-            encoder.writeNodeId("DataType", value.getDataType());
-            encoder.writeInt32("ValueRank", value.getValueRank());
-            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
-            encoder.writeByte("AccessLevel", value.getAccessLevel());
-            encoder.writeByte("UserAccessLevel", value.getUserAccessLevel());
-            encoder.writeDouble("MinimumSamplingInterval", value.getMinimumSamplingInterval());
-            encoder.writeBoolean("Historizing", value.getHistorizing());
-            encoder.writeUInt32("AccessLevelEx", value.getAccessLevelEx());
+        public void encodeType(EncodingContext context, UaEncoder encoder, VariableNode value) {
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeEnum("NodeClass", value.getNodeClass());
+            encoder.encodeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeUInt32("WriteMask", value.getWriteMask());
+            encoder.encodeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.encodeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeUInt16("AccessRestrictions", value.getAccessRestrictions());
+            encoder.encodeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
+            encoder.encodeVariant("Value", value.getValue());
+            encoder.encodeNodeId("DataType", value.getDataType());
+            encoder.encodeInt32("ValueRank", value.getValueRank());
+            encoder.encodeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.encodeByte("AccessLevel", value.getAccessLevel());
+            encoder.encodeByte("UserAccessLevel", value.getUserAccessLevel());
+            encoder.encodeDouble("MinimumSamplingInterval", value.getMinimumSamplingInterval());
+            encoder.encodeBoolean("Historizing", value.getHistorizing());
+            encoder.encodeUInt32("AccessLevelEx", value.getAccessLevelEx());
         }
     }
 }

@@ -249,7 +249,7 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public void setDataSetMetaData(DataSetMetaDataType value) throws UaException {
         PropertyTypeNode node = getDataSetMetaDataNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -281,7 +281,7 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public CompletableFuture<StatusCode> writeDataSetMetaDataAsync(
         DataSetMetaDataType dataSetMetaData) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), dataSetMetaData);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), dataSetMetaData);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDataSetMetaDataNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -717,7 +717,7 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public void setSecurityKeyServices(EndpointDescription[] value) throws UaException {
         PropertyTypeNode node = getSecurityKeyServicesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -749,7 +749,7 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public CompletableFuture<StatusCode> writeSecurityKeyServicesAsync(
         EndpointDescription[] securityKeyServices) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), securityKeyServices);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), securityKeyServices);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSecurityKeyServicesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -784,7 +784,7 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public void setDataSetReaderProperties(KeyValuePair[] value) throws UaException {
         PropertyTypeNode node = getDataSetReaderPropertiesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -816,7 +816,7 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     @Override
     public CompletableFuture<StatusCode> writeDataSetReaderPropertiesAsync(
         KeyValuePair[] dataSetReaderProperties) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), dataSetReaderProperties);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), dataSetReaderProperties);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDataSetReaderPropertiesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -30,8 +30,8 @@ import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -152,9 +152,9 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                     }
 
                     try {
-                        UaRequestMessage request = (UaRequestMessage) binaryDecoder
+                        UaRequestMessageType request = (UaRequestMessageType) binaryDecoder
                             .setBuffer(message)
-                            .readMessage(null);
+                            .decodeMessage(null);
 
                         String endpointUrl = ctx.channel()
                             .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
@@ -213,15 +213,15 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
     private void sendServiceResponse(
         ChannelHandlerContext ctx,
         long requestId,
-        UaRequestMessage request,
-        UaResponseMessage response) {
+        UaRequestMessageType request,
+        UaResponseMessageType response) {
 
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, response);
+                binaryEncoder.encodeMessage(null, response);
 
                 checkMessageSize(messageBuffer);
 
@@ -284,7 +284,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, serviceFault);
+                binaryEncoder.encodeMessage(null, serviceFault);
 
                 checkMessageSize(messageBuffer);
 

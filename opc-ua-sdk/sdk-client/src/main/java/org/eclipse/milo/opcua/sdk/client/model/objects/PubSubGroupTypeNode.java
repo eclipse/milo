@@ -197,7 +197,7 @@ public class PubSubGroupTypeNode extends BaseObjectTypeNode implements PubSubGro
     @Override
     public void setSecurityKeyServices(EndpointDescription[] value) throws UaException {
         PropertyTypeNode node = getSecurityKeyServicesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -229,7 +229,7 @@ public class PubSubGroupTypeNode extends BaseObjectTypeNode implements PubSubGro
     @Override
     public CompletableFuture<StatusCode> writeSecurityKeyServicesAsync(
         EndpointDescription[] securityKeyServices) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), securityKeyServices);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), securityKeyServices);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSecurityKeyServicesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -329,7 +329,7 @@ public class PubSubGroupTypeNode extends BaseObjectTypeNode implements PubSubGro
     @Override
     public void setGroupProperties(KeyValuePair[] value) throws UaException {
         PropertyTypeNode node = getGroupPropertiesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -360,7 +360,7 @@ public class PubSubGroupTypeNode extends BaseObjectTypeNode implements PubSubGro
 
     @Override
     public CompletableFuture<StatusCode> writeGroupPropertiesAsync(KeyValuePair[] groupProperties) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), groupProperties);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), groupProperties);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getGroupPropertiesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -52,7 +52,7 @@ public class GeneralModelChangeEventTypeNode extends BaseModelChangeEventTypeNod
     @Override
     public void setChanges(ModelChangeStructureDataType[] value) throws UaException {
         PropertyTypeNode node = getChangesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -83,7 +83,7 @@ public class GeneralModelChangeEventTypeNode extends BaseModelChangeEventTypeNod
 
     @Override
     public CompletableFuture<StatusCode> writeChangesAsync(ModelChangeStructureDataType[] changes) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), changes);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), changes);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getChangesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

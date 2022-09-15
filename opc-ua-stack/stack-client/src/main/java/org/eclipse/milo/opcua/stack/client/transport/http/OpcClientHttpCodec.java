@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,10 +31,10 @@ import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
@@ -78,10 +78,10 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
         switch (transportProfile) {
             case HTTPS_UABINARY: {
-                OpcUaBinaryStreamEncoder encoder =
-                    new OpcUaBinaryStreamEncoder(client.getStaticSerializationContext());
+                OpcUaBinaryEncoder encoder =
+                    new OpcUaBinaryEncoder(client.getStaticEncodingContext());
                 encoder.setBuffer(content);
-                encoder.writeMessage(null, transportRequest.getRequest());
+                encoder.encodeMessage(null, transportRequest.getRequest());
                 break;
             }
 
@@ -132,7 +132,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
             FullHttpResponse fullHttpResponse = (FullHttpResponse) httpResponse;
             ByteBuf content = fullHttpResponse.content();
 
-            UaResponseMessage responseMessage;
+            UaResponseMessageType responseMessage;
 
             switch (transportProfile) {
                 case HTTPS_UABINARY: {
@@ -141,10 +141,10 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                             "unexpected content-type: " + contentType);
                     }
 
-                    OpcUaBinaryStreamDecoder decoder =
-                        new OpcUaBinaryStreamDecoder(client.getStaticSerializationContext());
+                    OpcUaBinaryDecoder decoder =
+                        new OpcUaBinaryDecoder(client.getStaticEncodingContext());
                     decoder.setBuffer(content);
-                    responseMessage = (UaResponseMessage) decoder.readMessage(null);
+                    responseMessage = (UaResponseMessageType) decoder.decodeMessage(null);
                     break;
                 }
 

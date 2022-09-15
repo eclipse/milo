@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -76,7 +76,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
         );
 
         HistoryReadDetails details = (HistoryReadDetails) request.getHistoryReadDetails().decode(
-            server.getSerializationContext()
+            server.getEncodingContext()
         );
 
         server.getAddressSpaceManager().historyRead(
@@ -113,7 +113,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
         List<HistoryUpdateDetails> historyUpdateDetailsList = l(request.getHistoryUpdateDetails())
             .stream().map(e -> (HistoryUpdateDetails) e.decode(
-                server.getSerializationContext()
+                server.getEncodingContext()
             ))
             .collect(Collectors.toList());
 

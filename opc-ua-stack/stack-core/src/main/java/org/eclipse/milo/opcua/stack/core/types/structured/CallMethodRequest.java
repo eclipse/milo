@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class CallMethodRequest extends Structure implements UaStructure {
+public class CallMethodRequest extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=704");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=706");
@@ -97,18 +107,19 @@ public class CallMethodRequest extends Structure implements UaStructure {
         }
 
         @Override
-        public CallMethodRequest decode(SerializationContext context, UaDecoder decoder) {
-            NodeId objectId = decoder.readNodeId("ObjectId");
-            NodeId methodId = decoder.readNodeId("MethodId");
-            Variant[] inputArguments = decoder.readVariantArray("InputArguments");
+        public CallMethodRequest decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId objectId = decoder.decodeNodeId("ObjectId");
+            NodeId methodId = decoder.decodeNodeId("MethodId");
+            Variant[] inputArguments = decoder.decodeVariantArray("InputArguments");
             return new CallMethodRequest(objectId, methodId, inputArguments);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CallMethodRequest value) {
-            encoder.writeNodeId("ObjectId", value.getObjectId());
-            encoder.writeNodeId("MethodId", value.getMethodId());
-            encoder.writeVariantArray("InputArguments", value.getInputArguments());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               CallMethodRequest value) {
+            encoder.encodeNodeId("ObjectId", value.getObjectId());
+            encoder.encodeNodeId("MethodId", value.getMethodId());
+            encoder.encodeVariantArray("InputArguments", value.getInputArguments());
         }
     }
 }

@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class SessionDiagnosticsDataType extends Structure implements UaStructure {
+public class SessionDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=865");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=867");
@@ -440,99 +450,99 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
         }
 
         @Override
-        public SessionDiagnosticsDataType decode(SerializationContext context, UaDecoder decoder) {
-            NodeId sessionId = decoder.readNodeId("SessionId");
-            String sessionName = decoder.readString("SessionName");
-            ApplicationDescription clientDescription = (ApplicationDescription) decoder.readStruct("ClientDescription", ApplicationDescription.TYPE_ID);
-            String serverUri = decoder.readString("ServerUri");
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String[] localeIds = decoder.readStringArray("LocaleIds");
-            Double actualSessionTimeout = decoder.readDouble("ActualSessionTimeout");
-            UInteger maxResponseMessageSize = decoder.readUInt32("MaxResponseMessageSize");
-            DateTime clientConnectionTime = decoder.readDateTime("ClientConnectionTime");
-            DateTime clientLastContactTime = decoder.readDateTime("ClientLastContactTime");
-            UInteger currentSubscriptionsCount = decoder.readUInt32("CurrentSubscriptionsCount");
-            UInteger currentMonitoredItemsCount = decoder.readUInt32("CurrentMonitoredItemsCount");
-            UInteger currentPublishRequestsInQueue = decoder.readUInt32("CurrentPublishRequestsInQueue");
-            ServiceCounterDataType totalRequestCount = (ServiceCounterDataType) decoder.readStruct("TotalRequestCount", ServiceCounterDataType.TYPE_ID);
-            UInteger unauthorizedRequestCount = decoder.readUInt32("UnauthorizedRequestCount");
-            ServiceCounterDataType readCount = (ServiceCounterDataType) decoder.readStruct("ReadCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType historyReadCount = (ServiceCounterDataType) decoder.readStruct("HistoryReadCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType writeCount = (ServiceCounterDataType) decoder.readStruct("WriteCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType historyUpdateCount = (ServiceCounterDataType) decoder.readStruct("HistoryUpdateCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType callCount = (ServiceCounterDataType) decoder.readStruct("CallCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType createMonitoredItemsCount = (ServiceCounterDataType) decoder.readStruct("CreateMonitoredItemsCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType modifyMonitoredItemsCount = (ServiceCounterDataType) decoder.readStruct("ModifyMonitoredItemsCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType setMonitoringModeCount = (ServiceCounterDataType) decoder.readStruct("SetMonitoringModeCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType setTriggeringCount = (ServiceCounterDataType) decoder.readStruct("SetTriggeringCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType deleteMonitoredItemsCount = (ServiceCounterDataType) decoder.readStruct("DeleteMonitoredItemsCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType createSubscriptionCount = (ServiceCounterDataType) decoder.readStruct("CreateSubscriptionCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType modifySubscriptionCount = (ServiceCounterDataType) decoder.readStruct("ModifySubscriptionCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType setPublishingModeCount = (ServiceCounterDataType) decoder.readStruct("SetPublishingModeCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType publishCount = (ServiceCounterDataType) decoder.readStruct("PublishCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType republishCount = (ServiceCounterDataType) decoder.readStruct("RepublishCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType transferSubscriptionsCount = (ServiceCounterDataType) decoder.readStruct("TransferSubscriptionsCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType deleteSubscriptionsCount = (ServiceCounterDataType) decoder.readStruct("DeleteSubscriptionsCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType addNodesCount = (ServiceCounterDataType) decoder.readStruct("AddNodesCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType addReferencesCount = (ServiceCounterDataType) decoder.readStruct("AddReferencesCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType deleteNodesCount = (ServiceCounterDataType) decoder.readStruct("DeleteNodesCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType deleteReferencesCount = (ServiceCounterDataType) decoder.readStruct("DeleteReferencesCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType browseCount = (ServiceCounterDataType) decoder.readStruct("BrowseCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType browseNextCount = (ServiceCounterDataType) decoder.readStruct("BrowseNextCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType translateBrowsePathsToNodeIdsCount = (ServiceCounterDataType) decoder.readStruct("TranslateBrowsePathsToNodeIdsCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType queryFirstCount = (ServiceCounterDataType) decoder.readStruct("QueryFirstCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType queryNextCount = (ServiceCounterDataType) decoder.readStruct("QueryNextCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType registerNodesCount = (ServiceCounterDataType) decoder.readStruct("RegisterNodesCount", ServiceCounterDataType.TYPE_ID);
-            ServiceCounterDataType unregisterNodesCount = (ServiceCounterDataType) decoder.readStruct("UnregisterNodesCount", ServiceCounterDataType.TYPE_ID);
+        public SessionDiagnosticsDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId sessionId = decoder.decodeNodeId("SessionId");
+            String sessionName = decoder.decodeString("SessionName");
+            ApplicationDescription clientDescription = (ApplicationDescription) decoder.decodeStruct("ClientDescription", ApplicationDescription.TYPE_ID);
+            String serverUri = decoder.decodeString("ServerUri");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String[] localeIds = decoder.decodeStringArray("LocaleIds");
+            Double actualSessionTimeout = decoder.decodeDouble("ActualSessionTimeout");
+            UInteger maxResponseMessageSize = decoder.decodeUInt32("MaxResponseMessageSize");
+            DateTime clientConnectionTime = decoder.decodeDateTime("ClientConnectionTime");
+            DateTime clientLastContactTime = decoder.decodeDateTime("ClientLastContactTime");
+            UInteger currentSubscriptionsCount = decoder.decodeUInt32("CurrentSubscriptionsCount");
+            UInteger currentMonitoredItemsCount = decoder.decodeUInt32("CurrentMonitoredItemsCount");
+            UInteger currentPublishRequestsInQueue = decoder.decodeUInt32("CurrentPublishRequestsInQueue");
+            ServiceCounterDataType totalRequestCount = (ServiceCounterDataType) decoder.decodeStruct("TotalRequestCount", ServiceCounterDataType.TYPE_ID);
+            UInteger unauthorizedRequestCount = decoder.decodeUInt32("UnauthorizedRequestCount");
+            ServiceCounterDataType readCount = (ServiceCounterDataType) decoder.decodeStruct("ReadCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType historyReadCount = (ServiceCounterDataType) decoder.decodeStruct("HistoryReadCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType writeCount = (ServiceCounterDataType) decoder.decodeStruct("WriteCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType historyUpdateCount = (ServiceCounterDataType) decoder.decodeStruct("HistoryUpdateCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType callCount = (ServiceCounterDataType) decoder.decodeStruct("CallCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType createMonitoredItemsCount = (ServiceCounterDataType) decoder.decodeStruct("CreateMonitoredItemsCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType modifyMonitoredItemsCount = (ServiceCounterDataType) decoder.decodeStruct("ModifyMonitoredItemsCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType setMonitoringModeCount = (ServiceCounterDataType) decoder.decodeStruct("SetMonitoringModeCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType setTriggeringCount = (ServiceCounterDataType) decoder.decodeStruct("SetTriggeringCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType deleteMonitoredItemsCount = (ServiceCounterDataType) decoder.decodeStruct("DeleteMonitoredItemsCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType createSubscriptionCount = (ServiceCounterDataType) decoder.decodeStruct("CreateSubscriptionCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType modifySubscriptionCount = (ServiceCounterDataType) decoder.decodeStruct("ModifySubscriptionCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType setPublishingModeCount = (ServiceCounterDataType) decoder.decodeStruct("SetPublishingModeCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType publishCount = (ServiceCounterDataType) decoder.decodeStruct("PublishCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType republishCount = (ServiceCounterDataType) decoder.decodeStruct("RepublishCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType transferSubscriptionsCount = (ServiceCounterDataType) decoder.decodeStruct("TransferSubscriptionsCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType deleteSubscriptionsCount = (ServiceCounterDataType) decoder.decodeStruct("DeleteSubscriptionsCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType addNodesCount = (ServiceCounterDataType) decoder.decodeStruct("AddNodesCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType addReferencesCount = (ServiceCounterDataType) decoder.decodeStruct("AddReferencesCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType deleteNodesCount = (ServiceCounterDataType) decoder.decodeStruct("DeleteNodesCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType deleteReferencesCount = (ServiceCounterDataType) decoder.decodeStruct("DeleteReferencesCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType browseCount = (ServiceCounterDataType) decoder.decodeStruct("BrowseCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType browseNextCount = (ServiceCounterDataType) decoder.decodeStruct("BrowseNextCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType translateBrowsePathsToNodeIdsCount = (ServiceCounterDataType) decoder.decodeStruct("TranslateBrowsePathsToNodeIdsCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType queryFirstCount = (ServiceCounterDataType) decoder.decodeStruct("QueryFirstCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType queryNextCount = (ServiceCounterDataType) decoder.decodeStruct("QueryNextCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType registerNodesCount = (ServiceCounterDataType) decoder.decodeStruct("RegisterNodesCount", ServiceCounterDataType.TYPE_ID);
+            ServiceCounterDataType unregisterNodesCount = (ServiceCounterDataType) decoder.decodeStruct("UnregisterNodesCount", ServiceCounterDataType.TYPE_ID);
             return new SessionDiagnosticsDataType(sessionId, sessionName, clientDescription, serverUri, endpointUrl, localeIds, actualSessionTimeout, maxResponseMessageSize, clientConnectionTime, clientLastContactTime, currentSubscriptionsCount, currentMonitoredItemsCount, currentPublishRequestsInQueue, totalRequestCount, unauthorizedRequestCount, readCount, historyReadCount, writeCount, historyUpdateCount, callCount, createMonitoredItemsCount, modifyMonitoredItemsCount, setMonitoringModeCount, setTriggeringCount, deleteMonitoredItemsCount, createSubscriptionCount, modifySubscriptionCount, setPublishingModeCount, publishCount, republishCount, transferSubscriptionsCount, deleteSubscriptionsCount, addNodesCount, addReferencesCount, deleteNodesCount, deleteReferencesCount, browseCount, browseNextCount, translateBrowsePathsToNodeIdsCount, queryFirstCount, queryNextCount, registerNodesCount, unregisterNodesCount);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SessionDiagnosticsDataType value) {
-            encoder.writeNodeId("SessionId", value.getSessionId());
-            encoder.writeString("SessionName", value.getSessionName());
-            encoder.writeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
-            encoder.writeString("ServerUri", value.getServerUri());
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
-            encoder.writeDouble("ActualSessionTimeout", value.getActualSessionTimeout());
-            encoder.writeUInt32("MaxResponseMessageSize", value.getMaxResponseMessageSize());
-            encoder.writeDateTime("ClientConnectionTime", value.getClientConnectionTime());
-            encoder.writeDateTime("ClientLastContactTime", value.getClientLastContactTime());
-            encoder.writeUInt32("CurrentSubscriptionsCount", value.getCurrentSubscriptionsCount());
-            encoder.writeUInt32("CurrentMonitoredItemsCount", value.getCurrentMonitoredItemsCount());
-            encoder.writeUInt32("CurrentPublishRequestsInQueue", value.getCurrentPublishRequestsInQueue());
-            encoder.writeStruct("TotalRequestCount", value.getTotalRequestCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeUInt32("UnauthorizedRequestCount", value.getUnauthorizedRequestCount());
-            encoder.writeStruct("ReadCount", value.getReadCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("HistoryReadCount", value.getHistoryReadCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("WriteCount", value.getWriteCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("HistoryUpdateCount", value.getHistoryUpdateCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("CallCount", value.getCallCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("CreateMonitoredItemsCount", value.getCreateMonitoredItemsCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("ModifyMonitoredItemsCount", value.getModifyMonitoredItemsCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("SetMonitoringModeCount", value.getSetMonitoringModeCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("SetTriggeringCount", value.getSetTriggeringCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("DeleteMonitoredItemsCount", value.getDeleteMonitoredItemsCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("CreateSubscriptionCount", value.getCreateSubscriptionCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("ModifySubscriptionCount", value.getModifySubscriptionCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("SetPublishingModeCount", value.getSetPublishingModeCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("PublishCount", value.getPublishCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("RepublishCount", value.getRepublishCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("TransferSubscriptionsCount", value.getTransferSubscriptionsCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("DeleteSubscriptionsCount", value.getDeleteSubscriptionsCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("AddNodesCount", value.getAddNodesCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("AddReferencesCount", value.getAddReferencesCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("DeleteNodesCount", value.getDeleteNodesCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("DeleteReferencesCount", value.getDeleteReferencesCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("BrowseCount", value.getBrowseCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("BrowseNextCount", value.getBrowseNextCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("TranslateBrowsePathsToNodeIdsCount", value.getTranslateBrowsePathsToNodeIdsCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("QueryFirstCount", value.getQueryFirstCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("QueryNextCount", value.getQueryNextCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("RegisterNodesCount", value.getRegisterNodesCount(), ServiceCounterDataType.TYPE_ID);
-            encoder.writeStruct("UnregisterNodesCount", value.getUnregisterNodesCount(), ServiceCounterDataType.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               SessionDiagnosticsDataType value) {
+            encoder.encodeNodeId("SessionId", value.getSessionId());
+            encoder.encodeString("SessionName", value.getSessionName());
+            encoder.encodeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
+            encoder.encodeString("ServerUri", value.getServerUri());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.encodeDouble("ActualSessionTimeout", value.getActualSessionTimeout());
+            encoder.encodeUInt32("MaxResponseMessageSize", value.getMaxResponseMessageSize());
+            encoder.encodeDateTime("ClientConnectionTime", value.getClientConnectionTime());
+            encoder.encodeDateTime("ClientLastContactTime", value.getClientLastContactTime());
+            encoder.encodeUInt32("CurrentSubscriptionsCount", value.getCurrentSubscriptionsCount());
+            encoder.encodeUInt32("CurrentMonitoredItemsCount", value.getCurrentMonitoredItemsCount());
+            encoder.encodeUInt32("CurrentPublishRequestsInQueue", value.getCurrentPublishRequestsInQueue());
+            encoder.encodeStruct("TotalRequestCount", value.getTotalRequestCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeUInt32("UnauthorizedRequestCount", value.getUnauthorizedRequestCount());
+            encoder.encodeStruct("ReadCount", value.getReadCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("HistoryReadCount", value.getHistoryReadCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("WriteCount", value.getWriteCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("HistoryUpdateCount", value.getHistoryUpdateCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("CallCount", value.getCallCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("CreateMonitoredItemsCount", value.getCreateMonitoredItemsCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("ModifyMonitoredItemsCount", value.getModifyMonitoredItemsCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("SetMonitoringModeCount", value.getSetMonitoringModeCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("SetTriggeringCount", value.getSetTriggeringCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("DeleteMonitoredItemsCount", value.getDeleteMonitoredItemsCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("CreateSubscriptionCount", value.getCreateSubscriptionCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("ModifySubscriptionCount", value.getModifySubscriptionCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("SetPublishingModeCount", value.getSetPublishingModeCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("PublishCount", value.getPublishCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("RepublishCount", value.getRepublishCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("TransferSubscriptionsCount", value.getTransferSubscriptionsCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("DeleteSubscriptionsCount", value.getDeleteSubscriptionsCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("AddNodesCount", value.getAddNodesCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("AddReferencesCount", value.getAddReferencesCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("DeleteNodesCount", value.getDeleteNodesCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("DeleteReferencesCount", value.getDeleteReferencesCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("BrowseCount", value.getBrowseCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("BrowseNextCount", value.getBrowseNextCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("TranslateBrowsePathsToNodeIdsCount", value.getTranslateBrowsePathsToNodeIdsCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("QueryFirstCount", value.getQueryFirstCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("QueryNextCount", value.getQueryNextCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("RegisterNodesCount", value.getRegisterNodesCount(), ServiceCounterDataType.TYPE_ID);
+            encoder.encodeStruct("UnregisterNodesCount", value.getUnregisterNodesCount(), ServiceCounterDataType.TYPE_ID);
         }
     }
 }

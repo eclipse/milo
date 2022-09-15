@@ -117,7 +117,7 @@ public class PublishedEventsTypeNode extends PublishedDataSetTypeNode implements
     @Override
     public void setSelectedFields(SimpleAttributeOperand[] value) throws UaException {
         PropertyTypeNode node = getSelectedFieldsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -149,7 +149,7 @@ public class PublishedEventsTypeNode extends PublishedDataSetTypeNode implements
     @Override
     public CompletableFuture<StatusCode> writeSelectedFieldsAsync(
         SimpleAttributeOperand[] selectedFields) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), selectedFields);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), selectedFields);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSelectedFieldsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -184,7 +184,7 @@ public class PublishedEventsTypeNode extends PublishedDataSetTypeNode implements
     @Override
     public void setFilter(ContentFilter value) throws UaException {
         PropertyTypeNode node = getFilterNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -215,7 +215,7 @@ public class PublishedEventsTypeNode extends PublishedDataSetTypeNode implements
 
     @Override
     public CompletableFuture<StatusCode> writeFilterAsync(ContentFilter filter) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), filter);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), filter);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getFilterNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -35,11 +35,13 @@ import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
@@ -128,6 +130,9 @@ public class UaStackServer {
     private final DataTypeManager dataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
+    private final EncodingManager encodingManager =
+        DefaultEncodingManager.createAndInitialize();
+
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
 
@@ -136,7 +141,7 @@ public class UaStackServer {
     private final Set<EndpointConfiguration> boundEndpoints = ConcurrentHashMap.newKeySet();
 
     private final ServerChannelManager channelManager;
-    private final SerializationContext serializationContext;
+    private final EncodingContext encodingContext;
 
     private final UaStackServerConfig config;
 
@@ -147,10 +152,15 @@ public class UaStackServer {
 
         channelManager = new ServerChannelManager(this);
 
-        serializationContext = new SerializationContext() {
+        encodingContext = new EncodingContext() {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return dataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
             }
 
             @Override
@@ -259,8 +269,12 @@ public class UaStackServer {
         return dataTypeManager;
     }
 
-    public SerializationContext getSerializationContext() {
-        return serializationContext;
+    public EncodingManager getEncodingManager() {
+        return encodingManager;
+    }
+
+    public EncodingContext getEncodingContext() {
+        return encodingContext;
     }
 
     public void registerConnectedChannel(Channel channel) {
@@ -289,7 +303,7 @@ public class UaStackServer {
     }
 
     private void handleServiceRequest(String path, ServiceRequest serviceRequest) {
-        UaRequestMessage request = serviceRequest.getRequest();
+        UaRequestMessageType request = serviceRequest.getRequest();
 
         if (logger.isTraceEnabled()) {
             logger.trace(
@@ -447,7 +461,7 @@ public class UaStackServer {
         return securityRejectedRequestCount;
     }
 
-    public <T extends UaRequestMessage> void addServiceHandler(
+    public <T extends UaRequestMessageType> void addServiceHandler(
         String path,
         ExpandedNodeId dataTypeId,
         ServiceRequestHandler serviceHandler) {
@@ -457,7 +471,7 @@ public class UaStackServer {
         serviceHandlerTable.put(path, dataTypeId, serviceHandler);
     }
 
-    public <T extends UaRequestMessage> void removeServiceHandler(String path, ExpandedNodeId dataTypeId) {
+    public <T extends UaRequestMessageType> void removeServiceHandler(String path, ExpandedNodeId dataTypeId) {
         logger.debug("Removing ServiceHandler for {} at {}", dataTypeId, path);
 
         serviceHandlerTable.remove(path, dataTypeId);

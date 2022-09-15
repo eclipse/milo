@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ModificationInfo extends Structure implements UaStructure {
+public class ModificationInfo extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=11216");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=11226");
@@ -99,18 +109,19 @@ public class ModificationInfo extends Structure implements UaStructure {
         }
 
         @Override
-        public ModificationInfo decode(SerializationContext context, UaDecoder decoder) {
-            DateTime modificationTime = decoder.readDateTime("ModificationTime");
-            HistoryUpdateType updateType = (HistoryUpdateType) decoder.readEnum("UpdateType", HistoryUpdateType.class);
-            String userName = decoder.readString("UserName");
+        public ModificationInfo decodeType(EncodingContext context, UaDecoder decoder) {
+            DateTime modificationTime = decoder.decodeDateTime("ModificationTime");
+            HistoryUpdateType updateType = HistoryUpdateType.from(decoder.decodeEnum("UpdateType"));
+            String userName = decoder.decodeString("UserName");
             return new ModificationInfo(modificationTime, updateType, userName);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ModificationInfo value) {
-            encoder.writeDateTime("ModificationTime", value.getModificationTime());
-            encoder.writeEnum("UpdateType", value.getUpdateType());
-            encoder.writeString("UserName", value.getUserName());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               ModificationInfo value) {
+            encoder.encodeDateTime("ModificationTime", value.getModificationTime());
+            encoder.encodeEnum("UpdateType", value.getUpdateType());
+            encoder.encodeString("UserName", value.getUserName());
         }
     }
 }

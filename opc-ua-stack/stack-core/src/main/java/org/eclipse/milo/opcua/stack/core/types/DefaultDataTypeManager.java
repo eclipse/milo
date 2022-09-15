@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,75 +10,133 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
 
 public class DefaultDataTypeManager implements DataTypeManager {
 
-    private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = new ConcurrentHashMap<>();
-    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = new ConcurrentHashMap<>();
-    private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
-        Tables.synchronizedTable(HashBasedTable.create());
+    /**
+     * K = NodeId of DataType Encoding
+     * V = DataTypeCodec
+     */
+    private final Map<NodeId, DataTypeCodec> codecsByEncodingId = new ConcurrentHashMap<>();
+
+    /**
+     * R = QualifiedName of DataType Encoding
+     * C = NodeId of DataType
+     * V = DataTypeCodec
+     */
+    private final Map<QualifiedName, Map<NodeId, DataTypeCodec>> codecsByEncodingName =
+        new ConcurrentHashMap<>();
+
+    /**
+     * R = QualifiedName of DataType Encoding
+     * C = NodeId of DataType
+     * V = NodeId of DataType Encoding
+     */
+    private final Map<QualifiedName, Map<NodeId, NodeId>> encodingIdsByEncodingName =
+        new ConcurrentHashMap<>();
+
+    /**
+     * K = String of Namespace URI
+     * V = DataTypeDictionary
+     */
+    private final Map<String, DataTypeDictionary> dataTypeDictionaries = new ConcurrentHashMap<>();
 
     @Override
-    public void registerCodec(NodeId encodingId, DataTypeCodec codec) {
-        codecsByEncodingId.put(encodingId, codec);
+    public void registerType(
+        NodeId dataTypeId,
+        DataTypeCodec codec,
+        @Nullable NodeId binaryEncodingId,
+        @Nullable NodeId xmlEncodingId,
+        @Nullable NodeId jsonEncodingId
+    ) {
+
+        if (binaryEncodingId != null && binaryEncodingId.isNotNull()) {
+            putCodecForEncoding(DataTypeEncoding.BINARY_ENCODING_NAME, dataTypeId, codec);
+            putEncodingIdForEncoding(DataTypeEncoding.BINARY_ENCODING_NAME, dataTypeId, binaryEncodingId);
+            codecsByEncodingId.put(binaryEncodingId, codec);
+        }
+        if (xmlEncodingId != null && xmlEncodingId.isNotNull()) {
+            putCodecForEncoding(DataTypeEncoding.XML_ENCODING_NAME, dataTypeId, codec);
+            putEncodingIdForEncoding(DataTypeEncoding.XML_ENCODING_NAME, dataTypeId, xmlEncodingId);
+            codecsByEncodingId.put(xmlEncodingId, codec);
+        }
+        if (jsonEncodingId != null && jsonEncodingId.isNotNull()) {
+            putCodecForEncoding(DataTypeEncoding.JSON_ENCODING_NAME, dataTypeId, codec);
+            putEncodingIdForEncoding(DataTypeEncoding.JSON_ENCODING_NAME, dataTypeId, jsonEncodingId);
+            codecsByEncodingId.put(jsonEncodingId, codec);
+        }
     }
 
     @Override
-    public void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
-        codecsByDataTypeId.put(encodingName, dataTypeId, codec);
-    }
-
-    @Override
-    public void registerTypeDictionary(DataTypeDictionary<?> dataTypeDictionary) {
-        dictionaries.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
-
-        this.codecsByEncodingId.putAll(dataTypeDictionary.getCodecsByEncodingId());
-
-        dataTypeDictionary.getCodecsByDataTypeId().forEach(
-            (dataTypeId, codec) ->
-                codecsByDataTypeId.put(dataTypeDictionary.getEncodingName(), dataTypeId, codec)
-        );
-    }
-
-    @Nullable
-    @Override
-    public DataTypeCodec getCodec(NodeId encodingId) {
+    public @Nullable DataTypeCodec getCodec(NodeId encodingId) {
         return codecsByEncodingId.get(encodingId);
     }
 
-    @Nullable
     @Override
-    public DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId) {
-        return codecsByDataTypeId.get(encodingName, dataTypeId);
+    public @Nullable DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId) {
+        Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.get(encodingName);
+
+        return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
-    @Nullable
     @Override
-    public DataTypeCodec getCodec(String namespaceUri, String description) {
-        DataTypeDictionary<?> dataTypeDictionary = dictionaries.get(namespaceUri);
+    public @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId) {
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(DataTypeEncoding.BINARY_ENCODING_NAME);
 
-        return dataTypeDictionary != null ? dataTypeDictionary.getCodec(description) : null;
+        return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
-    @Nullable
     @Override
-    public DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri) {
-        return dictionaries.get(namespaceUri);
+    public @Nullable NodeId getXmlEncodingId(NodeId dataTypeId) {
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(DataTypeEncoding.XML_ENCODING_NAME);
+
+        return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
+    }
+
+    @Override
+    public @Nullable NodeId getJsonEncodingId(NodeId dataTypeId) {
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(DataTypeEncoding.JSON_ENCODING_NAME);
+
+        return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
+    }
+
+    @Override
+    public @Nullable DataTypeDictionary getTypeDictionary(String namespaceUri) {
+        return dataTypeDictionaries.get(namespaceUri);
+    }
+
+    @Override
+    public void registerTypeDictionary(DataTypeDictionary dictionary) {
+        dataTypeDictionaries.put(dictionary.getNamespaceUri(), dictionary);
+    }
+
+    private void putCodecForEncoding(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
+        Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.computeIfAbsent(
+            encodingName,
+            k -> new ConcurrentHashMap<>()
+        );
+        byDataTypeId.put(dataTypeId, codec);
+    }
+
+    private void putEncodingIdForEncoding(QualifiedName encodingName, NodeId dataTypeId, NodeId encodingId) {
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.computeIfAbsent(
+            encodingName,
+            k -> new ConcurrentHashMap<>()
+        );
+        byDataTypeId.put(dataTypeId, encodingId);
     }
 
     /**
-     * Create a {@link DefaultDataTypeManager} and initialize it with the built-in DataTypes.
+     * Create a {@link DefaultDataTypeManager} and initialize it by registering all built-in
+     * DataTypes.
      *
      * @param namespaceTable a {@link NamespaceTable}.
      * @return a {@link DataTypeManager} pre-initialized wth the built-in DataTypes.
@@ -87,7 +145,6 @@ public class DefaultDataTypeManager implements DataTypeManager {
         DefaultDataTypeManager dataTypeManager = new DefaultDataTypeManager();
 
         new DataTypeInitializer().initialize(namespaceTable, dataTypeManager);
-        new DataTypeDictionaryInitializer().initialize(namespaceTable, dataTypeManager);
 
         return dataTypeManager;
     }

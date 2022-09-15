@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ThreeDVector extends Vector implements UaStructure {
+public class ThreeDVector extends Vector implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=18808");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=18817");
@@ -96,18 +106,18 @@ public class ThreeDVector extends Vector implements UaStructure {
         }
 
         @Override
-        public ThreeDVector decode(SerializationContext context, UaDecoder decoder) {
-            Double x = decoder.readDouble("X");
-            Double y = decoder.readDouble("Y");
-            Double z = decoder.readDouble("Z");
+        public ThreeDVector decodeType(EncodingContext context, UaDecoder decoder) {
+            Double x = decoder.decodeDouble("X");
+            Double y = decoder.decodeDouble("Y");
+            Double z = decoder.decodeDouble("Z");
             return new ThreeDVector(x, y, z);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ThreeDVector value) {
-            encoder.writeDouble("X", value.getX());
-            encoder.writeDouble("Y", value.getY());
-            encoder.writeDouble("Z", value.getZ());
+        public void encodeType(EncodingContext context, UaEncoder encoder, ThreeDVector value) {
+            encoder.encodeDouble("X", value.getX());
+            encoder.encodeDouble("Y", value.getY());
+            encoder.encodeDouble("Z", value.getZ());
         }
     }
 }

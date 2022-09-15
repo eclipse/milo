@@ -441,7 +441,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     @Override
     public void setSoftwareCertificates(SignedSoftwareCertificate[] value) throws UaException {
         PropertyTypeNode node = getSoftwareCertificatesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -473,7 +473,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     @Override
     public CompletableFuture<StatusCode> writeSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] softwareCertificates) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), softwareCertificates);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), softwareCertificates);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSoftwareCertificatesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

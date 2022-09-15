@@ -11,10 +11,11 @@
 package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -46,10 +47,32 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         // Add a SessionInitializer that will read any DataTypeDictionary
         // nodes present in the server every time the session is activated
         // and dynamically generate codecs for custom structures.
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(new GenericBsdParser()));
+        client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
 
         client.connect().get();
 
+        readPerson(client);
+        readWorkOrder(client);
+
+        future.complete(client);
+    }
+
+    private void readPerson(OpcUaClient client) throws InterruptedException, ExecutionException {
+        DataValue dataValue = client.readValue(
+            0.0,
+            TimestampsToReturn.Neither,
+            NodeId.parse("ns=2;s=Person1")
+        ).get();
+
+        ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
+        assert xo != null;
+
+        Object value = xo.decode(client.getDynamicEncodingContext());
+
+        logger.info("value: {}", value);
+    }
+
+    private void readWorkOrder(OpcUaClient client) throws InterruptedException, ExecutionException {
         DataValue dataValue = client.readValue(
             0.0,
             TimestampsToReturn.Neither,
@@ -57,12 +80,11 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         ).get();
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
+        assert xo != null;
 
-        Object value = xo.decode(client.getDynamicSerializationContext());
+        Object value = xo.decode(client.getDynamicEncodingContext());
 
         logger.info("value: {}", value);
-
-        future.complete(client);
     }
 
     @Override

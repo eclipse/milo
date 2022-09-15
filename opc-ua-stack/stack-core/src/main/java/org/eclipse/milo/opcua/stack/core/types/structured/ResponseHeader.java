@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -27,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ResponseHeader extends Structure implements UaStructure {
+public class ResponseHeader extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=392");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=394");
@@ -125,24 +135,24 @@ public class ResponseHeader extends Structure implements UaStructure {
         }
 
         @Override
-        public ResponseHeader decode(SerializationContext context, UaDecoder decoder) {
-            DateTime timestamp = decoder.readDateTime("Timestamp");
-            UInteger requestHandle = decoder.readUInt32("RequestHandle");
-            StatusCode serviceResult = decoder.readStatusCode("ServiceResult");
-            DiagnosticInfo serviceDiagnostics = decoder.readDiagnosticInfo("ServiceDiagnostics");
-            String[] stringTable = decoder.readStringArray("StringTable");
-            ExtensionObject additionalHeader = decoder.readExtensionObject("AdditionalHeader");
+        public ResponseHeader decodeType(EncodingContext context, UaDecoder decoder) {
+            DateTime timestamp = decoder.decodeDateTime("Timestamp");
+            UInteger requestHandle = decoder.decodeUInt32("RequestHandle");
+            StatusCode serviceResult = decoder.decodeStatusCode("ServiceResult");
+            DiagnosticInfo serviceDiagnostics = decoder.decodeDiagnosticInfo("ServiceDiagnostics");
+            String[] stringTable = decoder.decodeStringArray("StringTable");
+            ExtensionObject additionalHeader = decoder.decodeExtensionObject("AdditionalHeader");
             return new ResponseHeader(timestamp, requestHandle, serviceResult, serviceDiagnostics, stringTable, additionalHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ResponseHeader value) {
-            encoder.writeDateTime("Timestamp", value.getTimestamp());
-            encoder.writeUInt32("RequestHandle", value.getRequestHandle());
-            encoder.writeStatusCode("ServiceResult", value.getServiceResult());
-            encoder.writeDiagnosticInfo("ServiceDiagnostics", value.getServiceDiagnostics());
-            encoder.writeStringArray("StringTable", value.getStringTable());
-            encoder.writeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
+        public void encodeType(EncodingContext context, UaEncoder encoder, ResponseHeader value) {
+            encoder.encodeDateTime("Timestamp", value.getTimestamp());
+            encoder.encodeUInt32("RequestHandle", value.getRequestHandle());
+            encoder.encodeStatusCode("ServiceResult", value.getServiceResult());
+            encoder.encodeDiagnosticInfo("ServiceDiagnostics", value.getServiceDiagnostics());
+            encoder.encodeStringArray("StringTable", value.getStringTable());
+            encoder.encodeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
         }
     }
 }

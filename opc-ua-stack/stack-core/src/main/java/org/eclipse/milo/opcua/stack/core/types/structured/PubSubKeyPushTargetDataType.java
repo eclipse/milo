@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PubSubKeyPushTargetDataType extends Structure implements UaStructure {
+public class PubSubKeyPushTargetDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=25270");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=25530");
@@ -148,31 +158,31 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
         }
 
         @Override
-        public PubSubKeyPushTargetDataType decode(SerializationContext context, UaDecoder decoder) {
-            String applicationUri = decoder.readString("ApplicationUri");
-            String[] pushTargetFolder = decoder.readStringArray("PushTargetFolder");
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            UserTokenPolicy userTokenType = (UserTokenPolicy) decoder.readStruct("UserTokenType", UserTokenPolicy.TYPE_ID);
-            UShort requestedKeyCount = decoder.readUInt16("RequestedKeyCount");
-            Double retryInterval = decoder.readDouble("RetryInterval");
-            KeyValuePair[] pushTargetProperties = (KeyValuePair[]) decoder.readStructArray("PushTargetProperties", KeyValuePair.TYPE_ID);
-            String[] securityGroups = decoder.readStringArray("SecurityGroups");
+        public PubSubKeyPushTargetDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String applicationUri = decoder.decodeString("ApplicationUri");
+            String[] pushTargetFolder = decoder.decodeStringArray("PushTargetFolder");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            UserTokenPolicy userTokenType = (UserTokenPolicy) decoder.decodeStruct("UserTokenType", UserTokenPolicy.TYPE_ID);
+            UShort requestedKeyCount = decoder.decodeUInt16("RequestedKeyCount");
+            Double retryInterval = decoder.decodeDouble("RetryInterval");
+            KeyValuePair[] pushTargetProperties = (KeyValuePair[]) decoder.decodeStructArray("PushTargetProperties", KeyValuePair.TYPE_ID);
+            String[] securityGroups = decoder.decodeStringArray("SecurityGroups");
             return new PubSubKeyPushTargetDataType(applicationUri, pushTargetFolder, endpointUrl, securityPolicyUri, userTokenType, requestedKeyCount, retryInterval, pushTargetProperties, securityGroups);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubKeyPushTargetDataType value) {
-            encoder.writeString("ApplicationUri", value.getApplicationUri());
-            encoder.writeStringArray("PushTargetFolder", value.getPushTargetFolder());
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeStruct("UserTokenType", value.getUserTokenType(), UserTokenPolicy.TYPE_ID);
-            encoder.writeUInt16("RequestedKeyCount", value.getRequestedKeyCount());
-            encoder.writeDouble("RetryInterval", value.getRetryInterval());
-            encoder.writeStructArray("PushTargetProperties", value.getPushTargetProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStringArray("SecurityGroups", value.getSecurityGroups());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PubSubKeyPushTargetDataType value) {
+            encoder.encodeString("ApplicationUri", value.getApplicationUri());
+            encoder.encodeStringArray("PushTargetFolder", value.getPushTargetFolder());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeStruct("UserTokenType", value.getUserTokenType(), UserTokenPolicy.TYPE_ID);
+            encoder.encodeUInt16("RequestedKeyCount", value.getRequestedKeyCount());
+            encoder.encodeDouble("RetryInterval", value.getRetryInterval());
+            encoder.encodeStructArray("PushTargetProperties", value.getPushTargetProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStringArray("SecurityGroups", value.getSecurityGroups());
         }
     }
 }

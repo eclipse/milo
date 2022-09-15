@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class MonitoredItemModifyResult extends Structure implements UaStructure {
+public class MonitoredItemModifyResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=758");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=760");
@@ -107,21 +117,21 @@ public class MonitoredItemModifyResult extends Structure implements UaStructure 
         }
 
         @Override
-        public MonitoredItemModifyResult decode(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            Double revisedSamplingInterval = decoder.readDouble("RevisedSamplingInterval");
-            UInteger revisedQueueSize = decoder.readUInt32("RevisedQueueSize");
-            ExtensionObject filterResult = decoder.readExtensionObject("FilterResult");
+        public MonitoredItemModifyResult decodeType(EncodingContext context, UaDecoder decoder) {
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            Double revisedSamplingInterval = decoder.decodeDouble("RevisedSamplingInterval");
+            UInteger revisedQueueSize = decoder.decodeUInt32("RevisedQueueSize");
+            ExtensionObject filterResult = decoder.decodeExtensionObject("FilterResult");
             return new MonitoredItemModifyResult(statusCode, revisedSamplingInterval, revisedQueueSize, filterResult);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoredItemModifyResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
-            encoder.writeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
-            encoder.writeExtensionObject("FilterResult", value.getFilterResult());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               MonitoredItemModifyResult value) {
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
+            encoder.encodeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
+            encoder.encodeExtensionObject("FilterResult", value.getFilterResult());
         }
     }
 }

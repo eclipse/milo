@@ -1,10 +1,16 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.6">https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.6</a>
  */
-public enum TsnStreamState implements UaEnumeration {
+public enum TsnStreamState implements UaEnumeratedType {
     /**
      * The related TSN Stream is currently disabled.
      */
@@ -51,8 +57,9 @@ public enum TsnStreamState implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=24220");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable TsnStreamState from(int value) {
@@ -82,20 +89,7 @@ public enum TsnStreamState implements UaEnumeration {
         });
     }
 
-    public static final class Codec extends GenericDataTypeCodec<TsnStreamState> {
-        @Override
-        public Class<TsnStreamState> getType() {
-            return TsnStreamState.class;
-        }
-
-        @Override
-        public TsnStreamState decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, TsnStreamState.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TsnStreamState value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24220");
     }
 }

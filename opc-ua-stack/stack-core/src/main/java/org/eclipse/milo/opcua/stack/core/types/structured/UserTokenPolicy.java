@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 )
 @SuperBuilder
 @ToString
-public class UserTokenPolicy extends Structure implements UaStructure {
+public class UserTokenPolicy extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=304");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=306");
@@ -114,22 +124,22 @@ public class UserTokenPolicy extends Structure implements UaStructure {
         }
 
         @Override
-        public UserTokenPolicy decode(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            UserTokenType tokenType = (UserTokenType) decoder.readEnum("TokenType", UserTokenType.class);
-            String issuedTokenType = decoder.readString("IssuedTokenType");
-            String issuerEndpointUrl = decoder.readString("IssuerEndpointUrl");
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
+        public UserTokenPolicy decodeType(EncodingContext context, UaDecoder decoder) {
+            String policyId = decoder.decodeString("PolicyId");
+            UserTokenType tokenType = UserTokenType.from(decoder.decodeEnum("TokenType"));
+            String issuedTokenType = decoder.decodeString("IssuedTokenType");
+            String issuerEndpointUrl = decoder.decodeString("IssuerEndpointUrl");
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
             return new UserTokenPolicy(policyId, tokenType, issuedTokenType, issuerEndpointUrl, securityPolicyUri);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, UserTokenPolicy value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeEnum("TokenType", value.getTokenType());
-            encoder.writeString("IssuedTokenType", value.getIssuedTokenType());
-            encoder.writeString("IssuerEndpointUrl", value.getIssuerEndpointUrl());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+        public void encodeType(EncodingContext context, UaEncoder encoder, UserTokenPolicy value) {
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeEnum("TokenType", value.getTokenType());
+            encoder.encodeString("IssuedTokenType", value.getIssuedTokenType());
+            encoder.encodeString("IssuerEndpointUrl", value.getIssuerEndpointUrl());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
         }
     }
 }

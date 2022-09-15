@@ -54,7 +54,7 @@ public class UserManagementTypeNode extends BaseObjectTypeNode implements UserMa
     @Override
     public void setUsers(UserManagementDataType[] value) throws UaException {
         PropertyTypeNode node = getUsersNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class UserManagementTypeNode extends BaseObjectTypeNode implements UserMa
 
     @Override
     public CompletableFuture<StatusCode> writeUsersAsync(UserManagementDataType[] users) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), users);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), users);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUsersNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -120,7 +120,7 @@ public class UserManagementTypeNode extends BaseObjectTypeNode implements UserMa
     @Override
     public void setPasswordLength(Range value) throws UaException {
         PropertyTypeNode node = getPasswordLengthNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -151,7 +151,7 @@ public class UserManagementTypeNode extends BaseObjectTypeNode implements UserMa
 
     @Override
     public CompletableFuture<StatusCode> writePasswordLengthAsync(Range passwordLength) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), passwordLength);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), passwordLength);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getPasswordLengthNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

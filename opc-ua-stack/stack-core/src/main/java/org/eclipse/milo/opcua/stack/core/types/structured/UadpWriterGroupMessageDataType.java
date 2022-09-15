@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType implements UaStructure {
+public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15645");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15715");
@@ -115,23 +125,24 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         }
 
         @Override
-        public UadpWriterGroupMessageDataType decode(SerializationContext context, UaDecoder decoder) {
-            UInteger groupVersion = decoder.readUInt32("GroupVersion");
-            DataSetOrderingType dataSetOrdering = (DataSetOrderingType) decoder.readEnum("DataSetOrdering", DataSetOrderingType.class);
-            UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
-            Double samplingOffset = decoder.readDouble("SamplingOffset");
-            Double[] publishingOffset = decoder.readDoubleArray("PublishingOffset");
+        public UadpWriterGroupMessageDataType decodeType(EncodingContext context,
+                                                         UaDecoder decoder) {
+            UInteger groupVersion = decoder.decodeUInt32("GroupVersion");
+            DataSetOrderingType dataSetOrdering = DataSetOrderingType.from(decoder.decodeEnum("DataSetOrdering"));
+            UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));
+            Double samplingOffset = decoder.decodeDouble("SamplingOffset");
+            Double[] publishingOffset = decoder.decodeDoubleArray("PublishingOffset");
             return new UadpWriterGroupMessageDataType(groupVersion, dataSetOrdering, networkMessageContentMask, samplingOffset, publishingOffset);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UadpWriterGroupMessageDataType value) {
-            encoder.writeUInt32("GroupVersion", value.getGroupVersion());
-            encoder.writeEnum("DataSetOrdering", value.getDataSetOrdering());
-            encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
-            encoder.writeDouble("SamplingOffset", value.getSamplingOffset());
-            encoder.writeDoubleArray("PublishingOffset", value.getPublishingOffset());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               UadpWriterGroupMessageDataType value) {
+            encoder.encodeUInt32("GroupVersion", value.getGroupVersion());
+            encoder.encodeEnum("DataSetOrdering", value.getDataSetOrdering());
+            encoder.encodeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
+            encoder.encodeDouble("SamplingOffset", value.getSamplingOffset());
+            encoder.encodeDoubleArray("PublishingOffset", value.getPublishingOffset());
         }
     }
 }

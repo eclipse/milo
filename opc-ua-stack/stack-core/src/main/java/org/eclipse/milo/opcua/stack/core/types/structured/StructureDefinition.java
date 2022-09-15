@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class StructureDefinition extends DataTypeDefinition implements UaStructure {
+public class StructureDefinition extends DataTypeDefinition implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=99");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=122");
@@ -105,20 +115,21 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         }
 
         @Override
-        public StructureDefinition decode(SerializationContext context, UaDecoder decoder) {
-            NodeId defaultEncodingId = decoder.readNodeId("DefaultEncodingId");
-            NodeId baseDataType = decoder.readNodeId("BaseDataType");
-            StructureType structureType = (StructureType) decoder.readEnum("StructureType", StructureType.class);
-            StructureField[] fields = (StructureField[]) decoder.readStructArray("Fields", StructureField.TYPE_ID);
+        public StructureDefinition decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId defaultEncodingId = decoder.decodeNodeId("DefaultEncodingId");
+            NodeId baseDataType = decoder.decodeNodeId("BaseDataType");
+            StructureType structureType = StructureType.from(decoder.decodeEnum("StructureType"));
+            StructureField[] fields = (StructureField[]) decoder.decodeStructArray("Fields", StructureField.TYPE_ID);
             return new StructureDefinition(defaultEncodingId, baseDataType, structureType, fields);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, StructureDefinition value) {
-            encoder.writeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
-            encoder.writeNodeId("BaseDataType", value.getBaseDataType());
-            encoder.writeEnum("StructureType", value.getStructureType());
-            encoder.writeStructArray("Fields", value.getFields(), StructureField.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               StructureDefinition value) {
+            encoder.encodeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
+            encoder.encodeNodeId("BaseDataType", value.getBaseDataType());
+            encoder.encodeEnum("StructureType", value.getStructureType());
+            encoder.encodeStructArray("Fields", value.getFields(), StructureField.TYPE_ID);
         }
     }
 }

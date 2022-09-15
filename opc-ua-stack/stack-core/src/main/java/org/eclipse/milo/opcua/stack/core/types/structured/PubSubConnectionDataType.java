@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PubSubConnectionDataType extends Structure implements UaStructure {
+public class PubSubConnectionDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15617");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15694");
@@ -148,31 +158,31 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public PubSubConnectionDataType decode(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            Variant publisherId = decoder.readVariant("PublisherId");
-            String transportProfileUri = decoder.readString("TransportProfileUri");
-            NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
-            KeyValuePair[] connectionProperties = (KeyValuePair[]) decoder.readStructArray("ConnectionProperties", KeyValuePair.TYPE_ID);
-            ConnectionTransportDataType transportSettings = (ConnectionTransportDataType) decoder.readStruct("TransportSettings", ConnectionTransportDataType.TYPE_ID);
-            WriterGroupDataType[] writerGroups = (WriterGroupDataType[]) decoder.readStructArray("WriterGroups", WriterGroupDataType.TYPE_ID);
-            ReaderGroupDataType[] readerGroups = (ReaderGroupDataType[]) decoder.readStructArray("ReaderGroups", ReaderGroupDataType.TYPE_ID);
+        public PubSubConnectionDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            Variant publisherId = decoder.decodeVariant("PublisherId");
+            String transportProfileUri = decoder.decodeString("TransportProfileUri");
+            NetworkAddressDataType address = (NetworkAddressDataType) decoder.decodeStruct("Address", NetworkAddressDataType.TYPE_ID);
+            KeyValuePair[] connectionProperties = (KeyValuePair[]) decoder.decodeStructArray("ConnectionProperties", KeyValuePair.TYPE_ID);
+            ConnectionTransportDataType transportSettings = (ConnectionTransportDataType) decoder.decodeStruct("TransportSettings", ConnectionTransportDataType.TYPE_ID);
+            WriterGroupDataType[] writerGroups = (WriterGroupDataType[]) decoder.decodeStructArray("WriterGroups", WriterGroupDataType.TYPE_ID);
+            ReaderGroupDataType[] readerGroups = (ReaderGroupDataType[]) decoder.decodeStructArray("ReaderGroups", ReaderGroupDataType.TYPE_ID);
             return new PubSubConnectionDataType(name, enabled, publisherId, transportProfileUri, address, connectionProperties, transportSettings, writerGroups, readerGroups);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConnectionDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeVariant("PublisherId", value.getPublisherId());
-            encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
-            encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
-            encoder.writeStructArray("ConnectionProperties", value.getConnectionProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), ConnectionTransportDataType.TYPE_ID);
-            encoder.writeStructArray("WriterGroups", value.getWriterGroups(), WriterGroupDataType.TYPE_ID);
-            encoder.writeStructArray("ReaderGroups", value.getReaderGroups(), ReaderGroupDataType.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PubSubConnectionDataType value) {
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeVariant("PublisherId", value.getPublisherId());
+            encoder.encodeString("TransportProfileUri", value.getTransportProfileUri());
+            encoder.encodeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
+            encoder.encodeStructArray("ConnectionProperties", value.getConnectionProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), ConnectionTransportDataType.TYPE_ID);
+            encoder.encodeStructArray("WriterGroups", value.getWriterGroups(), WriterGroupDataType.TYPE_ID);
+            encoder.encodeStructArray("ReaderGroups", value.getReaderGroups(), ReaderGroupDataType.TYPE_ID);
         }
     }
 }

@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class BrokerConnectionTransportDataType extends ConnectionTransportDataType implements UaStructure {
+public class BrokerConnectionTransportDataType extends ConnectionTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15007");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15479");
@@ -88,18 +98,18 @@ public class BrokerConnectionTransportDataType extends ConnectionTransportDataTy
         }
 
         @Override
-        public BrokerConnectionTransportDataType decode(SerializationContext context,
-                                                        UaDecoder decoder) {
-            String resourceUri = decoder.readString("ResourceUri");
-            String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
+        public BrokerConnectionTransportDataType decodeType(EncodingContext context,
+                                                            UaDecoder decoder) {
+            String resourceUri = decoder.decodeString("ResourceUri");
+            String authenticationProfileUri = decoder.decodeString("AuthenticationProfileUri");
             return new BrokerConnectionTransportDataType(resourceUri, authenticationProfileUri);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           BrokerConnectionTransportDataType value) {
-            encoder.writeString("ResourceUri", value.getResourceUri());
-            encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               BrokerConnectionTransportDataType value) {
+            encoder.encodeString("ResourceUri", value.getResourceUri());
+            encoder.encodeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
         }
     }
 }

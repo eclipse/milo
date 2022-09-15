@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,10 +27,8 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -178,20 +176,15 @@ public class AttributeReader {
         DataTypeEncoding newEncoding;
         if (OpcUaDefaultBinaryEncoding.ENCODING_NAME.equals(encodingName)) {
             newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
-        } else if (OpcUaDefaultXmlEncoding.ENCODING_NAME.equals(encodingName)) {
-            newEncoding = OpcUaDefaultXmlEncoding.getInstance();
-        } else if (OpcUaDefaultJsonEncoding.ENCODING_NAME.equals(encodingName)) {
-            newEncoding = OpcUaDefaultJsonEncoding.getInstance();
         } else {
-            // TODO look up registered alternate encodings
-            newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
+            newEncoding = context.getServer().getEncodingManager().getEncoding(encodingName);
         }
 
         NodeId newEncodingId = getEncodingId(context, node, encodingName);
 
         if (newEncodingId != null) {
             return xo.transcode(
-                context.getServer().getSerializationContext(),
+                context.getServer().getEncodingContext(),
                 newEncodingId,
                 newEncoding
             );

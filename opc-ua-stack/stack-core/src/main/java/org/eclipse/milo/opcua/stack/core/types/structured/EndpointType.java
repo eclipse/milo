@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class EndpointType extends Structure implements UaStructure {
+public class EndpointType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15528");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15671");
@@ -106,20 +116,20 @@ public class EndpointType extends Structure implements UaStructure {
         }
 
         @Override
-        public EndpointType decode(SerializationContext context, UaDecoder decoder) {
-            String endpointUrl = decoder.readString("EndpointUrl");
-            MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            String transportProfileUri = decoder.readString("TransportProfileUri");
+        public EndpointType decodeType(EncodingContext context, UaDecoder decoder) {
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            String transportProfileUri = decoder.decodeString("TransportProfileUri");
             return new EndpointType(endpointUrl, securityMode, securityPolicyUri, transportProfileUri);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EndpointType value) {
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
+        public void encodeType(EncodingContext context, UaEncoder encoder, EndpointType value) {
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeString("TransportProfileUri", value.getTransportProfileUri());
         }
     }
 }

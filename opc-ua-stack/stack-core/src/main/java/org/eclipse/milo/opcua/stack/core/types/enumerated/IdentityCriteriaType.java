@@ -1,10 +1,16 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.4">https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.4</a>
  */
-public enum IdentityCriteriaType implements UaEnumeration {
+public enum IdentityCriteriaType implements UaEnumeratedType {
     /**
      * The rule specifies a UserName from a UserNameIdentityToken.
      */
@@ -66,8 +72,9 @@ public enum IdentityCriteriaType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=15632");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable IdentityCriteriaType from(int value) {
@@ -106,21 +113,7 @@ public enum IdentityCriteriaType implements UaEnumeration {
         });
     }
 
-    public static final class Codec extends GenericDataTypeCodec<IdentityCriteriaType> {
-        @Override
-        public Class<IdentityCriteriaType> getType() {
-            return IdentityCriteriaType.class;
-        }
-
-        @Override
-        public IdentityCriteriaType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, IdentityCriteriaType.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           IdentityCriteriaType value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15632");
     }
 }

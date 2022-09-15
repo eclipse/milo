@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ContentFilter extends Structure implements UaStructure {
+public class ContentFilter extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=586");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=588");
@@ -80,14 +90,14 @@ public class ContentFilter extends Structure implements UaStructure {
         }
 
         @Override
-        public ContentFilter decode(SerializationContext context, UaDecoder decoder) {
-            ContentFilterElement[] elements = (ContentFilterElement[]) decoder.readStructArray("Elements", ContentFilterElement.TYPE_ID);
+        public ContentFilter decodeType(EncodingContext context, UaDecoder decoder) {
+            ContentFilterElement[] elements = (ContentFilterElement[]) decoder.decodeStructArray("Elements", ContentFilterElement.TYPE_ID);
             return new ContentFilter(elements);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ContentFilter value) {
-            encoder.writeStructArray("Elements", value.getElements(), ContentFilterElement.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder, ContentFilter value) {
+            encoder.encodeStructArray("Elements", value.getElements(), ContentFilterElement.TYPE_ID);
         }
     }
 }

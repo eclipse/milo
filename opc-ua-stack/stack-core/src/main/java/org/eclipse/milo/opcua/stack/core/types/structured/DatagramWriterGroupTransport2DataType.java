@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTransportDataType implements UaStructure {
+public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23613");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=23865");
@@ -118,28 +128,28 @@ public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTr
         }
 
         @Override
-        public DatagramWriterGroupTransport2DataType decode(SerializationContext context,
-                                                            UaDecoder decoder) {
-            UByte messageRepeatCount = decoder.readByte("MessageRepeatCount");
-            Double messageRepeatDelay = decoder.readDouble("MessageRepeatDelay");
-            NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
-            String qosCategory = decoder.readString("QosCategory");
-            TransmitQosDataType[] datagramQos = (TransmitQosDataType[]) decoder.readStructArray("DatagramQos", TransmitQosDataType.TYPE_ID);
-            UInteger discoveryAnnounceRate = decoder.readUInt32("DiscoveryAnnounceRate");
-            String topic = decoder.readString("Topic");
+        public DatagramWriterGroupTransport2DataType decodeType(EncodingContext context,
+                                                                UaDecoder decoder) {
+            UByte messageRepeatCount = decoder.decodeByte("MessageRepeatCount");
+            Double messageRepeatDelay = decoder.decodeDouble("MessageRepeatDelay");
+            NetworkAddressDataType address = (NetworkAddressDataType) decoder.decodeStruct("Address", NetworkAddressDataType.TYPE_ID);
+            String qosCategory = decoder.decodeString("QosCategory");
+            TransmitQosDataType[] datagramQos = (TransmitQosDataType[]) decoder.decodeStructArray("DatagramQos", TransmitQosDataType.TYPE_ID);
+            UInteger discoveryAnnounceRate = decoder.decodeUInt32("DiscoveryAnnounceRate");
+            String topic = decoder.decodeString("Topic");
             return new DatagramWriterGroupTransport2DataType(messageRepeatCount, messageRepeatDelay, address, qosCategory, datagramQos, discoveryAnnounceRate, topic);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramWriterGroupTransport2DataType value) {
-            encoder.writeByte("MessageRepeatCount", value.getMessageRepeatCount());
-            encoder.writeDouble("MessageRepeatDelay", value.getMessageRepeatDelay());
-            encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
-            encoder.writeString("QosCategory", value.getQosCategory());
-            encoder.writeStructArray("DatagramQos", value.getDatagramQos(), TransmitQosDataType.TYPE_ID);
-            encoder.writeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
-            encoder.writeString("Topic", value.getTopic());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               DatagramWriterGroupTransport2DataType value) {
+            encoder.encodeByte("MessageRepeatCount", value.getMessageRepeatCount());
+            encoder.encodeDouble("MessageRepeatDelay", value.getMessageRepeatDelay());
+            encoder.encodeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
+            encoder.encodeString("QosCategory", value.getQosCategory());
+            encoder.encodeStructArray("DatagramQos", value.getDatagramQos(), TransmitQosDataType.TYPE_ID);
+            encoder.encodeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
+            encoder.encodeString("Topic", value.getTopic());
         }
     }
 }

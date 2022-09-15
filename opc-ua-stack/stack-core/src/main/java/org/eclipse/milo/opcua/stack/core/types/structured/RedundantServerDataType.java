@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class RedundantServerDataType extends Structure implements UaStructure {
+public class RedundantServerDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=853");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=855");
@@ -98,19 +108,19 @@ public class RedundantServerDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public RedundantServerDataType decode(SerializationContext context, UaDecoder decoder) {
-            String serverId = decoder.readString("ServerId");
-            UByte serviceLevel = decoder.readByte("ServiceLevel");
-            ServerState serverState = (ServerState) decoder.readEnum("ServerState", ServerState.class);
+        public RedundantServerDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String serverId = decoder.decodeString("ServerId");
+            UByte serviceLevel = decoder.decodeByte("ServiceLevel");
+            ServerState serverState = ServerState.from(decoder.decodeEnum("ServerState"));
             return new RedundantServerDataType(serverId, serviceLevel, serverState);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           RedundantServerDataType value) {
-            encoder.writeString("ServerId", value.getServerId());
-            encoder.writeByte("ServiceLevel", value.getServiceLevel());
-            encoder.writeEnum("ServerState", value.getServerState());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               RedundantServerDataType value) {
+            encoder.encodeString("ServerId", value.getServerId());
+            encoder.encodeByte("ServiceLevel", value.getServiceLevel());
+            encoder.encodeEnum("ServerState", value.getServerState());
         }
     }
 }

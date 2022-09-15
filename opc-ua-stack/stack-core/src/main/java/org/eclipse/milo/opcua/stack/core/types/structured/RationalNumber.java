@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class RationalNumber extends Structure implements UaStructure {
+public class RationalNumber extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=18806");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=18815");
@@ -88,16 +98,16 @@ public class RationalNumber extends Structure implements UaStructure {
         }
 
         @Override
-        public RationalNumber decode(SerializationContext context, UaDecoder decoder) {
-            Integer numerator = decoder.readInt32("Numerator");
-            UInteger denominator = decoder.readUInt32("Denominator");
+        public RationalNumber decodeType(EncodingContext context, UaDecoder decoder) {
+            Integer numerator = decoder.decodeInt32("Numerator");
+            UInteger denominator = decoder.decodeUInt32("Denominator");
             return new RationalNumber(numerator, denominator);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RationalNumber value) {
-            encoder.writeInt32("Numerator", value.getNumerator());
-            encoder.writeUInt32("Denominator", value.getDenominator());
+        public void encodeType(EncodingContext context, UaEncoder encoder, RationalNumber value) {
+            encoder.encodeInt32("Numerator", value.getNumerator());
+            encoder.encodeUInt32("Denominator", value.getDenominator());
         }
     }
 }

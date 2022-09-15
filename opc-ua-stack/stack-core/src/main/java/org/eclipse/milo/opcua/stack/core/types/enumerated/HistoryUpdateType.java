@@ -1,10 +1,16 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.6">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.6</a>
  */
-public enum HistoryUpdateType implements UaEnumeration {
+public enum HistoryUpdateType implements UaEnumeratedType {
     Insert(1),
 
     Replace(2),
@@ -34,8 +40,9 @@ public enum HistoryUpdateType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=11234");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable HistoryUpdateType from(int value) {
@@ -62,20 +69,7 @@ public enum HistoryUpdateType implements UaEnumeration {
         });
     }
 
-    public static final class Codec extends GenericDataTypeCodec<HistoryUpdateType> {
-        @Override
-        public Class<HistoryUpdateType> getType() {
-            return HistoryUpdateType.class;
-        }
-
-        @Override
-        public HistoryUpdateType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, HistoryUpdateType.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryUpdateType value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=11234");
     }
 }

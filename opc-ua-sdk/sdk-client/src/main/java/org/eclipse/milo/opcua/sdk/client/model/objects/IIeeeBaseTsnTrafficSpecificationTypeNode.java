@@ -181,7 +181,7 @@ public class IIeeeBaseTsnTrafficSpecificationTypeNode extends BaseInterfaceTypeN
     @Override
     public void setInterval(UnsignedRationalNumber value) throws UaException {
         BaseDataVariableTypeNode node = getIntervalNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -212,7 +212,7 @@ public class IIeeeBaseTsnTrafficSpecificationTypeNode extends BaseInterfaceTypeN
 
     @Override
     public CompletableFuture<StatusCode> writeIntervalAsync(UnsignedRationalNumber interval) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), interval);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), interval);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getIntervalNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

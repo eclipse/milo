@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class IssuedIdentityToken extends UserIdentityToken implements UaStructure {
+public class IssuedIdentityToken extends UserIdentityToken implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=938");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=940");
@@ -91,18 +101,19 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
 
         @Override
-        public IssuedIdentityToken decode(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            ByteString tokenData = decoder.readByteString("TokenData");
-            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
+        public IssuedIdentityToken decodeType(EncodingContext context, UaDecoder decoder) {
+            String policyId = decoder.decodeString("PolicyId");
+            ByteString tokenData = decoder.decodeByteString("TokenData");
+            String encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
             return new IssuedIdentityToken(policyId, tokenData, encryptionAlgorithm);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, IssuedIdentityToken value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeByteString("TokenData", value.getTokenData());
-            encoder.writeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               IssuedIdentityToken value) {
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeByteString("TokenData", value.getTokenData());
+            encoder.encodeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
         }
     }
 }

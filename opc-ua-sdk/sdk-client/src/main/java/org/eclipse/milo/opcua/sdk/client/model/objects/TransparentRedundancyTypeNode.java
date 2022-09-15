@@ -116,7 +116,7 @@ public class TransparentRedundancyTypeNode extends ServerRedundancyTypeNode impl
     @Override
     public void setRedundantServerArray(RedundantServerDataType[] value) throws UaException {
         PropertyTypeNode node = getRedundantServerArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -148,7 +148,7 @@ public class TransparentRedundancyTypeNode extends ServerRedundancyTypeNode impl
     @Override
     public CompletableFuture<StatusCode> writeRedundantServerArrayAsync(
         RedundantServerDataType[] redundantServerArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), redundantServerArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), redundantServerArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getRedundantServerArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

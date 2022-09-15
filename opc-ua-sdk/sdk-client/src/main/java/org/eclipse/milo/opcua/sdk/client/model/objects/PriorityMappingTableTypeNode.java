@@ -52,7 +52,7 @@ public class PriorityMappingTableTypeNode extends BaseObjectTypeNode implements 
     @Override
     public void setPriorityMapppingEntries(PriorityMappingEntryType[] value) throws UaException {
         PropertyTypeNode node = getPriorityMapppingEntriesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), value);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class PriorityMappingTableTypeNode extends BaseObjectTypeNode implements 
     @Override
     public CompletableFuture<StatusCode> writePriorityMapppingEntriesAsync(
         PriorityMappingEntryType[] priorityMapppingEntries) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), priorityMapppingEntries);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), priorityMapppingEntries);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getPriorityMapppingEntriesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

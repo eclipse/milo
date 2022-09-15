@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class RegisterServer2Request extends Structure implements UaRequestMessage {
+public class RegisterServer2Request extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12193");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=12211");
@@ -98,19 +108,19 @@ public class RegisterServer2Request extends Structure implements UaRequestMessag
         }
 
         @Override
-        public RegisterServer2Request decode(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            RegisteredServer server = (RegisteredServer) decoder.readStruct("Server", RegisteredServer.TYPE_ID);
-            ExtensionObject[] discoveryConfiguration = decoder.readExtensionObjectArray("DiscoveryConfiguration");
+        public RegisterServer2Request decodeType(EncodingContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            RegisteredServer server = (RegisteredServer) decoder.decodeStruct("Server", RegisteredServer.TYPE_ID);
+            ExtensionObject[] discoveryConfiguration = decoder.decodeExtensionObjectArray("DiscoveryConfiguration");
             return new RegisterServer2Request(requestHeader, server, discoveryConfiguration);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           RegisterServer2Request value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("Server", value.getServer(), RegisteredServer.TYPE_ID);
-            encoder.writeExtensionObjectArray("DiscoveryConfiguration", value.getDiscoveryConfiguration());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               RegisterServer2Request value) {
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("Server", value.getServer(), RegisteredServer.TYPE_ID);
+            encoder.encodeExtensionObjectArray("DiscoveryConfiguration", value.getDiscoveryConfiguration());
         }
     }
 }

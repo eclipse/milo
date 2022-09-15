@@ -54,7 +54,7 @@ public class OrientationTypeNode extends BaseDataVariableTypeNode implements Ori
     @Override
     public void setAngleUnit(EUInformation value) throws UaException {
         PropertyTypeNode node = getAngleUnitNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -85,7 +85,7 @@ public class OrientationTypeNode extends BaseDataVariableTypeNode implements Ori
 
     @Override
     public CompletableFuture<StatusCode> writeAngleUnitAsync(EUInformation angleUnit) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), angleUnit);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), angleUnit);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getAngleUnitNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

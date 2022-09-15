@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -29,8 +29,8 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -109,7 +109,7 @@ public class ClientServerTest extends SecurityFixture {
             {new Variant(new QualifiedName(0, "QualifiedName"))},
             {new Variant(LocalizedText.english("LocalizedText"))},
             {new Variant(ExtensionObject.encode(
-                new TestSerializationContext(),
+                new TestEncodingContext(),
                 new ReadValueId(NodeId.NULL_VALUE, uint(1), null, new QualifiedName(0, "DataEncoding"))
             ))},
         };
@@ -290,7 +290,7 @@ public class ClientServerTest extends SecurityFixture {
             );
 
             logger.debug("sending request: {}", request);
-            UaResponseMessage response = client.sendRequest(request).get();
+            UaResponseMessageType response = client.sendRequest(request).get();
             logger.debug("got response: {}", response);
 
             client.disconnect().get();
@@ -333,7 +333,7 @@ public class ClientServerTest extends SecurityFixture {
         );
 
         logger.info("sending request: {}", request);
-        UaResponseMessage response0 = client.sendRequest(request).get();
+        UaResponseMessageType response0 = client.sendRequest(request).get();
         logger.info("got response: {}", response0);
 
         client.disconnect().get();
@@ -377,7 +377,7 @@ public class ClientServerTest extends SecurityFixture {
         );
 
         logger.info("sending request: {}", request);
-        UaResponseMessage response0 = client.sendRequest(request).get();
+        UaResponseMessageType response0 = client.sendRequest(request).get();
         logger.info("got response: {}", response0);
 
         logger.info("initiating a reconnect by closing channel in server...");
@@ -391,11 +391,11 @@ public class ClientServerTest extends SecurityFixture {
 
         logger.info("sending request: {}", request);
         try {
-            UaResponseMessage response1 = client.sendRequest(request).get();
+            UaResponseMessageType response1 = client.sendRequest(request).get();
             logger.info("got response: {}", response1);
         } catch (Exception e) {
             // try again because close() above is a race condition
-            UaResponseMessage response1 = client.sendRequest(request).get();
+            UaResponseMessageType response1 = client.sendRequest(request).get();
             logger.info("got response: {}", response1);
         }
 

@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ConfigurationVersionDataType extends Structure implements UaStructure {
+public class ConfigurationVersionDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14593");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=14847");
@@ -88,17 +98,18 @@ public class ConfigurationVersionDataType extends Structure implements UaStructu
         }
 
         @Override
-        public ConfigurationVersionDataType decode(SerializationContext context, UaDecoder decoder) {
-            UInteger majorVersion = decoder.readUInt32("MajorVersion");
-            UInteger minorVersion = decoder.readUInt32("MinorVersion");
+        public ConfigurationVersionDataType decodeType(EncodingContext context,
+                                                       UaDecoder decoder) {
+            UInteger majorVersion = decoder.decodeUInt32("MajorVersion");
+            UInteger minorVersion = decoder.decodeUInt32("MinorVersion");
             return new ConfigurationVersionDataType(majorVersion, minorVersion);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ConfigurationVersionDataType value) {
-            encoder.writeUInt32("MajorVersion", value.getMajorVersion());
-            encoder.writeUInt32("MinorVersion", value.getMinorVersion());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               ConfigurationVersionDataType value) {
+            encoder.encodeUInt32("MajorVersion", value.getMajorVersion());
+            encoder.encodeUInt32("MinorVersion", value.getMinorVersion());
         }
     }
 }

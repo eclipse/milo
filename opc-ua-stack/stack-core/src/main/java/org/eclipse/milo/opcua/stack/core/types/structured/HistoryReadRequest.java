@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 )
 @SuperBuilder
 @ToString
-public class HistoryReadRequest extends Structure implements UaRequestMessage {
+public class HistoryReadRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=662");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=664");
@@ -116,22 +126,23 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public HistoryReadRequest decode(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ExtensionObject historyReadDetails = decoder.readExtensionObject("HistoryReadDetails");
-            TimestampsToReturn timestampsToReturn = (TimestampsToReturn) decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
-            Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
-            HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.readStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
+        public HistoryReadRequest decodeType(EncodingContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ExtensionObject historyReadDetails = decoder.decodeExtensionObject("HistoryReadDetails");
+            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.decodeEnum("TimestampsToReturn"));
+            Boolean releaseContinuationPoints = decoder.decodeBoolean("ReleaseContinuationPoints");
+            HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.decodeStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
             return new HistoryReadRequest(requestHeader, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
-            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
-            encoder.writeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
-            encoder.writeStructArray("NodesToRead", value.getNodesToRead(), HistoryReadValueId.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               HistoryReadRequest value) {
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
+            encoder.encodeEnum("TimestampsToReturn", value.getTimestampsToReturn());
+            encoder.encodeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
+            encoder.encodeStructArray("NodesToRead", value.getNodesToRead(), HistoryReadValueId.TYPE_ID);
         }
     }
 }

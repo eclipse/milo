@@ -47,7 +47,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -220,7 +220,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, request);
+                binaryEncoder.encodeMessage(null, request);
 
                 checkMessageSize(messageBuffer);
 
@@ -289,7 +289,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, request);
+                binaryEncoder.encodeMessage(null, request);
 
                 checkMessageSize(messageBuffer);
 
@@ -331,7 +331,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, request.getRequest());
+                binaryEncoder.encodeMessage(null, request.getRequest());
 
                 checkMessageSize(messageBuffer);
 
@@ -503,9 +503,9 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 }
 
                 try {
-                    UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                    UaResponseMessageType response = (UaResponseMessageType) binaryDecoder
                         .setBuffer(message)
-                        .readMessage(null);
+                        .decodeMessage(null);
 
                     StatusCode serviceResult = response.getResponseHeader().getServiceResult();
 
@@ -649,9 +649,9 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 UaTransportRequest request = pending.remove(requestId);
 
                 try {
-                    UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                    UaResponseMessageType response = (UaResponseMessageType) binaryDecoder
                         .setBuffer(message)
-                        .readMessage(null);
+                        .decodeMessage(null);
 
                     if (request != null) {
                         request.getFuture().complete(response);

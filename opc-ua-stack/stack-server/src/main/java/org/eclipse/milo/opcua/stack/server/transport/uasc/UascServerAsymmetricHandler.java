@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -264,7 +264,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                     try {
                         OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
                             .setBuffer(message)
-                            .readMessage(null);
+                            .decodeMessage(null);
 
                         logger.debug(
                             "Received OpenSecureChannelRequest ({}, id={}).",
@@ -298,7 +298,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 OpenSecureChannelResponse response = openSecureChannel(ctx, request);
 
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, response);
+                binaryEncoder.encodeMessage(null, response);
 
                 checkMessageSize(messageBuffer);
 

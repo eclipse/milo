@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.UUID;
@@ -6,11 +16,11 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -25,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStructure {
+public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14523");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=124");
@@ -122,30 +132,31 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         }
 
         @Override
-        public DataSetMetaDataType decode(SerializationContext context, UaDecoder decoder) {
-            String[] namespaces = decoder.readStringArray("Namespaces");
-            StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.readStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
-            EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.readStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
-            SimpleTypeDescription[] simpleDataTypes = (SimpleTypeDescription[]) decoder.readStructArray("SimpleDataTypes", SimpleTypeDescription.TYPE_ID);
-            String name = decoder.readString("Name");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            FieldMetaData[] fields = (FieldMetaData[]) decoder.readStructArray("Fields", FieldMetaData.TYPE_ID);
-            UUID dataSetClassId = decoder.readGuid("DataSetClassId");
-            ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) decoder.readStruct("ConfigurationVersion", ConfigurationVersionDataType.TYPE_ID);
+        public DataSetMetaDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String[] namespaces = decoder.decodeStringArray("Namespaces");
+            StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.decodeStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
+            EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.decodeStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
+            SimpleTypeDescription[] simpleDataTypes = (SimpleTypeDescription[]) decoder.decodeStructArray("SimpleDataTypes", SimpleTypeDescription.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            FieldMetaData[] fields = (FieldMetaData[]) decoder.decodeStructArray("Fields", FieldMetaData.TYPE_ID);
+            UUID dataSetClassId = decoder.decodeGuid("DataSetClassId");
+            ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) decoder.decodeStruct("ConfigurationVersion", ConfigurationVersionDataType.TYPE_ID);
             return new DataSetMetaDataType(namespaces, structureDataTypes, enumDataTypes, simpleDataTypes, name, description, fields, dataSetClassId, configurationVersion);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DataSetMetaDataType value) {
-            encoder.writeStringArray("Namespaces", value.getNamespaces());
-            encoder.writeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
-            encoder.writeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);
-            encoder.writeStructArray("SimpleDataTypes", value.getSimpleDataTypes(), SimpleTypeDescription.TYPE_ID);
-            encoder.writeString("Name", value.getName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeStructArray("Fields", value.getFields(), FieldMetaData.TYPE_ID);
-            encoder.writeGuid("DataSetClassId", value.getDataSetClassId());
-            encoder.writeStruct("ConfigurationVersion", value.getConfigurationVersion(), ConfigurationVersionDataType.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               DataSetMetaDataType value) {
+            encoder.encodeStringArray("Namespaces", value.getNamespaces());
+            encoder.encodeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
+            encoder.encodeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);
+            encoder.encodeStructArray("SimpleDataTypes", value.getSimpleDataTypes(), SimpleTypeDescription.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeStructArray("Fields", value.getFields(), FieldMetaData.TYPE_ID);
+            encoder.encodeGuid("DataSetClassId", value.getDataSetClassId());
+            encoder.encodeStruct("ConfigurationVersion", value.getConfigurationVersion(), ConfigurationVersionDataType.TYPE_ID);
         }
     }
 }

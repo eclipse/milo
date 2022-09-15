@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class CurrencyUnitType extends Structure implements UaStructure {
+public class CurrencyUnitType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23498");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=23507");
@@ -105,20 +115,21 @@ public class CurrencyUnitType extends Structure implements UaStructure {
         }
 
         @Override
-        public CurrencyUnitType decode(SerializationContext context, UaDecoder decoder) {
-            Short numericCode = decoder.readInt16("NumericCode");
-            Byte exponent = decoder.readSByte("Exponent");
-            String alphabeticCode = decoder.readString("AlphabeticCode");
-            LocalizedText currency = decoder.readLocalizedText("Currency");
+        public CurrencyUnitType decodeType(EncodingContext context, UaDecoder decoder) {
+            Short numericCode = decoder.decodeInt16("NumericCode");
+            Byte exponent = decoder.decodeSByte("Exponent");
+            String alphabeticCode = decoder.decodeString("AlphabeticCode");
+            LocalizedText currency = decoder.decodeLocalizedText("Currency");
             return new CurrencyUnitType(numericCode, exponent, alphabeticCode, currency);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CurrencyUnitType value) {
-            encoder.writeInt16("NumericCode", value.getNumericCode());
-            encoder.writeSByte("Exponent", value.getExponent());
-            encoder.writeString("AlphabeticCode", value.getAlphabeticCode());
-            encoder.writeLocalizedText("Currency", value.getCurrency());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               CurrencyUnitType value) {
+            encoder.encodeInt16("NumericCode", value.getNumericCode());
+            encoder.encodeSByte("Exponent", value.getExponent());
+            encoder.encodeString("AlphabeticCode", value.getAlphabeticCode());
+            encoder.encodeLocalizedText("Currency", value.getCurrency());
         }
     }
 }

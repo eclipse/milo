@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -23,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class PubSubConfiguration2DataType extends PubSubConfigurationDataType implements UaStructure {
+public class PubSubConfiguration2DataType extends PubSubConfigurationDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23602");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=23854");
@@ -137,33 +147,34 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         }
 
         @Override
-        public PubSubConfiguration2DataType decode(SerializationContext context, UaDecoder decoder) {
-            PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.readStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
-            PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.readStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
-            Boolean enabled = decoder.readBoolean("Enabled");
-            StandaloneSubscribedDataSetDataType[] subscribedDataSets = (StandaloneSubscribedDataSetDataType[]) decoder.readStructArray("SubscribedDataSets", StandaloneSubscribedDataSetDataType.TYPE_ID);
-            DataSetMetaDataType[] dataSetClasses = (DataSetMetaDataType[]) decoder.readStructArray("DataSetClasses", DataSetMetaDataType.TYPE_ID);
-            EndpointDescription[] defaultSecurityKeyServices = (EndpointDescription[]) decoder.readStructArray("DefaultSecurityKeyServices", EndpointDescription.TYPE_ID);
-            SecurityGroupDataType[] securityGroups = (SecurityGroupDataType[]) decoder.readStructArray("SecurityGroups", SecurityGroupDataType.TYPE_ID);
-            PubSubKeyPushTargetDataType[] pubSubKeyPushTargets = (PubSubKeyPushTargetDataType[]) decoder.readStructArray("PubSubKeyPushTargets", PubSubKeyPushTargetDataType.TYPE_ID);
-            UInteger configurationVersion = decoder.readUInt32("ConfigurationVersion");
-            KeyValuePair[] configurationProperties = (KeyValuePair[]) decoder.readStructArray("ConfigurationProperties", KeyValuePair.TYPE_ID);
+        public PubSubConfiguration2DataType decodeType(EncodingContext context,
+                                                       UaDecoder decoder) {
+            PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.decodeStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
+            PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.decodeStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            StandaloneSubscribedDataSetDataType[] subscribedDataSets = (StandaloneSubscribedDataSetDataType[]) decoder.decodeStructArray("SubscribedDataSets", StandaloneSubscribedDataSetDataType.TYPE_ID);
+            DataSetMetaDataType[] dataSetClasses = (DataSetMetaDataType[]) decoder.decodeStructArray("DataSetClasses", DataSetMetaDataType.TYPE_ID);
+            EndpointDescription[] defaultSecurityKeyServices = (EndpointDescription[]) decoder.decodeStructArray("DefaultSecurityKeyServices", EndpointDescription.TYPE_ID);
+            SecurityGroupDataType[] securityGroups = (SecurityGroupDataType[]) decoder.decodeStructArray("SecurityGroups", SecurityGroupDataType.TYPE_ID);
+            PubSubKeyPushTargetDataType[] pubSubKeyPushTargets = (PubSubKeyPushTargetDataType[]) decoder.decodeStructArray("PubSubKeyPushTargets", PubSubKeyPushTargetDataType.TYPE_ID);
+            UInteger configurationVersion = decoder.decodeUInt32("ConfigurationVersion");
+            KeyValuePair[] configurationProperties = (KeyValuePair[]) decoder.decodeStructArray("ConfigurationProperties", KeyValuePair.TYPE_ID);
             return new PubSubConfiguration2DataType(publishedDataSets, connections, enabled, subscribedDataSets, dataSetClasses, defaultSecurityKeyServices, securityGroups, pubSubKeyPushTargets, configurationVersion, configurationProperties);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConfiguration2DataType value) {
-            encoder.writeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
-            encoder.writeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeStructArray("SubscribedDataSets", value.getSubscribedDataSets(), StandaloneSubscribedDataSetDataType.TYPE_ID);
-            encoder.writeStructArray("DataSetClasses", value.getDataSetClasses(), DataSetMetaDataType.TYPE_ID);
-            encoder.writeStructArray("DefaultSecurityKeyServices", value.getDefaultSecurityKeyServices(), EndpointDescription.TYPE_ID);
-            encoder.writeStructArray("SecurityGroups", value.getSecurityGroups(), SecurityGroupDataType.TYPE_ID);
-            encoder.writeStructArray("PubSubKeyPushTargets", value.getPubSubKeyPushTargets(), PubSubKeyPushTargetDataType.TYPE_ID);
-            encoder.writeUInt32("ConfigurationVersion", value.getConfigurationVersion());
-            encoder.writeStructArray("ConfigurationProperties", value.getConfigurationProperties(), KeyValuePair.TYPE_ID);
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               PubSubConfiguration2DataType value) {
+            encoder.encodeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
+            encoder.encodeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeStructArray("SubscribedDataSets", value.getSubscribedDataSets(), StandaloneSubscribedDataSetDataType.TYPE_ID);
+            encoder.encodeStructArray("DataSetClasses", value.getDataSetClasses(), DataSetMetaDataType.TYPE_ID);
+            encoder.encodeStructArray("DefaultSecurityKeyServices", value.getDefaultSecurityKeyServices(), EndpointDescription.TYPE_ID);
+            encoder.encodeStructArray("SecurityGroups", value.getSecurityGroups(), SecurityGroupDataType.TYPE_ID);
+            encoder.encodeStructArray("PubSubKeyPushTargets", value.getPubSubKeyPushTargets(), PubSubKeyPushTargetDataType.TYPE_ID);
+            encoder.encodeUInt32("ConfigurationVersion", value.getConfigurationVersion());
+            encoder.encodeStructArray("ConfigurationProperties", value.getConfigurationProperties(), KeyValuePair.TYPE_ID);
         }
     }
 }

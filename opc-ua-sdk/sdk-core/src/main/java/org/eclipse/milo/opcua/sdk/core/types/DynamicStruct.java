@@ -12,9 +12,13 @@ package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class DynamicStruct {
+import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+
+public class DynamicStruct implements UaDataType {
 
     private final DataType dataType;
     private final LinkedHashMap<String, Object> members;
@@ -30,6 +34,11 @@ public class DynamicStruct {
 
     public LinkedHashMap<String, Object> getMembers() {
         return members;
+    }
+
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return dataType.getNodeId().expanded();
     }
 
     @Override
@@ -49,6 +58,14 @@ public class DynamicStruct {
                 }
             })
             .collect(Collectors.joining(", "));
+    }
+
+    public static DynamicStruct newInstance(DataType dataType) {
+        return new DynamicStruct(dataType, new LinkedHashMap<>());
+    }
+
+    public static Supplier<DynamicStruct> newInstanceFactory(DataType dataType) {
+        return () -> new DynamicStruct(dataType, new LinkedHashMap<>());
     }
 
 }

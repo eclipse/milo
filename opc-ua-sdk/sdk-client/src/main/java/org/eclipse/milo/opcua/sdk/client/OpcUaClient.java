@@ -39,11 +39,11 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -355,17 +355,17 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * @see UaStackClient#getStaticSerializationContext()
+     * @see UaStackClient#getStaticEncodingContext()
      */
-    public SerializationContext getStaticSerializationContext() {
-        return stackClient.getStaticSerializationContext();
+    public EncodingContext getStaticEncodingContext() {
+        return stackClient.getStaticEncodingContext();
     }
 
     /**
-     * @see UaStackClient#getDynamicSerializationContext()
+     * @see UaStackClient#getDynamicEncodingContext()
      */
-    public SerializationContext getDynamicSerializationContext() {
-        return stackClient.getDynamicSerializationContext();
+    public EncodingContext getDynamicEncodingContext() {
+        return stackClient.getDynamicEncodingContext();
     }
 
     /**
@@ -624,7 +624,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             HistoryReadRequest request = new HistoryReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                ExtensionObject.encode(getStaticSerializationContext(), historyReadDetails),
+                ExtensionObject.encode(getStaticEncodingContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
                 a(nodesToRead, HistoryReadValueId.class)
@@ -638,7 +638,7 @@ public class OpcUaClient implements UaClient {
     public CompletableFuture<HistoryUpdateResponse> historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails) {
         return getSession().thenCompose(session -> {
             ExtensionObject[] details = historyUpdateDetails.stream()
-                .map(hud -> ExtensionObject.encode(getStaticSerializationContext(), hud))
+                .map(hud -> ExtensionObject.encode(getStaticEncodingContext(), hud))
                 .toArray(ExtensionObject[]::new);
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(
@@ -986,8 +986,8 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
-        CompletableFuture<UaResponseMessage> f = getStackClient().sendRequest(request);
+    public <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request) {
+        CompletableFuture<UaResponseMessageType> f = getStackClient().sendRequest(request);
 
         if (faultListeners.size() > 0) {
             f.whenComplete(this::maybeHandleServiceFault);
@@ -997,7 +997,7 @@ public class OpcUaClient implements UaClient {
     }
 
 
-    private void maybeHandleServiceFault(UaResponseMessage response, Throwable ex) {
+    private void maybeHandleServiceFault(UaResponseMessageType response, Throwable ex) {
         if (faultListeners.isEmpty()) return;
 
         if (ex != null) {

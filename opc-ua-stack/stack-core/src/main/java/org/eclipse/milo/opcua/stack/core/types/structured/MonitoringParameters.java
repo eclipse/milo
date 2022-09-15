@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class MonitoringParameters extends Structure implements UaStructure {
+public class MonitoringParameters extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=740");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=742");
@@ -114,23 +124,23 @@ public class MonitoringParameters extends Structure implements UaStructure {
         }
 
         @Override
-        public MonitoringParameters decode(SerializationContext context, UaDecoder decoder) {
-            UInteger clientHandle = decoder.readUInt32("ClientHandle");
-            Double samplingInterval = decoder.readDouble("SamplingInterval");
-            ExtensionObject filter = decoder.readExtensionObject("Filter");
-            UInteger queueSize = decoder.readUInt32("QueueSize");
-            Boolean discardOldest = decoder.readBoolean("DiscardOldest");
+        public MonitoringParameters decodeType(EncodingContext context, UaDecoder decoder) {
+            UInteger clientHandle = decoder.decodeUInt32("ClientHandle");
+            Double samplingInterval = decoder.decodeDouble("SamplingInterval");
+            ExtensionObject filter = decoder.decodeExtensionObject("Filter");
+            UInteger queueSize = decoder.decodeUInt32("QueueSize");
+            Boolean discardOldest = decoder.decodeBoolean("DiscardOldest");
             return new MonitoringParameters(clientHandle, samplingInterval, filter, queueSize, discardOldest);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoringParameters value) {
-            encoder.writeUInt32("ClientHandle", value.getClientHandle());
-            encoder.writeDouble("SamplingInterval", value.getSamplingInterval());
-            encoder.writeExtensionObject("Filter", value.getFilter());
-            encoder.writeUInt32("QueueSize", value.getQueueSize());
-            encoder.writeBoolean("DiscardOldest", value.getDiscardOldest());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               MonitoringParameters value) {
+            encoder.encodeUInt32("ClientHandle", value.getClientHandle());
+            encoder.encodeDouble("SamplingInterval", value.getSamplingInterval());
+            encoder.encodeExtensionObject("Filter", value.getFilter());
+            encoder.encodeUInt32("QueueSize", value.getQueueSize());
+            encoder.encodeBoolean("DiscardOldest", value.getDiscardOldest());
         }
     }
 }

@@ -117,7 +117,7 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
     @Override
     public void setOldValues(HistoryEventFieldList value) throws UaException {
         PropertyTypeNode node = getOldValuesNode();
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), value);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), value);
         node.setValue(new Variant(encoded));
     }
 
@@ -148,7 +148,7 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
 
     @Override
     public CompletableFuture<StatusCode> writeOldValuesAsync(HistoryEventFieldList oldValues) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), oldValues);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticEncodingContext(), oldValues);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getOldValuesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -14,12 +14,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -91,24 +89,45 @@ public final class ExtensionObject {
         }
     }
 
-    public Object decode(SerializationContext context) throws UaSerializationException {
+    public Object decode(EncodingContext context) throws UaSerializationException {
         switch (bodyType) {
-            case ByteString:
+            case ByteString: {
                 return decode(context, OpcUaDefaultBinaryEncoding.getInstance());
-            case XmlElement:
-                return decode(context, OpcUaDefaultXmlEncoding.getInstance());
-            case JsonString:
-                return decode(context, OpcUaDefaultJsonEncoding.getInstance());
+            }
+            case XmlElement: {
+                DataTypeEncoding encoding = context.getEncodingManager()
+                    .getEncoding(DataTypeEncoding.XML_ENCODING_NAME);
+
+                if (encoding != null) {
+                    return decode(context, encoding);
+                } else {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "encoding not registered: " + DataTypeEncoding.XML_ENCODING_NAME);
+                }
+            }
+            case JsonString: {
+                DataTypeEncoding encoding = context.getEncodingManager()
+                    .getEncoding(DataTypeEncoding.JSON_ENCODING_NAME);
+
+                if (encoding != null) {
+                    return decode(context, encoding);
+                } else {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "encoding not registered: " + DataTypeEncoding.JSON_ENCODING_NAME);
+                }
+            }
             default:
                 throw new IllegalStateException("BodyType: " + bodyType);
         }
     }
 
-    public Object decode(SerializationContext context, DataTypeEncoding encoding) throws UaSerializationException {
+    public Object decode(EncodingContext context, DataTypeEncoding encoding) throws UaSerializationException {
         return decoded.getOrCompute(() -> encoding.decode(context, body, encodingId));
     }
 
-    public @Nullable Object decodeOrNull(SerializationContext context) {
+    public @Nullable Object decodeOrNull(EncodingContext context) {
         try {
             return decode(context);
         } catch (UaSerializationException e) {
@@ -117,7 +136,7 @@ public final class ExtensionObject {
     }
 
     public ExtensionObject transcode(
-        SerializationContext context,
+        EncodingContext context,
         NodeId newEncodingId,
         DataTypeEncoding newEncoding
     ) {
@@ -143,8 +162,8 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
-        UaStructure struct
+        EncodingContext context,
+        UaStructuredType struct
     ) throws UaSerializationException {
 
         NodeId encodingId = struct.getBinaryEncodingId()
@@ -161,8 +180,8 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject[] encodeArray(
-        SerializationContext context,
-        UaStructure[] structArray
+        EncodingContext context,
+        UaStructuredType[] structArray
     ) throws UaSerializationException {
 
         ExtensionObject[] xos = new ExtensionObject[structArray.length];
@@ -175,7 +194,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encodeDefaultBinary(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId
     ) throws UaSerializationException {
@@ -183,47 +202,26 @@ public final class ExtensionObject {
         return encode(context, object, encodingId, OpcUaDefaultBinaryEncoding.getInstance());
     }
 
-    public static ExtensionObject encodeDefaultXml(
-        SerializationContext context,
-        Object object,
-        NodeId encodingId
-    ) throws UaSerializationException {
-
-        return encode(context, object, encodingId, OpcUaDefaultXmlEncoding.getInstance());
-    }
-
-    public static ExtensionObject encodeDefaultJson(
-        SerializationContext context,
-        Object object,
-        NodeId encodingId
-    ) throws UaSerializationException {
-
-        return encode(context, object, encodingId, OpcUaDefaultJsonEncoding.getInstance());
-    }
-
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         ExpandedNodeId xEncodingId,
         DataTypeEncoding encoding
     ) throws UaSerializationException {
 
-        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable())
-            .orElseThrow(
-                () ->
-                    new UaSerializationException(
-                        StatusCodes.Bad_EncodingError,
-                        "namespace not registered: " +
-                            xEncodingId.getNamespaceUri())
-            );
+        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable()).orElseThrow(
+            () ->
+                new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "namespace not registered: " +
+                        xEncodingId.getNamespaceUri())
+        );
 
-        Object body = encoding.encode(context, object, encodingId);
-
-        return new ExtensionObject(body, encodingId);
+        return encode(context, object, encodingId, encoding);
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId,
         DataTypeEncoding encoding
