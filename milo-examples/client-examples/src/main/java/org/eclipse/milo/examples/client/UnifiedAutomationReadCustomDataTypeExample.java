@@ -11,6 +11,7 @@
 package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionarySessionInitializer;
@@ -50,11 +51,17 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
         client.connect().get();
 
+        readPerson(client);
+        readWorkOrder(client);
+
+        future.complete(client);
+    }
+
+    private void readPerson(OpcUaClient client) throws InterruptedException, ExecutionException {
         DataValue dataValue = client.readValue(
             0.0,
             TimestampsToReturn.Neither,
             NodeId.parse("ns=2;s=Person1")
-//            NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder")
         ).get();
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
@@ -63,8 +70,21 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         Object value = xo.decode(client.getDynamicEncodingContext());
 
         logger.info("value: {}", value);
+    }
 
-        future.complete(client);
+    private void readWorkOrder(OpcUaClient client) throws InterruptedException, ExecutionException {
+        DataValue dataValue = client.readValue(
+            0.0,
+            TimestampsToReturn.Neither,
+            NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder")
+        ).get();
+
+        ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
+        assert xo != null;
+
+        Object value = xo.decode(client.getDynamicEncodingContext());
+
+        logger.info("value: {}", value);
     }
 
     @Override

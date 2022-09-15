@@ -807,7 +807,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         });
 
         // Populate the OPC UA 1.04+ DataTypeDefinition attribute
-//        dataTypeNode.setDataTypeDefinition(definition);
+        dataTypeNode.setDataTypeDefinition(definition);
 
         // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
         // DataTypeDictionary from the server. We describe the type using StructureDefinition
@@ -900,7 +900,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         );
 
         // Populate the OPC UA 1.04+ DataTypeDefinition attribute
-//        dataTypeNode.setDataTypeDefinition(definition);
+        dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
         getNodeContext().getServer().getDataTypeManager().registerType(
@@ -985,7 +985,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             fields
         );
 
-//        dataTypeNode.setDataTypeDefinition(definition);
+        dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
         getNodeContext().getServer().getDataTypeManager().registerType(
