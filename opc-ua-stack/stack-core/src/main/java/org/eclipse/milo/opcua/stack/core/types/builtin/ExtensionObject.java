@@ -97,6 +97,7 @@ public final class ExtensionObject {
             case XmlElement: {
                 DataTypeEncoding encoding = context.getEncodingManager()
                     .getEncoding(DataTypeEncoding.XML_ENCODING_NAME);
+
                 if (encoding != null) {
                     return decode(context, encoding);
                 } else {
@@ -108,6 +109,7 @@ public final class ExtensionObject {
             case JsonString: {
                 DataTypeEncoding encoding = context.getEncodingManager()
                     .getEncoding(DataTypeEncoding.JSON_ENCODING_NAME);
+
                 if (encoding != null) {
                     return decode(context, encoding);
                 } else {
@@ -207,18 +209,15 @@ public final class ExtensionObject {
         DataTypeEncoding encoding
     ) throws UaSerializationException {
 
-        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable())
-            .orElseThrow(
-                () ->
-                    new UaSerializationException(
-                        StatusCodes.Bad_EncodingError,
-                        "namespace not registered: " +
-                            xEncodingId.getNamespaceUri())
-            );
+        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable()).orElseThrow(
+            () ->
+                new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "namespace not registered: " +
+                        xEncodingId.getNamespaceUri())
+        );
 
-        Object body = encoding.encode(context, object, encodingId);
-
-        return new ExtensionObject(body, encodingId);
+        return encode(context, object, encodingId, encoding);
     }
 
     public static ExtensionObject encode(
