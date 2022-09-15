@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -449,10 +448,7 @@ public class SubscriptionManager {
                 throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
             }
 
-            // TODO this should check with EncodingManager instead
-            if (!dataEncoding.equals(DataTypeEncoding.BINARY_ENCODING_NAME) &&
-                !dataEncoding.equals(DataTypeEncoding.XML_ENCODING_NAME)) {
-
+            if (!server.getEncodingManager().hasEncoding(dataEncoding)) {
                 throw new UaException(StatusCodes.Bad_DataEncodingUnsupported);
             }
         }
