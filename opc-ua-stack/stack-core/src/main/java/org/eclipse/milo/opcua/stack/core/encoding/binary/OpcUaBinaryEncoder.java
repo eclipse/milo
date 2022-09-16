@@ -18,7 +18,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.netty.buffer.ByteBuf;
-import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
@@ -1214,7 +1213,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
             for (int i = 0; i < length; i++) {
                 Object o = Array.get(elements, i);
 
-                encodeValue(o, BuiltinDataType.Int32.getTypeId(), false, true, false);
+                encodeEnum(null, (UaEnumeratedType) o);
             }
         }
     }
