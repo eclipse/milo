@@ -1258,7 +1258,22 @@ public class OpcUaXmlDecoder implements UaDecoder {
 
     @Override
     public Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException {
-        return null; // TODO
+        return null;
+    }
+
+    @Override
+    public Matrix decodeEnumMatrix(String field) {
+        return null;
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, NodeId dataTypeId) {
+        return null;
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, ExpandedNodeId dataTypeId) {
+        return null;
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {

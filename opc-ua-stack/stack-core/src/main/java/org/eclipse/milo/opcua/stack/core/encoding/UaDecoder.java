@@ -156,4 +156,10 @@ public interface UaDecoder {
 
     Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException;
 
+    Matrix decodeEnumMatrix(String field) throws UaSerializationException;
+
+    Matrix decodeStructMatrix(String field, NodeId dataTypeId) throws UaSerializationException;
+
+    Matrix decodeStructMatrix(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
+
 }

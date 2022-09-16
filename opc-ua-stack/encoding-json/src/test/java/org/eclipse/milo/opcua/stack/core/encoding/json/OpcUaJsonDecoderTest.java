@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -346,7 +347,7 @@ class OpcUaJsonDecoderTest {
         decoder.reset(new StringReader(String.format("\"%s\"", Base64.getEncoder().encodeToString(emptyBytes))));
         assertEquals(ByteString.of(emptyBytes), decoder.decodeByteString(null));
 
-        byte[] randomBytes = randomBytes(16);
+        byte[] randomBytes = randomBytes16();
         decoder.reset(new StringReader(String.format("\"%s\"", Base64.getEncoder().encodeToString(randomBytes))));
         assertEquals(ByteString.of(randomBytes), decoder.decodeByteString(null));
 
@@ -410,7 +411,7 @@ class OpcUaJsonDecoderTest {
         assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == ByteString, Namespace = 0
-        ByteString bs = ByteString.of(randomBytes(16));
+        ByteString bs = ByteString.of(randomBytes16());
         nodeId = new NodeId(0, bs);
         decoder.reset(new StringReader("{\"IdType\":3,\"Id\":\"" + Base64.getEncoder().encodeToString(bs.bytesOrEmpty()) + "\"}"));
         assertEquals(nodeId, decoder.decodeNodeId(null));
@@ -783,9 +784,42 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.endObject();
     }
 
-    private static byte[] randomBytes(int length) {
+    @Test
+    void decodeEnumMatrix() throws Exception {
+        var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
+
+        decoder.reset(new StringReader("[[0,1],[2,3]]"));
+        assertEquals(Matrix.ofInt32(new Integer[][]{{0, 1}, {2, 3}}), decoder.decodeEnumMatrix(null));
+
+        decoder.reset(new StringReader("{\"foo\":[[0,1],[2,3]]}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(Matrix.ofInt32(new Integer[][]{{0, 1}, {2, 3}}), decoder.decodeEnumMatrix("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    @Test
+    void decodeStructMatrix() throws Exception {
+        var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
+
+        XVType[][] xvTypes = new XVType[][]{
+            new XVType[]{new XVType(0.0d, 1.0f), new XVType(2.0d, 3.0f)},
+            new XVType[]{new XVType(4.0d, 5.0f), new XVType(6.0d, 7.0f)}
+        };
+
+        var matrix = new Matrix(xvTypes);
+
+        decoder.reset(new StringReader("[[{\"X\":0.0,\"Value\":1.0},{\"X\":2.0,\"Value\":3.0}],[{\"X\":4.0,\"Value\":5.0},{\"X\":6.0,\"Value\":7.0}]]"));
+        assertEquals(matrix, decoder.decodeStructMatrix(null, XVType.TYPE_ID));
+
+        decoder.reset(new StringReader("{\"foo\":[[{\"X\":0.0,\"Value\":1.0},{\"X\":2.0,\"Value\":3.0}],[{\"X\":4.0,\"Value\":5.0},{\"X\":6.0,\"Value\":7.0}]]}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(matrix, decoder.decodeStructMatrix("foo", XVType.TYPE_ID));
+        decoder.jsonReader.endObject();
+    }
+
+    private static byte[] randomBytes16() {
         var random = new Random();
-        var bs = new byte[length];
+        var bs = new byte[16];
         random.nextBytes(bs);
         return bs;
     }

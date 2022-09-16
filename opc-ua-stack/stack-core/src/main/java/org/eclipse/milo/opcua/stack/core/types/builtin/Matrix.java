@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Arrays;
@@ -7,6 +17,8 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
@@ -15,7 +27,15 @@ import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Matrix is a container for multidimensional array values of one of the built-in types.
+ * Matrix is a container for multidimensional array values.
+ * <p>
+ * Allowed value types:
+ * <ul>
+ *     <li>any builtin type</li>
+ *     <li>UaStructuredType</li>
+ *     <li>UaEnumeratedType</li>
+ *     <li>OptionSetUInteger subclasses</li>
+ * </ul>
  */
 public class Matrix {
 
@@ -31,7 +51,7 @@ public class Matrix {
         } else {
             this.flatArray = ArrayUtil.flatten(array);
             this.dimensions = ArrayUtil.getDimensions(array);
-            this.builtinDataType = BuiltinDataType.fromBackingClass(ArrayUtil.getType(flatArray));
+            this.builtinDataType = deriveBuiltinType(flatArray);
         }
 
         assert flatArray == null || (dimensions.length > 1 && builtinDataType != null);
@@ -40,7 +60,7 @@ public class Matrix {
     public Matrix(Object flatArray, int[] dimensions) {
         this.flatArray = flatArray;
         this.dimensions = dimensions;
-        this.builtinDataType = BuiltinDataType.fromBackingClass(ArrayUtil.getType(flatArray));
+        this.builtinDataType = deriveBuiltinType(flatArray);
 
         assert dimensions.length > 1 && builtinDataType != null;
     }
@@ -51,6 +71,19 @@ public class Matrix {
         this.builtinDataType = builtinDataType;
 
         assert flatArray != null && dimensions.length > 1 && builtinDataType != null;
+    }
+
+    private static BuiltinDataType deriveBuiltinType(Object flatArray) {
+        Class<?> type = ArrayUtil.getType(flatArray);
+        if (UaEnumeratedType.class.isAssignableFrom(type)) {
+            return BuiltinDataType.Int32;
+        } else if (UaStructuredType.class.isAssignableFrom(type)) {
+            return BuiltinDataType.ExtensionObject;
+        } else if (OptionSetUInteger.class.isAssignableFrom(type)) {
+            return BuiltinDataType.UInt32; // TODO subclasses
+        } else {
+            return BuiltinDataType.fromBackingClass(type);
+        }
     }
 
     /**

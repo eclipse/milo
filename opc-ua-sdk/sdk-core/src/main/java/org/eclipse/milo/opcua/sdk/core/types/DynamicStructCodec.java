@@ -45,7 +45,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
-import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
@@ -295,16 +294,11 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 TypeHint typeHint = (TypeHint) hint;
 
                 switch (typeHint) {
-                    // TODO do we need decodeEnumMatrix and decodeStructMatrix on UaDecoder?
-                    //  I'm not sure this is going to work as is, at least with non-binary encodings.
-
                     case ENUM: {
-                        // TODO should the field value be multidimensional DynamicEnum or left as Matrix?
+                        Matrix matrix = decoder.decodeEnumMatrix(fieldName);
 
-                        Matrix m = decoder.decodeMatrix(fieldName, BuiltinDataType.Int32);
-
-                        if (m.getElements() instanceof Integer[]) {
-                            Integer[] enumValues = (Integer[]) m.getElements();
+                        if (matrix.getElements() instanceof Integer[]) {
+                            Integer[] enumValues = (Integer[]) matrix.getElements();
 
                             Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
                             assert factory != null;
@@ -313,27 +307,14 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                                 .map(factory)
                                 .toArray(DynamicEnum[]::new);
 
-                            value = ArrayUtil.unflatten(dynamicEnums, m.getDimensions());
+                            value = new Matrix(dynamicEnums, matrix.getDimensions());
                         } else {
                             value = null;
                         }
                         break;
                     }
                     case STRUCT:
-                        Matrix m = decoder.decodeMatrix(fieldName, BuiltinDataType.ExtensionObject);
-
-                        if (m.getElements() instanceof ExtensionObject[]) {
-                            ExtensionObject[] xos = (ExtensionObject[]) m.getElements();
-
-                            // TODO Obviously broken, need EncodingContext
-                            DynamicStruct[] dynamicStructs = Arrays.stream(xos)
-                                .map(xo -> (DynamicStruct) xo.decodeOrNull(null))
-                                .toArray(DynamicStruct[]::new);
-
-                            value = ArrayUtil.unflatten(dynamicStructs, m.getDimensions());
-                        } else {
-                            value = null;
-                        }
+                        value = decoder.decodeStructMatrix(fieldName, dataTypeId);
                         break;
                     default:
                         throw new RuntimeException("codecType: " + typeHint);
@@ -390,8 +371,25 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 }
             }
         } else if (valueRank > 1) {
-            // TODO special matrix encoding for multi-dimensional array structure fields
-            throw new RuntimeException("not implemented");
+            Matrix matrix = (Matrix) value;
+
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                encoder.encodeMatrix(fieldName, matrix);
+            } else {
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM:
+                        encoder.encodeEnumMatrix(fieldName, matrix);
+                        break;
+                    case STRUCT:
+                        encoder.encodeStructMatrix(fieldName, matrix, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
+            }
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError, "illegal ValueRank: " + valueRank);

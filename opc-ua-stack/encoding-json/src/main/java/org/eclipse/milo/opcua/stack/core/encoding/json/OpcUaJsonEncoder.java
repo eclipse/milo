@@ -1269,12 +1269,16 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void encodeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws
-        UaSerializationException {
+    public void encodeStructArray(
+        String field,
+        Object[] value,
+        ExpandedNodeId dataTypeId
+    ) throws UaSerializationException {
+
         NodeId localDataTypeId = dataTypeId.toNodeId(encodingContext.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
-                "no codec registered: " + dataTypeId
+                "encodeStructArray: namespace not registered: " + dataTypeId
             ));
 
         encodeStructArray(field, value, localDataTypeId);
@@ -1340,6 +1344,79 @@ public class OpcUaJsonEncoder implements UaEncoder {
         }
     }
 
+    @Override
+    public void encodeEnumMatrix(String field, Matrix value) throws UaSerializationException {
+        try {
+            EncodingContext context = contextPeek();
+            if (!reversible || context == OpcUaJsonEncoder.EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
+                if (field != null) {
+                    jsonWriter.name(field);
+                }
+
+                Object flatArray = value.getElements();
+                if (flatArray == null) {
+                    try {
+                        jsonWriter.nullValue();
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                } else {
+                    int[] dimensions = value.getDimensions();
+
+                    try {
+                        encodeFlatEnumArrayAsNested((UaEnumeratedType[]) flatArray, dimensions, 0);
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, NodeId dataTypeId) throws UaSerializationException {
+        try {
+            EncodingContext context = contextPeek();
+            if (!reversible || context == OpcUaJsonEncoder.EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
+                if (field != null) {
+                    jsonWriter.name(field);
+                }
+
+                Object flatArray = value.getElements();
+                if (flatArray == null) {
+                    try {
+                        jsonWriter.nullValue();
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                } else {
+                    int[] dimensions = value.getDimensions();
+
+                    try {
+                        encodeFlatStructArrayAsNested(flatArray, dataTypeId, dimensions, 0);
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(encodingContext.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "encodeStructArray: namespace not registered: " + dataTypeId
+            ));
+
+        encodeStructMatrix(field, value, localDataTypeId);
+    }
+
     private void encodeFlatArrayAsNested(
         Object value,
         int[] dimensions,
@@ -1359,6 +1436,53 @@ public class OpcUaJsonEncoder implements UaEncoder {
             int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
             for (int i = 0; i < dimensions[0]; i++) {
                 encodeFlatArrayAsNested(value, tail, builtinDataType, offset + i * length(tail));
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private void encodeFlatEnumArrayAsNested(
+        UaEnumeratedType[] value,
+        int[] dimensions,
+        int offset
+    ) throws IOException {
+
+        if (dimensions.length == 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object e = Array.get(value, offset + i);
+                encodeEnum(null, (UaEnumeratedType) e);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+            for (int i = 0; i < dimensions[0]; i++) {
+                encodeFlatEnumArrayAsNested(value, tail, offset + i * length(tail));
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private void encodeFlatStructArrayAsNested(
+        Object value,
+        NodeId dataTypeId,
+        int[] dimensions,
+        int offset
+    ) throws IOException {
+
+        if (dimensions.length == 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object e = Array.get(value, offset + i);
+                encodeStruct(null, e, dataTypeId);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+            for (int i = 0; i < dimensions[0]; i++) {
+                encodeFlatStructArrayAsNested(value, dataTypeId, tail, offset + i * length(tail));
             }
             jsonWriter.endArray();
         }

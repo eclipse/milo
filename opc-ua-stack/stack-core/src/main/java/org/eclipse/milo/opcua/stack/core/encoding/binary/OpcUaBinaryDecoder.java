@@ -1235,21 +1235,8 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException {
-        int[] dimensions;
-        {
-            int length = decodeInt32(null);
-
-            if (length == -1) {
-                return null;
-            } else {
-                checkArrayLength(length);
-
-                dimensions = new int[length];
-                for (int i = 0; i < length; i++) {
-                    dimensions[i] = decodeInt32(null);
-                }
-            }
-        }
+        int[] dimensions = decodeMatrixDimensions();
+        if (dimensions == null) return null;
 
         int length = 1;
         for (int d : dimensions) {
@@ -1273,6 +1260,78 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
 
         return new Matrix(flatArray, dimensions, builtinDataType);
+    }
+
+
+    @Override
+    public Matrix decodeEnumMatrix(String field) throws UaSerializationException {
+        return decodeMatrix(field, BuiltinDataType.Int32);
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, NodeId dataTypeId) throws UaSerializationException {
+        int[] dimensions = decodeMatrixDimensions();
+        if (dimensions == null) return null;
+
+        int length = 1;
+        for (int d : dimensions) {
+            checkArrayLength(d);
+            if (d > 0) {
+                length *= d;
+            } else {
+                length = 0;
+            }
+        }
+        checkArrayLength(length);
+
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+
+        if (codec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + dataTypeId
+            );
+        }
+
+        Class<?> clazz = codec.getType();
+        Object flatArray = Array.newInstance(clazz, length);
+
+        for (int i = 0; i < length; i++) {
+            Object value = codec.decode(context, this);
+
+            Array.set(flatArray, i, value);
+        }
+
+        return new Matrix(flatArray, dimensions, BuiltinDataType.ExtensionObject);
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "decodeStructMatrix: namespace not registered: " + dataTypeId
+            ));
+
+        return decodeStructMatrix(field, localDataTypeId);
+    }
+
+    private int @Nullable [] decodeMatrixDimensions() {
+        int length = decodeInt32(null);
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            int[] dimensions = new int[length];
+            for (int i = 0; i < length; i++) {
+                dimensions[i] = decodeInt32(null);
+            }
+
+            return dimensions;
+        }
     }
 
 }

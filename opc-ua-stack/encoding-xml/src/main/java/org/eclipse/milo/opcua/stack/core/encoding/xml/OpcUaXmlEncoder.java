@@ -398,7 +398,22 @@ public class OpcUaXmlEncoder implements UaEncoder {
 
     @Override
     public void encodeMatrix(String field, Matrix value) throws UaSerializationException {
-        // TODO
+        
     }
-    
+
+    @Override
+    public void encodeEnumMatrix(String field, Matrix value) throws UaSerializationException {
+
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, NodeId dataTypeId) throws UaSerializationException {
+
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+
+    }
+
 }

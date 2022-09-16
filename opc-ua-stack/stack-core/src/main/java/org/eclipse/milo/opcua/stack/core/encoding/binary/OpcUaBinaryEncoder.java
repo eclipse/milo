@@ -18,6 +18,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import io.netty.buffer.ByteBuf;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
@@ -1185,6 +1186,79 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                 encodeValue(o, typeId, false, false, false);
             }
         }
+    }
+
+    @Override
+    public void encodeEnumMatrix(String field, Matrix value) throws UaSerializationException {
+        Object elements = value.getElements();
+
+        if (elements == null) {
+            buffer.writeIntLE(-1);
+            return;
+        }
+
+        int[] dimensions = value.getDimensions();
+        assert dimensions.length > 1;
+
+        boolean noZeroDimensions = true;
+        buffer.writeIntLE(dimensions.length);
+        for (int d : dimensions) {
+            if (d <= 0) noZeroDimensions = false;
+            buffer.writeIntLE(d);
+        }
+
+        if (noZeroDimensions) {
+            int length = Array.getLength(elements);
+
+            buffer.writeIntLE(length);
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(elements, i);
+
+                encodeValue(o, BuiltinDataType.Int32.getTypeId(), false, true, false);
+            }
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, NodeId dataTypeId) throws UaSerializationException {
+        Object elements = value.getElements();
+
+        if (elements == null) {
+            buffer.writeIntLE(-1);
+            return;
+        }
+
+        int[] dimensions = value.getDimensions();
+        assert dimensions.length > 1;
+
+        boolean noZeroDimensions = true;
+        buffer.writeIntLE(dimensions.length);
+        for (int d : dimensions) {
+            if (d <= 0) noZeroDimensions = false;
+            buffer.writeIntLE(d);
+        }
+
+        if (noZeroDimensions) {
+            int length = Array.getLength(elements);
+
+            buffer.writeIntLE(length);
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(elements, i);
+
+                encodeStruct(null, o, dataTypeId);
+            }
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "encodeStructArray: namespace not registered: " + dataTypeId
+            ));
+
+        encodeStructMatrix(field, value, localDataTypeId);
     }
 
 }

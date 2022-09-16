@@ -1589,7 +1589,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 }
             }
 
-            Object nestedArray = decodeNestedMultiDimensionalArrayValue(builtinDataType.getTypeId());
+            Object nestedArray = decodeNestedMultiDimensionalArrayBuiltinValue(builtinDataType.getTypeId());
 
             return new Matrix(nestedArray);
         } catch (IOException e) {
@@ -1597,12 +1597,59 @@ public class OpcUaJsonDecoder implements UaDecoder {
         }
     }
 
-    private Object decodeNestedMultiDimensionalArrayValue(int typeId) throws IOException {
+    @Override
+    public Matrix decodeEnumMatrix(String field) throws UaSerializationException {
+        return decodeMatrix(field, BuiltinDataType.Int32);
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+
+        if (codec != null) {
+            try {
+                if (field != null) {
+                    String nextName = nextName();
+                    if (!field.equals(nextName)) {
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readStruct: %s != %s", field, nextName)
+                        );
+                    }
+                }
+
+                Object nestedArray = decodeNestedMultiDimensionalArrayStructValue(codec);
+
+                return new Matrix(nestedArray);
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "decodeStructMatrix: no codec registered: " + dataTypeId
+            );
+        }
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "decodeStructMatrix: namespace not registered: " + dataTypeId
+            ));
+
+        return decodeStructMatrix(field, localDataTypeId);
+    }
+
+    private Object decodeNestedMultiDimensionalArrayBuiltinValue(int typeId) throws IOException {
         if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
             jsonReader.beginArray();
             List<Object> elements = new ArrayList<>();
             while (jsonReader.peek() != JsonToken.END_ARRAY) {
-                elements.add(decodeNestedMultiDimensionalArrayValue(typeId));
+                elements.add(decodeNestedMultiDimensionalArrayBuiltinValue(typeId));
             }
             jsonReader.endArray();
 
@@ -1613,6 +1660,25 @@ public class OpcUaJsonDecoder implements UaDecoder {
             return array;
         } else {
             return readBuiltinTypeValue(null, typeId);
+        }
+    }
+
+    private Object decodeNestedMultiDimensionalArrayStructValue(DataTypeCodec codec) throws IOException {
+        if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+            jsonReader.beginArray();
+            List<Object> elements = new ArrayList<>();
+            while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                elements.add(decodeNestedMultiDimensionalArrayStructValue(codec));
+            }
+            jsonReader.endArray();
+
+            Object array = Array.newInstance(elements.get(0).getClass(), elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+                Array.set(array, i, elements.get(i));
+            }
+            return array;
+        } else {
+            return decodeStruct(null, codec);
         }
     }
 
