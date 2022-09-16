@@ -119,8 +119,7 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               UpdateEventDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, UpdateEventDetails value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeEnum("PerformInsertReplace", value.getPerformInsertReplace());
             encoder.encodeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);

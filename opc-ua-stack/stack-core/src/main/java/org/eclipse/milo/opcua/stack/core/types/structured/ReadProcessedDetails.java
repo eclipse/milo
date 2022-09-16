@@ -134,8 +134,7 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ReadProcessedDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ReadProcessedDetails value) {
             encoder.encodeDateTime("StartTime", value.getStartTime());
             encoder.encodeDateTime("EndTime", value.getEndTime());
             encoder.encodeDouble("ProcessingInterval", value.getProcessingInterval());

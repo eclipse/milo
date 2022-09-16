@@ -105,8 +105,7 @@ public class BrowsePathTarget extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               BrowsePathTarget value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, BrowsePathTarget value) {
             encoder.encodeExpandedNodeId("TargetId", value.getTargetId());
             encoder.encodeUInt32("RemainingPathIndex", value.getRemainingPathIndex());
         }

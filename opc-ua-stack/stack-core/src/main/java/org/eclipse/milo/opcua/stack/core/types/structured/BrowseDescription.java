@@ -143,8 +143,7 @@ public class BrowseDescription extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               BrowseDescription value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, BrowseDescription value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeEnum("BrowseDirection", value.getBrowseDirection());
             encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());

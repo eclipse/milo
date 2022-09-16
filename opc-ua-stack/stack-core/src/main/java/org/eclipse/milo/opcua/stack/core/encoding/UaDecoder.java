@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.encoding;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.UaMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -22,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -151,5 +153,13 @@ public interface UaDecoder {
     Object[] decodeStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> T[] decodeArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
+
+    Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException;
+
+    Matrix decodeEnumMatrix(String field) throws UaSerializationException;
+
+    Matrix decodeStructMatrix(String field, NodeId dataTypeId) throws UaSerializationException;
+
+    Matrix decodeStructMatrix(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
 }

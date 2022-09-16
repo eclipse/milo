@@ -115,8 +115,7 @@ public class NodeTypeDescription extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               NodeTypeDescription value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, NodeTypeDescription value) {
             encoder.encodeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
             encoder.encodeBoolean("IncludeSubTypes", value.getIncludeSubTypes());
             encoder.encodeStructArray("DataToReturn", value.getDataToReturn(), QueryDataDescription.TYPE_ID);

@@ -168,7 +168,9 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         assertNotNull(treeNode);
 
         treeNode.traverse(dataType -> {
-            if (!Objects.equals(dataType.getBrowseName().getName(), "Structure")) {
+            String name = dataType.getBrowseName().getName();
+            
+            if (!Objects.equals(name, "Structure") && !Objects.equals(name, "MatrixTestType")) {
                 assertNotNull(dataType.getBinaryEncodingId());
                 assertNotNull(dataType.getXmlEncodingId());
                 assertNotNull(dataType.getJsonEncodingId());

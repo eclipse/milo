@@ -105,8 +105,7 @@ public class DeleteNodesRequest extends Structure implements UaRequestMessageTyp
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DeleteNodesRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DeleteNodesRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStructArray("NodesToDelete", value.getNodesToDelete(), DeleteNodesItem.TYPE_ID);
         }

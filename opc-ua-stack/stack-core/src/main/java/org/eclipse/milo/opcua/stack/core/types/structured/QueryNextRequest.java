@@ -116,8 +116,7 @@ public class QueryNextRequest extends Structure implements UaRequestMessageType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               QueryNextRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, QueryNextRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeBoolean("ReleaseContinuationPoint", value.getReleaseContinuationPoint());
             encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());

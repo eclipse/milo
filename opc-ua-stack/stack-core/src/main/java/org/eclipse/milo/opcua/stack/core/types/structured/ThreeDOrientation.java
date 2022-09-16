@@ -114,8 +114,7 @@ public class ThreeDOrientation extends Orientation implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ThreeDOrientation value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ThreeDOrientation value) {
             encoder.encodeDouble("A", value.getA());
             encoder.encodeDouble("B", value.getB());
             encoder.encodeDouble("C", value.getC());

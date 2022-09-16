@@ -105,8 +105,7 @@ public class ComplexNumberType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ComplexNumberType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ComplexNumberType value) {
             encoder.encodeFloat("Real", value.getReal());
             encoder.encodeFloat("Imaginary", value.getImaginary());
         }

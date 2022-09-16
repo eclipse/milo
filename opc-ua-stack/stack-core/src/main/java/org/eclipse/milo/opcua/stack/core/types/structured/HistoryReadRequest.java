@@ -136,8 +136,7 @@ public class HistoryReadRequest extends Structure implements UaRequestMessageTyp
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryReadRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryReadRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
             encoder.encodeEnum("TimestampsToReturn", value.getTimestampsToReturn());

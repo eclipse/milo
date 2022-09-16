@@ -106,8 +106,7 @@ public class HistoryUpdateRequest extends Structure implements UaRequestMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryUpdateRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryUpdateRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeExtensionObjectArray("HistoryUpdateDetails", value.getHistoryUpdateDetails());
         }

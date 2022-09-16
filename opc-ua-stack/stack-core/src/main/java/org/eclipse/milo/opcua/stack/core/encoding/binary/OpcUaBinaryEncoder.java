@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.encoding.binary;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -33,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -605,6 +607,13 @@ public class OpcUaBinaryEncoder implements UaEncoder {
             } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
                 valueClass = ((OptionSetUInteger<?>) value).getValue().getClass();
                 optionSet = true;
+            } else if (Matrix.class.isAssignableFrom(valueClass)) {
+                Matrix m = (Matrix) value;
+                if (m.isNull()) {
+                    buffer.writeByte(0);
+                    return;
+                }
+                valueClass = ((Matrix) value).getBuiltinDataType().orElseThrow().getBackingClass();
             }
 
             int typeId = TypeUtil.getBuiltinTypeId(valueClass);
@@ -614,10 +623,8 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                     .warn("Not a built-in type: {}", valueClass);
             }
 
-            if (value.getClass().isArray()) {
-                int[] dimensions = ArrayUtil.getDimensions(value);
-
-                if (dimensions.length == 1) {
+            if (value.getClass().isArray() || value instanceof Matrix) {
+                if (value.getClass().isArray()) {
                     buffer.writeByte(typeId | 0x80);
 
                     int length = Array.getLength(value);
@@ -629,14 +636,16 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                         encodeValue(o, typeId, structure, enumeration, optionSet);
                     }
                 } else {
+                    int[] dimensions = ((Matrix) value).getDimensions();
+
                     buffer.writeByte(typeId | 0xC0);
 
-                    Object flattened = ArrayUtil.flatten(value);
-                    int length = Array.getLength(flattened);
+                    Object elements = ((Matrix) value).getElements();
+                    int length = Array.getLength(elements);
                     buffer.writeIntLE(length);
 
                     for (int i = 0; i < length; i++) {
-                        Object o = Array.get(flattened, i);
+                        Object o = Array.get(elements, i);
 
                         encodeValue(o, typeId, structure, enumeration, optionSet);
                     }
@@ -1145,6 +1154,112 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                 encoder.accept(field, t);
             }
         }
+    }
+
+    @Override
+    public void encodeMatrix(String field, Matrix value) throws UaSerializationException {
+        Object elements = value.getElements();
+
+        if (elements == null) {
+            buffer.writeIntLE(-1);
+            return;
+        }
+
+        int[] dimensions = value.getDimensions();
+        assert dimensions.length > 1;
+
+        boolean noZeroDimensions = true;
+        buffer.writeIntLE(dimensions.length);
+        for (int d : dimensions) {
+            if (d <= 0) noZeroDimensions = false;
+            buffer.writeIntLE(d);
+        }
+
+        if (noZeroDimensions) {
+            int length = Array.getLength(elements);
+            assert length == Arrays.stream(dimensions).reduce(1, (left, right) -> left * right);
+
+            int typeId = value.getBuiltinDataType().orElseThrow().getTypeId(); // won't throw, we checked for null
+
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(elements, i);
+
+                encodeValue(o, typeId, false, false, false);
+            }
+        }
+    }
+
+    @Override
+    public void encodeEnumMatrix(String field, Matrix value) throws UaSerializationException {
+        Object elements = value.getElements();
+
+        if (elements == null) {
+            buffer.writeIntLE(-1);
+            return;
+        }
+
+        int[] dimensions = value.getDimensions();
+        assert dimensions.length > 1;
+
+        boolean noZeroDimensions = true;
+        buffer.writeIntLE(dimensions.length);
+        for (int d : dimensions) {
+            if (d <= 0) noZeroDimensions = false;
+            buffer.writeIntLE(d);
+        }
+
+        if (noZeroDimensions) {
+            int length = Array.getLength(elements);
+            assert length == Arrays.stream(dimensions).reduce(1, (left, right) -> left * right);
+
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(elements, i);
+
+                encodeEnum(null, (UaEnumeratedType) o);
+            }
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, NodeId dataTypeId) throws UaSerializationException {
+        Object elements = value.getElements();
+
+        if (elements == null) {
+            buffer.writeIntLE(-1);
+            return;
+        }
+
+        int[] dimensions = value.getDimensions();
+        assert dimensions.length > 1;
+
+        boolean noZeroDimensions = true;
+        buffer.writeIntLE(dimensions.length);
+        for (int d : dimensions) {
+            if (d <= 0) noZeroDimensions = false;
+            buffer.writeIntLE(d);
+        }
+
+        if (noZeroDimensions) {
+            int length = Array.getLength(elements);
+            assert length == Arrays.stream(dimensions).reduce(1, (left, right) -> left * right);
+
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(elements, i);
+
+                encodeStruct(null, o, dataTypeId);
+            }
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "encodeStructArray: namespace not registered: " + dataTypeId
+            ));
+
+        encodeStructMatrix(field, value, localDataTypeId);
     }
 
 }

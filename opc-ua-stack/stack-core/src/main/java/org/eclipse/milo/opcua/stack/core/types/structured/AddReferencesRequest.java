@@ -105,8 +105,7 @@ public class AddReferencesRequest extends Structure implements UaRequestMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               AddReferencesRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AddReferencesRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStructArray("ReferencesToAdd", value.getReferencesToAdd(), AddReferencesItem.TYPE_ID);
         }

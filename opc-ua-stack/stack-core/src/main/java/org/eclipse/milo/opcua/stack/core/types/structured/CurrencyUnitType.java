@@ -124,8 +124,7 @@ public class CurrencyUnitType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               CurrencyUnitType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CurrencyUnitType value) {
             encoder.encodeInt16("NumericCode", value.getNumericCode());
             encoder.encodeSByte("Exponent", value.getExponent());
             encoder.encodeString("AlphabeticCode", value.getAlphabeticCode());

@@ -133,8 +133,7 @@ public class AttributeOperand extends FilterOperand implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               AttributeOperand value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AttributeOperand value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeString("Alias", value.getAlias());
             encoder.encodeStruct("BrowsePath", value.getBrowsePath(), RelativePath.TYPE_ID);

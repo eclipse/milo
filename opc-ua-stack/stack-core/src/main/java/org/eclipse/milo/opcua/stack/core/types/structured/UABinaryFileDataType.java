@@ -126,8 +126,7 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               UABinaryFileDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, UABinaryFileDataType value) {
             encoder.encodeStringArray("Namespaces", value.getNamespaces());
             encoder.encodeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
             encoder.encodeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);

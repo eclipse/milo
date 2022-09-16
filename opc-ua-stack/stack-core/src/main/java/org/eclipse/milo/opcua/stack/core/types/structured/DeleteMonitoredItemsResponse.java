@@ -109,8 +109,7 @@ public class DeleteMonitoredItemsResponse extends Structure implements UaRespons
         }
 
         @Override
-        public DeleteMonitoredItemsResponse decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public DeleteMonitoredItemsResponse decodeType(EncodingContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             StatusCode[] results = decoder.decodeStatusCodeArray("Results");
             DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");

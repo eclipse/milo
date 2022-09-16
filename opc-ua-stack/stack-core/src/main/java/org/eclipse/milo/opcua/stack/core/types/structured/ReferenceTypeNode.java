@@ -142,8 +142,7 @@ public class ReferenceTypeNode extends TypeNode implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ReferenceTypeNode value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ReferenceTypeNode value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeEnum("NodeClass", value.getNodeClass());
             encoder.encodeQualifiedName("BrowseName", value.getBrowseName());

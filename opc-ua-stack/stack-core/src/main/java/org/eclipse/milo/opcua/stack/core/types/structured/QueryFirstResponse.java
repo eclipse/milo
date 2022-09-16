@@ -145,8 +145,7 @@ public class QueryFirstResponse extends Structure implements UaResponseMessageTy
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               QueryFirstResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, QueryFirstResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
             encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());

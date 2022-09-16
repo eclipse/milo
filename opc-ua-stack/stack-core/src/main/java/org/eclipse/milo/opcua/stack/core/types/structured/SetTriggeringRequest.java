@@ -133,8 +133,7 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               SetTriggeringRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, SetTriggeringRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.encodeUInt32("TriggeringItemId", value.getTriggeringItemId());

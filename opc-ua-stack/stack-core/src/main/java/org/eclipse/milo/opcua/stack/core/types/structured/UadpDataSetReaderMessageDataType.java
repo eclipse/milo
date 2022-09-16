@@ -161,8 +161,7 @@ public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         }
 
         @Override
-        public UadpDataSetReaderMessageDataType decodeType(EncodingContext context,
-                                                           UaDecoder decoder) {
+        public UadpDataSetReaderMessageDataType decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger groupVersion = decoder.decodeUInt32("GroupVersion");
             UShort networkMessageNumber = decoder.decodeUInt16("NetworkMessageNumber");
             UShort dataSetOffset = decoder.decodeUInt16("DataSetOffset");

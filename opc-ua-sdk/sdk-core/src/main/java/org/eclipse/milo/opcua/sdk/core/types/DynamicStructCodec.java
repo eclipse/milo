@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -282,8 +283,39 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
             return value;
         } else if (valueRank > 1) {
-            // TODO special matrix encoding for multi-dimensional array structure fields
-            throw new RuntimeException("not implemented");
+            Object value;
+
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                BuiltinDataType builtinDataType = (BuiltinDataType) hint;
+
+                value = decoder.decodeMatrix(fieldName, builtinDataType);
+            } else {
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM: {
+                        Matrix matrix = decoder.decodeEnumMatrix(fieldName);
+
+                        if (matrix.isNotNull()) {
+                            Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                            assert factory != null;
+
+                            value = matrix.transform(o -> factory.apply((Integer) o));
+                        } else {
+                            value = matrix;
+                        }
+                        break;
+                    }
+                    case STRUCT:
+                        value = decoder.decodeStructMatrix(fieldName, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
+            }
+
+            return value;
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError, "illegal ValueRank: " + valueRank);
@@ -333,8 +365,25 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 }
             }
         } else if (valueRank > 1) {
-            // TODO special matrix encoding for multi-dimensional array structure fields
-            throw new RuntimeException("not implemented");
+            Matrix matrix = (Matrix) value;
+
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                encoder.encodeMatrix(fieldName, matrix);
+            } else {
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    case ENUM:
+                        encoder.encodeEnumMatrix(fieldName, matrix);
+                        break;
+                    case STRUCT:
+                        encoder.encodeStructMatrix(fieldName, matrix, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
+            }
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError, "illegal ValueRank: " + valueRank);

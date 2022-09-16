@@ -107,8 +107,7 @@ public class ContentFilterElement extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ContentFilterElement value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ContentFilterElement value) {
             encoder.encodeEnum("FilterOperator", value.getFilterOperator());
             encoder.encodeExtensionObjectArray("FilterOperands", value.getFilterOperands());
         }

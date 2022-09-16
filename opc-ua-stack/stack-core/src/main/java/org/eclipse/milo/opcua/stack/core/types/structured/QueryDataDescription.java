@@ -114,8 +114,7 @@ public class QueryDataDescription extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               QueryDataDescription value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, QueryDataDescription value) {
             encoder.encodeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
             encoder.encodeUInt32("AttributeId", value.getAttributeId());
             encoder.encodeString("IndexRange", value.getIndexRange());

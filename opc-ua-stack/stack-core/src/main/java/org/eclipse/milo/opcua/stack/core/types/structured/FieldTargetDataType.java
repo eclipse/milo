@@ -156,8 +156,7 @@ public class FieldTargetDataType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               FieldTargetDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, FieldTargetDataType value) {
             encoder.encodeGuid("DataSetFieldId", value.getDataSetFieldId());
             encoder.encodeString("ReceiverIndexRange", value.getReceiverIndexRange());
             encoder.encodeNodeId("TargetNodeId", value.getTargetNodeId());

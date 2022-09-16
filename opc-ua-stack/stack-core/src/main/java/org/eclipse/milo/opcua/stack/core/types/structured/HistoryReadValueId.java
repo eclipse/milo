@@ -126,8 +126,7 @@ public class HistoryReadValueId extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryReadValueId value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryReadValueId value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeString("IndexRange", value.getIndexRange());
             encoder.encodeQualifiedName("DataEncoding", value.getDataEncoding());

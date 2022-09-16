@@ -105,8 +105,7 @@ public class TimeZoneDataType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               TimeZoneDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, TimeZoneDataType value) {
             encoder.encodeInt16("Offset", value.getOffset());
             encoder.encodeBoolean("DaylightSavingInOffset", value.getDaylightSavingInOffset());
         }

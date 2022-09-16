@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -26,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
@@ -39,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -1089,9 +1092,21 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 try {
                     jsonReader = new JsonReader(new StringReader(bodyElement.toString()));
 
-                    Object value = readFlattenedMultiDimensionalVariantValue(typeId, dimensions);
+                    var elements = new ArrayList<>();
+                    jsonReader.beginArray();
+                    while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                        elements.add(readBuiltinTypeValue(null, typeId));
+                    }
+                    jsonReader.endArray();
 
-                    return new Variant(value);
+                    Object flatArray = Array.newInstance(TypeUtil.getPrimitiveBackingClass(typeId), elements.size());
+                    for (int i = 0; i < elements.size(); i++) {
+                        Array.set(flatArray, i, elements.get(i));
+                    }
+
+                    var matrix = new Matrix(flatArray, dimensions, BuiltinDataType.fromTypeId(typeId));
+
+                    return new Variant(matrix);
                 } finally {
                     jsonReader = reader;
                 }
@@ -1560,6 +1575,110 @@ public class OpcUaJsonDecoder implements UaDecoder {
             return (T[]) array;
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    @Override
+    public Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException {
+        try {
+            if (field != null) {
+                String nextName = nextName();
+                if (!field.equals(nextName)) {
+                    this.peekedNextName = nextName;
+                    return Matrix.ofNull();
+                }
+            }
+
+            Object nestedArray = decodeNestedMultiDimensionalArrayBuiltinValue(builtinDataType.getTypeId());
+
+            return new Matrix(nestedArray);
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    @Override
+    public Matrix decodeEnumMatrix(String field) throws UaSerializationException {
+        return decodeMatrix(field, BuiltinDataType.Int32);
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+
+        if (codec != null) {
+            try {
+                if (field != null) {
+                    String nextName = nextName();
+                    if (!field.equals(nextName)) {
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readStruct: %s != %s", field, nextName)
+                        );
+                    }
+                }
+
+                Object nestedArray = decodeNestedMultiDimensionalArrayStructValue(codec);
+
+                return new Matrix(nestedArray);
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "decodeStructMatrix: no codec registered: " + dataTypeId
+            );
+        }
+    }
+
+    @Override
+    public Matrix decodeStructMatrix(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "decodeStructMatrix: namespace not registered: " + dataTypeId
+            ));
+
+        return decodeStructMatrix(field, localDataTypeId);
+    }
+
+    private Object decodeNestedMultiDimensionalArrayBuiltinValue(int typeId) throws IOException {
+        if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+            jsonReader.beginArray();
+            List<Object> elements = new ArrayList<>();
+            while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                elements.add(decodeNestedMultiDimensionalArrayBuiltinValue(typeId));
+            }
+            jsonReader.endArray();
+
+            Object array = Array.newInstance(elements.get(0).getClass(), elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+                Array.set(array, i, elements.get(i));
+            }
+            return array;
+        } else {
+            return readBuiltinTypeValue(null, typeId);
+        }
+    }
+
+    private Object decodeNestedMultiDimensionalArrayStructValue(DataTypeCodec codec) throws IOException {
+        if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+            jsonReader.beginArray();
+            List<Object> elements = new ArrayList<>();
+            while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                elements.add(decodeNestedMultiDimensionalArrayStructValue(codec));
+            }
+            jsonReader.endArray();
+
+            Object array = Array.newInstance(elements.get(0).getClass(), elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+                Array.set(array, i, elements.get(i));
+            }
+            return array;
+        } else {
+            return decodeStruct(null, codec);
         }
     }
 

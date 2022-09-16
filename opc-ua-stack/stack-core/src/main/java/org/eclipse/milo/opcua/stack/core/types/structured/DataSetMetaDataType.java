@@ -146,8 +146,7 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DataSetMetaDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DataSetMetaDataType value) {
             encoder.encodeStringArray("Namespaces", value.getNamespaces());
             encoder.encodeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
             encoder.encodeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);

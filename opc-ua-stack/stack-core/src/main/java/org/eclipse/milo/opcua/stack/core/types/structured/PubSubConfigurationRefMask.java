@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
@@ -6,7 +16,7 @@ import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -16,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
     callSuper = true
 )
 @ToString
-public class PubSubConfigurationRefMask extends OptionSetUInteger<PubSubConfigurationRefMask.Field> {
+public class PubSubConfigurationRefMask extends OptionSetUI32<PubSubConfigurationRefMask.Field> {
     public PubSubConfigurationRefMask(UInteger value) {
         super(value);
     }
@@ -79,13 +89,13 @@ public class PubSubConfigurationRefMask extends OptionSetUInteger<PubSubConfigur
     }
 
     @Override
-    public Set<PubSubConfigurationRefMask.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static PubSubConfigurationRefMask of(PubSubConfigurationRefMask.Field... fields) {
+    public static PubSubConfigurationRefMask of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -95,7 +105,7 @@ public class PubSubConfigurationRefMask extends OptionSetUInteger<PubSubConfigur
         return new PubSubConfigurationRefMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         ElementAdd(0),
 
         ElementMatch(1),

@@ -144,8 +144,7 @@ public class ServerStatusDataType extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ServerStatusDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ServerStatusDataType value) {
             encoder.encodeDateTime("StartTime", value.getStartTime());
             encoder.encodeDateTime("CurrentTime", value.getCurrentTime());
             encoder.encodeEnum("State", value.getState());

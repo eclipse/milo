@@ -109,8 +109,7 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               IssuedIdentityToken value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, IssuedIdentityToken value) {
             encoder.encodeString("PolicyId", value.getPolicyId());
             encoder.encodeByteString("TokenData", value.getTokenData());
             encoder.encodeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());

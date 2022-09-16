@@ -134,8 +134,7 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ReaderGroupDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ReaderGroupDataType value) {
             encoder.encodeString("Name", value.getName());
             encoder.encodeBoolean("Enabled", value.getEnabled());
             encoder.encodeEnum("SecurityMode", value.getSecurityMode());

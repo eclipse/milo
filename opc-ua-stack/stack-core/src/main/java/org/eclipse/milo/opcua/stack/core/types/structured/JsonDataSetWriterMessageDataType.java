@@ -90,8 +90,7 @@ public class JsonDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public JsonDataSetWriterMessageDataType decodeType(EncodingContext context,
-                                                           UaDecoder decoder) {
+        public JsonDataSetWriterMessageDataType decodeType(EncodingContext context, UaDecoder decoder) {
             JsonDataSetMessageContentMask dataSetMessageContentMask = new JsonDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
             return new JsonDataSetWriterMessageDataType(dataSetMessageContentMask);
         }

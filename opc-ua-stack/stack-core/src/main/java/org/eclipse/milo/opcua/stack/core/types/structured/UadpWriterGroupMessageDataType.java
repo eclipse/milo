@@ -125,8 +125,7 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         }
 
         @Override
-        public UadpWriterGroupMessageDataType decodeType(EncodingContext context,
-                                                         UaDecoder decoder) {
+        public UadpWriterGroupMessageDataType decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger groupVersion = decoder.decodeUInt32("GroupVersion");
             DataSetOrderingType dataSetOrdering = DataSetOrderingType.from(decoder.decodeEnum("DataSetOrdering"));
             UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));

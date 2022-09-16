@@ -164,8 +164,7 @@ public class EndpointDescription extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               EndpointDescription value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, EndpointDescription value) {
             encoder.encodeString("EndpointUrl", value.getEndpointUrl());
             encoder.encodeStruct("Server", value.getServer(), ApplicationDescription.TYPE_ID);
             encoder.encodeByteString("ServerCertificate", value.getServerCertificate());

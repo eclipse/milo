@@ -116,8 +116,7 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public UadpDataSetWriterMessageDataType decodeType(EncodingContext context,
-                                                           UaDecoder decoder) {
+        public UadpDataSetWriterMessageDataType decodeType(EncodingContext context, UaDecoder decoder) {
             UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
             UShort configuredSize = decoder.decodeUInt16("ConfiguredSize");
             UShort networkMessageNumber = decoder.decodeUInt16("NetworkMessageNumber");

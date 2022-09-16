@@ -111,8 +111,7 @@ public class UpdateDataDetails extends HistoryUpdateDetails implements UaStructu
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               UpdateDataDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, UpdateDataDetails value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeEnum("PerformInsertReplace", value.getPerformInsertReplace());
             encoder.encodeDataValueArray("UpdateValues", value.getUpdateValues());

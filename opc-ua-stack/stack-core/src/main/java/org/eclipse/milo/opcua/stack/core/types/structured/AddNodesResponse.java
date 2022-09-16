@@ -116,8 +116,7 @@ public class AddNodesResponse extends Structure implements UaResponseMessageType
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               AddNodesResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AddNodesResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Results", value.getResults(), AddNodesResult.TYPE_ID);
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

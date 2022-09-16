@@ -123,8 +123,7 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         }
 
         @Override
-        public SessionlessInvokeRequestType decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public SessionlessInvokeRequestType decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger urisVersion = decoder.decodeUInt32("UrisVersion");
             String[] namespaceUris = decoder.decodeStringArray("NamespaceUris");
             String[] serverUris = decoder.decodeStringArray("ServerUris");

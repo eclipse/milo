@@ -109,8 +109,7 @@ public class GenericAttributes extends NodeAttributes implements UaStructuredTyp
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               GenericAttributes value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, GenericAttributes value) {
             encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
             encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
             encoder.encodeLocalizedText("Description", value.getDescription());

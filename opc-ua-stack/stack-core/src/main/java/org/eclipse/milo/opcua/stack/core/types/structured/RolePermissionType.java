@@ -105,8 +105,7 @@ public class RolePermissionType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               RolePermissionType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RolePermissionType value) {
             encoder.encodeNodeId("RoleId", value.getRoleId());
             encoder.encodeUInt32("Permissions", value.getPermissions().getValue());
         }

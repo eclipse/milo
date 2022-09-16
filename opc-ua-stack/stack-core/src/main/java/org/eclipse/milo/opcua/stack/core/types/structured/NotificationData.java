@@ -86,8 +86,7 @@ public class NotificationData extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               NotificationData value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, NotificationData value) {
         }
     }
 }

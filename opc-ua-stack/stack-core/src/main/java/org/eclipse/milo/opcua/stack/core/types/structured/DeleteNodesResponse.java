@@ -117,8 +117,7 @@ public class DeleteNodesResponse extends Structure implements UaResponseMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DeleteNodesResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DeleteNodesResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStatusCodeArray("Results", value.getResults());
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

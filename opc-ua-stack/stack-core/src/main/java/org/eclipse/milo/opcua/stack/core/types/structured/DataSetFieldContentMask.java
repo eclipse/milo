@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
@@ -6,7 +16,7 @@ import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -16,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
     callSuper = true
 )
 @ToString
-public class DataSetFieldContentMask extends OptionSetUInteger<DataSetFieldContentMask.Field> {
+public class DataSetFieldContentMask extends OptionSetUI32<DataSetFieldContentMask.Field> {
     public DataSetFieldContentMask(UInteger value) {
         super(value);
     }
@@ -51,13 +61,13 @@ public class DataSetFieldContentMask extends OptionSetUInteger<DataSetFieldConte
     }
 
     @Override
-    public Set<DataSetFieldContentMask.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static DataSetFieldContentMask of(DataSetFieldContentMask.Field... fields) {
+    public static DataSetFieldContentMask of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -67,7 +77,7 @@ public class DataSetFieldContentMask extends OptionSetUInteger<DataSetFieldConte
         return new DataSetFieldContentMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         StatusCode(0),
 
         SourceTimestamp(1),

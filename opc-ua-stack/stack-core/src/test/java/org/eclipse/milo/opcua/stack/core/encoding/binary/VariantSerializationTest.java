@@ -15,6 +15,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.encoding.TestEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
@@ -36,11 +37,11 @@ public class VariantSerializationTest extends BinarySerializationFixture {
             {new Variant("hello, world")},
             {new Variant(42)},
             {new Variant(new Integer[]{0, 1, 2, 3})},
-            {new Variant(new Integer[][]{{0, 1}, {2, 3}})},
+            {new Variant(Matrix.ofInt32(new Integer[][]{{0, 1}, {2, 3}}))},
             {new Variant(new Long[]{0L, 1L, 2L, 3L})},
-            {new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})},
+            {new Variant(Matrix.ofInt64(new Long[][]{{0L, 1L}, {2L, 3L}}))},
             {new Variant(new UInteger[]{uint(0), uint(1), uint(2), uint(3)})},
-            {new Variant(new UInteger[][]{{uint(0), uint(1)}, {uint(2), uint(3)}})},
+            {new Variant(Matrix.ofUInt32(new UInteger[][]{{uint(0), uint(1)}, {uint(2), uint(3)}}))},
             {new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)})}
         };
     }
@@ -77,14 +78,14 @@ public class VariantSerializationTest extends BinarySerializationFixture {
             {new Variant(new int[]{0, 1, 2, 3}),
                 new Variant(new Integer[]{0, 1, 2, 3})},
 
-            {new Variant(new int[][]{{0, 1}, {2, 3}}),
-                new Variant(new Integer[][]{{0, 1}, {2, 3}})},
+            {new Variant(Matrix.ofInt32(new int[][]{{0, 1}, {2, 3}})),
+                new Variant(Matrix.ofInt32(new Integer[][]{{0, 1}, {2, 3}}))},
 
             {new Variant(new long[]{0L, 1L, 2L, 3L}),
                 new Variant(new Long[]{0L, 1L, 2L, 3L})},
 
-            {new Variant(new long[][]{{0L, 1L}, {2L, 3L}}),
-                new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})}
+            {new Variant(Matrix.ofInt64(new long[][]{{0L, 1L}, {2L, 3L}})),
+                new Variant(Matrix.ofInt64(new Long[][]{{0L, 1L}, {2L, 3L}}))}
         };
     }
 

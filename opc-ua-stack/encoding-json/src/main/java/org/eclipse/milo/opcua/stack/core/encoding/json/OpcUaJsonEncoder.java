@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Stack;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -734,83 +736,135 @@ public class OpcUaJsonEncoder implements UaEncoder {
                 jsonWriter.name(field);
             }
 
-            writeVariantValue(value.getValue());
+            assert value.getValue() != null;
+            encodeVariantValue(value.getValue());
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
     }
 
-    private void writeVariantValue(Object value) throws IOException {
-        Class<?> valueClass = getClass(value);
+    enum TypeHint {BUILTIN, ENUM, STRUCT, OPTION_SET}
+
+    private void encodeVariantValue(@NotNull Object value) throws IOException {
+        Class<?> valueClass;
+        if (value instanceof Matrix) {
+            Matrix m = (Matrix) value;
+            if (m.getElements() == null) return;
+            valueClass = getClass(m.getElements());
+        } else {
+            valueClass = getClass(value);
+        }
+
+        TypeHint typeHint = TypeHint.BUILTIN;
+        if (UaEnumeratedType.class.isAssignableFrom(valueClass)) {
+            typeHint = TypeHint.ENUM;
+        } else if (UaStructuredType.class.isAssignableFrom(valueClass)) {
+            typeHint = TypeHint.STRUCT;
+        } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
+            typeHint = TypeHint.OPTION_SET;
+        }
 
         int typeId;
-        if (UaStructuredType.class.isAssignableFrom(valueClass)) {
-            typeId = BuiltinDataType.ExtensionObject.getTypeId();
-
-            value = ExtensionObject.encode(encodingContext, (UaStructuredType) value);
-        } else if (UaEnumeratedType.class.isAssignableFrom(valueClass)) {
+        if (typeHint == TypeHint.ENUM) {
             typeId = BuiltinDataType.Int32.getTypeId();
-
-            value = ((UaEnumeratedType) value).getValue();
-        } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
-            Object optionSetValue = ((OptionSetUInteger<?>) value).getValue();
-            typeId = TypeUtil.getBuiltinTypeId(optionSetValue.getClass());
-
-            value = optionSetValue;
+        } else if (typeHint == TypeHint.STRUCT) {
+            typeId = BuiltinDataType.ExtensionObject.getTypeId();
+        } else if (typeHint == TypeHint.OPTION_SET) {
+            // TODO this would fail on empty array
+            //  would be better to have size-specific OptionSetUI subclasses, e.g. OptionSetUI8, OptionSetUI16, etc...
+            Object os = Array.get(value, 0);
+            Object osv = ((OptionSetUInteger<?>) os).getValue();
+            typeId = TypeUtil.getBuiltinTypeId(osv.getClass());
         } else {
             typeId = TypeUtil.getBuiltinTypeId(valueClass);
         }
 
-        if (typeId == -1) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_EncodingError,
-                "not a built-in type: " + value.getClass()
-            );
-        }
-
-        if (reversible) {
-            jsonWriter.beginObject();
-            jsonWriter.name("Type").value(typeId);
-        }
-
-        if (!value.getClass().isArray()) {
-            String field = reversible ? "Body" : null;
-            writeBuiltinTypeValue(field, typeId, value);
-        } else {
-            int[] dimensions = ArrayUtil.getDimensions(value);
-
+        if (value.getClass().isArray()) {
             if (reversible) {
+                jsonWriter.beginObject();
+                jsonWriter.name("Type").value(typeId);
                 jsonWriter.name("Body");
             }
 
-            if (dimensions.length == 1) {
-                int length = Array.getLength(value);
+            int length = Array.getLength(value);
+            jsonWriter.beginArray();
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(value, i);
 
+                encodeVariantBodyValue(o, typeHint, typeId);
+            }
+            jsonWriter.endArray();
+
+            if (reversible) {
+                jsonWriter.endObject();
+            }
+        } else if (value instanceof Matrix) {
+            if (reversible) {
+                jsonWriter.beginObject();
+                jsonWriter.name("Type").value(typeId);
+                jsonWriter.name("Body");
+            }
+
+            Matrix m = (Matrix) value;
+            if (reversible) {
+                Object flatArray = m.getElements();
+                int length = Array.getLength(flatArray);
                 jsonWriter.beginArray();
                 for (int i = 0; i < length; i++) {
-                    Object o = Array.get(value, i);
+                    Object o = Array.get(flatArray, i);
 
-                    writeBuiltinTypeValue(null, typeId, o);
+                    encodeVariantBodyValue(o, typeHint, typeId);
                 }
                 jsonWriter.endArray();
-            } else {
-                if (reversible) {
-                    writeFlattenedMultiDimensionalVariantValue(typeId, value, dimensions, 0);
 
-                    jsonWriter.name("Dimensions");
-                    jsonWriter.beginArray();
-                    for (int dimension : dimensions) {
-                        jsonWriter.value(dimension);
-                    }
-                    jsonWriter.endArray();
-                } else {
-                    writeNestedMultiDimensionalVariantValue(typeId, value, dimensions, 0);
+                jsonWriter.name("Dimensions");
+                jsonWriter.beginArray();
+                for (int dimension : m.getDimensions()) {
+                    jsonWriter.value(dimension);
                 }
+                jsonWriter.endArray();
+                jsonWriter.endObject();
+            } else {
+                Object nestedArray = ArrayUtil.unflatten(m.getElements(), m.getDimensions());
+                writeNestedMultiDimensionalVariantValue(typeId, nestedArray, m.getDimensions(), 0);
+            }
+        } else {
+            if (reversible) {
+                jsonWriter.beginObject();
+                jsonWriter.name("Type").value(typeId);
+                jsonWriter.name("Body");
+            }
+
+            encodeVariantBodyValue(value, typeHint, typeId);
+
+            if (reversible) {
+                jsonWriter.endObject();
             }
         }
+    }
 
-        if (reversible) {
-            jsonWriter.endObject();
+    private void encodeVariantBodyValue(Object value, TypeHint typeHint, int typeId) {
+        switch (typeHint) {
+            case BUILTIN: {
+                encodeBuiltinTypeValue(null, typeId, value);
+                break;
+            }
+            case ENUM: {
+                Object enumValue = ((UaEnumeratedType) value).getValue();
+                encodeBuiltinTypeValue(null, typeId, enumValue);
+                break;
+            }
+            case STRUCT: {
+                UaStructuredType struct = (UaStructuredType) value;
+                ExtensionObject xo = ExtensionObject.encode(encodingContext, struct);
+                encodeBuiltinTypeValue(null, typeId, xo);
+                break;
+            }
+            case OPTION_SET: {
+                Object optionSetValue = ((OptionSetUInteger<?>) value).getValue();
+                encodeBuiltinTypeValue(null, typeId, optionSetValue);
+                break;
+            }
         }
     }
 
@@ -834,7 +888,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
         } else if (dimensionIndex == dimensions.length - 1) {
             for (int i = 0; i < dimensions[dimensionIndex]; i++) {
                 Object e = Array.get(value, i);
-                writeBuiltinTypeValue(null, typeId, e);
+                encodeBuiltinTypeValue(null, typeId, e);
             }
         } else {
             for (int i = 0; i < dimensions[dimensionIndex]; i++) {
@@ -858,7 +912,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
             jsonWriter.beginArray();
             for (int i = 0; i < dimensions[dimensionIndex]; i++) {
                 Object e = Array.get(value, i);
-                writeBuiltinTypeValue(null, typeId, e);
+                encodeBuiltinTypeValue(null, typeId, e);
             }
             jsonWriter.endArray();
         } else {
@@ -871,7 +925,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
         }
     }
 
-    private void writeBuiltinTypeValue(String field, int typeId, Object value) throws UaSerializationException {
+    private void encodeBuiltinTypeValue(String field, int typeId, Object value) throws UaSerializationException {
         contextPush(OpcUaJsonEncoder.EncodingContext.BUILTIN);
         switch (typeId) {
             case 1:
@@ -1215,18 +1269,24 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void encodeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public void encodeStructArray(
+        String field,
+        Object[] value,
+        ExpandedNodeId dataTypeId
+    ) throws UaSerializationException {
+
         NodeId localDataTypeId = dataTypeId.toNodeId(encodingContext.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
-                "no codec registered: " + dataTypeId
+                "encodeStructArray: namespace not registered: " + dataTypeId
             ));
 
         encodeStructArray(field, value, localDataTypeId);
     }
 
     @Override
-    public <T> void encodeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
+    public <T> void encodeArray(String field, T[] values, BiConsumer<String, T> encoder) throws
+        UaSerializationException {
         if (values == null) {
             return;
         }
@@ -1252,5 +1312,189 @@ public class OpcUaJsonEncoder implements UaEncoder {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
     }
+
+    @Override
+    public void encodeMatrix(String field, Matrix value) throws UaSerializationException {
+        try {
+            EncodingContext context = contextPeek();
+            if (!reversible || context == OpcUaJsonEncoder.EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
+                if (field != null) {
+                    jsonWriter.name(field);
+                }
+
+                Object flatArray = value.getElements();
+                if (flatArray == null) {
+                    try {
+                        jsonWriter.nullValue();
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                } else {
+                    int[] dimensions = value.getDimensions();
+                    BuiltinDataType builtinDataType = value.getBuiltinDataType().orElseThrow();
+                    try {
+                        encodeFlatArrayAsNested(flatArray, dimensions, builtinDataType, 0);
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void encodeEnumMatrix(String field, Matrix value) throws UaSerializationException {
+        try {
+            EncodingContext context = contextPeek();
+            if (!reversible || context == OpcUaJsonEncoder.EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
+                if (field != null) {
+                    jsonWriter.name(field);
+                }
+
+                Object flatArray = value.getElements();
+                if (flatArray == null) {
+                    try {
+                        jsonWriter.nullValue();
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                } else {
+                    int[] dimensions = value.getDimensions();
+
+                    try {
+                        encodeFlatEnumArrayAsNested((UaEnumeratedType[]) flatArray, dimensions, 0);
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, NodeId dataTypeId) throws UaSerializationException {
+        try {
+            EncodingContext context = contextPeek();
+            if (!reversible || context == OpcUaJsonEncoder.EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
+                if (field != null) {
+                    jsonWriter.name(field);
+                }
+
+                Object flatArray = value.getElements();
+                if (flatArray == null) {
+                    try {
+                        jsonWriter.nullValue();
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                } else {
+                    int[] dimensions = value.getDimensions();
+
+                    try {
+                        encodeFlatStructArrayAsNested(flatArray, dataTypeId, dimensions, 0);
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void encodeStructMatrix(String field, Matrix value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(encodingContext.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "encodeStructArray: namespace not registered: " + dataTypeId
+            ));
+
+        encodeStructMatrix(field, value, localDataTypeId);
+    }
+
+    private void encodeFlatArrayAsNested(
+        Object value,
+        int[] dimensions,
+        BuiltinDataType builtinDataType,
+        int offset
+    ) throws IOException {
+
+        if (dimensions.length == 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object e = Array.get(value, offset + i);
+                encodeBuiltinTypeValue(null, builtinDataType.getTypeId(), e);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+            for (int i = 0; i < dimensions[0]; i++) {
+                encodeFlatArrayAsNested(value, tail, builtinDataType, offset + i * length(tail));
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private void encodeFlatEnumArrayAsNested(
+        UaEnumeratedType[] value,
+        int[] dimensions,
+        int offset
+    ) throws IOException {
+
+        if (dimensions.length == 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object e = Array.get(value, offset + i);
+                encodeEnum(null, (UaEnumeratedType) e);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+            for (int i = 0; i < dimensions[0]; i++) {
+                encodeFlatEnumArrayAsNested(value, tail, offset + i * length(tail));
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private void encodeFlatStructArrayAsNested(
+        Object value,
+        NodeId dataTypeId,
+        int[] dimensions,
+        int offset
+    ) throws IOException {
+
+        if (dimensions.length == 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object e = Array.get(value, offset + i);
+                encodeStruct(null, e, dataTypeId);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+            for (int i = 0; i < dimensions[0]; i++) {
+                encodeFlatStructArrayAsNested(value, dataTypeId, tail, offset + i * length(tail));
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private static int length(int[] tail) {
+        int product = 1;
+        for (int aTail : tail) {
+            product *= aTail;
+        }
+        return product;
+    }
+
 
 }

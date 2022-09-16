@@ -147,8 +147,7 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         }
 
         @Override
-        public PubSubConfiguration2DataType decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public PubSubConfiguration2DataType decodeType(EncodingContext context, UaDecoder decoder) {
             PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.decodeStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
             PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.decodeStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
             Boolean enabled = decoder.decodeBoolean("Enabled");

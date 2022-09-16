@@ -100,8 +100,7 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DeleteAtTimeDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DeleteAtTimeDetails value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeDateTimeArray("ReqTimes", value.getReqTimes());
         }

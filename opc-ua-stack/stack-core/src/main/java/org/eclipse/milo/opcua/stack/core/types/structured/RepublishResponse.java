@@ -105,8 +105,7 @@ public class RepublishResponse extends Structure implements UaResponseMessageTyp
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               RepublishResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RepublishResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStruct("NotificationMessage", value.getNotificationMessage(), NotificationMessage.TYPE_ID);
         }

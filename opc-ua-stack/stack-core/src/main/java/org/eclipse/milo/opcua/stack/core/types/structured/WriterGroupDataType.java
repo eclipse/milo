@@ -191,8 +191,7 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               WriterGroupDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, WriterGroupDataType value) {
             encoder.encodeString("Name", value.getName());
             encoder.encodeBoolean("Enabled", value.getEnabled());
             encoder.encodeEnum("SecurityMode", value.getSecurityMode());

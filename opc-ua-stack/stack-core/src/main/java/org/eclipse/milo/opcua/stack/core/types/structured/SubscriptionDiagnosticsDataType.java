@@ -343,8 +343,7 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
         }
 
         @Override
-        public SubscriptionDiagnosticsDataType decodeType(EncodingContext context,
-                                                          UaDecoder decoder) {
+        public SubscriptionDiagnosticsDataType decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId sessionId = decoder.decodeNodeId("SessionId");
             UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
             UByte priority = decoder.decodeByte("Priority");

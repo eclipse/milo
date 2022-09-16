@@ -116,8 +116,7 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         }
 
         @Override
-        public PubSubConfigurationRefDataType decodeType(EncodingContext context,
-                                                         UaDecoder decoder) {
+        public PubSubConfigurationRefDataType decodeType(EncodingContext context, UaDecoder decoder) {
             PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.decodeUInt32("ConfigurationMask"));
             UShort elementIndex = decoder.decodeUInt16("ElementIndex");
             UShort connectionIndex = decoder.decodeUInt16("ConnectionIndex");

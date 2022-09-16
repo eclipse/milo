@@ -115,8 +115,7 @@ public class CallMethodRequest extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               CallMethodRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CallMethodRequest value) {
             encoder.encodeNodeId("ObjectId", value.getObjectId());
             encoder.encodeNodeId("MethodId", value.getMethodId());
             encoder.encodeVariantArray("InputArguments", value.getInputArguments());

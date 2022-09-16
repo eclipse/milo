@@ -108,8 +108,7 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
         }
 
         @Override
-        public FindServersOnNetworkResponse decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public FindServersOnNetworkResponse decodeType(EncodingContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             DateTime lastCounterResetTime = decoder.decodeDateTime("LastCounterResetTime");
             ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.decodeStructArray("Servers", ServerOnNetwork.TYPE_ID);

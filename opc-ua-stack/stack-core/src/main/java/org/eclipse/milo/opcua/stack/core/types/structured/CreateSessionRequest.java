@@ -172,8 +172,7 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               CreateSessionRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CreateSessionRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
             encoder.encodeString("ServerUri", value.getServerUri());

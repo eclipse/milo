@@ -100,8 +100,7 @@ public class DeleteEventDetails extends HistoryUpdateDetails implements UaStruct
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DeleteEventDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DeleteEventDetails value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeByteStringArray("EventIds", value.getEventIds());
         }

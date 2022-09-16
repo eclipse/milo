@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -42,6 +43,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.junit.jupiter.api.Test;
 
@@ -870,6 +872,10 @@ class OpcUaJsonEncoderTest {
         encoder.reset(writer = new StringWriter());
         encoder.encodeVariant(null, new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}));
         assertEquals("{\"Type\":24,\"Body\":[{\"Type\":12,\"Body\":\"foo\"},{\"Type\":12,\"Body\":\"bar\"}]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(new int[][]{{0, 1}, {2, 3}})));
+        assertEquals("{\"Type\":6,\"Body\":[0,1,2,3],\"Dimensions\":[2,2]}", writer.toString());
         //endregion
 
         //region non-reversible
@@ -910,11 +916,11 @@ class OpcUaJsonEncoderTest {
         assertEquals("{\"Type\":6,\"Body\":[0,1,2,3]}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value2d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value2d)));
         assertEquals("{\"Type\":6,\"Body\":[0,2,3,1,3,4],\"Dimensions\":[2,3]}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value3d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value3d)));
         assertEquals("{\"Type\":6,\"Body\":[0,1,2,3,4,5,6,7],\"Dimensions\":[2,2,2]}", writer.toString());
         //endregion
 
@@ -926,11 +932,11 @@ class OpcUaJsonEncoderTest {
         assertEquals("[0,1,2,3]", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value2d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value2d)));
         assertEquals("[[0,2,3],[1,3,4]]", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value3d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value3d)));
         assertEquals("[[[0,1],[2,3]],[[4,5],[6,7]]]", writer.toString());
         //endregion
     }
@@ -978,7 +984,6 @@ class OpcUaJsonEncoderTest {
     public void writeMessage() {
         var writer = new StringWriter();
         var encoder = new OpcUaJsonEncoder(context, writer);
-        encoder.encodingContext = new TestEncodingContext();
 
         var message = new ReadRequest(
             new RequestHeader(
@@ -1061,7 +1066,6 @@ class OpcUaJsonEncoderTest {
     public void writeBooleanArray() throws IOException {
         var writer = new StringWriter();
         var encoder = new OpcUaJsonEncoder(context, writer);
-        encoder.encodingContext = new TestEncodingContext();
 
         encoder.reset(writer = new StringWriter());
         encoder.encodeBooleanArray(null, null);
@@ -1090,6 +1094,80 @@ class OpcUaJsonEncoderTest {
         encoder.encodeBooleanArray("foo", null);
         encoder.jsonWriter.endObject();
         assertEquals("{}", writer.toString());
+    }
+
+    @Test
+    void encodeMatrix() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(context, writer);
+
+        var matrix2d = new Matrix(new Integer[][]{
+            new Integer[]{0, 1},
+            new Integer[]{2, 3}
+        });
+
+        var matrix3d = new Matrix(new Integer[][][]{
+            new Integer[][]{
+                {0, 1}, {2, 3}
+            },
+            new Integer[][]{
+                {4, 5}, {6, 7}
+            }
+        });
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeMatrix(null, matrix2d);
+        assertEquals("[[0,1],[2,3]]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeMatrix(null, matrix3d);
+        assertEquals("[[[0,1],[2,3]],[[4,5],[6,7]]]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.encodeMatrix("foo", matrix2d);
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":[[0,1],[2,3]]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.encodeMatrix("foo", matrix3d);
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":[[[0,1],[2,3]],[[4,5],[6,7]]]}", writer.toString());
+    }
+
+    @Test
+    void encodeEnumMatrix() {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(context, writer);
+
+        var applicationTypes = new ApplicationType[][]{
+            new ApplicationType[]{ApplicationType.Server, ApplicationType.Client},
+            new ApplicationType[]{ApplicationType.ClientAndServer, ApplicationType.DiscoveryServer}
+        };
+
+        var matrix = new Matrix(applicationTypes);
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeEnumMatrix(null, matrix);
+        assertEquals("[[0,1],[2,3]]", writer.toString());
+    }
+
+    @Test
+    void encodeStructMatrix() {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(context, writer);
+
+        XVType[][] xvTypes = new XVType[][]{
+            new XVType[]{new XVType(0.0d, 1.0f), new XVType(2.0d, 3.0f)},
+            new XVType[]{new XVType(4.0d, 5.0f), new XVType(6.0d, 7.0f)}
+        };
+
+        var matrix = new Matrix(xvTypes);
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeStructMatrix(null, matrix, XVType.TYPE_ID);
+        assertEquals("[[{\"Value\":1.0},{\"X\":2.0,\"Value\":3.0}],[{\"X\":4.0,\"Value\":5.0},{\"X\":6.0,\"Value\":7.0}]]", writer.toString());
     }
 
     private static byte[] randomBytes(int length) {

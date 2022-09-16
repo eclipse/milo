@@ -106,8 +106,7 @@ public class ReadAtTimeDetails extends HistoryReadDetails implements UaStructure
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ReadAtTimeDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ReadAtTimeDetails value) {
             encoder.encodeDateTimeArray("ReqTimes", value.getReqTimes());
             encoder.encodeBoolean("UseSimpleBounds", value.getUseSimpleBounds());
         }
