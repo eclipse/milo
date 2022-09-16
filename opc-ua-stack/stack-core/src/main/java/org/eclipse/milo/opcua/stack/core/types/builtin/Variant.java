@@ -782,6 +782,16 @@ public final class Variant {
         return new Variant(value);
     }
 
+    /**
+     * Create a Variant containing a Matrix value.
+     *
+     * @param value the Matrix value.
+     * @return a new Variant containing {@code value}.
+     */
+    public static Variant ofMatrix(Matrix value) {
+        return new Variant(value);
+    }
+
     //endregion
 
 }

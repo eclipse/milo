@@ -18,6 +18,7 @@ import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -744,6 +746,41 @@ class OpcUaJsonDecoderTest {
 
         decoder.reset(new StringReader("{\"Name\":\"foo\",\"DataType\":{\"Id\":6},\"ValueRank\":-1,\"Description\":{\"Locale\":\"en\",\"Text\":\"foo desc\"}}"));
         assertEquals(struct, decoder.decodeStruct(null, Argument.TYPE_ID));
+    }
+
+    @Test
+    void decodeMatrix() throws IOException {
+        var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
+
+        var matrix2d = new Matrix(new Integer[][]{
+            new Integer[]{0, 1},
+            new Integer[]{2, 3}
+        });
+
+        var matrix3d = new Matrix(new Integer[][][]{
+            new Integer[][]{
+                {0, 1}, {2, 3}
+            },
+            new Integer[][]{
+                {4, 5}, {6, 7}
+            }
+        });
+
+        decoder.reset(new StringReader("[[0,1],[2,3]]"));
+        assertEquals(matrix2d, decoder.decodeMatrix(null, BuiltinDataType.Int32));
+
+        decoder.reset(new StringReader("[[[0,1],[2,3]],[[4,5],[6,7]]]"));
+        assertEquals(matrix3d, decoder.decodeMatrix(null, BuiltinDataType.Int32));
+
+        decoder.reset(new StringReader("{\"foo\":[[0,1],[2,3]]}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(matrix2d, decoder.decodeMatrix("foo", BuiltinDataType.Int32));
+        decoder.jsonReader.endObject();
+
+        decoder.reset(new StringReader("{\"foo\":[[[0,1],[2,3]],[[4,5],[6,7]]]}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(matrix3d, decoder.decodeMatrix("foo", BuiltinDataType.Int32));
+        decoder.jsonReader.endObject();
     }
 
     private static byte[] randomBytes(int length) {

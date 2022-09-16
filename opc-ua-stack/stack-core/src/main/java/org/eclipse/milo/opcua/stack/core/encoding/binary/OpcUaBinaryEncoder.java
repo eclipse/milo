@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -614,10 +615,8 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                     .warn("Not a built-in type: {}", valueClass);
             }
 
-            if (value.getClass().isArray()) {
-                int[] dimensions = ArrayUtil.getDimensions(value);
-
-                if (dimensions.length == 1) {
+            if (value.getClass().isArray() || value instanceof Matrix) {
+                if (value.getClass().isArray()) {
                     buffer.writeByte(typeId | 0x80);
 
                     int length = Array.getLength(value);
@@ -629,14 +628,16 @@ public class OpcUaBinaryEncoder implements UaEncoder {
                         encodeValue(o, typeId, structure, enumeration, optionSet);
                     }
                 } else {
+                    int[] dimensions = ((Matrix) value).getDimensions();
+
                     buffer.writeByte(typeId | 0xC0);
 
-                    Object flattened = ArrayUtil.flatten(value);
-                    int length = Array.getLength(flattened);
+                    Object elements = ((Matrix) value).getElements();
+                    int length = Array.getLength(elements);
                     buffer.writeIntLE(length);
 
                     for (int i = 0; i < length; i++) {
-                        Object o = Array.get(flattened, i);
+                        Object o = Array.get(elements, i);
 
                         encodeValue(o, typeId, structure, enumeration, optionSet);
                     }
@@ -1143,6 +1144,38 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             for (T t : values) {
                 encoder.accept(field, t);
+            }
+        }
+    }
+
+    @Override
+    public void encodeMatrix(String field, Matrix value) throws UaSerializationException {
+        Object elements = value.getElements();
+
+        if (elements == null) {
+            buffer.writeIntLE(-1);
+            return;
+        }
+
+        int[] dimensions = value.getDimensions();
+        assert dimensions.length > 1;
+
+        boolean noZeroDimensions = true;
+        buffer.writeIntLE(dimensions.length);
+        for (int d : dimensions) {
+            if (d <= 0) noZeroDimensions = false;
+            buffer.writeIntLE(d);
+        }
+
+        if (noZeroDimensions) {
+            int length = Array.getLength(elements);
+            int typeId = value.getBuiltinDataType().orElseThrow().getTypeId(); // won't throw, we checked for null
+
+            buffer.writeIntLE(length);
+            for (int i = 0; i < length; i++) {
+                Object o = Array.get(elements, i);
+
+                encodeValue(o, typeId, false, false, false);
             }
         }
     }

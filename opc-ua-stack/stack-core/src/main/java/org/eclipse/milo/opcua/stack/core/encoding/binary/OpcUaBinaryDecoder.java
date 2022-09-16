@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ByteProcessor;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
@@ -33,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -42,7 +44,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -398,6 +399,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
                     } else {
                         checkArrayLength(length);
 
+                        // TODO speed this up by switching on BuiltinDataType instead of using reflection
                         Object flatArray = Array.newInstance(backingClass, length);
 
                         for (int i = 0; i < length; i++) {
@@ -407,9 +409,15 @@ public class OpcUaBinaryDecoder implements UaDecoder {
                         }
 
                         int[] dimensions = dimensionsEncoded ? decodeDimensions() : new int[]{length};
-                        Object array = dimensions.length > 1 ? ArrayUtil.unflatten(flatArray, dimensions) : flatArray;
 
-                        return new Variant(array);
+                        Object value;
+                        if (dimensions.length > 1) {
+                            value = new Matrix(flatArray, dimensions, BuiltinDataType.fromTypeId(typeId));
+                        } else {
+                            value = flatArray;
+                        }
+
+                        return new Variant(value);
                     }
                 } else {
                     Object value = decodeBuiltinType(typeId);
@@ -1223,6 +1231,48 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
             return array;
         }
+    }
+
+    @Override
+    public Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException {
+        int[] dimensions;
+        {
+            int length = decodeInt32(null);
+
+            if (length == -1) {
+                return null;
+            } else {
+                checkArrayLength(length);
+
+                dimensions = new int[length];
+                for (int i = 0; i < length; i++) {
+                    dimensions[i] = decodeInt32(null);
+                }
+            }
+        }
+
+        int length = 1;
+        for (int d : dimensions) {
+            checkArrayLength(d);
+            if (d > 0) {
+                length *= d;
+            } else {
+                length = 0;
+            }
+        }
+        checkArrayLength(length);
+
+        // TODO speed this up by switching on BuiltinDataType instead of using reflection
+        Class<?> backingClass = builtinDataType.getBackingClass();
+        Object flatArray = Array.newInstance(backingClass, length);
+
+        for (int i = 0; i < length; i++) {
+            Object element = decodeBuiltinType(builtinDataType.getTypeId());
+
+            Array.set(flatArray, i, element);
+        }
+
+        return new Matrix(flatArray, dimensions, builtinDataType);
     }
 
 }

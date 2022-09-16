@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -152,5 +153,7 @@ public interface UaEncoder {
     void encodeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> void encodeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException;
+
+    void encodeMatrix(String field, Matrix value) throws UaSerializationException;
 
 }

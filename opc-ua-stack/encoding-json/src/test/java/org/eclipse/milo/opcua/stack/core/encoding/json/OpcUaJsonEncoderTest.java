@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -978,7 +979,6 @@ class OpcUaJsonEncoderTest {
     public void writeMessage() {
         var writer = new StringWriter();
         var encoder = new OpcUaJsonEncoder(context, writer);
-        encoder.encodingContext = new TestEncodingContext();
 
         var message = new ReadRequest(
             new RequestHeader(
@@ -1061,7 +1061,6 @@ class OpcUaJsonEncoderTest {
     public void writeBooleanArray() throws IOException {
         var writer = new StringWriter();
         var encoder = new OpcUaJsonEncoder(context, writer);
-        encoder.encodingContext = new TestEncodingContext();
 
         encoder.reset(writer = new StringWriter());
         encoder.encodeBooleanArray(null, null);
@@ -1090,6 +1089,46 @@ class OpcUaJsonEncoderTest {
         encoder.encodeBooleanArray("foo", null);
         encoder.jsonWriter.endObject();
         assertEquals("{}", writer.toString());
+    }
+
+    @Test
+    void encodeMatrix() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(context, writer);
+
+        var matrix2d = new Matrix(new Integer[][]{
+            new Integer[]{0, 1},
+            new Integer[]{2, 3}
+        });
+
+        var matrix3d = new Matrix(new Integer[][][]{
+            new Integer[][]{
+                {0, 1}, {2, 3}
+            },
+            new Integer[][]{
+                {4, 5}, {6, 7}
+            }
+        });
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeMatrix(null, matrix2d);
+        assertEquals("[[0,1],[2,3]]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeMatrix(null, matrix3d);
+        assertEquals("[[[0,1],[2,3]],[[4,5],[6,7]]]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.encodeMatrix("foo", matrix2d);
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":[[0,1],[2,3]]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.encodeMatrix("foo", matrix3d);
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":[[[0,1],[2,3]],[[4,5],[6,7]]]}", writer.toString());
     }
 
     private static byte[] randomBytes(int length) {

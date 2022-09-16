@@ -33,6 +33,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.io.CharStreams;
 import jakarta.xml.bind.DatatypeConverter;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -48,6 +49,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -1252,6 +1254,11 @@ public class OpcUaXmlDecoder implements UaDecoder {
                 );
             }
         }
+    }
+
+    @Override
+    public Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException {
+        return null; // TODO
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {

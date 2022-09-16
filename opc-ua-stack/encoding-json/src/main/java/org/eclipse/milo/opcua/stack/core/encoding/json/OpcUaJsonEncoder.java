@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Stack;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -1252,5 +1254,69 @@ public class OpcUaJsonEncoder implements UaEncoder {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
     }
+
+    @Override
+    public void encodeMatrix(String field, Matrix value) throws UaSerializationException {
+        try {
+            EncodingContext context = contextPeek();
+            if (!reversible || context == OpcUaJsonEncoder.EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
+                if (field != null) {
+                    jsonWriter.name(field);
+                }
+
+                Object flatArray = value.getElements();
+                if (flatArray == null) {
+                    try {
+                        jsonWriter.nullValue();
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                } else {
+                    int[] dimensions = value.getDimensions();
+                    BuiltinDataType builtinDataType = value.getBuiltinDataType().orElseThrow();
+                    try {
+                        encodeFlatArrayAsNested(flatArray, dimensions, builtinDataType, 0);
+                    } catch (IOException e) {
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    private void encodeFlatArrayAsNested(
+        Object value,
+        int[] dimensions,
+        BuiltinDataType builtinDataType,
+        int offset
+    ) throws IOException {
+
+        if (dimensions.length == 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object e = Array.get(value, offset + i);
+                writeBuiltinTypeValue(null, builtinDataType.getTypeId(), e);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+            for (int i = 0; i < dimensions[0]; i++) {
+                encodeFlatArrayAsNested(value, tail, builtinDataType, offset + i * length(tail));
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private static int length(int[] tail) {
+        int product = 1;
+        for (int aTail : tail) {
+            product *= aTail;
+        }
+        return product;
+    }
+
 
 }

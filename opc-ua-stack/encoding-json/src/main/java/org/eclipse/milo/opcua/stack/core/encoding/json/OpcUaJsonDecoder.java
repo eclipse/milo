@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -26,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
@@ -39,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -1560,6 +1563,44 @@ public class OpcUaJsonDecoder implements UaDecoder {
             return (T[]) array;
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    @Override
+    public Matrix decodeMatrix(String field, BuiltinDataType builtinDataType) throws UaSerializationException {
+        try {
+            if (field != null) {
+                String nextName = nextName();
+                if (!field.equals(nextName)) {
+                    this.peekedNextName = nextName;
+                    return Matrix.ofNull();
+                }
+            }
+
+            Object nestedArray = decodeNestedMultiDimensionalArrayValue(builtinDataType.getTypeId());
+
+            return new Matrix(nestedArray);
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    private Object decodeNestedMultiDimensionalArrayValue(int typeId) throws IOException {
+        if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+            jsonReader.beginArray();
+            List<Object> elements = new ArrayList<>();
+            while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                elements.add(decodeNestedMultiDimensionalArrayValue(typeId));
+            }
+            jsonReader.endArray();
+
+            Object array = Array.newInstance(elements.get(0).getClass(), elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+                Array.set(array, i, elements.get(i));
+            }
+            return array;
+        } else {
+            return readBuiltinTypeValue(null, typeId);
         }
     }
 
