@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.encoding.binary;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -1176,9 +1177,10 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
         if (noZeroDimensions) {
             int length = Array.getLength(elements);
+            assert length == Arrays.stream(dimensions).reduce(1, (left, right) -> left * right);
+
             int typeId = value.getBuiltinDataType().orElseThrow().getTypeId(); // won't throw, we checked for null
 
-            buffer.writeIntLE(length);
             for (int i = 0; i < length; i++) {
                 Object o = Array.get(elements, i);
 
@@ -1208,8 +1210,8 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
         if (noZeroDimensions) {
             int length = Array.getLength(elements);
+            assert length == Arrays.stream(dimensions).reduce(1, (left, right) -> left * right);
 
-            buffer.writeIntLE(length);
             for (int i = 0; i < length; i++) {
                 Object o = Array.get(elements, i);
 
@@ -1239,8 +1241,8 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
         if (noZeroDimensions) {
             int length = Array.getLength(elements);
+            assert length == Arrays.stream(dimensions).reduce(1, (left, right) -> left * right);
 
-            buffer.writeIntLE(length);
             for (int i = 0; i < length; i++) {
                 Object o = Array.get(elements, i);
 

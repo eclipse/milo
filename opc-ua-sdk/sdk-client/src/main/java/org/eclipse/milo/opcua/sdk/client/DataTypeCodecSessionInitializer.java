@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.concurrent.CompletableFuture;
@@ -12,9 +22,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitializer {
+
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(DataTypeCodecSessionInitializer.class);
 
     @Override
     public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {
@@ -45,6 +59,11 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
                 DataTypeDefinition definition = dataType.getDataTypeDefinition();
 
                 if (definition instanceof StructureDefinition) {
+                    LOGGER.debug(
+                        "Registering type: name={}, dataTypeId={}",
+                        dataType.getBrowseName(), dataType.getNodeId()
+                    );
+
                     stackClient.getDynamicDataTypeManager().registerType(
                         dataType.getNodeId(),
                         new DynamicStructCodec(dataTypeTree, dataType),

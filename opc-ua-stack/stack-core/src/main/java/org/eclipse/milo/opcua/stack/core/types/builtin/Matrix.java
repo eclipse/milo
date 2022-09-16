@@ -10,11 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
@@ -140,6 +142,37 @@ public class Matrix {
      */
     public boolean isNotNull() {
         return !isNull();
+    }
+
+    /**
+     * Create a new Matrix by applying the transform function {@code f} to each of the elements in
+     * this Matrix.
+     *
+     * @param f the transform function applied to each element.
+     * @return a new Matrix containing transformed elements.
+     */
+    public Matrix transform(Function<Object, Object> f) {
+        if (flatArray == null) {
+            return new Matrix(null);
+        } else {
+            Object transformedArray = null;
+
+            int length = Array.getLength(flatArray);
+            for (int i = 0; i < length; i++) {
+                Object e = Array.get(flatArray, i);
+                Object t = f.apply(e);
+                if (transformedArray == null) {
+                    transformedArray = Array.newInstance(t.getClass(), length);
+                }
+                Array.set(transformedArray, i, t);
+            }
+
+            return new Matrix(transformedArray, dimensions);
+        }
+    }
+
+    public Object unflatten() {
+        return ArrayUtil.unflatten(flatArray, dimensions);
     }
 
     @Override
