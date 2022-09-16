@@ -37,11 +37,11 @@ public class VariantSerializationTest extends BinarySerializationFixture {
             {new Variant("hello, world")},
             {new Variant(42)},
             {new Variant(new Integer[]{0, 1, 2, 3})},
-            {new Variant(new Matrix(new Integer[][]{{0, 1}, {2, 3}}))},
+            {new Variant(Matrix.ofInt32(new Integer[][]{{0, 1}, {2, 3}}))},
             {new Variant(new Long[]{0L, 1L, 2L, 3L})},
-            {new Variant(new Matrix(new Long[][]{{0L, 1L}, {2L, 3L}}))},
+            {new Variant(Matrix.ofInt64(new Long[][]{{0L, 1L}, {2L, 3L}}))},
             {new Variant(new UInteger[]{uint(0), uint(1), uint(2), uint(3)})},
-            {new Variant(new Matrix(new UInteger[][]{{uint(0), uint(1)}, {uint(2), uint(3)}}))},
+            {new Variant(Matrix.ofUInt32(new UInteger[][]{{uint(0), uint(1)}, {uint(2), uint(3)}}))},
             {new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)})}
         };
     }
@@ -78,14 +78,14 @@ public class VariantSerializationTest extends BinarySerializationFixture {
             {new Variant(new int[]{0, 1, 2, 3}),
                 new Variant(new Integer[]{0, 1, 2, 3})},
 
-            {new Variant(new Matrix(new int[][]{{0, 1}, {2, 3}})),
-                new Variant(new Matrix(new Integer[][]{{0, 1}, {2, 3}}))},
+            {new Variant(Matrix.ofInt32(new int[][]{{0, 1}, {2, 3}})),
+                new Variant(Matrix.ofInt32(new Integer[][]{{0, 1}, {2, 3}}))},
 
             {new Variant(new long[]{0L, 1L, 2L, 3L}),
                 new Variant(new Long[]{0L, 1L, 2L, 3L})},
 
-            {new Variant(new Matrix(new long[][]{{0L, 1L}, {2L, 3L}})),
-                new Variant(new Matrix(new Long[][]{{0L, 1L}, {2L, 3L}}))}
+            {new Variant(Matrix.ofInt64(new long[][]{{0L, 1L}, {2L, 3L}})),
+                new Variant(Matrix.ofInt64(new Long[][]{{0L, 1L}, {2L, 3L}}))}
         };
     }
 

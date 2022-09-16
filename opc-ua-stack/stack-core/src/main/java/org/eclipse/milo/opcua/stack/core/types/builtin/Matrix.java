@@ -4,8 +4,13 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -143,6 +148,8 @@ public class Matrix {
         return joiner.toString();
     }
 
+    //region Static factory methods
+
     /**
      * Create a Matrix containing a null value.
      *
@@ -151,5 +158,647 @@ public class Matrix {
     public static Matrix ofNull() {
         return new Matrix(null);
     }
+
+    /**
+     * Create a Matrix containing a multidimensional Boolean value.
+     *
+     * @param value the multidimensional Boolean value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofBoolean(Boolean[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Boolean value.
+     *
+     * @param value the multidimensional Boolean value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofBoolean(boolean[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Boolean value.
+     *
+     * @param value the multidimensional Boolean value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofBoolean(Boolean[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Boolean value.
+     *
+     * @param value the multidimensional Boolean value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofBoolean(boolean[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional SByte value.
+     *
+     * @param value the multidimensional SByte value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofSByte(Byte[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional SByte value.
+     *
+     * @param value the multidimensional SByte value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofSByte(byte[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional SByte value.
+     *
+     * @param value the multidimensional SByte value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofSByte(Byte[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional SByte value.
+     *
+     * @param value the multidimensional SByte value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofSByte(byte[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Byte value.
+     *
+     * @param value the multidimensional Byte value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofByte(UByte[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Byte value.
+     *
+     * @param value the multidimensional Byte value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofByte(UByte[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int16 value.
+     *
+     * @param value the multidimensional Int16 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt16(Short[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int16 value.
+     *
+     * @param value the multidimensional Int16 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt16(short[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int16 value.
+     *
+     * @param value the multidimensional Int16 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt16(Short[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int16 value.
+     *
+     * @param value the multidimensional Int16 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt16(short[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UInt16 value.
+     *
+     * @param value the multidimensional UInt16 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofUInt16(UShort[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UInt16 value.
+     *
+     * @param value the multidimensional UInt16 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofUInt16(UShort[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int32 value.
+     *
+     * @param value the multidimensional Int32 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt32(Integer[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int32 value.
+     *
+     * @param value the multidimensional Int32 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt32(int[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int32 value.
+     *
+     * @param value the multidimensional Int32 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt32(Integer[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int32 value.
+     *
+     * @param value the multidimensional Int32 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt32(int[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UInt32 value.
+     *
+     * @param value the multidimensional UInt32 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofUInt32(UInteger[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UInt32 value.
+     *
+     * @param value the multidimensional UInt32 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofUInt32(UInteger[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int64 value.
+     *
+     * @param value the multidimensional Int64 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt64(Long[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int64 value.
+     *
+     * @param value the multidimensional Int64 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt64(long[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int64 value.
+     *
+     * @param value the multidimensional Int64 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt64(Long[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Int64 value.
+     *
+     * @param value the multidimensional Int64 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofInt64(long[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UInt64 value.
+     *
+     * @param value the multidimensional UInt64 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofUInt64(ULong[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UInt64 value.
+     *
+     * @param value the multidimensional UInt64 value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofUInt64(ULong[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Float value.
+     *
+     * @param value the multidimensional Float value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofFloat(Float[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Float value.
+     *
+     * @param value the multidimensional Float value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofFloat(float[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Float value.
+     *
+     * @param value the multidimensional Float value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofFloat(Float[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Float value.
+     *
+     * @param value the multidimensional Float value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofFloat(float[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Double value.
+     *
+     * @param value the multidimensional Double value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDouble(Double[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Double value.
+     *
+     * @param value the multidimensional Double value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDouble(double[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Double value.
+     *
+     * @param value the multidimensional Double value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDouble(Double[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Double value.
+     *
+     * @param value the multidimensional Double value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDouble(double[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional String value.
+     *
+     * @param value the multidimensional String value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofString(String[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional String value.
+     *
+     * @param value the multidimensional String value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofString(String[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional DateTime value.
+     *
+     * @param value the multidimensional DateTime value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDateTime(DateTime[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional DateTime value.
+     *
+     * @param value the multidimensional DateTime value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDateTime(DateTime[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Guid value.
+     *
+     * @param value the multidimensional Guid value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofGuid(UUID[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Guid value.
+     *
+     * @param value the multidimensional Guid value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofGuid(UUID[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional ByteString value.
+     *
+     * @param value the multidimensional ByteString value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofByteString(ByteString[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional ByteString value.
+     *
+     * @param value the multidimensional ByteString value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofByteString(ByteString[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional XmlElement value.
+     *
+     * @param value the multidimensional XmlElement value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofXmlElement(XmlElement[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional XmlElement value.
+     *
+     * @param value the multidimensional XmlElement value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofXmlElement(XmlElement[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional NodeId value.
+     *
+     * @param value the multidimensional NodeId value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofNodeId(NodeId[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional NodeId value.
+     *
+     * @param value the multidimensional NodeId value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofNodeId(NodeId[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional ExpandedNodeId value.
+     *
+     * @param value the multidimensional ExpandedNodeId value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofExpandedNodeId(ExpandedNodeId[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional ExpandedNodeId value.
+     *
+     * @param value the multidimensional ExpandedNodeId value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofExpandedNodeId(ExpandedNodeId[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional StatusCode value.
+     *
+     * @param value the multidimensional StatusCode value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofStatusCode(StatusCode[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional StatusCode value.
+     *
+     * @param value the multidimensional StatusCode value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofStatusCode(StatusCode[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional QualifiedName value.
+     *
+     * @param value the multidimensional QualifiedName value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofQualifiedName(QualifiedName[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional QualifiedName value.
+     *
+     * @param value the multidimensional QualifiedName value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofQualifiedName(QualifiedName[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional LocalizedText value.
+     *
+     * @param value the multidimensional LocalizedText value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofLocalizedText(LocalizedText[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional LocalizedText value.
+     *
+     * @param value the multidimensional LocalizedText value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofLocalizedText(LocalizedText[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional ExtensionObject value.
+     *
+     * @param value the multidimensional ExtensionObject value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofExtensionObject(ExtensionObject[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional ExtensionObject value.
+     *
+     * @param value the multidimensional ExtensionObject value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofExtensionObject(ExtensionObject[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional DataValue value.
+     *
+     * @param value the multidimensional DataValue value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDataValue(DataValue[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional DataValue value.
+     *
+     * @param value the multidimensional DataValue value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDataValue(DataValue[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Variant value.
+     *
+     * @param value the multidimensional Variant value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofVariant(Variant[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional Variant value.
+     *
+     * @param value the multidimensional Variant value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofVariant(Variant[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional DiagnosticInfo value.
+     *
+     * @param value the multidimensional DiagnosticInfo value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDiagnosticInfo(DiagnosticInfo[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional DiagnosticInfo value.
+     *
+     * @param value the multidimensional DiagnosticInfo value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofDiagnosticInfo(DiagnosticInfo[][][] value) {
+        return new Matrix(value);
+    }
+
+    //endregion
 
 }
