@@ -74,6 +74,17 @@ public class Matrix {
     }
 
     /**
+     * Get the value rank (number of dimensions) of this Matrix.
+     * <p>
+     * The returned value is -1 if this Matrix contains a null value.
+     *
+     * @return the value rank of this Matrix.
+     */
+    public int getValueRank() {
+        return flatArray != null ? dimensions.length : -1;
+    }
+
+    /**
      * Get the {@link BuiltinDataType} of the elements of this Matrix.
      * <p>
      * Empty only if this Matrix contains a {@code null} value.

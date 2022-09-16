@@ -1092,9 +1092,21 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 try {
                     jsonReader = new JsonReader(new StringReader(bodyElement.toString()));
 
-                    Object value = readFlattenedMultiDimensionalVariantValue(typeId, dimensions);
+                    var elements = new ArrayList<>();
+                    jsonReader.beginArray();
+                    while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                        elements.add(readBuiltinTypeValue(null, typeId));
+                    }
+                    jsonReader.endArray();
 
-                    return new Variant(value);
+                    Object flatArray = Array.newInstance(TypeUtil.getPrimitiveBackingClass(typeId), elements.size());
+                    for (int i = 0; i < elements.size(); i++) {
+                        Array.set(flatArray, i, elements.get(i));
+                    }
+
+                    var matrix = new Matrix(flatArray, dimensions, BuiltinDataType.fromTypeId(typeId));
+
+                    return new Variant(matrix);
                 } finally {
                     jsonReader = reader;
                 }

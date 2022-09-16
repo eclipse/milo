@@ -641,10 +641,10 @@ class OpcUaJsonDecoderTest {
         assertEquals(new Variant(value1d), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,2,3,1,3,4],\"Dimensions\":[2,3]}"));
-        assertEquals(new Variant(value2d), decoder.decodeVariant(null));
+        assertEquals(new Variant(Matrix.ofInt32(value2d)), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,1,2,3,4,5,6,7],\"Dimensions\":[2,2,2]}"));
-        assertEquals(new Variant(value3d), decoder.decodeVariant(null));
+        assertEquals(new Variant(Matrix.ofInt32(value3d)), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"Type\":1,\"Body\":true}}"));
         decoder.jsonReader.beginObject();

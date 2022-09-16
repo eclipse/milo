@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -44,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
+import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
@@ -282,8 +284,63 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
             return value;
         } else if (valueRank > 1) {
-            // TODO special matrix encoding for multi-dimensional array structure fields
-            throw new RuntimeException("not implemented");
+            Object value;
+
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                BuiltinDataType builtinDataType = (BuiltinDataType) hint;
+
+                value = decoder.decodeMatrix(fieldName, builtinDataType);
+            } else {
+                TypeHint typeHint = (TypeHint) hint;
+
+                switch (typeHint) {
+                    // TODO do we need decodeEnumMatrix and decodeStructMatrix on UaDecoder?
+                    //  I'm not sure this is going to work as is, at least with non-binary encodings.
+
+                    case ENUM: {
+                        // TODO should the field value be multidimensional DynamicEnum or left as Matrix?
+
+                        Matrix m = decoder.decodeMatrix(fieldName, BuiltinDataType.Int32);
+
+                        if (m.getElements() instanceof Integer[]) {
+                            Integer[] enumValues = (Integer[]) m.getElements();
+
+                            Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                            assert factory != null;
+
+                            DynamicEnum[] dynamicEnums = Arrays.stream(enumValues)
+                                .map(factory)
+                                .toArray(DynamicEnum[]::new);
+
+                            value = ArrayUtil.unflatten(dynamicEnums, m.getDimensions());
+                        } else {
+                            value = null;
+                        }
+                        break;
+                    }
+                    case STRUCT:
+                        Matrix m = decoder.decodeMatrix(fieldName, BuiltinDataType.ExtensionObject);
+
+                        if (m.getElements() instanceof ExtensionObject[]) {
+                            ExtensionObject[] xos = (ExtensionObject[]) m.getElements();
+
+                            // TODO Obviously broken, need EncodingContext
+                            DynamicStruct[] dynamicStructs = Arrays.stream(xos)
+                                .map(xo -> (DynamicStruct) xo.decodeOrNull(null))
+                                .toArray(DynamicStruct[]::new);
+
+                            value = ArrayUtil.unflatten(dynamicStructs, m.getDimensions());
+                        } else {
+                            value = null;
+                        }
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + typeHint);
+                }
+            }
+
+            return value;
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError, "illegal ValueRank: " + valueRank);

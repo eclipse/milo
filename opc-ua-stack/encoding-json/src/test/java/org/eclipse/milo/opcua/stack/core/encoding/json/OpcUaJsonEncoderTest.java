@@ -871,6 +871,10 @@ class OpcUaJsonEncoderTest {
         encoder.reset(writer = new StringWriter());
         encoder.encodeVariant(null, new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}));
         assertEquals("{\"Type\":24,\"Body\":[{\"Type\":12,\"Body\":\"foo\"},{\"Type\":12,\"Body\":\"bar\"}]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(new int[][]{{0,1},{2,3}})));
+        assertEquals("{\"Type\":6,\"Body\":[0,1,2,3],\"Dimensions\":[2,2]}", writer.toString());
         //endregion
 
         //region non-reversible
@@ -911,11 +915,11 @@ class OpcUaJsonEncoderTest {
         assertEquals("{\"Type\":6,\"Body\":[0,1,2,3]}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value2d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value2d)));
         assertEquals("{\"Type\":6,\"Body\":[0,2,3,1,3,4],\"Dimensions\":[2,3]}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value3d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value3d)));
         assertEquals("{\"Type\":6,\"Body\":[0,1,2,3,4,5,6,7],\"Dimensions\":[2,2,2]}", writer.toString());
         //endregion
 
@@ -927,11 +931,11 @@ class OpcUaJsonEncoderTest {
         assertEquals("[0,1,2,3]", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value2d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value2d)));
         assertEquals("[[0,2,3],[1,3,4]]", writer.toString());
 
         encoder.reset(writer = new StringWriter());
-        encoder.encodeVariant(null, new Variant(value3d));
+        encoder.encodeVariant(null, new Variant(Matrix.ofInt32(value3d)));
         assertEquals("[[[0,1],[2,3]],[[4,5],[6,7]]]", writer.toString());
         //endregion
     }
