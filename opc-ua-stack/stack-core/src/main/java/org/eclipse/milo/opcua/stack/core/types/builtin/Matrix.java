@@ -28,18 +28,24 @@ public class Matrix {
             this.dimensions = ArrayUtil.getDimensions(array);
             this.builtinDataType = BuiltinDataType.fromBackingClass(ArrayUtil.getType(flatArray));
         }
+
+        assert flatArray == null || (dimensions.length > 1 && builtinDataType != null);
     }
 
     public Matrix(Object flatArray, int[] dimensions) {
         this.flatArray = flatArray;
         this.dimensions = dimensions;
         this.builtinDataType = BuiltinDataType.fromBackingClass(ArrayUtil.getType(flatArray));
+
+        assert dimensions.length > 1 && builtinDataType != null;
     }
 
     public Matrix(Object flatArray, int[] dimensions, BuiltinDataType builtinDataType) {
         this.flatArray = flatArray;
         this.dimensions = dimensions;
         this.builtinDataType = builtinDataType;
+
+        assert flatArray != null && dimensions.length > 1 && builtinDataType != null;
     }
 
     /**
@@ -87,15 +93,6 @@ public class Matrix {
         return !isNull();
     }
 
-    /**
-     * Create a Matrix containing a null value.
-     *
-     * @return a Matrix containing a null value.
-     */
-    public static Matrix ofNull() {
-        return new Matrix(null);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,11 +112,44 @@ public class Matrix {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Matrix.class.getSimpleName() + "{", "}")
+        StringJoiner joiner = new StringJoiner(", ", Matrix.class.getSimpleName() + "{", "}")
             .add("builtinDataType=" + builtinDataType)
-            .add("dimensions=" + Arrays.toString(dimensions))
-            .add("flatArray=" + Arrays.toString((Object[]) flatArray))
-            .toString();
+            .add("dimensions=" + Arrays.toString(dimensions));
+
+        Class<?> clazz = ArrayUtil.getType(flatArray);
+
+        if (clazz.isPrimitive()) {
+            if (clazz == boolean.class) {
+                joiner.add("flatArray=" + Arrays.toString((boolean[]) flatArray));
+            } else if (clazz == byte.class) {
+                joiner.add("flatArray=" + Arrays.toString((byte[]) flatArray));
+            } else if (clazz == short.class) {
+                joiner.add("flatArray=" + Arrays.toString((short[]) flatArray));
+            } else if (clazz == int.class) {
+                joiner.add("flatArray=" + Arrays.toString((int[]) flatArray));
+            } else if (clazz == long.class) {
+                joiner.add("flatArray=" + Arrays.toString((long[]) flatArray));
+            } else if (clazz == float.class) {
+                joiner.add("flatArray=" + Arrays.toString((float[]) flatArray));
+            } else if (clazz == double.class) {
+                joiner.add("flatArray=" + Arrays.toString((double[]) flatArray));
+            } else {
+                joiner.add("flatArray=" + flatArray);
+            }
+        } else {
+            joiner.add("flatArray=" + Arrays.toString((Object[]) flatArray));
+        }
+
+        return joiner.toString();
+    }
+
+    /**
+     * Create a Matrix containing a null value.
+     *
+     * @return a Matrix containing a null value.
+     */
+    public static Matrix ofNull() {
+        return new Matrix(null);
     }
 
 }

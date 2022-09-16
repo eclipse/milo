@@ -606,6 +606,13 @@ public class OpcUaBinaryEncoder implements UaEncoder {
             } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
                 valueClass = ((OptionSetUInteger<?>) value).getValue().getClass();
                 optionSet = true;
+            } else if (Matrix.class.isAssignableFrom(valueClass)) {
+                Matrix m = (Matrix) value;
+                if (m.isNull()) {
+                    buffer.writeByte(0);
+                    return;
+                }
+                valueClass = ((Matrix) value).getBuiltinDataType().orElseThrow().getBackingClass();
             }
 
             int typeId = TypeUtil.getBuiltinTypeId(valueClass);
