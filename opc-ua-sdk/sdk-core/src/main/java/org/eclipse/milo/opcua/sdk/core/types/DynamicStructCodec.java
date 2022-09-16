@@ -297,19 +297,13 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                     case ENUM: {
                         Matrix matrix = decoder.decodeEnumMatrix(fieldName);
 
-                        if (matrix.getElements() instanceof Integer[]) {
-                            Integer[] enumValues = (Integer[]) matrix.getElements();
-
+                        if (matrix.isNotNull()) {
                             Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
                             assert factory != null;
 
-                            DynamicEnum[] dynamicEnums = Arrays.stream(enumValues)
-                                .map(factory)
-                                .toArray(DynamicEnum[]::new);
-
-                            value = new Matrix(dynamicEnums, matrix.getDimensions());
+                            value = matrix.transform(o -> factory.apply((Integer) o));
                         } else {
-                            value = null;
+                            value = matrix;
                         }
                         break;
                     }
