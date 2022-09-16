@@ -108,8 +108,7 @@ public class PubSubConfigurationValueDataType extends Structure implements UaStr
         }
 
         @Override
-        public PubSubConfigurationValueDataType decodeType(EncodingContext context,
-                                                           UaDecoder decoder) {
+        public PubSubConfigurationValueDataType decodeType(EncodingContext context, UaDecoder decoder) {
             PubSubConfigurationRefDataType configurationElement = (PubSubConfigurationRefDataType) decoder.decodeStruct("ConfigurationElement", PubSubConfigurationRefDataType.TYPE_ID);
             String name = decoder.decodeString("Name");
             Variant identifier = decoder.decodeVariant("Identifier");

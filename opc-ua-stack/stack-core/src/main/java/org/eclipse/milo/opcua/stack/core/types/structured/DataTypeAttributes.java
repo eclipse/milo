@@ -108,8 +108,7 @@ public class DataTypeAttributes extends NodeAttributes implements UaStructuredTy
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DataTypeAttributes value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DataTypeAttributes value) {
             encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
             encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
             encoder.encodeLocalizedText("Description", value.getDescription());

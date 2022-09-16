@@ -105,8 +105,7 @@ public class NetworkGroupDataType extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               NetworkGroupDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, NetworkGroupDataType value) {
             encoder.encodeString("ServerUri", value.getServerUri());
             encoder.encodeStructArray("NetworkPaths", value.getNetworkPaths(), EndpointUrlListDataType.TYPE_ID);
         }

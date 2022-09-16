@@ -103,8 +103,7 @@ public class StructureDescription extends DataTypeDescription implements UaStruc
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               StructureDescription value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, StructureDescription value) {
             encoder.encodeNodeId("DataTypeId", value.getDataTypeId());
             encoder.encodeQualifiedName("Name", value.getName());
             encoder.encodeStruct("StructureDefinition", value.getStructureDefinition(), StructureDefinition.TYPE_ID);

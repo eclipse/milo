@@ -134,8 +134,7 @@ public class MonitoringParameters extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               MonitoringParameters value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, MonitoringParameters value) {
             encoder.encodeUInt32("ClientHandle", value.getClientHandle());
             encoder.encodeDouble("SamplingInterval", value.getSamplingInterval());
             encoder.encodeExtensionObject("Filter", value.getFilter());

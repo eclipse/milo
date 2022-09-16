@@ -103,9 +103,9 @@ public class MatrixTestType implements UaStructuredType {
 
         @Override
         public MatrixTestType decodeType(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
-            Integer[][] builtinMatrix = (Integer[][]) decoder.decodeMatrix("BuiltinMatrix", BuiltinDataType.Int32).unflatten();
-            ApplicationType[][] enumMatrix = (ApplicationType[][]) decoder.decodeEnumMatrix("EnumMatrix").transform(e -> ApplicationType.from((Integer) e)).unflatten();
-            XVType[][] structMatrix = (XVType[][]) decoder.decodeStructMatrix("StructMatrix", XVType.TYPE_ID).unflatten();
+            Integer[][] builtinMatrix = (Integer[][]) decoder.decodeMatrix("BuiltinMatrix", BuiltinDataType.Int32).nestedArrayValue();
+            ApplicationType[][] enumMatrix = (ApplicationType[][]) decoder.decodeEnumMatrix("EnumMatrix").transform(e -> ApplicationType.from((Integer) e)).nestedArrayValue();
+            XVType[][] structMatrix = (XVType[][]) decoder.decodeStructMatrix("StructMatrix", XVType.TYPE_ID).nestedArrayValue();
 
             return new MatrixTestType(builtinMatrix, enumMatrix, structMatrix);
         }

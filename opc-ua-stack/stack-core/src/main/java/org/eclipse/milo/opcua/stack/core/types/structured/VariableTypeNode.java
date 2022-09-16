@@ -161,8 +161,7 @@ public class VariableTypeNode extends TypeNode implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               VariableTypeNode value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, VariableTypeNode value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeEnum("NodeClass", value.getNodeClass());
             encoder.encodeQualifiedName("BrowseName", value.getBrowseName());

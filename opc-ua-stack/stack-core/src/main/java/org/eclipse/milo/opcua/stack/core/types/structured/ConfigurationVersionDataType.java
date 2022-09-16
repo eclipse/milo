@@ -98,8 +98,7 @@ public class ConfigurationVersionDataType extends Structure implements UaStructu
         }
 
         @Override
-        public ConfigurationVersionDataType decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public ConfigurationVersionDataType decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger majorVersion = decoder.decodeUInt32("MajorVersion");
             UInteger minorVersion = decoder.decodeUInt32("MinorVersion");
             return new ConfigurationVersionDataType(majorVersion, minorVersion);

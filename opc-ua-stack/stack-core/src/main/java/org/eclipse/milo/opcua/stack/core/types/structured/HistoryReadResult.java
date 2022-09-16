@@ -118,8 +118,7 @@ public class HistoryReadResult extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryReadResult value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryReadResult value) {
             encoder.encodeStatusCode("StatusCode", value.getStatusCode());
             encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
             encoder.encodeExtensionObject("HistoryData", value.getHistoryData());

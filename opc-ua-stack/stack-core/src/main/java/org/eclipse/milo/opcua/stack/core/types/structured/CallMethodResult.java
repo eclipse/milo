@@ -127,8 +127,7 @@ public class CallMethodResult extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               CallMethodResult value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CallMethodResult value) {
             encoder.encodeStatusCode("StatusCode", value.getStatusCode());
             encoder.encodeStatusCodeArray("InputArgumentResults", value.getInputArgumentResults());
             encoder.encodeDiagnosticInfoArray("InputArgumentDiagnosticInfos", value.getInputArgumentDiagnosticInfos());

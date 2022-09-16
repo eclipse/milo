@@ -183,8 +183,7 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
         }
 
         @Override
-        public ServerDiagnosticsSummaryDataType decodeType(EncodingContext context,
-                                                           UaDecoder decoder) {
+        public ServerDiagnosticsSummaryDataType decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger serverViewCount = decoder.decodeUInt32("ServerViewCount");
             UInteger currentSessionCount = decoder.decodeUInt32("CurrentSessionCount");
             UInteger cumulatedSessionCount = decoder.decodeUInt32("CumulatedSessionCount");

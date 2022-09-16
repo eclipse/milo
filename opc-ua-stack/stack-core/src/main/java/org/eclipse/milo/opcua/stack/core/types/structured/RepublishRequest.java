@@ -115,8 +115,7 @@ public class RepublishRequest extends Structure implements UaRequestMessageType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               RepublishRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RepublishRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.encodeUInt32("RetransmitSequenceNumber", value.getRetransmitSequenceNumber());

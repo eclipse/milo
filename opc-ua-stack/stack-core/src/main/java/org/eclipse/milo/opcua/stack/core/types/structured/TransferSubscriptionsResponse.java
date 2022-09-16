@@ -108,8 +108,7 @@ public class TransferSubscriptionsResponse extends Structure implements UaRespon
         }
 
         @Override
-        public TransferSubscriptionsResponse decodeType(EncodingContext context,
-                                                        UaDecoder decoder) {
+        public TransferSubscriptionsResponse decodeType(EncodingContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             TransferResult[] results = (TransferResult[]) decoder.decodeStructArray("Results", TransferResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");

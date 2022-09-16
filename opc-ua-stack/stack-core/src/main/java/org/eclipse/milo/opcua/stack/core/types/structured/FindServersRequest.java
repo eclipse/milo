@@ -124,8 +124,7 @@ public class FindServersRequest extends Structure implements UaRequestMessageTyp
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               FindServersRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, FindServersRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeString("EndpointUrl", value.getEndpointUrl());
             encoder.encodeStringArray("LocaleIds", value.getLocaleIds());

@@ -116,8 +116,7 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               BrowseNextRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, BrowseNextRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
             encoder.encodeByteStringArray("ContinuationPoints", value.getContinuationPoints());

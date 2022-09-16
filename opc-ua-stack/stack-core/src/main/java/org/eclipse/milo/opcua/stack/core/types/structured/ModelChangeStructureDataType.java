@@ -107,8 +107,7 @@ public class ModelChangeStructureDataType extends Structure implements UaStructu
         }
 
         @Override
-        public ModelChangeStructureDataType decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public ModelChangeStructureDataType decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId affected = decoder.decodeNodeId("Affected");
             NodeId affectedType = decoder.decodeNodeId("AffectedType");
             UByte verb = decoder.decodeByte("Verb");

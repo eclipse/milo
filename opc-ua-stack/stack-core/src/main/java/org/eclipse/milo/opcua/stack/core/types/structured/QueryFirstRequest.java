@@ -143,8 +143,7 @@ public class QueryFirstRequest extends Structure implements UaRequestMessageType
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               QueryFirstRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, QueryFirstRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStruct("View", value.getView(), ViewDescription.TYPE_ID);
             encoder.encodeStructArray("NodeTypes", value.getNodeTypes(), NodeTypeDescription.TYPE_ID);

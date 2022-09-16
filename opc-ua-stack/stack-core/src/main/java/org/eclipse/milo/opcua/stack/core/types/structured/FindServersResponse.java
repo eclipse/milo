@@ -105,8 +105,7 @@ public class FindServersResponse extends Structure implements UaResponseMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               FindServersResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, FindServersResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Servers", value.getServers(), ApplicationDescription.TYPE_ID);
         }

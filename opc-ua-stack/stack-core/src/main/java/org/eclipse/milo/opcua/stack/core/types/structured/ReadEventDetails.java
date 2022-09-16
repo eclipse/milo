@@ -125,8 +125,7 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructured
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ReadEventDetails value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ReadEventDetails value) {
             encoder.encodeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
             encoder.encodeDateTime("StartTime", value.getStartTime());
             encoder.encodeDateTime("EndTime", value.getEndTime());

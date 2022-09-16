@@ -98,8 +98,7 @@ public class SemanticChangeStructureDataType extends Structure implements UaStru
         }
 
         @Override
-        public SemanticChangeStructureDataType decodeType(EncodingContext context,
-                                                          UaDecoder decoder) {
+        public SemanticChangeStructureDataType decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId affected = decoder.decodeNodeId("Affected");
             NodeId affectedType = decoder.decodeNodeId("AffectedType");
             return new SemanticChangeStructureDataType(affected, affectedType);

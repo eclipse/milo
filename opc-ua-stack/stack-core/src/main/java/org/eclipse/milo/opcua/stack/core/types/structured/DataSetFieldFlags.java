@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
@@ -6,7 +16,7 @@ import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
@@ -16,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
     callSuper = true
 )
 @ToString
-public class DataSetFieldFlags extends OptionSetUInteger<DataSetFieldFlags.Field> {
+public class DataSetFieldFlags extends OptionSetUI16<DataSetFieldFlags.Field> {
     public DataSetFieldFlags(UShort value) {
         super(value);
     }
@@ -31,13 +41,13 @@ public class DataSetFieldFlags extends OptionSetUInteger<DataSetFieldFlags.Field
     }
 
     @Override
-    public Set<DataSetFieldFlags.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static DataSetFieldFlags of(DataSetFieldFlags.Field... fields) {
+    public static DataSetFieldFlags of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -47,7 +57,7 @@ public class DataSetFieldFlags extends OptionSetUInteger<DataSetFieldFlags.Field
         return new DataSetFieldFlags(UShort.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         PromotedField(0);
 
         private final int bitIndex;

@@ -143,8 +143,7 @@ public class AddReferencesItem extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               AddReferencesItem value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AddReferencesItem value) {
             encoder.encodeNodeId("SourceNodeId", value.getSourceNodeId());
             encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.encodeBoolean("IsForward", value.getIsForward());

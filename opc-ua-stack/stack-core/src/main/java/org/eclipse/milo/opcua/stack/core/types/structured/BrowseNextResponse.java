@@ -116,8 +116,7 @@ public class BrowseNextResponse extends Structure implements UaResponseMessageTy
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               BrowseNextResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, BrowseNextResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Results", value.getResults(), BrowseResult.TYPE_ID);
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

@@ -96,8 +96,7 @@ public class CloseSessionResponse extends Structure implements UaResponseMessage
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               CloseSessionResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CloseSessionResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }

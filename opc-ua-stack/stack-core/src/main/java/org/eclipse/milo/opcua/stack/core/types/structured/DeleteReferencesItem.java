@@ -133,8 +133,7 @@ public class DeleteReferencesItem extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DeleteReferencesItem value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DeleteReferencesItem value) {
             encoder.encodeNodeId("SourceNodeId", value.getSourceNodeId());
             encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.encodeBoolean("IsForward", value.getIsForward());

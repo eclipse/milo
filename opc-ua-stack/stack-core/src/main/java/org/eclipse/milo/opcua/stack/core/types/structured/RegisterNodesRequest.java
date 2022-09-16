@@ -105,8 +105,7 @@ public class RegisterNodesRequest extends Structure implements UaRequestMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               RegisterNodesRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RegisterNodesRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeNodeIdArray("NodesToRegister", value.getNodesToRegister());
         }

@@ -100,8 +100,7 @@ public class HistoryModifiedData extends HistoryData implements UaStructuredType
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryModifiedData value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryModifiedData value) {
             encoder.encodeDataValueArray("DataValues", value.getDataValues());
             encoder.encodeStructArray("ModificationInfos", value.getModificationInfos(), ModificationInfo.TYPE_ID);
         }

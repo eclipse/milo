@@ -117,8 +117,7 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               EventFilterResult value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, EventFilterResult value) {
             encoder.encodeStatusCodeArray("SelectClauseResults", value.getSelectClauseResults());
             encoder.encodeDiagnosticInfoArray("SelectClauseDiagnosticInfos", value.getSelectClauseDiagnosticInfos());
             encoder.encodeStruct("WhereClauseResult", value.getWhereClauseResult(), ContentFilterResult.TYPE_ID);

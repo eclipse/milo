@@ -109,8 +109,7 @@ public class ObjectAttributes extends NodeAttributes implements UaStructuredType
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ObjectAttributes value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ObjectAttributes value) {
             encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
             encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
             encoder.encodeLocalizedText("Description", value.getDescription());

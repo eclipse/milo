@@ -108,8 +108,7 @@ public class ModifyMonitoredItemsResponse extends Structure implements UaRespons
         }
 
         @Override
-        public ModifyMonitoredItemsResponse decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public ModifyMonitoredItemsResponse decodeType(EncodingContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             MonitoredItemModifyResult[] results = (MonitoredItemModifyResult[]) decoder.decodeStructArray("Results", MonitoredItemModifyResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");

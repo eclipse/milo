@@ -117,8 +117,7 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryUpdateResult value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryUpdateResult value) {
             encoder.encodeStatusCode("StatusCode", value.getStatusCode());
             encoder.encodeStatusCodeArray("OperationResults", value.getOperationResults());
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

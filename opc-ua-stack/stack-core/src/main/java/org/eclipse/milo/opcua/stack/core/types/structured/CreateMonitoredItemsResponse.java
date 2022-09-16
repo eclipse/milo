@@ -108,8 +108,7 @@ public class CreateMonitoredItemsResponse extends Structure implements UaRespons
         }
 
         @Override
-        public CreateMonitoredItemsResponse decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public CreateMonitoredItemsResponse decodeType(EncodingContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             MonitoredItemCreateResult[] results = (MonitoredItemCreateResult[]) decoder.decodeStructArray("Results", MonitoredItemCreateResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");

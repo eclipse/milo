@@ -124,8 +124,7 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               StructureDefinition value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, StructureDefinition value) {
             encoder.encodeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
             encoder.encodeNodeId("BaseDataType", value.getBaseDataType());
             encoder.encodeEnum("StructureType", value.getStructureType());

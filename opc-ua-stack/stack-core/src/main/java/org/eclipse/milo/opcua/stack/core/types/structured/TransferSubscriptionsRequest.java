@@ -107,8 +107,7 @@ public class TransferSubscriptionsRequest extends Structure implements UaRequest
         }
 
         @Override
-        public TransferSubscriptionsRequest decodeType(EncodingContext context,
-                                                       UaDecoder decoder) {
+        public TransferSubscriptionsRequest decodeType(EncodingContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger[] subscriptionIds = decoder.decodeUInt32Array("SubscriptionIds");
             Boolean sendInitialValues = decoder.decodeBoolean("SendInitialValues");

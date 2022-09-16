@@ -125,8 +125,7 @@ public class RelativePathElement extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               RelativePathElement value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RelativePathElement value) {
             encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.encodeBoolean("IsInverse", value.getIsInverse());
             encoder.encodeBoolean("IncludeSubtypes", value.getIncludeSubtypes());

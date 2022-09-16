@@ -105,8 +105,7 @@ public class CloseSessionRequest extends Structure implements UaRequestMessageTy
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               CloseSessionRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CloseSessionRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeBoolean("DeleteSubscriptions", value.getDeleteSubscriptions());
         }

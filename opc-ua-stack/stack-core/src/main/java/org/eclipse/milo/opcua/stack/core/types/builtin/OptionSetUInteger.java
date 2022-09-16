@@ -20,7 +20,7 @@ public abstract class OptionSetUInteger<F extends Enum<F> & OptionSetUInteger.Bi
 
     protected final UNumber value;
 
-    public OptionSetUInteger(UNumber value) {
+    OptionSetUInteger(UNumber value) {
         this.value = value;
     }
 

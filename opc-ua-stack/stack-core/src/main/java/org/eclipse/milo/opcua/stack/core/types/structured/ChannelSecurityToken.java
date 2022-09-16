@@ -125,8 +125,7 @@ public class ChannelSecurityToken extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ChannelSecurityToken value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ChannelSecurityToken value) {
             encoder.encodeUInt32("ChannelId", value.getChannelId());
             encoder.encodeUInt32("TokenId", value.getTokenId());
             encoder.encodeDateTime("CreatedAt", value.getCreatedAt());

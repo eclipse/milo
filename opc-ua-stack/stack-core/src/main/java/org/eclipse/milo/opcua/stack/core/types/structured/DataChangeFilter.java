@@ -115,8 +115,7 @@ public class DataChangeFilter extends MonitoringFilter implements UaStructuredTy
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               DataChangeFilter value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, DataChangeFilter value) {
             encoder.encodeEnum("Trigger", value.getTrigger());
             encoder.encodeUInt32("DeadbandType", value.getDeadbandType());
             encoder.encodeDouble("DeadbandValue", value.getDeadbandValue());

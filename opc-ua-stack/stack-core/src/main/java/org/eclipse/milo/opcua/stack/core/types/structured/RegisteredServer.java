@@ -162,8 +162,7 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               RegisteredServer value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RegisteredServer value) {
             encoder.encodeString("ServerUri", value.getServerUri());
             encoder.encodeString("ProductUri", value.getProductUri());
             encoder.encodeLocalizedTextArray("ServerNames", value.getServerNames());

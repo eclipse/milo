@@ -107,8 +107,7 @@ public class ContentFilterResult extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               ContentFilterResult value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ContentFilterResult value) {
             encoder.encodeStructArray("ElementResults", value.getElementResults(), ContentFilterElementResult.TYPE_ID);
             encoder.encodeDiagnosticInfoArray("ElementDiagnosticInfos", value.getElementDiagnosticInfos());
         }

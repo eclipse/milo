@@ -100,8 +100,7 @@ public class X509IdentityToken extends UserIdentityToken implements UaStructured
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               X509IdentityToken value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, X509IdentityToken value) {
             encoder.encodeString("PolicyId", value.getPolicyId());
             encoder.encodeByteString("CertificateData", value.getCertificateData());
         }

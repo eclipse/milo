@@ -90,8 +90,7 @@ public class JsonWriterGroupMessageDataType extends WriterGroupMessageDataType i
         }
 
         @Override
-        public JsonWriterGroupMessageDataType decodeType(EncodingContext context,
-                                                         UaDecoder decoder) {
+        public JsonWriterGroupMessageDataType decodeType(EncodingContext context, UaDecoder decoder) {
             JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));
             return new JsonWriterGroupMessageDataType(networkMessageContentMask);
         }

@@ -45,14 +45,14 @@ public class Matrix {
     private final int[] dimensions;
     private final BuiltinDataType builtinDataType;
 
-    public Matrix(@Nullable Object array) {
-        if (array == null) {
+    public Matrix(@Nullable Object nestedArray) {
+        if (nestedArray == null) {
             this.flatArray = null;
             this.dimensions = new int[0];
             this.builtinDataType = null;
         } else {
-            this.flatArray = ArrayUtil.flatten(array);
-            this.dimensions = ArrayUtil.getDimensions(array);
+            this.flatArray = ArrayUtil.flatten(nestedArray);
+            this.dimensions = ArrayUtil.getDimensions(nestedArray);
             this.builtinDataType = deriveBuiltinType(flatArray);
         }
 
@@ -77,12 +77,23 @@ public class Matrix {
 
     private static BuiltinDataType deriveBuiltinType(Object flatArray) {
         Class<?> type = ArrayUtil.getType(flatArray);
+
         if (UaEnumeratedType.class.isAssignableFrom(type)) {
             return BuiltinDataType.Int32;
         } else if (UaStructuredType.class.isAssignableFrom(type)) {
             return BuiltinDataType.ExtensionObject;
         } else if (OptionSetUInteger.class.isAssignableFrom(type)) {
-            return BuiltinDataType.UInt32; // TODO subclasses
+            if (OptionSetUI8.class.isAssignableFrom(type)) {
+                return BuiltinDataType.Byte;
+            } else if (OptionSetUI16.class.isAssignableFrom(type)) {
+                return BuiltinDataType.UInt16;
+            } else if (OptionSetUI32.class.isAssignableFrom(type)) {
+                return BuiltinDataType.UInt32;
+            } else if (OptionSetUI64.class.isAssignableFrom(type)) {
+                return BuiltinDataType.UInt64;
+            } else {
+                throw new RuntimeException("unknown OptionSetUInteger subclass: " + type);
+            }
         } else {
             return BuiltinDataType.fromBackingClass(type);
         }
@@ -172,11 +183,11 @@ public class Matrix {
     }
 
     /**
-     * Get an unflattened (nested multidimensional) copy of the contained value.
+     * Get a copy of nested (un-flattened) multidimensional array value contained by this Matrix.
      *
-     * @return an unflattened (nested multidimensional) copy of the contained value.
+     * @return a copy of nested (un-flattened) multidimensional array value contained by this Matrix.
      */
-    public Object unflatten() {
+    public Object nestedArrayValue() {
         return ArrayUtil.unflatten(flatArray, dimensions);
     }
 
@@ -878,6 +889,66 @@ public class Matrix {
      * @return a new Matrix containing {@code value}.
      */
     public static Matrix ofDiagnosticInfo(DiagnosticInfo[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UaEnumeratedType value.
+     *
+     * @param value the multidimensional UaEnumeratedType value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofEnum(UaEnumeratedType[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UaEnumeratedType value.
+     *
+     * @param value the multidimensional UaEnumeratedType value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofEnum(UaEnumeratedType[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UaStructuredType value.
+     *
+     * @param value the multidimensional UaStructuredType value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofStruct(UaStructuredType[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional UaStructuredType value.
+     *
+     * @param value the multidimensional UaStructuredType value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofStruct(UaStructuredType[][][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional OptionSetUInteger value.
+     *
+     * @param value the multidimensional OptionSetUInteger value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofOptionSetUI(OptionSetUInteger<?>[][] value) {
+        return new Matrix(value);
+    }
+
+    /**
+     * Create a Matrix containing a multidimensional OptionSetUInteger value.
+     *
+     * @param value the multidimensional OptionSetUInteger value.
+     * @return a new Matrix containing {@code value}.
+     */
+    public static Matrix ofOptionSetUI(OptionSetUInteger<?>[][][] value) {
         return new Matrix(value);
     }
 

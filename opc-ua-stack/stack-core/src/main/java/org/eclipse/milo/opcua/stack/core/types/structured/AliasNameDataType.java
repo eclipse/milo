@@ -106,8 +106,7 @@ public class AliasNameDataType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               AliasNameDataType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AliasNameDataType value) {
             encoder.encodeQualifiedName("AliasName", value.getAliasName());
             encoder.encodeExpandedNodeIdArray("ReferencedNodes", value.getReferencedNodes());
         }

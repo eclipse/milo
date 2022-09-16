@@ -105,8 +105,7 @@ public class GetEndpointsResponse extends Structure implements UaResponseMessage
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               GetEndpointsResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, GetEndpointsResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Endpoints", value.getEndpoints(), EndpointDescription.TYPE_ID);
         }

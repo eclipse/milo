@@ -116,8 +116,7 @@ public class QueryNextResponse extends Structure implements UaResponseMessageTyp
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               QueryNextResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, QueryNextResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
             encoder.encodeByteString("RevisedContinuationPoint", value.getRevisedContinuationPoint());

@@ -124,8 +124,7 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               GetEndpointsRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, GetEndpointsRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeString("EndpointUrl", value.getEndpointUrl());
             encoder.encodeStringArray("LocaleIds", value.getLocaleIds());

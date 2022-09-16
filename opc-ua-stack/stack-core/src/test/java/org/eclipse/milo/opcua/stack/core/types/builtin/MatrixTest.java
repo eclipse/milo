@@ -25,7 +25,7 @@ class MatrixTest {
     private final Matrix boxedMatrix2d = new Matrix(boxedInt2d);
 
     @Test
-    void matrixTransform() {
+    void transform() {
         Matrix m = Matrix.ofInt32(new int[][]{
             {0, 1},
             {2, 3}
@@ -42,7 +42,7 @@ class MatrixTest {
     }
 
     @Test
-    void matrixUnflatten() {
+    void nestedArrayValue() {
         String[][] value = {
             new String[]{"0", "1"},
             new String[]{"2", "3"}
@@ -51,7 +51,13 @@ class MatrixTest {
         Matrix m = Matrix.ofString(value);
 
         assertTrue(Arrays.deepEquals(new String[]{"0", "1", "2", "3"}, (Object[]) m.getElements()));
-        assertTrue(Arrays.deepEquals(value, (String[][]) m.unflatten()));
+        assertTrue(Arrays.deepEquals(value, (String[][]) m.nestedArrayValue()));
+    }
+
+    @Test
+    void matrixEquals() {
+        assertEquals(primitiveMatrix2d, new Matrix(primitiveInt2d));
+        assertEquals(boxedMatrix2d, new Matrix(boxedInt2d));
     }
 
     @Test
@@ -60,12 +66,6 @@ class MatrixTest {
             "Matrix{builtinDataType=Int32, dimensions=[2, 2], flatArray=[1, 2, 3, 4]}", primitiveMatrix2d.toString());
         assertEquals(
             "Matrix{builtinDataType=Int32, dimensions=[2, 2], flatArray=[1, 2, 3, 4]}", boxedMatrix2d.toString());
-    }
-
-    @Test
-    void matrixEquals() {
-        assertEquals(primitiveMatrix2d, new Matrix(primitiveInt2d));
-        assertEquals(boxedMatrix2d, new Matrix(boxedInt2d));
     }
 
 }

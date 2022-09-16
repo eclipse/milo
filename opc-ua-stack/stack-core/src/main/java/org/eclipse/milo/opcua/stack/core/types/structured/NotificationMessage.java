@@ -117,8 +117,7 @@ public class NotificationMessage extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               NotificationMessage value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, NotificationMessage value) {
             encoder.encodeUInt32("SequenceNumber", value.getSequenceNumber());
             encoder.encodeDateTime("PublishTime", value.getPublishTime());
             encoder.encodeExtensionObjectArray("NotificationData", value.getNotificationData());

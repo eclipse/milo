@@ -116,8 +116,7 @@ public class HistoryReadResponse extends Structure implements UaResponseMessageT
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder,
-                               HistoryReadResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryReadResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Results", value.getResults(), HistoryReadResult.TYPE_ID);
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
