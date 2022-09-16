@@ -171,6 +171,11 @@ public class Matrix {
         }
     }
 
+    /**
+     * Get an unflattened (nested multidimensional) copy of the contained value.
+     *
+     * @return an unflattened (nested multidimensional) copy of the contained value.
+     */
     public Object unflatten() {
         return ArrayUtil.unflatten(flatArray, dimensions);
     }
