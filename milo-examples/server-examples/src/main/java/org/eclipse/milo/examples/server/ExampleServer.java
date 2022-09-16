@@ -14,7 +14,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.LinkedHashSet;
@@ -44,8 +43,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
-import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
 import org.slf4j.LoggerFactory;
@@ -57,7 +54,6 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 public class ExampleServer {
 
     private static final int TCP_BIND_PORT = 12686;
-    private static final int HTTPS_BIND_PORT = 8443;
 
     static {
         // Required for SecurityPolicy.Aes256_Sha256_RsaPss
@@ -102,24 +98,15 @@ public class ExampleServer {
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
-        DefaultCertificateManager certificateManager = new DefaultCertificateManager(
+        var certificateManager = new DefaultCertificateManager(
             loader.getServerKeyPair(),
             loader.getServerCertificateChain()
         );
 
-        DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
+        var trustListManager = new DefaultTrustListManager(pkiDir);
+        var certificateValidator = new DefaultServerCertificateValidator(trustListManager);
 
-        DefaultServerCertificateValidator certificateValidator =
-            new DefaultServerCertificateValidator(trustListManager);
-
-        KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
-
-        SelfSignedHttpsCertificateBuilder httpsCertificateBuilder = new SelfSignedHttpsCertificateBuilder(httpsKeyPair);
-        httpsCertificateBuilder.setCommonName(HostnameUtil.getHostname());
-        HostnameUtil.getHostnames("0.0.0.0").forEach(httpsCertificateBuilder::addDnsName);
-        X509Certificate httpsCertificate = httpsCertificateBuilder.build();
-
-        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
+        var identityValidator = new UsernameIdentityValidator(
             true,
             authChallenge -> {
                 String username = authChallenge.getUsername();
@@ -132,20 +119,28 @@ public class ExampleServer {
             }
         );
 
-        X509IdentityValidator x509IdentityValidator = new X509IdentityValidator(c -> true);
+        var x509IdentityValidator = new X509IdentityValidator(c -> true);
 
         // If you need to use multiple certificates you'll have to be smarter than this.
         X509Certificate certificate = certificateManager.getCertificates()
             .stream()
             .findFirst()
-            .orElseThrow(() -> new UaRuntimeException(StatusCodes.Bad_ConfigurationError, "no certificate found"));
+            .orElseThrow(
+                () -> new UaRuntimeException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no certificate found"
+                )
+            );
 
         // The configured application URI must match the one in the certificate(s)
         String applicationUri = CertificateUtil
             .getSanUri(certificate)
-            .orElseThrow(() -> new UaRuntimeException(
-                StatusCodes.Bad_ConfigurationError,
-                "certificate is missing the application URI"));
+            .orElseThrow(
+                () -> new UaRuntimeException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "certificate is missing the application URI"
+                )
+            );
 
         Set<EndpointConfiguration> endpointConfigurations = createEndpointConfigurations(certificate);
 
@@ -163,8 +158,6 @@ public class ExampleServer {
             .setCertificateManager(certificateManager)
             .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
-            .setHttpsKeyPair(httpsKeyPair)
-            .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
             .build();
@@ -176,11 +169,11 @@ public class ExampleServer {
     }
 
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
-        Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
+        var endpointConfigurations = new LinkedHashSet<EndpointConfiguration>();
 
         List<String> bindAddresses = List.of("0.0.0.0");
 
-        Set<String> hostnames = new LinkedHashSet<>();
+        var hostnames = new LinkedHashSet<String>();
         hostnames.add(HostnameUtil.getHostname());
         hostnames.addAll(HostnameUtil.getHostnames("0.0.0.0"));
 
@@ -194,7 +187,8 @@ public class ExampleServer {
                     .addTokenPolicies(
                         USER_TOKEN_POLICY_ANONYMOUS,
                         USER_TOKEN_POLICY_USERNAME,
-                        USER_TOKEN_POLICY_X509);
+                        USER_TOKEN_POLICY_X509
+                    );
 
 
                 EndpointConfiguration.Builder noSecurityBuilder = builder.copy()
@@ -202,20 +196,12 @@ public class ExampleServer {
                     .setSecurityMode(MessageSecurityMode.None);
 
                 endpointConfigurations.add(buildTcpEndpoint(noSecurityBuilder));
-                endpointConfigurations.add(buildHttpsEndpoint(noSecurityBuilder));
 
                 // TCP Basic256Sha256 / SignAndEncrypt
                 endpointConfigurations.add(buildTcpEndpoint(
                     builder.copy()
                         .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
                         .setSecurityMode(MessageSecurityMode.SignAndEncrypt))
-                );
-
-                // HTTPS Basic256Sha256 / Sign (SignAndEncrypt not allowed for HTTPS)
-                endpointConfigurations.add(buildHttpsEndpoint(
-                    builder.copy()
-                        .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
-                        .setSecurityMode(MessageSecurityMode.Sign))
                 );
 
                 /*
@@ -235,7 +221,6 @@ public class ExampleServer {
                     .setSecurityMode(MessageSecurityMode.None);
 
                 endpointConfigurations.add(buildTcpEndpoint(discoveryBuilder));
-                endpointConfigurations.add(buildHttpsEndpoint(discoveryBuilder));
             }
         }
 
@@ -246,13 +231,6 @@ public class ExampleServer {
         return base.copy()
             .setTransportProfile(TransportProfile.TCP_UASC_UABINARY)
             .setBindPort(TCP_BIND_PORT)
-            .build();
-    }
-
-    private static EndpointConfiguration buildHttpsEndpoint(EndpointConfiguration.Builder base) {
-        return base.copy()
-            .setTransportProfile(TransportProfile.HTTPS_UABINARY)
-            .setBindPort(HTTPS_BIND_PORT)
             .build();
     }
 
