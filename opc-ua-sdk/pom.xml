@@ -22,13 +22,6 @@
     <artifactId>opc-ua-sdk</artifactId>
     <packaging>pom</packaging>
 
-    <properties>
-        <annotations.version>22.0.0</annotations.version>
-        <slf4j.version>1.7.32</slf4j.version>
-        <testng.version>6.11</testng.version>
-        <mockito.version>2.25.1</mockito.version>
-    </properties>
-
     <modules>
         <module>dtd-core</module>
         <module>dtd-manager</module>
@@ -91,6 +84,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.2</version>
                     <executions>
                         <execution>
                             <goals>
@@ -99,7 +93,7 @@
                             <configuration>
                                 <artifactSet>
                                     <includes>
-                                        <include>org.eclipse.milo:${artifactId}</include>
+                                        <include>org.eclipse.milo:${project.artifactId}</include>
                                     </includes>
                                     <excludes>
                                         <exclude>org.eclipse.milo:guava-dependencies</exclude>

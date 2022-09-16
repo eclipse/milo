@@ -9,7 +9,8 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -20,15 +21,6 @@
 
     <artifactId>opc-ua-stack</artifactId>
     <packaging>pom</packaging>
-
-    <properties>
-        <bouncycastle.version>1.69</bouncycastle.version>
-        <javassist.version>3.23.1-GA</javassist.version>
-        <annotations.version>22.0.0</annotations.version>
-        <netty.version>4.1.77.Final</netty.version>
-        <slf4j.version>1.7.32</slf4j.version>
-        <testng.version>6.9.10</testng.version>
-    </properties>
 
     <modules>
         <module>encoding-json</module>
@@ -111,6 +103,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.2</version>
                     <executions>
                         <execution>
                             <goals>
@@ -119,7 +112,7 @@
                             <configuration>
                                 <artifactSet>
                                     <includes>
-                                        <include>org.eclipse.milo:${artifactId}</include>
+                                        <include>org.eclipse.milo:${project.artifactId}</include>
                                     </includes>
                                     <excludes>
                                         <exclude>org.eclipse.milo:guava-dependencies</exclude>
