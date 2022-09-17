@@ -56,7 +56,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     private final DataType dataType;
     private final StructureDefinition structureDefinition;
 
-    public DynamicStructCodec(DataTypeTree dataTypeTree, DataType dataType) {
+    public DynamicStructCodec(DataType dataType, DataTypeTree dataTypeTree) {
         this.dataType = dataType;
         this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();
 

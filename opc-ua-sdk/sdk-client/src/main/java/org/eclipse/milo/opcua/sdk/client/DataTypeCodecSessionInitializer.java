@@ -18,6 +18,7 @@ import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicStructCodec;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
@@ -29,6 +30,25 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
 
     private static final Logger LOGGER =
         LoggerFactory.getLogger(DataTypeCodecSessionInitializer.class);
+
+    private final CodecFactory codecFactory;
+
+    /**
+     * Create a {@link DataTypeCodecSessionInitializer} that with the default {@link CodecFactory}
+     * that uses {@link DynamicStructCodec}.
+     */
+    public DataTypeCodecSessionInitializer() {
+        this(DynamicStructCodec::new);
+    }
+
+    /**
+     * Create a {@link DataTypeCodecSessionInitializer} with a custom {@link CodecFactory}.
+     *
+     * @param codecFactory the custom {@link CodecFactory} that will create {@link DataTypeCodec}s.
+     */
+    public DataTypeCodecSessionInitializer(CodecFactory codecFactory) {
+        this.codecFactory = codecFactory;
+    }
 
     @Override
     public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {
@@ -51,7 +71,7 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
         }
     }
 
-    private static void registerCodecs(UaStackClient stackClient, DataTypeTree dataTypeTree) {
+    private void registerCodecs(UaStackClient stackClient, DataTypeTree dataTypeTree) {
         Tree<DataType> structureNode = dataTypeTree.getTreeNode(NodeIds.Structure);
 
         if (structureNode != null) {
@@ -66,7 +86,7 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
 
                     stackClient.getDynamicDataTypeManager().registerType(
                         dataType.getNodeId(),
-                        new DynamicStructCodec(dataTypeTree, dataType),
+                        codecFactory.create(dataType, dataTypeTree),
                         dataType.getBinaryEncodingId(),
                         dataType.getXmlEncodingId(),
                         dataType.getJsonEncodingId()
@@ -77,6 +97,19 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
             LoggerFactory.getLogger(DataTypeTreeSessionInitializer.class)
                 .warn("Tree for NodeIds.Structure not found; is the server DataType hierarchy sane?");
         }
+    }
+
+    public interface CodecFactory {
+
+        /**
+         * Create a {@link DataTypeCodec} instance for {@code dataType}.
+         *
+         * @param dataType     the {@link DataType} to create the codec for.
+         * @param dataTypeTree the {@link DataTypeTree}.
+         * @return a {@link DataTypeCodec} for {@code dataType}.
+         */
+        DataTypeCodec create(DataType dataType, DataTypeTree dataTypeTree);
+
     }
 
 }
