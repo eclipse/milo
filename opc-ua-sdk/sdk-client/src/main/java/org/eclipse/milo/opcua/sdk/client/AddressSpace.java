@@ -35,7 +35,6 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -1793,10 +1792,6 @@ public class AddressSpace {
             public Builder setBrowseDirection(BrowseDirection browseDirection) {
                 this.browseDirection = browseDirection;
                 return this;
-            }
-
-            public Builder setReferenceType(BuiltinReferenceType referenceType) {
-                return setReferenceType(referenceType.getNodeId());
             }
 
             public Builder setReferenceType(NodeId referenceTypeId) {

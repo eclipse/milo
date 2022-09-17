@@ -19,8 +19,8 @@ import org.eclipse.milo.opcua.sdk.client.model.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
-import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.ReferenceTypes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -83,7 +83,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
             );
 
             List<? extends UaNode> nodes = addressSpace.browseNodes(objectsFolderNode, browseOptions);
-            
+
             assertEquals(9, nodes.size());
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.RootFolder)));
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server)));
@@ -99,7 +99,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
         BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
             b ->
-                b.setReferenceType(BuiltinReferenceType.HasProperty)
+                b.setReferenceType(ReferenceTypes.HasProperty)
         );
 
         List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);

@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.ReferenceTypes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -51,7 +52,7 @@ public class UaNodeTest extends AbstractClientServerTest {
         UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         BrowseOptions browseOptions = BrowseOptions.builder()
-            .setReferenceType(NodeIds.HasProperty)
+            .setReferenceType(ReferenceTypes.HasProperty)
             .build();
 
         List<ReferenceDescription> references = serverNode.browse(browseOptions);
@@ -72,7 +73,7 @@ public class UaNodeTest extends AbstractClientServerTest {
         UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         BrowseOptions browseOptions = BrowseOptions.builder()
-            .setReferenceType(NodeIds.HasProperty)
+            .setReferenceType(ReferenceTypes.HasProperty)
             .build();
 
         List<? extends UaNode> nodes = serverNode.browseNodes(browseOptions);
