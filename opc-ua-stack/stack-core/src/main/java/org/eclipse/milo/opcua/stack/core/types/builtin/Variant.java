@@ -792,6 +792,36 @@ public final class Variant {
         return new Variant(value);
     }
 
+    /**
+     * Create a Variant containing a UaEnumeratedType value.
+     *
+     * @param value the UaEnumeratedType value.
+     * @return a new Variant containing {@code value}.
+     */
+    public static Variant ofEnum(UaEnumeratedType value) {
+        return new Variant(value);
+    }
+
+    /**
+     * Create a Variant containing a UaStructuredType value.
+     *
+     * @param value the UaStructuredType value.
+     * @return a new Variant containing {@code value}.
+     */
+    public static Variant ofStruct(UaStructuredType value) {
+        return new Variant(value);
+    }
+
+    /**
+     * Create a Variant containing an OptionSetUInteger value.
+     *
+     * @param value the OptionSetUInteger value.
+     * @return a new Variant containing {@code value}.
+     */
+    public static Variant ofOptionSetUI(OptionSetUInteger<?> value) {
+        return new Variant(value);
+    }
+
     //endregion
 
 }
