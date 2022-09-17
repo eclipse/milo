@@ -82,7 +82,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
      *
      * @param writer the new {@link Writer} to write to.
      */
-    void reset(Writer writer) {
+    public void reset(Writer writer) {
         jsonWriter = new JsonWriter(writer);
         jsonWriter.setHtmlSafe(false);
     }
@@ -92,7 +92,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
      *
      * @param outputStream the new {@link OutputStream} to write to.
      */
-    void reset(OutputStream outputStream) {
+    public void reset(OutputStream outputStream) {
         jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream));
         jsonWriter.setHtmlSafe(false);
     }

@@ -79,7 +79,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
         reset(reader);
     }
 
-    void reset(Reader reader) {
+    public void reset(Reader reader) {
         jsonReader = new JsonReader(reader);
     }
 
@@ -1692,7 +1692,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             peekedNextName = null;
             return next;
         } else {
-            return jsonReader.nextName();
+            return jsonReader.peek() == JsonToken.NAME ? jsonReader.nextName() : null;
         }
     }
 
