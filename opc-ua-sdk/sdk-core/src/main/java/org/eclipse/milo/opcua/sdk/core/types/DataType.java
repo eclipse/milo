@@ -154,7 +154,7 @@ public class DataType {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", DataType.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", DataType.class.getSimpleName() + "{", "}")
             .add("browseName=" + browseName)
             .add("nodeId=" + nodeId)
             .add("binaryEncodingId=" + binaryEncodingId)
