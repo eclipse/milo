@@ -62,6 +62,16 @@ public class TypeTree<T extends TypeTree.Type> {
     }
 
     /**
+     * Return {@code true} if this TypeTree contains a type identified by {@code nodeId}.
+     *
+     * @param typeId the {@link NodeId} identifying the type.
+     * @return {@code true} if this TypeTree contains a type identified by {@code nodeId}.
+     */
+    public boolean containsType(NodeId typeId) {
+        return types.containsKey(typeId);
+    }
+
+    /**
      * Check if a type is a subtype of some other type.
      *
      * @param type      the type to check.
