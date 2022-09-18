@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.jetbrains.annotations.Nullable;
 
-public class TypeTree<T extends TypeTree.Type> {
+public abstract class TypeTree<T extends TypeTree.Type> {
 
     protected final Map<NodeId, Tree<T>> types = new HashMap<>();
     protected final Tree<T> tree;
