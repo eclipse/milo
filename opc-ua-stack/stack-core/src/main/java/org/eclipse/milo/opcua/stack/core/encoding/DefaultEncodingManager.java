@@ -66,10 +66,10 @@ public class DefaultEncodingManager implements EncodingManager {
 
             encodingManager.registerEncoding(encoding);
 
-            logger.info("Default XML encoding found");
+            logger.debug("Default XML encoding found");
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
                  InvocationTargetException e) {
-            logger.info("Default XML encoding not found");
+            logger.debug("Default XML encoding not found");
         }
 
         try {
@@ -81,10 +81,10 @@ public class DefaultEncodingManager implements EncodingManager {
 
             encodingManager.registerEncoding(encoding);
 
-            logger.info("Default JSON encoding found");
+            logger.debug("Default JSON encoding found");
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
                  InvocationTargetException e) {
-            logger.info("Default JSON encoding not found");
+            logger.debug("Default JSON encoding not found");
         }
 
         return encodingManager;
