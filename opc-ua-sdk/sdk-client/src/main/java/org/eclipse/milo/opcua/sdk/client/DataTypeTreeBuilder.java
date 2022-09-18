@@ -45,6 +45,8 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -53,6 +55,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
  * {@link NodeIds#BaseDataType}.
  */
 public final class DataTypeTreeBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataTypeTreeBuilder.class);
 
     private DataTypeTreeBuilder() {}
 
@@ -305,25 +309,31 @@ public final class DataTypeTreeBuilder {
             }
         );
 
-        return client.sendRequest(request).thenApply(ReadResponse.class::cast).thenApply(response -> {
-            DataValue value = response.getResults()[0];
+        return client.sendRequest(request)
+            .thenApply(ReadResponse.class::cast)
+            .thenApply(response -> {
+                DataValue value = response.getResults()[0];
 
-            if (value.getStatusCode() != null && value.getStatusCode().isGood()) {
-                Object o = value.getValue().getValue();
-                if (o instanceof ExtensionObject) {
-                    Object decoded = ((ExtensionObject) o).decode(
-                        client.getStaticEncodingContext()
-                    );
+                if (value.getStatusCode() != null && value.getStatusCode().isGood()) {
+                    Object o = value.getValue().getValue();
+                    if (o instanceof ExtensionObject) {
+                        Object decoded = ((ExtensionObject) o).decode(
+                            client.getStaticEncodingContext()
+                        );
 
-                    return (DataTypeDefinition) decoded;
+                        return (DataTypeDefinition) decoded;
+                    } else {
+                        return null;
+                    }
                 } else {
+                    // OPC UA 1.03 and prior servers will return Bad_AttributeIdInvalid
                     return null;
                 }
-            } else {
-                // OPC UA 1.03 and prior servers will return Bad_AttributeIdInvalid
+            })
+            .exceptionally(e -> {
+                LOGGER.warn("Error reading DataTypeDefinition for {}", dataTypeId, e);
                 return null;
-            }
-        });
+            });
     }
 
 }
