@@ -8,10 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.core.types;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+package org.eclipse.milo.opcua.sdk.core.typetree;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -35,19 +32,10 @@ import org.jetbrains.annotations.Nullable;
  *     <li>retrieving the DataTypeDefinition for structured and enumerated DataTypes</li>
  * </ul>
  */
-public class DataTypeTree {
-
-    private final Map<NodeId, Tree<DataType>> dataTypes = new ConcurrentHashMap<>();
-
-    private final Tree<DataType> tree;
+public class DataTypeTree extends TypeTree<DataType> {
 
     public DataTypeTree(Tree<DataType> tree) {
-        this.tree = tree;
-
-        tree.traverseNodes(
-            treeNode ->
-                dataTypes.put(treeNode.getValue().getNodeId(), treeNode)
-        );
+        super(tree);
     }
 
     /**
@@ -80,7 +68,7 @@ public class DataTypeTree {
             } else if (NodeIds.UInteger.equals(dataTypeId)) {
                 return UNumber.class;
             } else {
-                Tree<DataType> node = dataTypes.get(dataTypeId);
+                Tree<DataType> node = types.get(dataTypeId);
                 Tree<DataType> parent = node != null ? node.getParent() : null;
 
                 if (parent != null) {
@@ -103,7 +91,7 @@ public class DataTypeTree {
         if (BuiltinDataType.isBuiltin(dataTypeId)) {
             return BuiltinDataType.fromNodeId(dataTypeId);
         } else {
-            Tree<DataType> node = dataTypes.get(dataTypeId);
+            Tree<DataType> node = types.get(dataTypeId);
             Tree<DataType> parent = node != null ? node.getParent() : null;
 
             if (parent != null) {
@@ -121,9 +109,7 @@ public class DataTypeTree {
      * @return the {@link DataType} info for the DataType identified by {@code dataTypeId}, if it exists.
      */
     public @Nullable DataType getDataType(NodeId dataTypeId) {
-        Tree<DataType> node = dataTypes.get(dataTypeId);
-
-        return node != null ? node.getValue() : null;
+        return getType(dataTypeId);
     }
 
     /**
@@ -210,27 +196,6 @@ public class DataTypeTree {
         return isSubtypeOf(dataTypeId, NodeIds.Structure);
     }
 
-    public boolean isSubtypeOf(NodeId dataTypeId, NodeId superDataTypeId) {
-        Tree<DataType> tree = getTreeNode(dataTypeId);
-        if (tree == null) return false;
-
-        Tree<DataType> parentTree = tree.getParent();
-        if (parentTree == null) return false;
-
-        NodeId parentDataTypeId = parentTree.getValue().getNodeId();
-
-        return parentDataTypeId.equals(superDataTypeId) || isSubtypeOf(parentDataTypeId, superDataTypeId);
-    }
-
-    /**
-     * Get the underlying {@link Tree} structure.
-     *
-     * @return the underlying {@link Tree} structure.
-     */
-    public Tree<DataType> getTree() {
-        return tree;
-    }
-
     /**
      * Get the underlying {@link Tree} node for the DataType identified by {@code dataTypeId}.
      *
@@ -238,7 +203,7 @@ public class DataTypeTree {
      * @return the underlying {@link Tree} node for the DataType identified by {@code dataTypeId}.
      */
     public @Nullable Tree<DataType> getTreeNode(NodeId dataTypeId) {
-        return dataTypes.get(dataTypeId);
+        return types.get(dataTypeId);
     }
 
 }

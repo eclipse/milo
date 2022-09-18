@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Objects;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
-import org.eclipse.milo.opcua.sdk.core.types.DataType;
-import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -49,7 +49,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
     @Test
     public void testGetTree() {
-        dataTypeTree.getTree().traverseWithDepth((dataType, depth) -> {
+        dataTypeTree.getRoot().traverseWithDepth((dataType, depth) -> {
             for (int i = 0; i < depth; i++) {
                 System.out.print("\t");
             }
@@ -169,7 +169,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
         treeNode.traverse(dataType -> {
             String name = dataType.getBrowseName().getName();
-            
+
             if (!Objects.equals(name, "Structure") && !Objects.equals(name, "MatrixTestType")) {
                 assertNotNull(dataType.getBinaryEncodingId());
                 assertNotNull(dataType.getXmlEncodingId());

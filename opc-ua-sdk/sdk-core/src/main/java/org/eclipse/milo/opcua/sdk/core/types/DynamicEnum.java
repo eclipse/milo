@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.function.Function;
 
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;

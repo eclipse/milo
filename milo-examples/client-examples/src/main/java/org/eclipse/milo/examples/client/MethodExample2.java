@@ -13,12 +13,12 @@ package org.eclipse.milo.examples.client;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.core.types.DataType;
-import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;

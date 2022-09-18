@@ -8,16 +8,15 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.core.types;
+package org.eclipse.milo.opcua.sdk.client.typetree;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
-import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
-import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  *     <li>{@link DataTypeDefinition} attribute value</li>>
  * </ul>
  */
-public class DataType {
+class ClientDataType implements DataType {
 
     private final QualifiedName browseName;
     private final NodeId nodeId;
@@ -40,7 +39,7 @@ public class DataType {
     private final NodeId jsonEncodingId;
     private final DataTypeDefinition dataTypeDefinition;
 
-    public DataType(
+    public ClientDataType(
         QualifiedName browseName,
         NodeId nodeId,
         NodeId binaryEncodingId,
@@ -57,81 +56,41 @@ public class DataType {
         this.dataTypeDefinition = dataTypeDefinition;
     }
 
-    /**
-     * Get the Browse Name of this DataType.
-     *
-     * @return the Browse Name of this DataType.
-     */
+    @Override
     public QualifiedName getBrowseName() {
         return browseName;
     }
 
-    /**
-     * Get the {@link NodeId} of this DataType.
-     *
-     * @return the {@link NodeId} of this DataType.
-     */
+    @Override
     public NodeId getNodeId() {
         return nodeId;
     }
 
-    /**
-     * Get the {@link NodeId} of the Binary Encoding Node for this DataType, if it exists.
-     * <p>
-     * Only Structured DataTypes have encoding ids.
-     *
-     * @return the NodeId of the Binary Encoding Node for this DataType, if it exists.
-     */
+    @Override
     public @Nullable NodeId getBinaryEncodingId() {
         return binaryEncodingId;
     }
 
-    /**
-     * Get the {@link NodeId} of the XML Encoding Node for this DataType, if it exists.
-     * <p>
-     * Only Structured DataTypes have encoding ids.
-     *
-     * @return the NodeId of the XML Encoding Node for this DataType, if it exists.
-     */
+    @Override
     public @Nullable NodeId getXmlEncodingId() {
         return xmlEncodingId;
     }
 
-    /**
-     * Get the {@link NodeId} of the JSON Encoding Node for this DataType, if it exists.
-     * <p>
-     * Only Structured DataTypes have encoding ids.
-     *
-     * @return the {@link NodeId} of the JSON Encoding Node for this DataType, if it exists.
-     */
+    @Override
     public @Nullable NodeId getJsonEncodingId() {
         return jsonEncodingId;
     }
 
-    /**
-     * Get the {@link DataTypeDefinition} of this DataType.
-     * <p>
-     * Only Structured and Enumerated DataTypes have a {@link DataTypeDefinition}.
-     *
-     * @return the {@link DataTypeDefinition} of this DataType.
-     */
+    @Override
     public @Nullable DataTypeDefinition getDataTypeDefinition() {
         return dataTypeDefinition;
-    }
-
-    public boolean isEnum() {
-        return dataTypeDefinition instanceof EnumDefinition;
-    }
-
-    public boolean isStruct() {
-        return dataTypeDefinition instanceof StructureDefinition;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DataType dataType = (DataType) o;
+        ClientDataType dataType = (ClientDataType) o;
         return browseName.equals(dataType.browseName) &&
             nodeId.equals(dataType.nodeId) &&
             Objects.equals(binaryEncodingId, dataType.binaryEncodingId) &&
@@ -154,7 +113,7 @@ public class DataType {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", DataType.class.getSimpleName() + "{", "}")
+        return new StringJoiner(", ", ClientDataType.class.getSimpleName() + "{", "}")
             .add("browseName=" + browseName)
             .add("nodeId=" + nodeId)
             .add("binaryEncodingId=" + binaryEncodingId)
@@ -163,4 +122,5 @@ public class DataType {
             .add("dataTypeDefinition=" + dataTypeDefinition)
             .toString();
     }
+
 }

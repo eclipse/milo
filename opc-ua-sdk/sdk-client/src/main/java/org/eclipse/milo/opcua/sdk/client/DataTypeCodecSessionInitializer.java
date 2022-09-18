@@ -13,9 +13,10 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
-import org.eclipse.milo.opcua.sdk.core.types.DataType;
-import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicCodecFactory;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
