@@ -12,6 +12,9 @@ package org.eclipse.milo.opcua.sdk.core.typetree;
 
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 
+/**
+ * A tree-based representation of a ReferenceType hierarchy.
+ */
 public class ReferenceTypeTree extends TypeTree<ReferenceType> {
 
     public ReferenceTypeTree(Tree<ReferenceType> tree) {
