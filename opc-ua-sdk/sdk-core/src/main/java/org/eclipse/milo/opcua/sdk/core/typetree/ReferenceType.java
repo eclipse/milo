@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.core.types;
+package org.eclipse.milo.opcua.sdk.core.typetree;
 
 import java.util.Optional;
 

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.sdk.client.typetree;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +16,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-import org.eclipse.milo.opcua.sdk.core.types.DataType;
-import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.client.BrowseHelper;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -124,7 +127,7 @@ public final class DataTypeTreeBuilder {
     public static CompletableFuture<DataTypeTree> buildAsync(UaStackClient client, OpcUaSession session) {
         Tree<DataType> root = new Tree<>(
             null,
-            new DataType(
+            new ClientDataType(
                 QualifiedName.parse("0:BaseDataType"),
                 NodeIds.BaseDataType,
                 null,
@@ -232,7 +235,7 @@ public final class DataTypeTreeBuilder {
                                 }
                             }
 
-                            return new DataType(
+                            return new ClientDataType(
                                 dataTypeReference.getBrowseName(),
                                 dataTypeId,
                                 binaryEncodingId,

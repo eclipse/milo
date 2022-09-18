@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 

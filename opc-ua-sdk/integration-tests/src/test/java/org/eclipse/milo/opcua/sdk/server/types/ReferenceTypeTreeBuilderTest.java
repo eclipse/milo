@@ -10,7 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.types;
 
-import org.eclipse.milo.opcua.sdk.core.types.ReferenceTypeTree;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
+import org.eclipse.milo.opcua.sdk.server.typetree.ReferenceTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.test.TestServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

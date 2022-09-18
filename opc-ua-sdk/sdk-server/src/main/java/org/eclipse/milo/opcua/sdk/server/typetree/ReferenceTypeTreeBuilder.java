@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.types;
+package org.eclipse.milo.opcua.sdk.server.typetree;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.ReferenceTypeNode;
-import org.eclipse.milo.opcua.sdk.core.types.ReferenceType;
-import org.eclipse.milo.opcua.sdk.core.types.ReferenceTypeTree;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceType;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaReferenceTypeNode;
