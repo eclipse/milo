@@ -1114,7 +1114,11 @@ public class SessionFsmFactory {
             SessionFsm.SessionInitializer initializer = initializers.removeFirst();
 
             return initializer.initialize(client, session)
-                .exceptionally(ex -> Unit.VALUE)
+                .exceptionally(ex -> {
+                    LOGGER.error("Uncaught initialization error: " +
+                        initializer.getClass().getSimpleName(), ex);
+                    return Unit.VALUE;
+                })
                 .thenCompose(u -> runSequentially(client, session, initializers));
         }
     }

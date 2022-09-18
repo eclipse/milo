@@ -30,10 +30,10 @@ public class DynamicEnum implements UaEnumeratedType {
     public DynamicEnum(DataType dataType, int value) {
         this.dataType = dataType;
 
-        EnumDefinition enumDefinition = (EnumDefinition) dataType.getDataTypeDefinition();
-        assert enumDefinition != null;
+        EnumDefinition definition = (EnumDefinition) dataType.getDataTypeDefinition();
+        assert definition != null;
 
-        for (EnumField field : enumDefinition.getFields()) {
+        for (EnumField field : definition.getFields()) {
             if (field.getValue() == value) {
                 this.name = field.getName();
                 this.value = field.getValue().intValue();

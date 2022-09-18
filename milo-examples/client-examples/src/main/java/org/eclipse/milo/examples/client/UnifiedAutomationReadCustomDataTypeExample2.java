@@ -18,8 +18,10 @@ import org.eclipse.milo.opcua.sdk.client.DataTypeCodecSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicEnum;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicOptionSet;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicStruct;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -56,6 +58,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
 
         readWriteReadPerson(client);
         readWriteReadWorkOrder(client);
+        readWriteCarExtras(client);
 
         future.complete(client);
     }
@@ -91,6 +94,22 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
 
         value = readValue(client, nodeId);
         logger.info("WorkOrder': {}", value);
+    }
+
+    private void readWriteCarExtras(OpcUaClient client) throws Exception {
+        NodeId nodeId = NodeId.parse("ns=2;s=Demo.Static.Scalar.CarExtras");
+
+        DynamicOptionSet value = (DynamicOptionSet) readValue(client, nodeId);
+        logger.info("CarExtras: {}", value);
+
+        byte b = value.getValue().bytes()[0];
+        value.setValue(ByteString.of(new byte[]{(byte) ~b}));
+
+        StatusCode status = writeValue(client, nodeId, value);
+        System.out.println("write status: " + status);
+
+        value = (DynamicOptionSet) readValue(client, nodeId);
+        logger.info("CarExtras': {}", value);
     }
 
     private static DynamicStruct readValue(OpcUaClient client, NodeId nodeId) throws Exception {

@@ -54,15 +54,15 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     private final Map<NodeId, Function<Integer, DynamicEnum>> enumFactories = new ConcurrentHashMap<>();
 
     private final DataType dataType;
-    private final StructureDefinition structureDefinition;
+    private final StructureDefinition definition;
 
     public DynamicStructCodec(DataType dataType, DataTypeTree dataTypeTree) {
         this.dataType = dataType;
-        this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();
+        this.definition = (StructureDefinition) dataType.getDataTypeDefinition();
 
-        assert structureDefinition != null;
+        assert definition != null;
 
-        for (StructureField field : structureDefinition.getFields()) {
+        for (StructureField field : definition.getFields()) {
             NodeId dataTypeId = field.getDataType();
 
             Object hint;
@@ -89,7 +89,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
     @Override
     public DynamicStruct decodeType(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
-        switch (structureDefinition.getStructureType()) {
+        switch (definition.getStructureType()) {
             case Structure:
             case StructureWithOptionalFields:
             case StructureWithSubtypedValues:
@@ -99,7 +99,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 return decodeUnion(decoder);
             default:
                 throw new IllegalArgumentException(
-                    "unhandled StructureType: " + structureDefinition.getStructureType());
+                    "unhandled StructureType: " + definition.getStructureType());
         }
     }
 
@@ -111,7 +111,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         DynamicStruct value
     ) throws UaSerializationException {
 
-        switch (structureDefinition.getStructureType()) {
+        switch (definition.getStructureType()) {
             case Structure:
             case StructureWithOptionalFields:
             case StructureWithSubtypedValues:
@@ -123,17 +123,17 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 break;
             default:
                 throw new IllegalArgumentException(
-                    "unhandled StructureType: " + structureDefinition.getStructureType());
+                    "unhandled StructureType: " + definition.getStructureType());
         }
     }
 
     private @NotNull DynamicStruct decodeStruct(UaDecoder decoder) {
-        StructureField[] fields = structureDefinition.getFields();
+        StructureField[] fields = definition.getFields();
 
         LinkedHashMap<String, Object> members = new LinkedHashMap<>();
 
         long switchField = 0xFFFFFFFFL;
-        if (structureDefinition.getStructureType() == StructureType.StructureWithOptionalFields) {
+        if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
             switchField = decoder.decodeUInt32("SwitchField").longValue();
         }
 
@@ -153,7 +153,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     private @NotNull DynamicUnion decodeUnion(UaDecoder decoder) {
         int switchField = decoder.decodeUInt32("SwitchField").intValue();
 
-        StructureField[] fields = structureDefinition.getFields();
+        StructureField[] fields = definition.getFields();
 
         if (switchField == 0) {
             return DynamicUnion.ofNull(dataType);
@@ -171,10 +171,10 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     private void encodeStruct(UaEncoder encoder, DynamicStruct struct) {
-        StructureField[] fields = structureDefinition.getFields();
+        StructureField[] fields = definition.getFields();
 
         long switchField = 0xFFFFFFFFL;
-        if (structureDefinition.getStructureType() == StructureType.StructureWithOptionalFields) {
+        if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
             switchField = 0L;
             for (int i = 0; i < fields.length; i++) {
                 StructureField field = fields[i];
@@ -199,7 +199,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     private void encodeUnion(UaEncoder encoder, DynamicStruct struct) {
-        StructureField[] fields = structureDefinition.getFields();
+        StructureField[] fields = definition.getFields();
 
         if (struct.getMembers().isEmpty()) {
             encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));

@@ -15,12 +15,10 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.types.DataType;
 import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
-import org.eclipse.milo.opcua.sdk.core.types.DynamicStructCodec;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicCodecFactory;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
-import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
@@ -34,11 +32,11 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
     private final CodecFactory codecFactory;
 
     /**
-     * Create a {@link DataTypeCodecSessionInitializer} that with the default {@link CodecFactory}
-     * that uses {@link DynamicStructCodec}.
+     * Create a {@link DataTypeCodecSessionInitializer} that the default {@link CodecFactory} that
+     * uses {@link DynamicCodecFactory}.
      */
     public DataTypeCodecSessionInitializer() {
-        this(DynamicStructCodec::new);
+        this(DynamicCodecFactory::create);
     }
 
     /**
@@ -76,9 +74,7 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
 
         if (structureNode != null) {
             structureNode.traverse(dataType -> {
-                DataTypeDefinition definition = dataType.getDataTypeDefinition();
-
-                if (definition instanceof StructureDefinition) {
+                if (dataType.getDataTypeDefinition() != null) {
                     LOGGER.debug(
                         "Registering type: name={}, dataTypeId={}",
                         dataType.getBrowseName(), dataType.getNodeId()
