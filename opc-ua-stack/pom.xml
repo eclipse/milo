@@ -30,6 +30,7 @@
         <module>stack-core</module>
         <module>stack-server</module>
         <module>stack-tests</module>
+        <module>transport</module>
     </modules>
 
     <build>
