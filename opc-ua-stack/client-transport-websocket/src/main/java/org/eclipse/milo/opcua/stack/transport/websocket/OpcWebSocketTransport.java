@@ -8,9 +8,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport.tcp;
+package org.eclipse.milo.opcua.stack.transport.websocket;
 
 import java.net.ConnectException;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -34,35 +35,45 @@ import io.netty.channel.ConnectTimeoutException;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
+import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
+import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.transport.OpcTransportConfig;
-import org.eclipse.milo.opcua.stack.transport.uasc.UascClientAcknowledgeHandler;
-import org.eclipse.milo.opcua.stack.transport.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcTcpTransport extends AbstractUascTransport {
+public class OpcWebSocketTransport extends AbstractTransport {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
-
     private final ChannelFsm channelFsm;
 
-    public OpcTcpTransport(OpcTransportConfig config) {
+    public OpcWebSocketTransport(OpcTransportConfig config) {
         super(config);
 
         // TODO use configurable executors
@@ -101,9 +112,9 @@ public class OpcTcpTransport extends AbstractUascTransport {
 
         private final Logger logger = LoggerFactory.getLogger(CHANNEL_FSM_LOGGER_NAME);
 
-        private final UascClientConfig config;
+        private final OpcTransportConfig config;
 
-        private ClientChannelActions(UascClientConfig config) {
+        private ClientChannelActions(OpcTransportConfig config) {
             this.config = config;
         }
 
@@ -120,15 +131,58 @@ public class OpcTcpTransport extends AbstractUascTransport {
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel ch) {
-                        var acknowledgeHandler = new UascClientAcknowledgeHandler(
-                            config,
-                            requestId::getAndIncrement,
-                            handshakeFuture
+                    protected void initChannel(SocketChannel channel) throws Exception {
+                        String endpointUrl = config.getEndpoint().getEndpointUrl();
+                        String scheme = EndpointUtil.getScheme(endpointUrl);
+
+                        TransportProfile transportProfile = TransportProfile
+                            .fromUri(config.getEndpoint().getTransportProfileUri());
+
+                        String subprotocol;
+                        if (transportProfile == TransportProfile.WSS_UASC_UABINARY) {
+                            subprotocol = "opcua+cp";
+                        } else if (transportProfile == TransportProfile.WSS_UAJSON) {
+                            subprotocol = "opcua+uajson";
+                        } else {
+                            throw new UaException(
+                                StatusCodes.Bad_InternalError,
+                                "unexpected TransportProfile: " + transportProfile
+                            );
+                        }
+
+                        if ("opc.wss".equalsIgnoreCase(scheme)) {
+                            SslContext sslContext = SslContextBuilder.forClient()
+                                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                                .build();
+
+                            channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
+                        }
+
+                        int maxMessageSize = config.getEncodingLimits().getMaxMessageSize();
+
+                        channel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
+                        channel.pipeline().addLast(new HttpClientCodec());
+                        channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
+
+                        channel.pipeline().addLast(
+                            new WebSocketClientProtocolHandler(
+                                WebSocketClientHandshakerFactory.newHandshaker(
+                                    new URI(endpointUrl),
+                                    WebSocketVersion.V13,
+                                    subprotocol,
+                                    true,
+                                    new DefaultHttpHeaders(),
+                                    config.getEncodingLimits().getMaxChunkSize()
+                                )
+                            )
                         );
 
-                        ch.pipeline().addLast(new UascClientResponseHandlerImpl());
-                        ch.pipeline().addLast(acknowledgeHandler);
+                        channel.pipeline().addLast(
+                            new WebSocketFrameAggregator(config.getEncodingLimits().getMaxMessageSize())
+                        );
+
+                        // OpcClientWebSocketFrameCodec adds UascClientAcknowledgeHandler when the WS upgrade is done.
+                        channel.pipeline().addLast(new OpcClientWebSocketBinaryFrameCodec(config, requestId::getAndIncrement, handshakeFuture));
                     }
                 });
 
