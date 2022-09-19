@@ -13,16 +13,19 @@ package org.eclipse.milo.opcua.stack.transport;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 
-public class ClientFactory {
-
+public abstract class AbstractClient {
 
     public static AbstractClient create(OpcTransportConfig config) {
         return null;
@@ -69,10 +72,46 @@ public class ClientFactory {
         var configBuilder = new ClientConfigBuilder() {};
         ClientConfig config = buildConfig.apply(configBuilder);
 
-        OpcTransport transport = TransportFactory.getInstance().create(profileUri, config);
+        OpcTransport transport = ClientTransportFactory.getInstance().create(profileUri, config);
 
         return new AbstractClient(transport) {};
     }
 
+    private final OpcTransport transport;
+
+    public AbstractClient(OpcTransport transport) {
+        this.transport = transport;
+    }
+
+    public void connect() throws UaException {
+        try {
+            transport.connect().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElseGet(() -> new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public void disconnect() throws UaException {
+        try {
+            transport.disconnect().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElseGet(() -> new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public UaResponseMessageType sendRequest(UaRequestMessageType request) throws UaException {
+        try {
+            return transport.sendRequestMessage(request).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElseGet(() -> new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<UaResponseMessageType> sendRequestAsync(UaRequestMessageType request) {
+        return transport.sendRequestMessage(request);
+    }
 
 }

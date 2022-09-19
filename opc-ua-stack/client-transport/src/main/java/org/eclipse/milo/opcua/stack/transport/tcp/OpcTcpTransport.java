@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport;
+package org.eclipse.milo.opcua.stack.transport.tcp;
 
 import java.net.ConnectException;
 import java.util.Map;
@@ -51,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.transport.OpcTransport;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientConfig;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientResponseHandler;

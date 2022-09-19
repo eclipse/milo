@@ -17,17 +17,18 @@ import java.util.function.Function;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.transport.tcp.OpcTcpTransport;
 
-public class TransportFactory {
+public class ClientTransportFactory {
 
-    private static final TransportFactory INSTANCE;
+    private static final ClientTransportFactory INSTANCE;
 
     static {
-        INSTANCE = new TransportFactory();
+        INSTANCE = new ClientTransportFactory();
         INSTANCE.register(Stack.TCP_UASC_UABINARY_TRANSPORT_URI, new OpcTcpTransportFactory());
     }
 
-    public static TransportFactory getInstance() {
+    public static ClientTransportFactory getInstance() {
         return INSTANCE;
     }
 
