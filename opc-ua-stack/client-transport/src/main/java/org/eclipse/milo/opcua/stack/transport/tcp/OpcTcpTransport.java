@@ -11,9 +11,7 @@
 package org.eclipse.milo.opcua.stack.transport.tcp;
 
 import java.net.ConnectException;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -43,41 +41,30 @@ import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
-import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.OpcTransport;
+import org.eclipse.milo.opcua.stack.transport.AbstractUascTransport;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientConfig;
-import org.eclipse.milo.opcua.stack.transport.uasc.UascClientResponseHandler;
-import org.eclipse.milo.opcua.stack.transport.uasc.UascMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcTcpTransport implements OpcTransport {
+public class OpcTcpTransport extends AbstractUascTransport {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Map<Long, CompletableFuture<UaResponseMessageType>> pendingRequests = new ConcurrentHashMap<>();
-    private final Map<Long, Timeout> pendingTimeouts = new ConcurrentHashMap<>();
 
     private final AtomicLong requestId = new AtomicLong(1L);
 
     private final ChannelFsm channelFsm;
 
-    private final UascClientConfig config;
-
     public OpcTcpTransport(UascClientConfig config) {
-        this.config = config;
+        super(config);
 
         // TODO use configurable executors
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
@@ -107,134 +94,14 @@ public class OpcTcpTransport implements OpcTransport {
     }
 
     @Override
-    public CompletableFuture<UaResponseMessageType> sendRequestMessage(UaRequestMessageType requestMessage) {
-        return getChannel().thenCompose(ch -> sendRequestMessage(requestMessage, ch));
-    }
-
-    private CompletableFuture<Channel> getChannel() {
+    protected CompletableFuture<Channel> getChannel() {
         return channelFsm.getChannel();
     }
 
-    private CompletableFuture<UaResponseMessageType> sendRequestMessage(
-        UaRequestMessageType requestMessage,
-        Channel channel
-    ) {
-
-        var request = new UascMessage.Request(requestId.getAndIncrement(), requestMessage);
-        var responseFuture = new CompletableFuture<UaResponseMessageType>();
-
-        pendingRequests.put(request.getRequestId(), responseFuture);
-        scheduleRequestTimeout(request);
-
-        channel.writeAndFlush(request).addListener(f -> {
-            if (!f.isSuccess()) {
-                pendingRequests.remove(request.getRequestId());
-                cancelRequestTimeout(request.getRequestId());
-
-                responseFuture.completeExceptionally(f.cause());
-
-                logger.debug(
-                    "Write failed, request={}, requestHandle={}",
-                    requestMessage.getClass().getSimpleName(), request.getRequestId()
-                );
-            } else {
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                        "Write succeeded, request={}, requestId={}",
-                        requestMessage.getClass().getSimpleName(), request.getRequestId()
-                    );
-                }
-            }
-        });
-
-        return responseFuture;
+    @Override
+    protected long nextRequestId() {
+        return requestId.getAndIncrement();
     }
-
-    private void scheduleRequestTimeout(UascMessage.Request request) {
-        RequestHeader requestHeader = request.getRequestMessage().getRequestHeader();
-
-        long timeoutHint = requestHeader.getTimeoutHint() != null ?
-            requestHeader.getTimeoutHint().longValue() : 0L;
-
-        if (timeoutHint > 0) {
-            Timeout timeout = config.getWheelTimer().newTimeout(
-                t -> {
-                    if (!t.isCancelled()) {
-                        CompletableFuture<UaResponseMessageType> future =
-                            pendingRequests.remove(request.getRequestId());
-
-                        if (future != null) {
-                            UaException exception = new UaException(
-                                StatusCodes.Bad_Timeout,
-                                String.format(
-                                    "requestId=%s timed out after %sms",
-                                    request.getRequestId(), timeoutHint)
-                            );
-
-                            future.completeExceptionally(exception);
-                        }
-                    }
-                },
-                timeoutHint,
-                TimeUnit.MILLISECONDS
-            );
-
-            pendingTimeouts.put(request.getRequestId(), timeout);
-        }
-    }
-
-    private void cancelRequestTimeout(long requestId) {
-        Timeout timeout = pendingTimeouts.remove(requestId);
-        if (timeout != null) timeout.cancel();
-    }
-
-
-    private class ClientResponseHandler extends UascClientResponseHandler {
-
-        @Override
-        protected void handleResponse(long requestId, UaResponseMessageType responseMessage) {
-            CompletableFuture<UaResponseMessageType> responseFuture = pendingRequests.remove(requestId);
-
-            if (responseFuture != null) {
-                cancelRequestTimeout(requestId);
-
-                // TODO use configurable executor
-                Stack.sharedExecutor().submit(() -> responseFuture.complete(responseMessage));
-            } else {
-                logger.warn("Received response for unknown request, requestId={}", requestId);
-            }
-        }
-
-        @Override
-        protected void handleSendFailure(long requestId, UaException exception) {
-            CompletableFuture<UaResponseMessageType> responseFuture = pendingRequests.remove(requestId);
-
-            if (responseFuture != null) {
-                cancelRequestTimeout(requestId);
-
-                // TODO use configurable executor
-                Stack.sharedExecutor().submit(() -> responseFuture.completeExceptionally(exception));
-            } else {
-                logger.warn("Send failed for unknown request, requestId={}", requestId);
-            }
-        }
-
-        @Override
-        protected void handleReceiveFailure(long requestId, UaException exception) {
-            CompletableFuture<UaResponseMessageType> responseFuture = pendingRequests.remove(requestId);
-
-            if (responseFuture != null) {
-                cancelRequestTimeout(requestId);
-
-                // TODO use configurable executor
-                Stack.sharedExecutor().submit(() -> responseFuture.completeExceptionally(exception));
-            } else {
-                logger.warn("Receive failed for unknown request, requestId={}", requestId);
-            }
-        }
-
-    }
-
 
     private class ClientChannelActions implements ChannelActions {
 
@@ -260,15 +127,13 @@ public class OpcTcpTransport implements OpcTransport {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
-                        var responseHandler = new ClientResponseHandler();
-
                         var acknowledgeHandler = new UascClientAcknowledgeHandler(
                             config,
                             requestId::getAndIncrement,
                             handshakeFuture
                         );
 
-                        ch.pipeline().addLast(responseHandler);
+                        ch.pipeline().addLast(OpcTcpTransport.this);
                         ch.pipeline().addLast(acknowledgeHandler);
                     }
                 });
@@ -277,6 +142,7 @@ public class OpcTcpTransport implements OpcTransport {
 
             String host = EndpointUtil.getHost(endpointUrl);
             assert host != null;
+
             int port = EndpointUtil.getPort(endpointUrl);
 
             bootstrap.connect(host, port).addListener((ChannelFuture f) -> {

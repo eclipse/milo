@@ -25,17 +25,17 @@ import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 
-public abstract class AbstractClient {
+public abstract class Client {
 
-    public static AbstractClient create(OpcTransportConfig config) {
+    public static Client create(OpcTransportConfig config) {
         return null;
     }
 
-    public static AbstractClient create(String endpointUrl) {
+    public static Client create(String endpointUrl) {
         return null;
     }
 
-    public static AbstractClient create(
+    public static Client create(
         String endpointUrl,
         Function<List<EndpointDescription>, Optional<EndpointDescription>> selectEndpoint,
         Function<ClientConfigBuilder, ClientConfig> buildConfig
@@ -74,12 +74,12 @@ public abstract class AbstractClient {
 
         OpcTransport transport = ClientTransportFactory.getInstance().create(profileUri, config);
 
-        return new AbstractClient(transport) {};
+        return new Client(transport) {};
     }
 
     private final OpcTransport transport;
 
-    public AbstractClient(OpcTransport transport) {
+    public Client(OpcTransport transport) {
         this.transport = transport;
     }
 
