@@ -28,6 +28,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -38,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder.DecodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
@@ -45,10 +48,15 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeade
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
@@ -108,8 +116,8 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
         this.handshakeFuture = handshakeFuture;
         this.channelParameters = channelParameters;
 
-        binaryDecoder = new OpcUaBinaryDecoder(config.getEncodingContext());
-        binaryEncoder = new OpcUaBinaryEncoder(config.getEncodingContext());
+        binaryDecoder = new OpcUaBinaryDecoder(newEncodingContext(config.getEncodingLimits()));
+        binaryEncoder = new OpcUaBinaryEncoder(newEncodingContext(config.getEncodingLimits()));
 
         chunkDecoder = new ChunkDecoder(channelParameters, config.getEncodingLimits());
         chunkEncoder = new ChunkEncoder(channelParameters);
@@ -681,6 +689,48 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
                 String.format("max message length exceeded (%s > %s)", messageLength, maxMessageLength)
             );
         }
+    }
+
+    private static EncodingContext newEncodingContext(EncodingLimits encodingLimits) {
+        return new DefaultEncodingContext(encodingLimits);
+    }
+
+    private static class DefaultEncodingContext implements EncodingContext {
+
+        private final NamespaceTable namespaceTable = new NamespaceTable();
+        private final ServerTable serverTable = new ServerTable();
+
+        private final EncodingLimits encodingLimits;
+
+        private DefaultEncodingContext(EncodingLimits encodingLimits) {
+            this.encodingLimits = encodingLimits;
+        }
+
+        @Override
+        public DataTypeManager getDataTypeManager() {
+            return OpcUaDataTypeManager.getInstance();
+        }
+
+        @Override
+        public EncodingManager getEncodingManager() {
+            return OpcUaEncodingManager.getInstance();
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return encodingLimits;
+        }
+
+        @Override
+        public NamespaceTable getNamespaceTable() {
+            return namespaceTable;
+        }
+
+        @Override
+        public ServerTable getServerTable() {
+            return serverTable;
+        }
+
     }
 
 }

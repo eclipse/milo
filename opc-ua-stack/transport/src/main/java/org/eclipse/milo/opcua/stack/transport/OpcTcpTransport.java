@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcTcpTransport {
+public class OpcTcpTransport implements OpcTransport {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
@@ -95,20 +95,23 @@ public class OpcTcpTransport {
         channelFsm = factory.newChannelFsm();
     }
 
+    @Override
     public CompletableFuture<Unit> connect() {
         return channelFsm.connect().thenApply(c -> Unit.VALUE);
     }
 
+    @Override
     public CompletableFuture<Unit> disconnect() {
         return channelFsm.disconnect().thenApply(c -> Unit.VALUE);
     }
 
-    public CompletableFuture<Channel> getChannel() {
-        return channelFsm.getChannel();
-    }
-
+    @Override
     public CompletableFuture<UaResponseMessageType> sendRequestMessage(UaRequestMessageType requestMessage) {
         return getChannel().thenCompose(ch -> sendRequestMessage(requestMessage, ch));
+    }
+
+    private CompletableFuture<Channel> getChannel() {
+        return channelFsm.getChannel();
     }
 
     private CompletableFuture<UaResponseMessageType> sendRequestMessage(

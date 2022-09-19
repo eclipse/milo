@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -32,8 +31,6 @@ public interface UascClientConfig {
     Optional<X509Certificate[]> getCertificateChain();
 
     CertificateValidator getCertificateValidator();
-
-    EncodingContext getEncodingContext();
 
     EncodingLimits getEncodingLimits();
 
