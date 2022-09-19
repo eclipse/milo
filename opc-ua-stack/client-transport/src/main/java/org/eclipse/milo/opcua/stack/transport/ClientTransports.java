@@ -12,47 +12,56 @@ package org.eclipse.milo.opcua.stack.transport;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.transport.tcp.OpcTcpTransport;
 
-public class ClientTransportFactory {
+public class ClientTransports {
 
-    private static final ClientTransportFactory INSTANCE;
+    private static final ClientTransports INSTANCE;
 
     static {
-        INSTANCE = new ClientTransportFactory();
+        INSTANCE = new ClientTransports();
         INSTANCE.register(Stack.TCP_UASC_UABINARY_TRANSPORT_URI, new OpcTcpTransportFactory());
     }
 
-    public static ClientTransportFactory getInstance() {
+    public static ClientTransports getInstance() {
         return INSTANCE;
     }
 
-    private final Map<String, Function<OpcTransportConfig, OpcTransport>> functions = new ConcurrentHashMap<>();
+    private final Map<String, TransportFactory> factories = new ConcurrentHashMap<>();
 
-    public OpcTransport create(String profileUri, OpcTransportConfig config) throws UaException {
-        Function<OpcTransportConfig, OpcTransport> f = functions.get(profileUri);
+    private ClientTransports() {}
 
-        if (f != null) {
-            return f.apply(config);
+    public OpcTransport createTransport(String profileUri, OpcTransportConfig config) throws UaException {
+        TransportFactory factory = factories.get(profileUri);
+
+        if (factory != null) {
+            return factory.create(config);
         } else {
             throw new UaException(StatusCodes.Bad_NotSupported, "transport: " + profileUri);
         }
     }
 
-    public void register(String profileUri, Function<OpcTransportConfig, OpcTransport> createTransport) {
-        functions.put(profileUri, createTransport);
+    public void register(String profileUri, TransportFactory factory) {
+        factories.put(profileUri, factory);
     }
 
-    private static class OpcTcpTransportFactory implements Function<OpcTransportConfig, OpcTransport> {
+    public interface TransportFactory {
+
+        OpcTransport create(OpcTransportConfig config);
+
+    }
+
+    private static class OpcTcpTransportFactory implements TransportFactory {
+
         @Override
-        public OpcTransport apply(OpcTransportConfig clientConfig) {
+        public OpcTransport create(OpcTransportConfig clientConfig) {
             return new OpcTcpTransport(clientConfig);
         }
+
     }
 
 }

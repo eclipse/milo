@@ -72,7 +72,7 @@ public abstract class Client {
         var configBuilder = new ClientConfigBuilder() {};
         ClientConfig config = buildConfig.apply(configBuilder);
 
-        OpcTransport transport = ClientTransportFactory.getInstance().create(profileUri, config);
+        OpcTransport transport = ClientTransports.getInstance().createTransport(profileUri, config);
 
         return new Client(transport) {};
     }
