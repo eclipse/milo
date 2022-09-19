@@ -12,6 +12,6 @@ package org.eclipse.milo.opcua.stack.transport;
 
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientConfig;
 
-interface OpcTransportConfig extends UascClientConfig {
+public interface OpcTransportConfig extends UascClientConfig {
 
 }

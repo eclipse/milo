@@ -14,6 +14,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
+import io.netty.channel.EventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
@@ -39,6 +40,8 @@ public interface UascClientConfig {
     UInteger getRequestTimeout();
 
     UInteger getChannelLifetime();
+
+    EventLoopGroup getEventLoop();
 
     HashedWheelTimer getWheelTimer();
 

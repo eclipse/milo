@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.stack.transport.tcp;
 import java.net.ConnectException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.digitalpetri.netty.fsm.ChannelActions;
 import com.digitalpetri.netty.fsm.ChannelFsm;
@@ -48,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.OpcTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.uasc.UascClientConfig;
 import org.slf4j.Logger;
@@ -59,11 +59,10 @@ public class OpcTcpTransport extends AbstractUascTransport {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
-    private final AtomicLong requestId = new AtomicLong(1L);
 
     private final ChannelFsm channelFsm;
 
-    public OpcTcpTransport(UascClientConfig config) {
+    public OpcTcpTransport(OpcTransportConfig config) {
         super(config);
 
         // TODO use configurable executors
@@ -98,11 +97,6 @@ public class OpcTcpTransport extends AbstractUascTransport {
         return channelFsm.getChannel();
     }
 
-    @Override
-    protected long nextRequestId() {
-        return requestId.getAndIncrement();
-    }
-
     private class ClientChannelActions implements ChannelActions {
 
         private final Logger logger = LoggerFactory.getLogger(CHANNEL_FSM_LOGGER_NAME);
@@ -133,7 +127,7 @@ public class OpcTcpTransport extends AbstractUascTransport {
                             handshakeFuture
                         );
 
-                        ch.pipeline().addLast(OpcTcpTransport.this);
+                        ch.pipeline().addLast(new UascClientResponseHandlerImpl());
                         ch.pipeline().addLast(acknowledgeHandler);
                     }
                 });
