@@ -14,12 +14,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.UascMessage.UascResponse;
 
-public abstract class InboundResponseHandler
-    extends SimpleChannelInboundHandler<UascMessage.Response> implements ServiceResponseHandler {
+public abstract class InboundUascResponseHandler
+    extends SimpleChannelInboundHandler<UascResponse> implements UascResponseHandler {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, UascMessage.Response response) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, UascResponse response) {
         if (response.isSuccess()) {
             handleResponse(response.getRequestId(), response.getResponseMessage());
         } else {
@@ -29,8 +30,8 @@ public abstract class InboundResponseHandler
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof UascMessage.Response) {
-            UascMessage.Response response = (UascMessage.Response) evt;
+        if (evt instanceof UascResponse) {
+            UascResponse response = (UascResponse) evt;
             assert response.isFailure();
 
             handleSendFailure(response.getRequestId(), response.getException());
@@ -41,17 +42,16 @@ public abstract class InboundResponseHandler
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        // TODO handleChannelInactive? subclass needs to cancel pending requests
         handleChannelInactive();
 
         super.channelInactive(ctx);
     }
 
-    public static class DelegatingResponseHandler extends InboundResponseHandler {
+    public static class DelegatingUascResponseHandler extends InboundUascResponseHandler {
 
-        private final ServiceResponseHandler delegate;
+        private final UascResponseHandler delegate;
 
-        public DelegatingResponseHandler(ServiceResponseHandler delegate) {
+        public DelegatingUascResponseHandler(UascResponseHandler delegate) {
             this.delegate = delegate;
         }
 

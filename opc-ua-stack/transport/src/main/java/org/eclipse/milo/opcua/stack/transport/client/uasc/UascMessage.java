@@ -27,11 +27,11 @@ public class UascMessage {
         return requestId;
     }
 
-    public static final class Request extends UascMessage {
+    public static final class UascRequest extends UascMessage {
 
         private final UaRequestMessageType requestMessage;
 
-        public Request(long requestId, UaRequestMessageType requestMessage) {
+        public UascRequest(long requestId, UaRequestMessageType requestMessage) {
             super(requestId);
 
             this.requestMessage = requestMessage;
@@ -43,12 +43,12 @@ public class UascMessage {
 
     }
 
-    public static final class Response extends UascMessage {
+    public static final class UascResponse extends UascMessage {
 
         private final UaResponseMessageType responseMessage;
         private final UaException exception;
 
-        private Response(
+        private UascResponse(
             long requestId,
             @Nullable UaResponseMessageType responseMessage,
             @Nullable UaException exception
@@ -79,12 +79,12 @@ public class UascMessage {
             return exception != null;
         }
 
-        public static Response success(long requestId, UaResponseMessageType responseMessage) {
-            return new Response(requestId, responseMessage, null);
+        public static UascResponse success(long requestId, UaResponseMessageType responseMessage) {
+            return new UascResponse(requestId, responseMessage, null);
         }
 
-        public static Response failure(long requestId, UaException exception) {
-            return new Response(requestId, null, exception);
+        public static UascResponse failure(long requestId, UaException exception) {
+            return new UascResponse(requestId, null, exception);
         }
 
     }

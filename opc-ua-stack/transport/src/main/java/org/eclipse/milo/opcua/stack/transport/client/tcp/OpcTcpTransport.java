@@ -47,8 +47,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
-import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundResponseHandler.DelegatingResponseHandler;
+import org.eclipse.milo.opcua.stack.transport.client.OpcTcpTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
@@ -60,10 +60,9 @@ public class OpcTcpTransport extends AbstractUascTransport {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
-
     private final ChannelFsm channelFsm;
 
-    public OpcTcpTransport(OpcTransportConfig config) {
+    public OpcTcpTransport(OpcTcpTransportConfig config) {
         super(config);
 
         // TODO use configurable executors
@@ -128,7 +127,7 @@ public class OpcTcpTransport extends AbstractUascTransport {
                             handshakeFuture
                         );
 
-                        ch.pipeline().addLast(new DelegatingResponseHandler(new ServiceResponseHandlerImpl()));
+                        ch.pipeline().addLast(new DelegatingUascResponseHandler(OpcTcpTransport.this));
                         ch.pipeline().addLast(acknowledgeHandler);
                     }
                 });

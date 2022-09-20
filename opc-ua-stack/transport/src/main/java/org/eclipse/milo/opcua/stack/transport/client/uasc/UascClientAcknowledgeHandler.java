@@ -230,7 +230,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
                 channelParameters
             );
 
-            ctx.pipeline().addLast(messageHandler);
+            ctx.pipeline().addFirst(messageHandler);
         });
     }
 

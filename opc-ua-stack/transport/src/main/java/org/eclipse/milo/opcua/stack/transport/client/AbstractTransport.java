@@ -54,7 +54,7 @@ public abstract class AbstractTransport implements OpcTransport {
         Channel channel
     ) {
 
-        var request = new UascMessage.Request(requestId.getAndIncrement(), requestMessage);
+        var request = new UascMessage.UascRequest(requestId.getAndIncrement(), requestMessage);
         var responseFuture = new CompletableFuture<UaResponseMessageType>();
 
         pendingRequests.put(request.getRequestId(), responseFuture);
@@ -84,7 +84,7 @@ public abstract class AbstractTransport implements OpcTransport {
         return responseFuture;
     }
 
-    private void scheduleRequestTimeout(UascMessage.Request request) {
+    private void scheduleRequestTimeout(UascMessage.UascRequest request) {
         RequestHeader requestHeader = request.getRequestMessage().getRequestHeader();
 
         long timeoutHint = requestHeader.getTimeoutHint() != null ?

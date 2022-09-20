@@ -59,7 +59,8 @@ public class ClientTransports {
 
         @Override
         public OpcTransport create(OpcTransportConfig clientConfig) {
-            return new OpcTcpTransport(clientConfig);
+            // TODO unsafe cast... can we do something better?
+            return new OpcTcpTransport((OpcTcpTransportConfig) clientConfig);
         }
 
     }

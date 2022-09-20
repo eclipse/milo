@@ -21,8 +21,8 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +32,12 @@ public class OpcClientWebSocketBinaryFrameCodec extends MessageToMessageCodec<We
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final OpcTransportConfig config;
+    private final UascClientConfig config;
     private final Supplier<Long> requestIdSupplier;
     private final CompletableFuture<ClientSecureChannel> handshake;
 
     public OpcClientWebSocketBinaryFrameCodec(
-        OpcTransportConfig config,
+        UascClientConfig config,
         Supplier<Long> requestIdSupplier,
         CompletableFuture<ClientSecureChannel> handshake
     ) {

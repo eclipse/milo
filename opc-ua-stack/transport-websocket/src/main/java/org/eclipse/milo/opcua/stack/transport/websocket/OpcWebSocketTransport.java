@@ -60,20 +60,20 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.client.AbstractTransport;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcWebSocketTransport extends AbstractTransport {
+public class OpcWebSocketTransport extends AbstractUascTransport {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
     private final ChannelFsm channelFsm;
 
-    public OpcWebSocketTransport(OpcTransportConfig config) {
+    public OpcWebSocketTransport(UascClientConfig config) {
         super(config);
 
         // TODO use configurable executors
@@ -112,9 +112,9 @@ public class OpcWebSocketTransport extends AbstractTransport {
 
         private final Logger logger = LoggerFactory.getLogger(CHANNEL_FSM_LOGGER_NAME);
 
-        private final OpcTransportConfig config;
+        private final UascClientConfig config;
 
-        private ClientChannelActions(OpcTransportConfig config) {
+        private ClientChannelActions(UascClientConfig config) {
             this.config = config;
         }
 
@@ -181,6 +181,7 @@ public class OpcWebSocketTransport extends AbstractTransport {
                             new WebSocketFrameAggregator(config.getEncodingLimits().getMaxMessageSize())
                         );
 
+                        // TODO when/where does the InboundUascResponseHandler get added?
                         // OpcClientWebSocketFrameCodec adds UascClientAcknowledgeHandler when the WS upgrade is done.
                         channel.pipeline().addLast(new OpcClientWebSocketBinaryFrameCodec(config, requestId::getAndIncrement, handshakeFuture));
                     }

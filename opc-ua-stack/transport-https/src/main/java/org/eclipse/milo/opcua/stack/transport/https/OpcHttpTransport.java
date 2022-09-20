@@ -30,20 +30,21 @@ import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.client.AbstractTransport;
+import org.eclipse.milo.opcua.stack.transport.client.OpcTransport;
 import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcHttpTransport extends AbstractTransport {
+public class OpcHttpTransport implements OpcTransport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpTransport.class);
 
     private ChannelPool channelPool = null;
 
+    private final OpcTransportConfig config;
 
     public OpcHttpTransport(OpcTransportConfig config) {
-        super(config);
+        this.config = config;
     }
 
     @Override
@@ -66,11 +67,6 @@ public class OpcHttpTransport extends AbstractTransport {
     }
 
     @Override
-    public synchronized CompletableFuture<Channel> getChannel() {
-        return acquireChannel();
-    }
-
-    @Override
     public synchronized CompletableFuture<UaResponseMessageType> sendRequestMessage(UaRequestMessageType request) {
         LOGGER.trace("sendRequest({})", request.getClass().getSimpleName());
 
@@ -78,6 +74,10 @@ public class OpcHttpTransport extends AbstractTransport {
             sendRequestMessage(request, channel)
                 .whenComplete((response, ex) -> releaseChannel(channel))
         );
+    }
+
+    private CompletableFuture<UaResponseMessageType> sendRequestMessage(UaRequestMessageType request, Channel channel) {
+        return CompletableFuture.failedFuture(new RuntimeException("TODO")); // TODO
     }
 
     private synchronized CompletableFuture<Channel> acquireChannel() {

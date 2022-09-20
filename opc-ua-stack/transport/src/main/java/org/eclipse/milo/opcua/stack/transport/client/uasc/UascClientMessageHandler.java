@@ -73,12 +73,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.UascMessage.UascResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Request> {
+public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.UascRequest> {
 
     private static final long PROTOCOL_VERSION = 0L;
 
@@ -181,7 +182,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, UascMessage.Request request, ByteBuf buffer) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, UascMessage.UascRequest request, ByteBuf buffer) throws Exception {
         ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
         try {
@@ -213,7 +214,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
             UaException responseException = UaException.extract(e)
                 .orElseGet(() -> new UaException(e));
 
-            UascMessage.Response response = UascMessage.Response
+            UascResponse response = UascResponse
                 .failure(request.getRequestId(), responseException);
 
             ctx.fireUserEventTriggered(response);
@@ -226,7 +227,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
             UaException responseException = UaException.extract(e)
                 .orElseGet(() -> new UaException(e));
 
-            UascMessage.Response response = UascMessage.Response
+            UascResponse response = UascResponse
                 .failure(request.getRequestId(), responseException);
 
             ctx.fireUserEventTriggered(response);
@@ -293,7 +294,27 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
                 binaryDecoder.setBuffer(messageBuffer);
                 UaMessageType message = binaryDecoder.decodeMessage(null);
 
-                out.add(message);
+                if (message instanceof ServiceFault) {
+                    ServiceFault serviceFault = (ServiceFault) message;
+
+                    UascResponse response = UascResponse.failure(
+                        decodedMessage.getRequestId(),
+                        new UaServiceFaultException(serviceFault)
+                    );
+                    out.add(response);
+                } else if (message instanceof UaResponseMessageType) {
+                    UascResponse response = UascResponse.success(
+                        decodedMessage.getRequestId(),
+                        (UaResponseMessageType) message
+                    );
+                    out.add(response);
+                } else {
+                    UascResponse response = UascResponse.failure(
+                        decodedMessage.getRequestId(),
+                        new UaException(StatusCodes.Bad_UnknownResponse, message.getClass().getSimpleName())
+                    );
+                    out.add(response);
+                }
             } catch (MessageAbortException e) {
                 logger.warn(
                     "Received message abort chunk; error={}, reason={}",
@@ -301,7 +322,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Req
                 );
 
                 out.add(
-                    UascMessage.Response.failure(
+                    UascResponse.failure(
                         e.getRequestId(),
                         new UaException(e.getStatusCode(), e.getMessage())
                     )

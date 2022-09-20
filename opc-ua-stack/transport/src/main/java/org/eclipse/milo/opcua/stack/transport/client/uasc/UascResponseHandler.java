@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.stack.transport.client.uasc;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
-public interface ServiceResponseHandler {
+public interface UascResponseHandler {
 
     // response successfully received and decoded
     void handleResponse(long requestId, UaResponseMessageType responseMessage);
@@ -21,7 +21,7 @@ public interface ServiceResponseHandler {
     // failed while sending request
     void handleSendFailure(long requestId, UaException exception);
 
-    // failed while decoding response, aborted or decode exception
+    // failed while decoding response, aborted, decode exception, ServiceFault
     void handleReceiveFailure(long requestId, UaException exception);
 
     // channel inactive, cancel pending requests?

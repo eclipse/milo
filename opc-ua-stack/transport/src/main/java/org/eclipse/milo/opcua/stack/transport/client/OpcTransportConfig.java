@@ -10,8 +10,39 @@
 
 package org.eclipse.milo.opcua.stack.transport.client;
 
-import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Optional;
 
-public interface OpcTransportConfig extends UascClientConfig {
+import io.netty.channel.EventLoopGroup;
+import io.netty.util.HashedWheelTimer;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+
+public interface OpcTransportConfig {
+
+    EndpointDescription getEndpoint();
+
+    Optional<KeyPair> getKeyPair();
+
+    Optional<X509Certificate> getCertificate();
+
+    Optional<X509Certificate[]> getCertificateChain();
+
+    CertificateValidator getCertificateValidator();
+
+    EncodingLimits getEncodingLimits();
+
+    UInteger getAcknowledgeTimeout();
+
+    UInteger getRequestTimeout();
+
+    UInteger getChannelLifetime();
+
+    EventLoopGroup getEventLoop();
+
+    HashedWheelTimer getWheelTimer();
 
 }
