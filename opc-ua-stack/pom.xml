@@ -23,9 +23,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>client-transport</module>
-        <module>client-transport-https</module>
-        <module>client-transport-websocket</module>
         <module>encoding-json</module>
         <module>encoding-xml</module>
         <module>guava-dependencies</module>
@@ -33,6 +30,9 @@
         <module>stack-core</module>
         <module>stack-server</module>
         <module>stack-tests</module>
+        <module>transport</module>
+        <module>transport-https</module>
+        <module>transport-websocket</module>
     </modules>
 
     <build>
