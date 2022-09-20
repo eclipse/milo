@@ -14,7 +14,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
-import org.eclipse.milo.opcua.stack.transport.client.uasc.UascMessage.UascResponse;
 
 public abstract class InboundUascResponseHandler
     extends SimpleChannelInboundHandler<UascResponse> implements UascResponseHandler {

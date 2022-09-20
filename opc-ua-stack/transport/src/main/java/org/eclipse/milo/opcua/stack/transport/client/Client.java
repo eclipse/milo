@@ -11,19 +11,20 @@
 package org.eclipse.milo.opcua.stack.transport.client;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfigBuilder;
 
 public abstract class Client {
 
@@ -38,48 +39,25 @@ public abstract class Client {
     public static Client create(
         String endpointUrl,
         Function<List<EndpointDescription>, Optional<EndpointDescription>> selectEndpoint,
-        Function<ClientConfigBuilder, ClientConfig> buildConfig
-    ) throws UaException {
+        Consumer<OpcTcpTransportConfigBuilder> configureTransport,
+        Consumer<ClientConfigBuilder> configureClient
+    ) {
 
-        String scheme = EndpointUtil.getScheme(endpointUrl);
+        OpcTcpTransportConfigBuilder tcb = OpcTcpTransportConfig.newBuilder();
+        configureTransport.accept(tcb);
+        OpcTcpTransportConfig transportConfig = tcb.build();
 
-        String profileUri;
+        ClientConfigBuilder ccb = ClientConfig.newBuilder();
+        configureClient.accept(ccb);
+        ClientConfig clientConfig = ccb.build();
 
-        switch (Objects.requireNonNullElse(scheme, "").toLowerCase()) {
-            case "opc.tcp":
-                profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
-                break;
-
-            case "http":
-            case "https":
-            case "opc.http":
-            case "opc.https":
-                profileUri = Stack.HTTPS_UABINARY_TRANSPORT_URI;
-                break;
-
-            case "opc.ws":
-            case "opc.wss":
-                profileUri = Stack.WSS_UASC_UABINARY_TRANSPORT_URI;
-                break;
-
-            default:
-                throw new UaException(
-                    StatusCodes.Bad_InternalError,
-                    "unsupported protocol: " + scheme
-                );
-        }
-
-        var configBuilder = new ClientConfigBuilder() {};
-        ClientConfig config = buildConfig.apply(configBuilder);
-
-        OpcTransport transport = ClientTransports.getInstance().createTransport(profileUri, config);
-
-        return new Client(transport) {};
+        var transport = new OpcTcpTransport(transportConfig);
+        return new Client(transport, clientConfig) {};
     }
 
     private final OpcTransport transport;
 
-    public Client(OpcTransport transport) {
+    public Client(OpcTransport transport, ClientConfig clientConfig) {
         this.transport = transport;
     }
 

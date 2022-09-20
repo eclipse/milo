@@ -37,7 +37,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -47,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTcpTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
@@ -65,15 +63,14 @@ public class OpcTcpTransport extends AbstractUascTransport {
     public OpcTcpTransport(OpcTcpTransportConfig config) {
         super(config);
 
-        // TODO use configurable executors
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
             .setLazy(false) // reconnect immediately
             .setMaxIdleSeconds(0) // keep alive handled by SessionFsm
             .setMaxReconnectDelaySeconds(16)
             .setPersistent(true)
             .setChannelActions(new ClientChannelActions(config))
-            .setExecutor(Stack.sharedExecutor())
-            .setScheduler(Stack.sharedScheduledExecutor())
+            .setExecutor(config.getExecutor())
+            .setScheduler(config.getScheduledExecutor())
             .setLoggerName(CHANNEL_FSM_LOGGER_NAME)
             .build();
 
@@ -116,7 +113,7 @@ public class OpcTcpTransport extends AbstractUascTransport {
             bootstrap.group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5_000)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config.getConnectTimeout().intValue())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

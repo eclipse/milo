@@ -104,7 +104,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
 
         String endpointUrl = config.getEndpoint().getEndpointUrl();
 
-        HelloMessage hello = new HelloMessage(
+        var hello = new HelloMessage(
             PROTOCOL_VERSION,
             config.getEncodingLimits().getMaxChunkSize(),
             config.getEncodingLimits().getMaxChunkSize(),
@@ -174,7 +174,8 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
             helloTimeout = null;
             handshakeFuture.completeExceptionally(
                 new UaException(StatusCodes.Bad_Timeout,
-                    "timed out waiting for acknowledge"));
+                    "timed out waiting for acknowledge")
+            );
             ctx.close();
             return;
         }
@@ -192,8 +193,10 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
         long remoteMaxChunkCount = acknowledge.getMaxChunkCount();
 
         if (PROTOCOL_VERSION > remoteProtocolVersion) {
-            logger.warn("Client protocol version ({}) does not match server protocol version ({}).",
-                PROTOCOL_VERSION, remoteProtocolVersion);
+            logger.warn(
+                "Client protocol version ({}) does not match server protocol version ({}).",
+                PROTOCOL_VERSION, remoteProtocolVersion
+            );
         }
 
         EncodingLimits encodingLimits = config.getEncodingLimits();

@@ -18,13 +18,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
-import org.eclipse.milo.opcua.stack.transport.client.uasc.UascMessage;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.UascRequest;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         Channel channel
     ) {
 
-        var request = new UascMessage.UascRequest(requestId.getAndIncrement(), requestMessage);
+        var request = new UascRequest(requestId.getAndIncrement(), requestMessage);
         var responseFuture = new CompletableFuture<UaResponseMessageType>();
 
         pendingRequests.put(request.getRequestId(), responseFuture);
@@ -87,7 +86,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         return responseFuture;
     }
 
-    private void scheduleRequestTimeout(UascMessage.UascRequest request) {
+    private void scheduleRequestTimeout(UascRequest request) {
         RequestHeader requestHeader = request.getRequestMessage().getRequestHeader();
 
         long timeoutHint = requestHeader.getTimeoutHint() != null ?
@@ -132,8 +131,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         if (responseFuture != null) {
             cancelRequestTimeout(requestId);
 
-            // TODO use configurable executor
-            Stack.sharedExecutor().submit(() -> responseFuture.complete(responseMessage));
+            config.getExecutor().submit(() -> responseFuture.complete(responseMessage));
         } else {
             logger.warn("Received response for unknown request, requestId={}", requestId);
         }
@@ -146,8 +144,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         if (responseFuture != null) {
             cancelRequestTimeout(requestId);
 
-            // TODO use configurable executor
-            Stack.sharedExecutor().submit(() -> responseFuture.completeExceptionally(exception));
+            config.getExecutor().submit(() -> responseFuture.completeExceptionally(exception));
         } else {
             logger.warn("Send failed for unknown request, requestId={}", requestId);
         }
@@ -160,8 +157,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         if (responseFuture != null) {
             cancelRequestTimeout(requestId);
 
-            // TODO use configurable executor
-            Stack.sharedExecutor().submit(() -> responseFuture.completeExceptionally(exception));
+            config.getExecutor().submit(() -> responseFuture.completeExceptionally(exception));
         } else {
             logger.warn("Receive failed for unknown request, requestId={}", requestId);
         }
@@ -169,7 +165,16 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
 
     @Override
     public void handleChannelInactive() {
-        // TODO
+        var exception = new UaException(
+            StatusCodes.Bad_ConnectionClosed,
+            "connection closed"
+        );
+
+        pendingRequests.values().forEach(f -> f.completeExceptionally(exception));
+        pendingRequests.clear();
+
+        pendingTimeouts.values().forEach(Timeout::cancel);
+        pendingTimeouts.clear();
     }
 
 }

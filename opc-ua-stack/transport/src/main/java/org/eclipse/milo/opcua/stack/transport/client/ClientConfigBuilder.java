@@ -10,4 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.transport.client;
 
-interface ClientConfigBuilder {}
+interface ClientConfigBuilder {
+
+    ClientConfig build();
+
+}

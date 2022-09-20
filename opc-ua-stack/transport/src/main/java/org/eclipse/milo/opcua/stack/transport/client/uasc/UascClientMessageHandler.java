@@ -73,13 +73,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.eclipse.milo.opcua.stack.transport.client.uasc.UascMessage.UascResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.UascRequest> {
+public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
 
     private static final long PROTOCOL_VERSION = 0L;
 
@@ -182,7 +181,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascMessage.Uas
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, UascMessage.UascRequest request, ByteBuf buffer) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, UascRequest request, ByteBuf buffer) throws Exception {
         ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
         try {

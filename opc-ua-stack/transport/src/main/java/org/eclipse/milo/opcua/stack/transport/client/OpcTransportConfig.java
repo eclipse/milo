@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.stack.transport.client;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.HashedWheelTimer;
@@ -35,11 +37,13 @@ public interface OpcTransportConfig {
 
     EncodingLimits getEncodingLimits();
 
-    UInteger getAcknowledgeTimeout();
+    UInteger getConnectTimeout();
 
     UInteger getRequestTimeout();
 
-    UInteger getChannelLifetime();
+    ExecutorService getExecutor();
+
+    ScheduledExecutorService getScheduledExecutor();
 
     EventLoopGroup getEventLoop();
 

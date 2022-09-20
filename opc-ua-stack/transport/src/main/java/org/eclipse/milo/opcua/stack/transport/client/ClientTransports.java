@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfig;
 
 public class ClientTransports {
 

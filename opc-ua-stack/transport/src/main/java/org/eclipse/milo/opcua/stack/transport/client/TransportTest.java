@@ -10,19 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.transport.client;
 
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import io.netty.channel.EventLoopGroup;
-import io.netty.util.HashedWheelTimer;
-import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -45,76 +36,25 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfig;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class TransportTest {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
+        var endpoint = new EndpointDescription(
+            "opc.tcp://localhost:12685/milo",
+            null,
+            null,
+            MessageSecurityMode.None,
+            SecurityPolicy.None.getUri(),
+            null, null, null
+        );
 
-        var config = new OpcTcpTransportConfig() {
-            @Override
-            public EndpointDescription getEndpoint() {
-                return new EndpointDescription(
-                    "opc.tcp://localhost:12685/milo",
-                    null,
-                    null,
-                    MessageSecurityMode.None,
-                    SecurityPolicy.None.getUri(),
-                    null, null, null
-                );
-            }
-
-            @Override
-            public Optional<KeyPair> getKeyPair() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Optional<X509Certificate> getCertificate() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Optional<X509Certificate[]> getCertificateChain() {
-                return Optional.empty();
-            }
-
-            @Override
-            public CertificateValidator getCertificateValidator() {
-                return new ClientCertificateValidator.InsecureValidator();
-            }
-
-            @Override
-            public EncodingLimits getEncodingLimits() {
-                return EncodingLimits.DEFAULT;
-            }
-
-            @Override
-            public UInteger getAcknowledgeTimeout() {
-                return uint(5000);
-            }
-
-            @Override
-            public UInteger getRequestTimeout() {
-                return uint(5000);
-            }
-
-            @Override
-            public UInteger getChannelLifetime() {
-                return uint(30_000);
-            }
-
-            @Override
-            public EventLoopGroup getEventLoop() {
-                return Stack.sharedEventLoop();
-            }
-
-            @Override
-            public HashedWheelTimer getWheelTimer() {
-                return Stack.sharedWheelTimer();
-            }
-        };
+        OpcTcpTransportConfig config = OpcTcpTransportConfig.newBuilder()
+            .setEndpoint(endpoint)
+            .build();
 
         var transport = new OpcTcpTransport(config);
 

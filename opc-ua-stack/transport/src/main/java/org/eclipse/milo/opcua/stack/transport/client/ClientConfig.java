@@ -10,4 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.transport.client;
 
-public interface ClientConfig extends OpcTransportConfig {}
+public interface ClientConfig {
+
+    static ClientConfigBuilder newBuilder() {
+        return null;
+    }
+
+}
