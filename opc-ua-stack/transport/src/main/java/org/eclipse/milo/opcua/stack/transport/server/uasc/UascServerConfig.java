@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport.server;
+package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ public interface UascServerConfig {
 
     List<EndpointDescription> getEndpointDescriptions();
 
-    EncodingLimits getEncodingLimits();
-
     CertificateManager getCertificateManager();
 
     CertificateValidator getCertificateValidator();
+
+    EncodingLimits getEncodingLimits();
 
     UInteger getMaximumSecureChannelLifetime();
 

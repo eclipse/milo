@@ -8,15 +8,13 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport.client;
-
-import java.util.concurrent.ExecutionException;
+package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -32,26 +30,44 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
-import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransport;
-import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfig;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class TransportTest {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        var endpoint = new EndpointDescription(
-            "opc.tcp://localhost:12685/milo",
-            null,
-            null,
-            MessageSecurityMode.None,
-            SecurityPolicy.None.getUri(),
-            null, null, null
-        );
+class OpcTcpTransportTest {
 
+    private final EndpointDescription endpoint = new EndpointDescription(
+        "opc.tcp://localhost:12685/milo",
+        null,
+        null,
+        MessageSecurityMode.None,
+        SecurityPolicy.None.getUri(),
+        null, null, null
+    );
+
+
+    @Disabled("run manually")
+    @Test()
+    void connect() throws Exception {
+        OpcTcpTransportConfig config = OpcTcpTransportConfig.newBuilder()
+            .setEndpoint(endpoint)
+            .build();
+
+        var transport = new OpcTcpTransport(config);
+
+        transport.connect().get();
+        transport.disconnect().get();
+    }
+
+    @Disabled("run manually")
+    @Test
+    void readServerTime() throws Exception {
         OpcTcpTransportConfig config = OpcTcpTransportConfig.newBuilder()
             .setEndpoint(endpoint)
             .build();
@@ -62,12 +78,12 @@ public class TransportTest {
 
         NodeId authToken = createSession(transport);
         activateSession(transport, authToken);
-        read(transport, authToken);
+        DataValue value = readCurrentTime(transport, authToken);
 
-        Thread.sleep(Integer.MAX_VALUE);
+        System.out.println(value.getValue());
     }
 
-    private static NodeId createSession(OpcTcpTransport transport) throws ExecutionException, InterruptedException {
+    private static NodeId createSession(OpcTcpTransport transport) throws Exception {
         var header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.nowMillis(),
@@ -101,7 +117,7 @@ public class TransportTest {
         return response.getAuthenticationToken();
     }
 
-    private static void activateSession(OpcTcpTransport transport, NodeId authToken) throws ExecutionException, InterruptedException {
+    private static void activateSession(OpcTcpTransport transport, NodeId authToken) throws Exception {
         var header = new RequestHeader(
             authToken,
             DateTime.nowMillis(),
@@ -125,7 +141,7 @@ public class TransportTest {
         assert response.getResponseHeader().getServiceResult().isGood();
     }
 
-    private static void read(OpcTcpTransport transport, NodeId authToken) throws ExecutionException, InterruptedException {
+    private static DataValue readCurrentTime(OpcTcpTransport transport, NodeId authToken) throws Exception {
         var header = new RequestHeader(
             authToken,
             DateTime.nowMillis(),
@@ -145,8 +161,8 @@ public class TransportTest {
             }
         );
 
-        UaResponseMessageType response = transport.sendRequestMessage(readRequest).get();
-        System.out.println(response);
+        ReadResponse response = (ReadResponse) transport.sendRequestMessage(readRequest).get();
+        return response.getResults()[0];
     }
 
 }

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport.server;
+package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -50,6 +50,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceRequest;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

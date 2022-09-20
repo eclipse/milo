@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport.server;
+package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
 import java.io.IOException;
 import java.util.List;
