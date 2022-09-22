@@ -50,12 +50,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.transport.server.ServiceRequest;
-import org.eclipse.milo.opcua.stack.transport.server.ServiceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceResponse> implements HeaderDecoder {
+public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceResponse> implements HeaderDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -97,7 +95,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ServiceResponse response, ByteBuf buffer) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, UascServiceResponse response, ByteBuf buffer) throws Exception {
         sendServiceResponse(response, buffer);
     }
 
@@ -179,11 +177,11 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
                     InetSocketAddress remoteSocketAddress =
                         (InetSocketAddress) ctx.channel().remoteAddress();
 
-                    var serviceRequest = new ServiceRequest(
+                    var serviceRequest = new UascServiceRequest(
                         endpointUrl,
                         secureChannel,
-                        requestId,
-                        requestMessage
+                        requestMessage,
+                        requestId
                     );
 
                     out.add(serviceRequest);
@@ -206,7 +204,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
         }
     }
 
-    private void sendServiceResponse(ServiceResponse response, ByteBuf outBuffer) {
+    private void sendServiceResponse(UascServiceResponse response, ByteBuf outBuffer) {
         ByteBuf messageBuffer = BufferUtil.pooledBuffer();
         try {
             binaryEncoder.setBuffer(messageBuffer);
@@ -242,7 +240,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
         }
     }
 
-    private void sendServiceFault(ServiceResponse response, ByteBuf outBuffer, Exception fault) {
+    private void sendServiceFault(UascServiceResponse response, ByteBuf outBuffer, Exception fault) {
         StatusCode statusCode = UaException.extract(fault)
             .map(UaException::getStatusCode)
             .orElse(StatusCode.BAD);
@@ -250,7 +248,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
         var serviceFault = new ServiceFault(
             new ResponseHeader(
                 DateTime.now(),
-                response.getRequestMessage().getRequestHeader().getRequestHandle(),
+                response.getResponseMessage().getResponseHeader().getRequestHandle(),
                 statusCode,
                 null, null, null
             )

@@ -10,33 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.transport.server;
 
-import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
 public class ServiceResponse {
 
-    private final long requestId;
-    private final UaRequestMessageType requestMessage;
     private final UaResponseMessageType responseMessage;
 
-
-    public ServiceResponse(
-        long requestId,
-        UaRequestMessageType requestMessage,
-        UaResponseMessageType responseMessage
-    ) {
-
-        this.requestId = requestId;
-        this.requestMessage = requestMessage;
+    public ServiceResponse(UaResponseMessageType responseMessage) {
         this.responseMessage = responseMessage;
-    }
-
-    public long getRequestId() {
-        return requestId;
-    }
-
-    public UaRequestMessageType getRequestMessage() {
-        return requestMessage;
     }
 
     public UaResponseMessageType getResponseMessage() {

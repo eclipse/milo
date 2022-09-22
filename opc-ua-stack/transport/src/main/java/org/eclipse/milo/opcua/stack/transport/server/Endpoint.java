@@ -10,8 +10,5 @@
 //
 //package org.eclipse.milo.opcua.stack.transport.server;
 //
-//public interface ServiceRequestHandler {
-//
-//    void handleRequest(ServiceRequest serviceRequest);
-//
+//public interface Endpoint {
 //}
