@@ -16,6 +16,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -47,7 +48,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
@@ -64,6 +64,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class OpcTcpTransportTest extends SecurityFixture {
@@ -204,7 +205,15 @@ class OpcTcpTransportTest extends SecurityFixture {
     }
 
     @Test
-    void uatest() throws Exception {
+    void securityPolicyRejectedOnUnsecuredChannel() throws Exception {
+        // We opened an unsecured channel even though only secured endpoints are available.
+        // Only Discovery services should be allowed. This is simulated by the test server
+        // transport. In reality, it's the ServerApplication responsible for this behavior.
+        OpcServerTransport serverTransport = bindServerTransport(
+            SecurityPolicy.Basic256Sha256,
+            MessageSecurityMode.SignAndEncrypt
+        );
+
         var application = new ClientApplication() {
             @Override
             public EndpointDescription getEndpoint() {
@@ -245,10 +254,12 @@ class OpcTcpTransportTest extends SecurityFixture {
         transport.connect(application).get();
         System.out.println("connected");
 
-        createSession(transport);
+        assertThrows(ExecutionException.class, () -> createSession(transport));
+
+        serverTransport.unbind();
     }
 
-    private static NodeId createSession(OpcTcpClientTransport transport) throws Exception {
+    private static void createSession(OpcTcpClientTransport transport) throws Exception {
         var header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.nowMillis(),
@@ -269,7 +280,7 @@ class OpcTcpTransportTest extends SecurityFixture {
                 .applicationUri("")
                 .build(),
             null,
-            "opc.tcp://localhost:12685/milo",
+            "opc.tcp://localhost:12685",
             "sessionName",
             ByteString.NULL_VALUE,
             ByteString.NULL_VALUE,
@@ -277,9 +288,7 @@ class OpcTcpTransportTest extends SecurityFixture {
             UInteger.MAX
         );
 
-        CreateSessionResponse response = (CreateSessionResponse) transport.sendRequestMessage(request).get();
-
-        return response.getAuthenticationToken();
+        transport.sendRequestMessage(request).get();
     }
 
     private OpcServerTransport bindServerTransport(
@@ -332,17 +341,15 @@ class OpcTcpTransportTest extends SecurityFixture {
                     if (getEndpointDescriptions().stream()
                         .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))) {
 
-
-                        // TODO SecurityPolicy.None allowed only for Discovery services
-                        // TODO how do we close the channel if it's not a Discovery service request?
-                        //  End result should be Error message with Bad_SecurityPolicyRejected
                         var errorMessage = new ErrorMessage(
                             StatusCodes.Bad_SecurityPolicyRejected,
                             StatusCodes.lookup(StatusCodes.Bad_SecurityPolicyRejected).map(ss -> ss[1]).orElse("")
                         );
 
-                        // TODO nothing is listening for this right now
                         context.getChannel().pipeline().fireUserEventTriggered(errorMessage);
+
+                        // won't complete, doesn't matter, we're closing down
+                        return new CompletableFuture<>();
                     }
                 }
 
@@ -350,7 +357,6 @@ class OpcTcpTransportTest extends SecurityFixture {
 
                 return CompletableFuture.failedFuture(new RuntimeException("not implemented"));
             }
-
         };
 
 
@@ -367,7 +373,7 @@ class OpcTcpTransportTest extends SecurityFixture {
     ) {
 
         return new EndpointDescription(
-            "opc.tcp://localhost:48010",
+            "opc.tcp://localhost:12685",
             new ApplicationDescription(
                 "uri:server",
                 "productUri",

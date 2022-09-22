@@ -31,7 +31,9 @@ import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
+import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
+import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
@@ -94,6 +96,19 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
         ctx.pipeline().addLast(new UascServiceRequestHandler(application));
 
         super.handlerAdded(ctx);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof ErrorMessage) {
+            // ErrorMessage triggered by ServerApplication
+            ErrorMessage errorMessage = (ErrorMessage) evt;
+            ByteBuf messageBuffer = TcpMessageEncoder.encode(errorMessage);
+
+            ctx.writeAndFlush(messageBuffer).addListener(future -> ctx.close());
+        }
+
+        super.userEventTriggered(ctx, evt);
     }
 
     @Override
