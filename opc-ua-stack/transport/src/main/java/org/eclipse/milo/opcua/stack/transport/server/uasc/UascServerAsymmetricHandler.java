@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -28,8 +27,6 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.Timeout;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -40,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecurityKeys;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
@@ -50,17 +46,12 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeade
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -73,6 +64,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,27 +95,24 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     private final int maxChunkSize;
 
     private final UascServerConfig config;
+    private final ServerApplication application;
     private final TransportProfile transportProfile;
     private final ChannelParameters channelParameters;
-    private final Supplier<Long> secureChannelIdSupplier;
-    private final Supplier<Long> secureChannelTokenIdSupplier;
 
     UascServerAsymmetricHandler(
         UascServerConfig config,
+        ServerApplication application,
         TransportProfile transportProfile,
-        ChannelParameters channelParameters,
-        Supplier<Long> secureChannelIdSupplier,
-        Supplier<Long> secureChannelTokenIdSupplier
+        ChannelParameters channelParameters
     ) {
 
         this.config = config;
+        this.application = application;
         this.transportProfile = transportProfile;
         this.channelParameters = channelParameters;
-        this.secureChannelIdSupplier = secureChannelIdSupplier;
-        this.secureChannelTokenIdSupplier = secureChannelTokenIdSupplier;
 
-        binaryEncoder = new OpcUaBinaryEncoder(newEncodingContext(config.getEncodingLimits()));
-        binaryDecoder = new OpcUaBinaryDecoder(newEncodingContext(config.getEncodingLimits()));
+        binaryEncoder = new OpcUaBinaryEncoder(application.getEncodingContext());
+        binaryDecoder = new OpcUaBinaryDecoder(application.getEncodingContext());
 
         chunkEncoder = new ChunkEncoder(channelParameters);
         chunkDecoder = new ChunkDecoder(channelParameters, config.getEncodingLimits());
@@ -210,7 +199,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             if (secureChannel == null) {
                 secureChannel = new ServerSecureChannel();
-                secureChannel.setChannelId(secureChannelIdSupplier.get());
+                secureChannel.setChannelId(application.getNextSecureChannelId());
 
                 String securityPolicyUri = header.getSecurityPolicyUri();
                 SecurityPolicy securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
@@ -220,11 +209,11 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 if (securityPolicy != SecurityPolicy.None) {
                     secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
 
-                    CertificateValidator certificateValidator = config.getCertificateValidator();
+                    CertificateValidator certificateValidator = application.getCertificateValidator();
 
                     certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
 
-                    CertificateManager certificateManager = config.getCertificateManager();
+                    CertificateManager certificateManager = application.getCertificateManager();
 
                     Optional<X509Certificate[]> localCertificateChain = certificateManager
                         .getCertificateChain(header.getReceiverThumbprint());
@@ -337,6 +326,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             if (!symmetricHandlerAdded) {
                 var symmetricHandler = new UascServerSymmetricHandler(
                     config,
+                    application,
                     channelParameters,
                     chunkEncoder,
                     chunkDecoder,
@@ -384,7 +374,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
 
-            EndpointDescription endpoint = config.getEndpointDescriptions()
+            EndpointDescription endpoint = application.getEndpointDescriptions()
                 .stream()
                 .filter(e -> {
                     boolean transportMatch = Objects.equals(
@@ -446,7 +436,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
         ChannelSecurityToken newToken = new ChannelSecurityToken(
             uint(secureChannel.getChannelId()),
-            uint(secureChannelTokenIdSupplier.get()),
+            uint(application.getNextSecureChannelTokenId()),
             DateTime.now(),
             uint(channelLifetime)
         );
@@ -561,48 +551,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         }
 
         super.channelInactive(ctx);
-    }
-
-    private static EncodingContext newEncodingContext(EncodingLimits encodingLimits) {
-        return new DefaultEncodingContext(encodingLimits);
-    }
-
-    private static class DefaultEncodingContext implements EncodingContext {
-
-        private final NamespaceTable namespaceTable = new NamespaceTable();
-        private final ServerTable serverTable = new ServerTable();
-
-        private final EncodingLimits encodingLimits;
-
-        private DefaultEncodingContext(EncodingLimits encodingLimits) {
-            this.encodingLimits = encodingLimits;
-        }
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return OpcUaEncodingManager.getInstance();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return encodingLimits;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceTable;
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return serverTable;
-        }
-
     }
 
 }

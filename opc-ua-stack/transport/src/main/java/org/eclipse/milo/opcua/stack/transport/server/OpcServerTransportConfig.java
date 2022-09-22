@@ -10,23 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.transport.server;
 
-import java.util.List;
-
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface OpcServerTransportConfig {
 
-    List<EndpointDescription> getEndpointDescriptions();
+    String getBindAddress();
 
-    CertificateManager getCertificateManager();
-
-    CertificateValidator getCertificateValidator();
+    int getBindPort();
 
     EncodingLimits getEncodingLimits();
-
-    ServiceInterface getServiceInterface();
 
 }

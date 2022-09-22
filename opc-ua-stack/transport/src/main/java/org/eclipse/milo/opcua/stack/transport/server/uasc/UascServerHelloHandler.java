@@ -15,14 +15,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.AttributeKey;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
@@ -37,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,15 +56,13 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
     private volatile boolean receivedHello = false;
 
     private final UascServerConfig config;
+    private final ServerApplication application;
     private final TransportProfile transportProfile;
-    private final Supplier<Long> secureChannelIdSupplier;
-    private final Supplier<Long> secureChannelTokenIdSupplier;
 
     public UascServerHelloHandler(
         UascServerConfig config,
-        TransportProfile transportProfile,
-        Supplier<Long> secureChannelIdSupplier,
-        Supplier<Long> secureChannelTokenIdSupplier
+        ServerApplication application,
+        TransportProfile transportProfile
     ) {
 
         if (transportProfile != TransportProfile.TCP_UASC_UABINARY &&
@@ -75,14 +72,13 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         }
 
         this.config = config;
+        this.application = application;
         this.transportProfile = transportProfile;
-        this.secureChannelIdSupplier = secureChannelIdSupplier;
-        this.secureChannelTokenIdSupplier = secureChannelTokenIdSupplier;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        int helloDeadlineMs = Stack.ConnectionLimits.HELLO_DEADLINE_MS;
+        int helloDeadlineMs = config.getHelloDeadline().intValue();
 
         logger.debug("Scheduling Hello deadline for +" + helloDeadlineMs + "ms");
 
@@ -137,7 +133,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         String endpointUrl = hello.getEndpointUrl();
 
         boolean endpointMatch = endpointUrl != null &&
-            config.getEndpointDescriptions()
+            application.getEndpointDescriptions()
                 .stream()
                 .anyMatch(endpoint ->
                     Objects.equals(
@@ -191,10 +187,9 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
         var asymmetricHandler = new UascServerAsymmetricHandler(
             config,
+            application,
             transportProfile,
-            channelParameters,
-            secureChannelIdSupplier,
-            secureChannelTokenIdSupplier
+            channelParameters
         );
 
         ctx.pipeline().addLast(asymmetricHandler);

@@ -11,22 +11,21 @@
 package org.eclipse.milo.opcua.stack.transport.server.tcp;
 
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
-import org.eclipse.milo.opcua.stack.transport.server.ServiceInterface;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 
 public class OpcTcpServerTransport implements OpcServerTransport {
 
+    public OpcTcpServerTransport(OpcTcpServerTransportConfig config) {
+
+    }
+
     @Override
-    public void bind() throws Exception {
+    public void bind(ServerApplication application) throws Exception {
 
     }
 
     @Override
     public void unbind() throws Exception {
-
-    }
-
-    @Override
-    public void setServiceInterface(ServiceInterface serviceInterface) {
 
     }
 

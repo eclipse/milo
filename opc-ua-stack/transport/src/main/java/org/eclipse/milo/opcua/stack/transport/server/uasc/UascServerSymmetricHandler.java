@@ -18,8 +18,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -28,20 +26,14 @@ import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder.DecodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -50,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +58,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     private final OpcUaBinaryDecoder binaryDecoder;
 
     private final UascServerConfig config;
+    private final ServerApplication application;
     private final ChannelParameters channelParameters;
     private final ChunkEncoder chunkEncoder;
     private final ChunkDecoder chunkDecoder;
@@ -72,6 +66,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
 
     UascServerSymmetricHandler(
         UascServerConfig config,
+        ServerApplication application,
         ChannelParameters channelParameters,
         ChunkEncoder chunkEncoder,
         ChunkDecoder chunkDecoder,
@@ -79,14 +74,14 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     ) {
 
         this.config = config;
+        this.application = application;
         this.channelParameters = channelParameters;
         this.chunkEncoder = chunkEncoder;
         this.chunkDecoder = chunkDecoder;
         this.secureChannel = secureChannel;
 
-        binaryEncoder = new OpcUaBinaryEncoder(newEncodingContext(config.getEncodingLimits()));
-        binaryDecoder = new OpcUaBinaryDecoder(newEncodingContext(config.getEncodingLimits()));
-
+        binaryEncoder = new OpcUaBinaryEncoder(application.getEncodingContext());
+        binaryDecoder = new OpcUaBinaryDecoder(application.getEncodingContext());
 
         maxChunkCount = channelParameters.getLocalMaxChunkCount();
         maxChunkSize = channelParameters.getLocalReceiveBufferSize();
@@ -297,48 +292,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
                     messageSize + " > " + remoteMaxMessageSize
             );
         }
-    }
-
-    private static EncodingContext newEncodingContext(EncodingLimits encodingLimits) {
-        return new DefaultEncodingContext(encodingLimits);
-    }
-
-    private static class DefaultEncodingContext implements EncodingContext {
-
-        private final NamespaceTable namespaceTable = new NamespaceTable();
-        private final ServerTable serverTable = new ServerTable();
-
-        private final EncodingLimits encodingLimits;
-
-        private DefaultEncodingContext(EncodingLimits encodingLimits) {
-            this.encodingLimits = encodingLimits;
-        }
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return OpcUaEncodingManager.getInstance();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return encodingLimits;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceTable;
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return serverTable;
-        }
-
     }
 
 }

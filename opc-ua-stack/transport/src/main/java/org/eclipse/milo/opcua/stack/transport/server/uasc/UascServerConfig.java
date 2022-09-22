@@ -10,29 +10,17 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
-import java.util.List;
-
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.transport.server.ServiceInterface;
 
 public interface UascServerConfig {
 
-    List<EndpointDescription> getEndpointDescriptions();
-
-    CertificateManager getCertificateManager();
-
-    CertificateValidator getCertificateValidator();
-
     EncodingLimits getEncodingLimits();
+
+    UInteger getHelloDeadline();
 
     UInteger getMaximumSecureChannelLifetime();
 
     UInteger getMinimumSecureChannelLifetime();
-
-    ServiceInterface getServiceInterface();
 
 }

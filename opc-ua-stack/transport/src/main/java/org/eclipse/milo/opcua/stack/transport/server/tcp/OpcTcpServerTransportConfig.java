@@ -15,9 +15,11 @@ import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransportConfig;
 
 public interface OpcTcpServerTransportConfig extends OpcServerTransportConfig {
 
-    UInteger getMaximumSecureChannelLifetime();
+    UInteger getHelloDeadline();
 
     UInteger getMinimumSecureChannelLifetime();
+
+    UInteger getMaximumSecureChannelLifetime();
 
     static OpcTcpServerTransportConfigBuilder newBuilder() {
         return new OpcTcpServerTransportConfigBuilder();

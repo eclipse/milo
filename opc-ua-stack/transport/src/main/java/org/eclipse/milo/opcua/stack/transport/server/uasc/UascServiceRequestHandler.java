@@ -15,18 +15,19 @@ import java.util.concurrent.CompletableFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 
 public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascServiceRequest> {
 
-    private final UascServerConfig config;
+    private final ServerApplication application;
 
-    public UascServiceRequestHandler(UascServerConfig config) {
-        this.config = config;
+    public UascServiceRequestHandler(ServerApplication application) {
+        this.application = application;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UascServiceRequest serviceRequest) {
-        CompletableFuture<UaResponseMessageType> future = config.getServiceInterface().handleServiceRequest(
+        CompletableFuture<UaResponseMessageType> future = application.handleServiceRequest(
             serviceRequest,
             serviceRequest.getRequestMessage()
         );

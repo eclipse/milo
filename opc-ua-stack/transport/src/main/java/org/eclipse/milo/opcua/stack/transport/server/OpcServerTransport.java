@@ -12,11 +12,8 @@ package org.eclipse.milo.opcua.stack.transport.server;
 
 public interface OpcServerTransport {
 
-    void bind() throws Exception;
+    void bind(ServerApplication application) throws Exception;
 
     void unbind() throws Exception;
-
-    // TODO settable after transport is instantiated or part of config?
-    void setServiceInterface(ServiceInterface serviceInterface);
 
 }
