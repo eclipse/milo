@@ -14,6 +14,7 @@ import java.net.ConnectException;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import com.digitalpetri.netty.fsm.ChannelActions;
 import com.digitalpetri.netty.fsm.ChannelFsm;
@@ -61,6 +62,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,9 @@ import org.slf4j.LoggerFactory;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcWebSocketTransport extends AbstractUascTransport {
+
+    private static final FsmContext.Key<ClientApplication> KEY_CLIENT_APPLICATION =
+        new FsmContext.Key<>("clientApplication", ClientApplication.class);
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
@@ -94,7 +99,12 @@ public class OpcWebSocketTransport extends AbstractUascTransport {
     }
 
     @Override
-    public CompletableFuture<Unit> connect() {
+    public CompletableFuture<Unit> connect(ClientApplication application) {
+        channelFsm.getFsm().withContext(
+            (Consumer<FsmContext<State, Event>>) ctx ->
+                ctx.set(KEY_CLIENT_APPLICATION, application)
+        );
+
         return channelFsm.connect().thenApply(c -> Unit.VALUE);
     }
 
@@ -120,6 +130,8 @@ public class OpcWebSocketTransport extends AbstractUascTransport {
 
         @Override
         public CompletableFuture<Channel> connect(FsmContext<State, Event> ctx) {
+            ClientApplication application = (ClientApplication) ctx.get(KEY_CLIENT_APPLICATION);
+
             var handshakeFuture = new CompletableFuture<ClientSecureChannel>();
 
             var bootstrap = new Bootstrap();
@@ -183,7 +195,13 @@ public class OpcWebSocketTransport extends AbstractUascTransport {
 
                         // TODO when/where does the InboundUascResponseHandler get added?
                         // OpcClientWebSocketFrameCodec adds UascClientAcknowledgeHandler when the WS upgrade is done.
-                        channel.pipeline().addLast(new OpcClientWebSocketBinaryFrameCodec(config, requestId::getAndIncrement, handshakeFuture));
+                        var codec = new OpcClientWebSocketBinaryFrameCodec(
+                            config,
+                            application,
+                            requestId::getAndIncrement,
+                            handshakeFuture
+                        );
+                        channel.pipeline().addLast(codec);
                     }
                 });
 

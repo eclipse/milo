@@ -19,6 +19,7 @@ import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -26,7 +27,7 @@ import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransport;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfigBuilder;
 
-public abstract class Client {
+public abstract class Client implements ClientApplication {
 
     public static Client create(OpcTransportConfig config) {
         return null;
@@ -45,14 +46,20 @@ public abstract class Client {
 
         OpcTcpTransportConfigBuilder tcb = OpcTcpTransportConfig.newBuilder();
         configureTransport.accept(tcb);
-        OpcTcpTransportConfig transportConfig = tcb.build();
+        OpcTcpTransportConfig config = tcb.build();
 
         ClientConfigBuilder ccb = ClientConfig.newBuilder();
         configureClient.accept(ccb);
         ClientConfig clientConfig = ccb.build();
 
-        var transport = new OpcTcpTransport(transportConfig);
-        return new Client(transport, clientConfig) {};
+
+        var transport = new OpcTcpTransport(config);
+        return new Client(transport, clientConfig) {
+            @Override
+            public EncodingContext getEncodingContext() {
+                return null; // TODO
+            }
+        };
     }
 
     private final OpcTransport transport;
@@ -63,7 +70,7 @@ public abstract class Client {
 
     public void connect() throws UaException {
         try {
-            transport.connect().get();
+            transport.connect(this).get();
         } catch (InterruptedException | ExecutionException e) {
             throw UaException.extract(e)
                 .orElseGet(() -> new UaException(StatusCodes.Bad_UnexpectedError, e));

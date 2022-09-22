@@ -21,6 +21,7 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
@@ -33,16 +34,19 @@ public class OpcClientWebSocketBinaryFrameCodec extends MessageToMessageCodec<We
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final UascClientConfig config;
+    private final ClientApplication application;
     private final Supplier<Long> requestIdSupplier;
     private final CompletableFuture<ClientSecureChannel> handshake;
 
     public OpcClientWebSocketBinaryFrameCodec(
         UascClientConfig config,
+        ClientApplication application,
         Supplier<Long> requestIdSupplier,
         CompletableFuture<ClientSecureChannel> handshake
     ) {
 
         this.config = config;
+        this.application = application;
         this.requestIdSupplier = requestIdSupplier;
         this.handshake = handshake;
     }
@@ -53,7 +57,14 @@ public class OpcClientWebSocketBinaryFrameCodec extends MessageToMessageCodec<We
             logger.debug("WebSocket handshake event: " + event);
 
             if (event == ClientHandshakeStateEvent.HANDSHAKE_COMPLETE) {
-                ctx.pipeline().addLast(new UascClientAcknowledgeHandler(config, requestIdSupplier, handshake));
+                var acknowledgeHandler = new UascClientAcknowledgeHandler(
+                    config,
+                    application,
+                    requestIdSupplier,
+                    handshake
+                );
+
+                ctx.pipeline().addLast(acknowledgeHandler);
             }
         }
     }

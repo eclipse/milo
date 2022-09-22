@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface OpcTransport {
 
-    CompletableFuture<Unit> connect();
+    CompletableFuture<Unit> connect(ClientApplication application);
 
     CompletableFuture<Unit> disconnect();
 

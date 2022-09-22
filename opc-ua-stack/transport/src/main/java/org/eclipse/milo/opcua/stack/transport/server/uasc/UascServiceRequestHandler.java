@@ -14,7 +14,14 @@ import java.util.concurrent.CompletableFuture;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 
 public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascServiceRequest> {
@@ -36,6 +43,25 @@ public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascS
             if (response != null) {
                 var serviceResponse = new UascServiceResponse(
                     response,
+                    serviceRequest.getRequestId()
+                );
+
+                ctx.pipeline().writeAndFlush(serviceResponse);
+            } else {
+                StatusCode serviceResult = UaException.extractStatusCode(ex)
+                    .orElse(new StatusCode(StatusCodes.Bad_UnexpectedError));
+
+                var header = new ResponseHeader(
+                    DateTime.now(),
+                    serviceRequest.getRequestMessage().getRequestHeader().getRequestHandle(),
+                    serviceResult,
+                    DiagnosticInfo.NULL_VALUE,
+                    null,
+                    null
+                );
+
+                var serviceResponse = new UascServiceResponse(
+                    new ServiceFault(header),
                     serviceRequest.getRequestId()
                 );
 

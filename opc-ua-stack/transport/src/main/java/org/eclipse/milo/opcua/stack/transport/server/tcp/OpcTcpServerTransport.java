@@ -10,23 +10,61 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.tcp;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LoggingHandler;
+import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
+import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
+import org.eclipse.milo.opcua.stack.server.transport.ServerChannelManager;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.uasc.UascServerHelloHandler;
 
 public class OpcTcpServerTransport implements OpcServerTransport {
 
-    public OpcTcpServerTransport(OpcTcpServerTransportConfig config) {
+    private final AtomicReference<Channel> channelReference = new AtomicReference<>();
 
+    private final OpcTcpServerTransportConfig config;
+
+    public OpcTcpServerTransport(OpcTcpServerTransportConfig config) {
+        this.config = config;
     }
 
     @Override
     public void bind(ServerApplication application) throws Exception {
+        var bootstrap = new ServerBootstrap();
 
+        bootstrap.group(Stack.sharedEventLoop())
+            .handler(new LoggingHandler(ServerChannelManager.class))
+            .channel(NioServerSocketChannel.class)
+            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .childOption(ChannelOption.TCP_NODELAY, true)
+            .childHandler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel channel) {
+                    channel.pipeline().addLast(RateLimitingHandler.getInstance());
+                    channel.pipeline().addLast(new UascServerHelloHandler(config, application, TransportProfile.TCP_UASC_UABINARY));
+                }
+            });
+
+        Channel channel = bootstrap.bind(config.getBindAddress(), config.getBindPort()).await().channel();
+        channelReference.set(channel);
     }
 
     @Override
     public void unbind() throws Exception {
-
+        Channel channel = channelReference.getAndSet(null);
+        if (channel != null) {
+            channel.close().get();
+        }
     }
 
 }

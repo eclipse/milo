@@ -90,6 +90,13 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     }
 
     @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        ctx.pipeline().addLast(new UascServiceRequestHandler(application));
+
+        super.handlerAdded(ctx);
+    }
+
+    @Override
     protected void encode(ChannelHandlerContext ctx, UascServiceResponse response, ByteBuf buffer) throws Exception {
         sendServiceResponse(response, buffer);
     }

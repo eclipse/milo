@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,16 +54,19 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
     private Timeout helloTimeout;
 
     private final UascClientConfig config;
+    private final ClientApplication application;
     private final Supplier<Long> requestIdSupplier;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
     public UascClientAcknowledgeHandler(
         UascClientConfig config,
+        ClientApplication application,
         Supplier<Long> requestIdSupplier,
         CompletableFuture<ClientSecureChannel> handshakeFuture
     ) {
 
         this.config = config;
+        this.application = application;
         this.requestIdSupplier = requestIdSupplier;
         this.handshakeFuture = handshakeFuture;
     }
@@ -227,6 +231,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
         ctx.executor().execute(() -> {
             var messageHandler = new UascClientMessageHandler(
                 config,
+                application,
                 requestIdSupplier,
                 handshakeFuture,
                 awaitingHandshake,

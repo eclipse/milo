@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.transport.client.tcp;
 import java.net.ConnectException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import com.digitalpetri.netty.fsm.ChannelActions;
 import com.digitalpetri.netty.fsm.ChannelFsm;
@@ -46,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
@@ -55,6 +57,9 @@ import org.slf4j.LoggerFactory;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcTcpTransport extends AbstractUascTransport {
+
+    private static final FsmContext.Key<ClientApplication> KEY_CLIENT_APPLICATION =
+        new FsmContext.Key<>("clientApplication", ClientApplication.class);
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
@@ -80,7 +85,12 @@ public class OpcTcpTransport extends AbstractUascTransport {
     }
 
     @Override
-    public CompletableFuture<Unit> connect() {
+    public CompletableFuture<Unit> connect(ClientApplication application) {
+        channelFsm.getFsm().withContext(
+            (Consumer<FsmContext<State, Event>>) ctx ->
+                ctx.set(KEY_CLIENT_APPLICATION, application)
+        );
+
         return channelFsm.connect().thenApply(c -> Unit.VALUE);
     }
 
@@ -106,6 +116,8 @@ public class OpcTcpTransport extends AbstractUascTransport {
 
         @Override
         public CompletableFuture<Channel> connect(FsmContext<State, Event> ctx) {
+            ClientApplication application = (ClientApplication) ctx.get(KEY_CLIENT_APPLICATION);
+
             var handshakeFuture = new CompletableFuture<ClientSecureChannel>();
 
             var bootstrap = new Bootstrap();
@@ -120,6 +132,7 @@ public class OpcTcpTransport extends AbstractUascTransport {
                     protected void initChannel(SocketChannel ch) {
                         var acknowledgeHandler = new UascClientAcknowledgeHandler(
                             config,
+                            application,
                             requestId::getAndIncrement,
                             handshakeFuture
                         );

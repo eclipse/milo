@@ -28,8 +28,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -40,7 +38,6 @@ import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder.DecodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
@@ -48,15 +45,10 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeade
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
@@ -65,6 +57,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelResponse;
@@ -73,6 +66,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,12 +93,14 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
     private final ChunkEncoder chunkEncoder;
 
     private final UascClientConfig config;
+    private final ClientApplication application;
     private final Supplier<Long> requestIdSupplier;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
     private final ChannelParameters channelParameters;
 
     public UascClientMessageHandler(
         UascClientConfig config,
+        ClientApplication application,
         Supplier<Long> requestIdSupplier,
         CompletableFuture<ClientSecureChannel> handshakeFuture,
         List<UaRequestMessageType> awaitingHandshake,
@@ -112,12 +108,13 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
     ) {
 
         this.config = config;
+        this.application = application;
         this.requestIdSupplier = requestIdSupplier;
         this.handshakeFuture = handshakeFuture;
         this.channelParameters = channelParameters;
 
-        binaryDecoder = new OpcUaBinaryDecoder(newEncodingContext(config.getEncodingLimits()));
-        binaryEncoder = new OpcUaBinaryEncoder(newEncodingContext(config.getEncodingLimits()));
+        binaryDecoder = new OpcUaBinaryDecoder(application.getEncodingContext());
+        binaryEncoder = new OpcUaBinaryEncoder(application.getEncodingContext());
 
         chunkDecoder = new ChunkDecoder(channelParameters, config.getEncodingLimits());
         chunkEncoder = new ChunkEncoder(channelParameters);
@@ -135,6 +132,22 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
                 awaitingHandshake.clear();
             });
         });
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        if (renewFuture != null) {
+            renewFuture.cancel(false);
+        }
+
+        UaException exception = new UaException(
+            StatusCodes.Bad_ConnectionClosed,
+            "connection closed"
+        );
+
+        handshakeFuture.completeExceptionally(exception);
+
+        super.channelInactive(ctx);
     }
 
     @Override
@@ -165,19 +178,10 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (renewFuture != null) {
-            renewFuture.cancel(false);
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        if (evt instanceof CloseSecureChannelRequest) {
+            sendCloseSecureChannelRequest(ctx, (CloseSecureChannelRequest) evt);
         }
-
-        UaException exception = new UaException(
-            StatusCodes.Bad_ConnectionClosed,
-            "connection closed"
-        );
-
-        handshakeFuture.completeExceptionally(exception);
-
-        super.channelInactive(ctx);
     }
 
     @Override
@@ -634,6 +638,45 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
         }
     }
 
+    private void sendCloseSecureChannelRequest(ChannelHandlerContext ctx, CloseSecureChannelRequest request) {
+        ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+
+        try {
+            binaryEncoder.setBuffer(messageBuffer);
+            binaryEncoder.encodeMessage(null, request);
+
+            checkMessageSize(messageBuffer);
+
+            EncodedMessage encodedMessage = chunkEncoder.encodeSymmetric(
+                secureChannel,
+                requestIdSupplier.get(),
+                messageBuffer,
+                MessageType.CloseSecureChannel
+            );
+
+            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+            for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
+                chunkComposite.addComponent(chunk);
+                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+            }
+
+            ctx.writeAndFlush(chunkComposite).addListener(future -> ctx.close());
+
+            secureChannel.setChannelId(0);
+        } catch (MessageEncodeException e) {
+            logger.error("Error encoding {}: {}", request, e.getMessage(), e);
+            handshakeFuture.completeExceptionally(e);
+            ctx.close();
+        } catch (UaSerializationException e) {
+            logger.error("Error serializing {}: {}", request, e.getMessage(), e);
+            handshakeFuture.completeExceptionally(e);
+            ctx.close();
+        } finally {
+            messageBuffer.release();
+        }
+    }
+
     private void checkMessageSize(ByteBuf messageBuffer) throws UaSerializationException {
         int messageSize = messageBuffer.readableBytes();
         int remoteMaxMessageSize = channelParameters.getRemoteMaxMessageSize();
@@ -709,48 +752,6 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
                 String.format("max message length exceeded (%s > %s)", messageLength, maxMessageLength)
             );
         }
-    }
-
-    private static EncodingContext newEncodingContext(EncodingLimits encodingLimits) {
-        return new DefaultEncodingContext(encodingLimits);
-    }
-
-    private static class DefaultEncodingContext implements EncodingContext {
-
-        private final NamespaceTable namespaceTable = new NamespaceTable();
-        private final ServerTable serverTable = new ServerTable();
-
-        private final EncodingLimits encodingLimits;
-
-        private DefaultEncodingContext(EncodingLimits encodingLimits) {
-            this.encodingLimits = encodingLimits;
-        }
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return OpcUaEncodingManager.getInstance();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return encodingLimits;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceTable;
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return serverTable;
-        }
-
     }
 
 }

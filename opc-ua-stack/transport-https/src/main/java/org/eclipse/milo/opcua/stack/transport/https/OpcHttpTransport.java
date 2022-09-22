@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.client.OpcTransport;
 import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class OpcHttpTransport implements OpcTransport {
     }
 
     @Override
-    public synchronized CompletableFuture<Unit> connect() {
+    public synchronized CompletableFuture<Unit> connect(ClientApplication application) {
         if (channelPool == null) {
             channelPool = createChannelPool(config);
         }
