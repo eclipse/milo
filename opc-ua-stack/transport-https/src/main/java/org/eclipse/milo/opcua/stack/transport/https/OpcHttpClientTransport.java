@@ -31,27 +31,27 @@ import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransport;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
+import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcHttpTransport implements OpcTransport {
+public class OpcHttpClientTransport implements OpcClientTransport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpTransport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpClientTransport.class);
 
     private ChannelPool channelPool = null;
 
-    private final OpcTransportConfig config;
+    private final OpcClientTransportConfig config;
 
-    public OpcHttpTransport(OpcTransportConfig config) {
+    public OpcHttpClientTransport(OpcClientTransportConfig config) {
         this.config = config;
     }
 
     @Override
     public synchronized CompletableFuture<Unit> connect(ClientApplication application) {
         if (channelPool == null) {
-            channelPool = createChannelPool(config);
+            channelPool = createChannelPool(config, application);
         }
 
         return CompletableFuture.completedFuture(Unit.VALUE);
@@ -83,7 +83,7 @@ public class OpcHttpTransport implements OpcTransport {
 
     private synchronized CompletableFuture<Channel> acquireChannel() {
         if (channelPool == null) {
-            channelPool = createChannelPool(config);
+            return CompletableFuture.failedFuture(new Exception("not connected"));
         }
 
         CompletableFuture<Channel> future = new CompletableFuture<>();
@@ -105,8 +105,8 @@ public class OpcHttpTransport implements OpcTransport {
         }
     }
 
-    private static ChannelPool createChannelPool(OpcTransportConfig config) {
-        final String endpointUrl = config.getEndpoint().getEndpointUrl();
+    private static ChannelPool createChannelPool(OpcClientTransportConfig config, ClientApplication application) {
+        final String endpointUrl = application.getEndpoint().getEndpointUrl();
 
         String host = EndpointUtil.getHost(endpointUrl);
         if (host == null) host = "";
@@ -140,7 +140,7 @@ public class OpcHttpTransport implements OpcTransport {
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());
                     channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
-                    channel.pipeline().addLast(new OpcClientHttpCodec(config));
+                    channel.pipeline().addLast(new OpcClientHttpCodec(config, application));
 
                     LOGGER.debug("channelCreated(): " + channel);
                 }

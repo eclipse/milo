@@ -10,30 +10,15 @@
 
 package org.eclipse.milo.opcua.stack.transport.client;
 
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
-public interface OpcTransportConfig {
-
-    EndpointDescription getEndpoint();
-
-    Optional<KeyPair> getKeyPair();
-
-    Optional<X509Certificate> getCertificate();
-
-    Optional<X509Certificate[]> getCertificateChain();
-
-    CertificateValidator getCertificateValidator();
+public interface OpcClientTransportConfig {
 
     EncodingLimits getEncodingLimits();
 

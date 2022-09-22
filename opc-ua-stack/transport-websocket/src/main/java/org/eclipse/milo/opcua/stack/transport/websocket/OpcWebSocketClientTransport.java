@@ -61,7 +61,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.client.AbstractUascClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcWebSocketTransport extends AbstractUascTransport {
+public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
 
     private static final FsmContext.Key<ClientApplication> KEY_CLIENT_APPLICATION =
         new FsmContext.Key<>("clientApplication", ClientApplication.class);
@@ -78,7 +78,7 @@ public class OpcWebSocketTransport extends AbstractUascTransport {
 
     private final ChannelFsm channelFsm;
 
-    public OpcWebSocketTransport(UascClientConfig config) {
+    public OpcWebSocketClientTransport(OpcWebSocketClientTransportConfig config) {
         super(config);
 
         // TODO use configurable executors
@@ -144,11 +144,11 @@ public class OpcWebSocketTransport extends AbstractUascTransport {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
-                        String endpointUrl = config.getEndpoint().getEndpointUrl();
+                        String endpointUrl = application.getEndpoint().getEndpointUrl();
                         String scheme = EndpointUtil.getScheme(endpointUrl);
 
                         TransportProfile transportProfile = TransportProfile
-                            .fromUri(config.getEndpoint().getTransportProfileUri());
+                            .fromUri(application.getEndpoint().getTransportProfileUri());
 
                         String subprotocol;
                         if (transportProfile == TransportProfile.WSS_UASC_UABINARY) {
@@ -205,7 +205,7 @@ public class OpcWebSocketTransport extends AbstractUascTransport {
                     }
                 });
 
-            String endpointUrl = config.getEndpoint().getEndpointUrl();
+            String endpointUrl = application.getEndpoint().getEndpointUrl();
 
             String host = EndpointUtil.getHost(endpointUrl);
             assert host != null;

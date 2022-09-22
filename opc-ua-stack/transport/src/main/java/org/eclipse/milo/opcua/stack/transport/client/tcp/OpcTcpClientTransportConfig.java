@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 
-public interface OpcTcpTransportConfig extends OpcTransportConfig, UascClientConfig {
+public interface OpcTcpClientTransportConfig extends OpcClientTransportConfig, UascClientConfig {
 
-    static OpcTcpTransportConfigBuilder newBuilder() {
-        return new OpcTcpTransportConfigBuilder();
+    static OpcTcpClientTransportConfigBuilder newBuilder() {
+        return new OpcTcpClientTransportConfigBuilder();
     }
 
 }

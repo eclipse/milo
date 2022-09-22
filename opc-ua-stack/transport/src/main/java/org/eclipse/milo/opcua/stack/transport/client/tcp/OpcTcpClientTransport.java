@@ -46,7 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.client.AbstractUascTransport;
+import org.eclipse.milo.opcua.stack.transport.client.AbstractUascClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcTcpTransport extends AbstractUascTransport {
+public class OpcTcpClientTransport extends AbstractUascClientTransport {
 
     private static final FsmContext.Key<ClientApplication> KEY_CLIENT_APPLICATION =
         new FsmContext.Key<>("clientApplication", ClientApplication.class);
@@ -65,7 +65,7 @@ public class OpcTcpTransport extends AbstractUascTransport {
 
     private final ChannelFsm channelFsm;
 
-    public OpcTcpTransport(OpcTcpTransportConfig config) {
+    public OpcTcpClientTransport(OpcTcpClientTransportConfig config) {
         super(config);
 
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
@@ -137,12 +137,12 @@ public class OpcTcpTransport extends AbstractUascTransport {
                             handshakeFuture
                         );
 
-                        ch.pipeline().addLast(new DelegatingUascResponseHandler(OpcTcpTransport.this));
+                        ch.pipeline().addLast(new DelegatingUascResponseHandler(OpcTcpClientTransport.this));
                         ch.pipeline().addLast(acknowledgeHandler);
                     }
                 });
 
-            String endpointUrl = config.getEndpoint().getEndpointUrl();
+            String endpointUrl = application.getEndpoint().getEndpointUrl();
 
             String host = EndpointUtil.getHost(endpointUrl);
             assert host != null;

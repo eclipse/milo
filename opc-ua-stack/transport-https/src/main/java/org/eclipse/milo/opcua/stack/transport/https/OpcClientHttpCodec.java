@@ -43,7 +43,8 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.transport.client.OpcTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,12 +61,14 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
     private final EndpointDescription endpoint;
     private final TransportProfile transportProfile;
 
-    private final OpcTransportConfig config;
+    private final OpcClientTransportConfig config;
+    private final ClientApplication application;
 
-    OpcClientHttpCodec(OpcTransportConfig config) {
+    OpcClientHttpCodec(OpcClientTransportConfig config, ClientApplication application) {
         this.config = config;
+        this.application = application;
 
-        endpoint = config.getEndpoint();
+        endpoint = application.getEndpoint();
         transportProfile = TransportProfile.fromUri(endpoint.getTransportProfileUri());
     }
 
@@ -113,7 +116,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
         httpRequest.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         httpRequest.headers().set(HttpHeaderNames.CONTENT_TYPE, UABINARY_CONTENT_TYPE);
         httpRequest.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
-        httpRequest.headers().set("OPCUA-SecurityPolicy", config.getEndpoint().getSecurityPolicyUri());
+        httpRequest.headers().set("OPCUA-SecurityPolicy", application.getEndpoint().getSecurityPolicyUri());
 
         out.add(httpRequest);
     }

@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
-public interface OpcTransport {
+public interface OpcClientTransport {
 
     CompletableFuture<Unit> connect(ClientApplication application);
 

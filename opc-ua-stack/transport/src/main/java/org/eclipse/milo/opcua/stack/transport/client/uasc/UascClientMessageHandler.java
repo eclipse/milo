@@ -26,6 +26,7 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -151,8 +152,25 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
     }
 
     @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.error(
+            "[remote={}] Exception caught: {}",
+            ctx.channel().remoteAddress(), cause.getMessage(), cause);
+
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        chunkBuffers.clear();
+
+        // If the handshake hasn't completed yet this cause will be more
+        // accurate than the generic "connection closed" exception that
+        // channelInactive() will use.
+        handshakeFuture.completeExceptionally(cause);
+
+        ctx.close();
+    }
+
+    @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        secureChannel = newSecureChannel(config);
+        secureChannel = newSecureChannel(application);
         secureChannel.setChannel(ctx.channel());
 
         SecurityTokenRequestType requestType = secureChannel.getChannelId() == 0 ?
@@ -368,7 +386,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
 
         if (headerRef.compareAndSet(null, securityHeader)) {
             // first time we've received the header; validate and verify the server certificate
-            CertificateValidator certificateValidator = config.getCertificateValidator();
+            CertificateValidator certificateValidator = application.getCertificateValidator();
 
             SecurityPolicy securityPolicy = SecurityPolicy.fromUri(securityHeader.getSecurityPolicyUri());
 
@@ -698,26 +716,26 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
         return channelParameters.getLocalReceiveBufferSize();
     }
 
-    private static ClientSecureChannel newSecureChannel(UascClientConfig config) throws UaException {
-        EndpointDescription endpoint = config.getEndpoint();
+    private static ClientSecureChannel newSecureChannel(ClientApplication application) throws UaException {
+        EndpointDescription endpoint = application.getEndpoint();
 
         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
 
         if (securityPolicy == SecurityPolicy.None) {
             return new ClientSecureChannel(securityPolicy, endpoint.getSecurityMode());
         } else {
-            KeyPair keyPair = config.getKeyPair().orElseThrow(
+            KeyPair keyPair = application.getKeyPair().orElseThrow(
                 () ->
                     new UaException(StatusCodes.Bad_ConfigurationError, "no KeyPair configured")
             );
 
-            X509Certificate certificate = config.getCertificate().orElseThrow(
+            X509Certificate certificate = application.getCertificate().orElseThrow(
                 () ->
                     new UaException(StatusCodes.Bad_ConfigurationError, "no certificate configured")
             );
 
             List<X509Certificate> certificateChain = Arrays.asList(
-                config.getCertificateChain().orElseThrow(
+                application.getCertificateChain().orElseThrow(
                     () ->
                         new UaException(StatusCodes.Bad_ConfigurationError, "no certificate chain configured")
                 )

@@ -19,17 +19,16 @@ import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransport;
-import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfig;
-import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpTransportConfigBuilder;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportConfigBuilder;
 
 public abstract class Client implements ClientApplication {
 
-    public static Client create(OpcTransportConfig config) {
+    public static Client create(OpcClientTransportConfig config) {
         return null;
     }
 
@@ -40,31 +39,27 @@ public abstract class Client implements ClientApplication {
     public static Client create(
         String endpointUrl,
         Function<List<EndpointDescription>, Optional<EndpointDescription>> selectEndpoint,
-        Consumer<OpcTcpTransportConfigBuilder> configureTransport,
+        Consumer<OpcTcpClientTransportConfigBuilder> configureTransport,
         Consumer<ClientConfigBuilder> configureClient
     ) {
 
-        OpcTcpTransportConfigBuilder tcb = OpcTcpTransportConfig.newBuilder();
+        OpcTcpClientTransportConfigBuilder tcb = OpcTcpClientTransportConfig.newBuilder();
         configureTransport.accept(tcb);
-        OpcTcpTransportConfig config = tcb.build();
+        OpcTcpClientTransportConfig config = tcb.build();
 
         ClientConfigBuilder ccb = ClientConfig.newBuilder();
         configureClient.accept(ccb);
         ClientConfig clientConfig = ccb.build();
 
 
-        var transport = new OpcTcpTransport(config);
-        return new Client(transport, clientConfig) {
-            @Override
-            public EncodingContext getEncodingContext() {
-                return null; // TODO
-            }
-        };
+        var transport = new OpcTcpClientTransport(config);
+
+        return null;
     }
 
-    private final OpcTransport transport;
+    private final OpcClientTransport transport;
 
-    public Client(OpcTransport transport, ClientConfig clientConfig) {
+    public Client(OpcClientTransport transport, ClientConfig clientConfig) {
         this.transport = transport;
     }
 

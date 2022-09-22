@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.stack.transport.client.uasc.UascResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractUascTransport implements OpcTransport, UascResponseHandler {
+public abstract class AbstractUascClientTransport implements OpcClientTransport, UascResponseHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -37,12 +37,11 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
     protected final Map<Long, CompletableFuture<UaResponseMessageType>> pendingRequests = new ConcurrentHashMap<>();
     protected final Map<Long, Timeout> pendingTimeouts = new ConcurrentHashMap<>();
 
-    protected final OpcTransportConfig config;
+    protected final OpcClientTransportConfig config;
 
-    public AbstractUascTransport(OpcTransportConfig config) {
+    public AbstractUascClientTransport(OpcClientTransportConfig config) {
         this.config = config;
     }
-
 
     protected abstract CompletableFuture<Channel> getChannel();
 
@@ -131,7 +130,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         if (responseFuture != null) {
             cancelRequestTimeout(requestId);
 
-            config.getExecutor().submit(() -> responseFuture.complete(responseMessage));
+            config.getExecutor().execute(() -> responseFuture.complete(responseMessage));
         } else {
             logger.warn("Received response for unknown request, requestId={}", requestId);
         }
@@ -144,7 +143,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         if (responseFuture != null) {
             cancelRequestTimeout(requestId);
 
-            config.getExecutor().submit(() -> responseFuture.completeExceptionally(exception));
+            config.getExecutor().execute(() -> responseFuture.completeExceptionally(exception));
         } else {
             logger.warn("Send failed for unknown request, requestId={}", requestId);
         }
@@ -157,7 +156,7 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
         if (responseFuture != null) {
             cancelRequestTimeout(requestId);
 
-            config.getExecutor().submit(() -> responseFuture.completeExceptionally(exception));
+            config.getExecutor().execute(() -> responseFuture.completeExceptionally(exception));
         } else {
             logger.warn("Receive failed for unknown request, requestId={}", requestId);
         }
@@ -170,7 +169,10 @@ public abstract class AbstractUascTransport implements OpcTransport, UascRespons
             "connection closed"
         );
 
-        pendingRequests.values().forEach(f -> f.completeExceptionally(exception));
+        pendingRequests.values().forEach(
+            f ->
+                config.getExecutor().execute(() -> f.completeExceptionally(exception))
+        );
         pendingRequests.clear();
 
         pendingTimeouts.values().forEach(Timeout::cancel);

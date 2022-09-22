@@ -10,9 +10,25 @@
 
 package org.eclipse.milo.opcua.stack.transport.client;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Optional;
+
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface ClientApplication {
+
+    EndpointDescription getEndpoint();
+
+    Optional<KeyPair> getKeyPair();
+
+    Optional<X509Certificate> getCertificate();
+
+    Optional<X509Certificate[]> getCertificateChain();
+
+    CertificateValidator getCertificateValidator();
 
     EncodingContext getEncodingContext();
 

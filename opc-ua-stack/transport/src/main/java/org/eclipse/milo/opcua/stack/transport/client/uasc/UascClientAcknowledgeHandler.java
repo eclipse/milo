@@ -103,10 +103,24 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
         super.handlerAdded(ctx);
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.error(
+            "[remote={}] Exception caught: {}",
+            ctx.channel().remoteAddress(), cause.getMessage(), cause);
+
+        // If the handshake hasn't completed yet this cause will be more
+        // accurate than the generic "connection closed" exception that
+        // channelInactive() will use.
+        handshakeFuture.completeExceptionally(cause);
+
+        ctx.close();
+    }
+
     private void sendHello(ChannelHandlerContext ctx) throws UaException {
         helloTimeout = startHelloTimeout(ctx);
 
-        String endpointUrl = config.getEndpoint().getEndpointUrl();
+        String endpointUrl = application.getEndpoint().getEndpointUrl();
 
         var hello = new HelloMessage(
             PROTOCOL_VERSION,

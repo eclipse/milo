@@ -10,31 +10,18 @@
 
 package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.google.common.base.Preconditions;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
-import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcTcpTransportConfigBuilder {
-
-    private EndpointDescription endpoint;
-    private KeyPair keyPair;
-    private X509Certificate certificate;
-    private X509Certificate[] certificateChain;
-    private ClientCertificateValidator certificateValidator = new ClientCertificateValidator.InsecureValidator();
+public class OpcTcpClientTransportConfigBuilder {
 
     private UInteger connectTimeout = uint(5_000);
     private UInteger acknowledgeTimeout = uint(5_000);
@@ -48,85 +35,52 @@ public class OpcTcpTransportConfigBuilder {
     private NioEventLoopGroup eventLoop;
     private HashedWheelTimer wheelTimer;
 
-    public OpcTcpTransportConfigBuilder setEndpoint(EndpointDescription endpoint) {
-        this.endpoint = endpoint;
-        return this;
-    }
-
-    public OpcTcpTransportConfigBuilder setKeyPair(KeyPair keyPair) {
-        this.keyPair = keyPair;
-        return this;
-    }
-
-    public OpcTcpTransportConfigBuilder setCertificate(X509Certificate certificate) {
-        this.certificate = certificate;
-        return this;
-    }
-
-    public OpcTcpTransportConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
-        this.certificateChain = certificateChain;
-        return this;
-    }
-
-    public OpcTcpTransportConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
-        this.certificateValidator = certificateValidator;
-        return this;
-    }
-
-    public OpcTcpTransportConfigBuilder setConnectTimeout(UInteger connectTimeout) {
+    public OpcTcpClientTransportConfigBuilder setConnectTimeout(UInteger connectTimeout) {
         this.connectTimeout = connectTimeout;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
+    public OpcTcpClientTransportConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
         this.acknowledgeTimeout = acknowledgeTimeout;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setRequestTimeout(UInteger requestTimeout) {
+    public OpcTcpClientTransportConfigBuilder setRequestTimeout(UInteger requestTimeout) {
         this.requestTimeout = requestTimeout;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setChannelLifetime(UInteger channelLifetime) {
+    public OpcTcpClientTransportConfigBuilder setChannelLifetime(UInteger channelLifetime) {
         this.channelLifetime = channelLifetime;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+    public OpcTcpClientTransportConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
         this.encodingLimits = encodingLimits;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setExecutor(ExecutorService executor) {
+    public OpcTcpClientTransportConfigBuilder setExecutor(ExecutorService executor) {
         this.executor = executor;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
+    public OpcTcpClientTransportConfigBuilder setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
         this.scheduledExecutor = scheduledExecutor;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setEventLoop(NioEventLoopGroup eventLoop) {
+    public OpcTcpClientTransportConfigBuilder setEventLoop(NioEventLoopGroup eventLoop) {
         this.eventLoop = eventLoop;
         return this;
     }
 
-    public OpcTcpTransportConfigBuilder setWheelTimer(HashedWheelTimer wheelTimer) {
+    public OpcTcpClientTransportConfigBuilder setWheelTimer(HashedWheelTimer wheelTimer) {
         this.wheelTimer = wheelTimer;
         return this;
     }
 
-    public OpcTcpTransportConfig build() {
-        Preconditions.checkNotNull(endpoint, "endpoint must be non-null");
-
-        if (certificate == null && certificateChain != null) {
-            certificate = certificateChain[0];
-        }
-        if (certificate != null && certificateChain == null) {
-            certificateChain = new X509Certificate[]{certificate};
-        }
+    public OpcTcpClientTransportConfig build() {
         if (executor == null) {
             executor = Stack.sharedExecutor();
         }
@@ -140,12 +94,7 @@ public class OpcTcpTransportConfigBuilder {
             wheelTimer = Stack.sharedWheelTimer();
         }
 
-        return new OpcTcpTransportConfigImpl(
-            endpoint,
-            keyPair,
-            certificate,
-            certificateChain,
-            certificateValidator,
+        return new OpcTcpClientTransportConfigImpl(
             connectTimeout,
             acknowledgeTimeout,
             requestTimeout,
@@ -158,13 +107,8 @@ public class OpcTcpTransportConfigBuilder {
         );
     }
 
-    static class OpcTcpTransportConfigImpl implements OpcTcpTransportConfig {
+    static class OpcTcpClientTransportConfigImpl implements OpcTcpClientTransportConfig {
 
-        private final EndpointDescription endpoint;
-        private final @Nullable KeyPair keyPair;
-        private final @Nullable X509Certificate certificate;
-        private final @Nullable X509Certificate[] certificateChain;
-        private final ClientCertificateValidator certificateValidator;
         private final UInteger connectTimeout;
         private final UInteger acknowledgeTimeout;
         private final UInteger requestTimeout;
@@ -175,12 +119,7 @@ public class OpcTcpTransportConfigBuilder {
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
 
-        public OpcTcpTransportConfigImpl(
-            EndpointDescription endpoint,
-            @Nullable KeyPair keyPair,
-            @Nullable X509Certificate certificate,
-            @Nullable X509Certificate[] certificateChain,
-            ClientCertificateValidator certificateValidator,
+        public OpcTcpClientTransportConfigImpl(
             UInteger connectTimeout,
             UInteger acknowledgeTimeout,
             UInteger requestTimeout,
@@ -192,11 +131,6 @@ public class OpcTcpTransportConfigBuilder {
             HashedWheelTimer wheelTimer
         ) {
 
-            this.endpoint = endpoint;
-            this.keyPair = keyPair;
-            this.certificate = certificate;
-            this.certificateChain = certificateChain;
-            this.certificateValidator = certificateValidator;
             this.connectTimeout = connectTimeout;
             this.acknowledgeTimeout = acknowledgeTimeout;
             this.requestTimeout = requestTimeout;
@@ -208,30 +142,6 @@ public class OpcTcpTransportConfigBuilder {
             this.wheelTimer = wheelTimer;
         }
 
-        @Override
-        public EndpointDescription getEndpoint() {
-            return endpoint;
-        }
-
-        @Override
-        public Optional<KeyPair> getKeyPair() {
-            return Optional.of(keyPair);
-        }
-
-        @Override
-        public Optional<X509Certificate> getCertificate() {
-            return Optional.ofNullable(certificate);
-        }
-
-        @Override
-        public Optional<X509Certificate[]> getCertificateChain() {
-            return Optional.ofNullable(certificateChain);
-        }
-
-        @Override
-        public ClientCertificateValidator getCertificateValidator() {
-            return certificateValidator;
-        }
 
         @Override
         public UInteger getConnectTimeout() {
