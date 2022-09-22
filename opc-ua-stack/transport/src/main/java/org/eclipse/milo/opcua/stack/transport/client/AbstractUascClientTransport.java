@@ -163,12 +163,16 @@ public abstract class AbstractUascClientTransport implements OpcClientTransport,
     }
 
     @Override
-    public void handleChannelInactive() {
-        var exception = new UaException(
-            StatusCodes.Bad_ConnectionClosed,
-            "connection closed"
-        );
+    public void handleChannelError(UaException exception) {
+        failAndClearPending(exception);
+    }
 
+    @Override
+    public void handleChannelInactive() {
+        failAndClearPending(new UaException(StatusCodes.Bad_ConnectionClosed, "connection closed"));
+    }
+
+    private void failAndClearPending(UaException exception) {
         pendingRequests.values().forEach(
             f ->
                 config.getExecutor().execute(() -> f.completeExceptionally(exception))

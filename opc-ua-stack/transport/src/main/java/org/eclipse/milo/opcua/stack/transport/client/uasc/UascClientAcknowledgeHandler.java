@@ -267,6 +267,8 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
             );
 
             handshakeFuture.completeExceptionally(new UaException(statusCode, errorMessage.getReason()));
+
+            ctx.fireUserEventTriggered(errorMessage);
         } catch (UaException e) {
             logger.error(
                 "[remote={}] an exception occurred while decoding an error message: {}",

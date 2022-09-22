@@ -23,7 +23,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
@@ -36,12 +38,18 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
@@ -49,11 +57,13 @@ import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransportConfig;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 
 class OpcTcpTransportTest extends SecurityFixture {
@@ -132,6 +142,146 @@ class OpcTcpTransportTest extends SecurityFixture {
         System.out.println("server transport unbound");
     }
 
+    @Test
+    void openUnsecuredChannelAgainstSecuredEndpoint() throws Exception {
+        // Opening a SecureChannel with no security should be allowed even if all the configured
+        // endpoints require security. This is to allow the receiving ServerApplication a chance
+        // to allow unsecured Discovery services to be implemented even when security is otherwise
+        // required.
+
+        OpcServerTransport serverTransport = bindServerTransport(
+            SecurityPolicy.Basic256Sha256,
+            MessageSecurityMode.SignAndEncrypt
+        );
+
+        var application = new ClientApplication() {
+            @Override
+            public EndpointDescription getEndpoint() {
+                return newEndpointDescription(SecurityPolicy.None, MessageSecurityMode.None);
+            }
+
+            @Override
+            public Optional<KeyPair> getKeyPair() {
+                return Optional.of(clientKeyPair);
+            }
+
+            @Override
+            public Optional<X509Certificate> getCertificate() {
+                return Optional.of(clientCertificate);
+            }
+
+            @Override
+            public Optional<X509Certificate[]> getCertificateChain() {
+                return Optional.of(new X509Certificate[]{clientCertificate});
+            }
+
+            @Override
+            public CertificateValidator getCertificateValidator() {
+                return new ClientCertificateValidator.InsecureValidator();
+            }
+
+            @Override
+            public EncodingContext getEncodingContext() {
+                return new DefaultEncodingContext();
+            }
+        };
+
+        OpcTcpClientTransportConfig config = OpcTcpClientTransportConfig.newBuilder().build();
+
+        var transport = new OpcTcpClientTransport(config);
+
+        System.out.println("connecting...");
+        transport.connect(application).get();
+        System.out.println("connected");
+
+        System.out.println("disconnecting...");
+        transport.disconnect().get();
+        System.out.println("disconnected");
+
+        System.out.println("unbinding server transport...");
+        serverTransport.unbind();
+        System.out.println("server transport unbound");
+    }
+
+    @Test
+    void uatest() throws Exception {
+        var application = new ClientApplication() {
+            @Override
+            public EndpointDescription getEndpoint() {
+                return newEndpointDescription(SecurityPolicy.None, MessageSecurityMode.None);
+            }
+
+            @Override
+            public Optional<KeyPair> getKeyPair() {
+                return Optional.of(clientKeyPair);
+            }
+
+            @Override
+            public Optional<X509Certificate> getCertificate() {
+                return Optional.of(clientCertificate);
+            }
+
+            @Override
+            public Optional<X509Certificate[]> getCertificateChain() {
+                return Optional.of(new X509Certificate[]{clientCertificate});
+            }
+
+            @Override
+            public CertificateValidator getCertificateValidator() {
+                return new ClientCertificateValidator.InsecureValidator();
+            }
+
+            @Override
+            public EncodingContext getEncodingContext() {
+                return new DefaultEncodingContext();
+            }
+        };
+
+        OpcTcpClientTransportConfig config = OpcTcpClientTransportConfig.newBuilder().build();
+
+        var transport = new OpcTcpClientTransport(config);
+
+        System.out.println("connecting...");
+        transport.connect(application).get();
+        System.out.println("connected");
+
+        createSession(transport);
+    }
+
+    private static NodeId createSession(OpcTcpClientTransport transport) throws Exception {
+        var header = new RequestHeader(
+            NodeId.NULL_VALUE,
+            DateTime.nowMillis(),
+            uint(0),
+            uint(0),
+            null,
+            uint(5_000),
+            null
+        );
+
+        var request = new CreateSessionRequest(
+            header,
+            ApplicationDescription.builder()
+                .applicationName(LocalizedText.NULL_VALUE)
+                .applicationUri("")
+                .applicationType(ApplicationType.Client)
+                .productUri("")
+                .applicationUri("")
+                .build(),
+            null,
+            "opc.tcp://localhost:12685/milo",
+            "sessionName",
+            ByteString.NULL_VALUE,
+            ByteString.NULL_VALUE,
+            60_000d,
+            UInteger.MAX
+        );
+
+        CreateSessionResponse response = (CreateSessionResponse) transport.sendRequestMessage(request).get();
+
+        return response.getAuthenticationToken();
+    }
+
     private OpcServerTransport bindServerTransport(
         SecurityPolicy securityPolicy,
         MessageSecurityMode messageSecurityMode
@@ -178,6 +328,24 @@ class OpcTcpTransportTest extends SecurityFixture {
                 UaRequestMessageType requestMessage
             ) {
 
+                if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
+                    if (getEndpointDescriptions().stream()
+                        .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))) {
+
+
+                        // TODO SecurityPolicy.None allowed only for Discovery services
+                        // TODO how do we close the channel if it's not a Discovery service request?
+                        //  End result should be Error message with Bad_SecurityPolicyRejected
+                        var errorMessage = new ErrorMessage(
+                            StatusCodes.Bad_SecurityPolicyRejected,
+                            StatusCodes.lookup(StatusCodes.Bad_SecurityPolicyRejected).map(ss -> ss[1]).orElse("")
+                        );
+
+                        // TODO nothing is listening for this right now
+                        context.getChannel().pipeline().fireUserEventTriggered(errorMessage);
+                    }
+                }
+
                 System.out.println("request: " + requestMessage);
 
                 return CompletableFuture.failedFuture(new RuntimeException("not implemented"));
@@ -199,7 +367,7 @@ class OpcTcpTransportTest extends SecurityFixture {
     ) {
 
         return new EndpointDescription(
-            "opc.tcp://localhost:12685",
+            "opc.tcp://localhost:48010",
             new ApplicationDescription(
                 "uri:server",
                 "productUri",

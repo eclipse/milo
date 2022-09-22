@@ -13,7 +13,9 @@ package org.eclipse.milo.opcua.stack.transport.client.uasc;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public abstract class InboundUascResponseHandler
     extends SimpleChannelInboundHandler<UascResponse> implements UascResponseHandler {
@@ -34,6 +36,11 @@ public abstract class InboundUascResponseHandler
             assert response.isFailure();
 
             handleSendFailure(response.getRequestId(), response.getException());
+        } else if (evt instanceof ErrorMessage) {
+            ErrorMessage errorMessage = (ErrorMessage) evt;
+            StatusCode statusCode = errorMessage.getError();
+
+            handleChannelError(new UaException(statusCode, errorMessage.getReason()));
         }
 
         super.userEventTriggered(ctx, evt);
@@ -67,6 +74,11 @@ public abstract class InboundUascResponseHandler
         @Override
         public void handleReceiveFailure(long requestId, UaException exception) {
             delegate.handleReceiveFailure(requestId, exception);
+        }
+
+        @Override
+        public void handleChannelError(UaException exception) {
+            delegate.handleChannelError(exception);
         }
 
         @Override

@@ -542,6 +542,8 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
             logger.error("[remote={}] errorMessage={}", ctx.channel().remoteAddress(), errorMessage);
 
             handshakeFuture.completeExceptionally(new UaException(statusCode, errorMessage.getReason()));
+
+            ctx.fireUserEventTriggered(errorMessage);
         } catch (UaException e) {
             logger.error(
                 "[remote={}] An exception occurred while decoding an error message: {}",

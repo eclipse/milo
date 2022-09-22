@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
+import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequest;
@@ -18,8 +19,8 @@ public class UascServiceRequest extends ServiceRequest {
 
     private final long requestId;
 
-    public UascServiceRequest(String endpointUrl, SecureChannel secureChannel, UaRequestMessageType requestMessage, long requestId) {
-        super(endpointUrl, secureChannel, requestMessage);
+    public UascServiceRequest(String endpointUrl, Channel channel, SecureChannel secureChannel, UaRequestMessageType requestMessage, long requestId) {
+        super(endpointUrl, channel, secureChannel, requestMessage);
 
         this.requestId = requestId;
     }

@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.transport.server;
 
-import java.net.InetAddress;
-
+import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 
@@ -20,16 +19,19 @@ public class ServiceRequest implements ServiceRequestContext {
     private final long receivedAtNanos = System.nanoTime();
 
     private final String endpointUrl;
+    private final Channel channel;
     private final SecureChannel secureChannel;
     private final UaRequestMessageType requestMessage;
 
     public ServiceRequest(
         String endpointUrl,
+        Channel channel,
         SecureChannel secureChannel,
         UaRequestMessageType requestMessage
     ) {
 
         this.endpointUrl = endpointUrl;
+        this.channel = channel;
         this.secureChannel = secureChannel;
         this.requestMessage = requestMessage;
     }
@@ -44,13 +46,13 @@ public class ServiceRequest implements ServiceRequestContext {
     }
 
     @Override
-    public SecureChannel getSecureChannel() {
-        return secureChannel;
+    public Channel getChannel() {
+        return channel;
     }
 
     @Override
-    public InetAddress getClientAddress() {
-        return getClientAddress();
+    public SecureChannel getSecureChannel() {
+        return secureChannel;
     }
 
     @Override

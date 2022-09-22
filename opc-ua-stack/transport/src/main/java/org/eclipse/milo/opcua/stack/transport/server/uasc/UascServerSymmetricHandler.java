@@ -181,6 +181,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
 
                     var serviceRequest = new UascServiceRequest(
                         endpointUrl,
+                        ctx.channel(),
                         secureChannel,
                         requestMessage,
                         requestId

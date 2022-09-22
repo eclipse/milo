@@ -10,17 +10,17 @@
 
 package org.eclipse.milo.opcua.stack.transport.server;
 
-import java.net.InetAddress;
 
+import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 
 public interface ServiceRequestContext {
 
     String getEndpointUrl();
 
-    SecureChannel getSecureChannel();
+    Channel getChannel();
 
-    InetAddress getClientAddress();
+    SecureChannel getSecureChannel();
 
     Long receivedAtNanos();
 

@@ -397,7 +397,12 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         request.getSecurityMode()
                     );
 
-                    return transportMatch && pathMatch && securityPolicyMatch && securityModeMatch;
+                    // allow a matched endpoint OR any unsecured connection, regardless of the
+                    // endpoint security, so that the receiving ServerApplication can decide if
+                    // it wants to allow unsecured Discovery services.
+                    return transportMatch && pathMatch &&
+                        (securityPolicyMatch && securityModeMatch ||
+                            secureChannel.getSecurityPolicy() == SecurityPolicy.None);
                 })
                 .findFirst()
                 .orElseThrow(() -> {
