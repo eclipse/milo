@@ -94,7 +94,9 @@ public abstract class AbstractUascClientTransport implements OpcClientTransport,
         if (timeoutHint > 0) {
             Timeout timeout = config.getWheelTimer().newTimeout(
                 t -> {
-                    if (!t.isCancelled()) {
+                    Timeout removed = pendingTimeouts.remove(request.getRequestId());
+
+                    if (removed != null && !removed.isCancelled()) {
                         CompletableFuture<UaResponseMessageType> future =
                             pendingRequests.remove(request.getRequestId());
 
@@ -173,14 +175,11 @@ public abstract class AbstractUascClientTransport implements OpcClientTransport,
     }
 
     private void failAndClearPending(UaException exception) {
-        pendingRequests.values().forEach(
-            f ->
-                config.getExecutor().execute(() -> f.completeExceptionally(exception))
-        );
+        pendingRequests.forEach((requestId, f) -> {
+            cancelRequestTimeout(requestId);
+            config.getExecutor().execute(() -> f.completeExceptionally(exception));
+        });
         pendingRequests.clear();
-
-        pendingTimeouts.values().forEach(Timeout::cancel);
-        pendingTimeouts.clear();
     }
 
 }

@@ -24,7 +24,7 @@ public interface UascResponseHandler {
     // failed while decoding response, aborted, decode exception, ServiceFault
     void handleReceiveFailure(long requestId, UaException exception);
 
-     void handleChannelError(UaException exception);
+    void handleChannelError(UaException exception);
 
     // channel inactive, cancel pending requests?
     void handleChannelInactive();

@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +38,9 @@ import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
-import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +56,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     private final OpcUaBinaryEncoder binaryEncoder;
     private final OpcUaBinaryDecoder binaryDecoder;
 
-    private final UascServerConfig config;
     private final ServerApplication application;
     private final ChannelParameters channelParameters;
     private final ChunkEncoder chunkEncoder;
@@ -67,7 +63,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     private final ServerSecureChannel secureChannel;
 
     UascServerSymmetricHandler(
-        UascServerConfig config,
         ServerApplication application,
         ChannelParameters channelParameters,
         ChunkEncoder chunkEncoder,
@@ -75,7 +70,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
         ServerSecureChannel secureChannel
     ) {
 
-        this.config = config;
         this.application = application;
         this.channelParameters = channelParameters;
         this.chunkEncoder = chunkEncoder;
@@ -184,15 +178,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
                     String endpointUrl = ctx.channel()
                         .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
                         .get();
-
-                    EndpointDescription endpoint = ctx.channel()
-                        .attr(UascServerAsymmetricHandler.ENDPOINT_KEY)
-                        .get();
-
-                    String path = EndpointUtil.getPath(endpointUrl);
-
-                    InetSocketAddress remoteSocketAddress =
-                        (InetSocketAddress) ctx.channel().remoteAddress();
 
                     var serviceRequest = new UascServiceRequest(
                         endpointUrl,

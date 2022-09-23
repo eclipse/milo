@@ -101,6 +101,26 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         super.channelActive(ctx);
     }
 
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof IOException) {
+            ctx.close();
+            logger.debug("[remote={}] IOException caught; channel closed",
+                ctx.channel().remoteAddress(), cause);
+        } else {
+            ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
+
+            if (cause instanceof UaException) {
+                logger.debug("[remote={}] UaException caught; sent {}",
+                    ctx.channel().remoteAddress(), errorMessage, cause);
+            } else {
+                logger.error("[remote={}] Exception caught; sent {}",
+                    ctx.channel().remoteAddress(), errorMessage, cause);
+            }
+        }
+    }
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
         if (buffer.readableBytes() >= HEADER_LENGTH) {
@@ -212,25 +232,6 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         ctx.executor().execute(() -> ctx.writeAndFlush(messageBuffer));
 
         logger.debug("[remote={}] Sent Acknowledge message.", ctx.channel().remoteAddress());
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if (cause instanceof IOException) {
-            ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed",
-                ctx.channel().remoteAddress(), cause);
-        } else {
-            ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
-
-            if (cause instanceof UaException) {
-                logger.debug("[remote={}] UaException caught; sent {}",
-                    ctx.channel().remoteAddress(), errorMessage, cause);
-            } else {
-                logger.error("[remote={}] Exception caught; sent {}",
-                    ctx.channel().remoteAddress(), errorMessage, cause);
-            }
-        }
     }
 
 }

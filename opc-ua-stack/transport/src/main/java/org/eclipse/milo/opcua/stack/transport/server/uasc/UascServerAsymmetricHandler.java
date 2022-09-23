@@ -121,6 +121,39 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         maxChunkSize = channelParameters.getLocalReceiveBufferSize();
     }
 
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        if (secureChannelTimeout != null) {
+            secureChannelTimeout.cancel();
+            secureChannelTimeout = null;
+        }
+
+        super.channelInactive(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        chunkBuffers.clear();
+
+        if (cause instanceof IOException) {
+            ctx.close();
+            logger.debug("[remote={}] IOException caught; channel closed",
+                ctx.channel().remoteAddress(), cause);
+        } else {
+            ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
+
+            if (cause instanceof UaException) {
+                logger.debug("[remote={}] UaException caught; sent {}",
+                    ctx.channel().remoteAddress(), errorMessage, cause);
+            } else {
+                logger.error("[remote={}] Exception caught; sent {}",
+                    ctx.channel().remoteAddress(), errorMessage, cause);
+            }
+        }
+    }
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
         if (buffer.readableBytes() >= HEADER_LENGTH) {
@@ -325,7 +358,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             if (!symmetricHandlerAdded) {
                 var symmetricHandler = new UascServerSymmetricHandler(
-                    config,
                     application,
                     channelParameters,
                     chunkEncoder,
@@ -524,38 +556,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                     messageSize + " > " + remoteMaxMessageSize
             );
         }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
-        chunkBuffers.clear();
-
-        if (cause instanceof IOException) {
-            ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed",
-                ctx.channel().remoteAddress(), cause);
-        } else {
-            ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
-
-            if (cause instanceof UaException) {
-                logger.debug("[remote={}] UaException caught; sent {}",
-                    ctx.channel().remoteAddress(), errorMessage, cause);
-            } else {
-                logger.error("[remote={}] Exception caught; sent {}",
-                    ctx.channel().remoteAddress(), errorMessage, cause);
-            }
-        }
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (secureChannelTimeout != null) {
-            secureChannelTimeout.cancel();
-            secureChannelTimeout = null;
-        }
-
-        super.channelInactive(ctx);
     }
 
 }
