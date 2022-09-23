@@ -31,12 +31,12 @@ public final class TestClient {
                 endpoints.stream()
                     .filter(e -> e.getSecurityPolicyUri().equals(endpoint.getSecurityPolicy().getUri()))
                     .findFirst(),
-            transportConfigBuilder ->
-                transportConfigBuilder.setRequestTimeout(uint(5000)),
+            transportConfigBuilder -> {},
             clientConfigBuilder ->
                 clientConfigBuilder
                     .setApplicationName(LocalizedText.english("eclipse milo test client"))
                     .setApplicationUri("urn:eclipse:milo:test:client")
+                    .setRequestTimeout(uint(5_000))
         );
     }
 

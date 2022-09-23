@@ -186,10 +186,10 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
                     ctx.close();
                 }
             },
-            config.getRequestTimeout().longValue(), TimeUnit.MILLISECONDS
+            application.getRequestTimeout().longValue(), TimeUnit.MILLISECONDS
         );
 
-        logger.debug("OpenSecureChannel timeout scheduled for +{}ms", config.getRequestTimeout());
+        logger.debug("OpenSecureChannel timeout scheduled for +{}ms", application.getRequestTimeout());
 
         sendOpenSecureChannelRequest(ctx, requestType);
     }
@@ -590,7 +590,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
             uint(0),
             uint(0),
             null,
-            config.getRequestTimeout(),
+            application.getRequestTimeout(),
             null
         );
 

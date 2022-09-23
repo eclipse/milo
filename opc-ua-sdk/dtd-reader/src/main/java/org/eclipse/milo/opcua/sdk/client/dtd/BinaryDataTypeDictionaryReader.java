@@ -528,7 +528,7 @@ public class BinaryDataTypeDictionaryReader {
     private CompletableFuture<List<ReferenceDescription>> browseNode(BrowseDescription browseDescription) {
         RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            client.getTransport().getConfig().getRequestTimeout()
+            client.getConfig().getRequestTimeout()
         );
 
         BrowseRequest browseRequest = new BrowseRequest(
@@ -580,7 +580,7 @@ public class BinaryDataTypeDictionaryReader {
 
         RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            client.getTransport().getConfig().getRequestTimeout()
+            client.getConfig().getRequestTimeout()
         );
 
         BrowseNextRequest request = new BrowseNextRequest(
@@ -606,7 +606,7 @@ public class BinaryDataTypeDictionaryReader {
     private CompletableFuture<List<DataValue>> readNodes(List<ReadValueId> readValueIds) {
         RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            client.getTransport().getConfig().getRequestTimeout()
+            client.getConfig().getRequestTimeout()
         );
 
         ReadRequest readRequest = new ReadRequest(

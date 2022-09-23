@@ -29,8 +29,6 @@ import org.eclipse.milo.opcua.stack.transport.client.security.DefaultClientCerti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-
 public class ClientExampleRunner {
 
     static {
@@ -90,8 +88,7 @@ public class ClientExampleRunner {
                 endpoints.stream()
                     .filter(clientExample.endpointFilter())
                     .findFirst(),
-            transportConfigBuilder ->
-                transportConfigBuilder.setRequestTimeout(uint(5000)),
+            transportConfigBuilder -> {},
             clientConfigBuilder ->
                 clientConfigBuilder
                     .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))

@@ -124,6 +124,11 @@ class OpcTcpTransportTest extends SecurityFixture {
             public EncodingContext getEncodingContext() {
                 return new DefaultEncodingContext();
             }
+
+            @Override
+            public UInteger getRequestTimeout() {
+                return uint(5_000);
+            }
         };
 
         OpcTcpClientTransportConfig config = OpcTcpClientTransportConfig.newBuilder().build();
@@ -185,6 +190,11 @@ class OpcTcpTransportTest extends SecurityFixture {
             public EncodingContext getEncodingContext() {
                 return new DefaultEncodingContext();
             }
+
+            @Override
+            public UInteger getRequestTimeout() {
+                return uint(5_000);
+            }
         };
 
         OpcTcpClientTransportConfig config = OpcTcpClientTransportConfig.newBuilder().build();
@@ -243,6 +253,11 @@ class OpcTcpTransportTest extends SecurityFixture {
             @Override
             public EncodingContext getEncodingContext() {
                 return new DefaultEncodingContext();
+            }
+
+            @Override
+            public UInteger getRequestTimeout() {
+                return uint(5_000);
             }
         };
 

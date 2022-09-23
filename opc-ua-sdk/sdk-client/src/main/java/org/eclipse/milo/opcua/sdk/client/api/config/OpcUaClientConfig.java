@@ -97,6 +97,11 @@ public interface OpcUaClientConfig {
     UInteger getSessionTimeout();
 
     /**
+     * @return the request timeout, in milliseconds.
+     */
+    UInteger getRequestTimeout();
+
+    /**
      * @return the {@link EncodingLimits} used by this client.
      */
     EncodingLimits getEncodingLimits();
@@ -167,6 +172,7 @@ public interface OpcUaClientConfig {
         builder.setProductUri(config.getProductUri());
         builder.setSessionName(config.getSessionName());
         builder.setSessionTimeout(config.getSessionTimeout());
+        builder.setRequestTimeout(config.getRequestTimeout());
         builder.setMaxResponseMessageSize(config.getMaxResponseMessageSize());
         builder.setMaxPendingPublishRequests(config.getMaxPendingPublishRequests());
         builder.setIdentityProvider(config.getIdentityProvider());

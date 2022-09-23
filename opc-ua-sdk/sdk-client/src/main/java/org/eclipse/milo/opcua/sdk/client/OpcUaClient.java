@@ -392,6 +392,11 @@ public class OpcUaClient implements UaClient {
             public EncodingContext getEncodingContext() {
                 return staticEncodingContext;
             }
+
+            @Override
+            public UInteger getRequestTimeout() {
+                return config.getRequestTimeout();
+            }
         };
 
         sessionFsm = SessionFsmFactory.newSessionFsm(this);
@@ -692,7 +697,7 @@ public class OpcUaClient implements UaClient {
      * @return a new {@link RequestHeader} created with {@code authToken}.
      */
     public RequestHeader newRequestHeader(NodeId authToken) {
-        return newRequestHeader(authToken, transport.getConfig().getRequestTimeout());
+        return newRequestHeader(authToken, config.getRequestTimeout());
     }
 
     /**

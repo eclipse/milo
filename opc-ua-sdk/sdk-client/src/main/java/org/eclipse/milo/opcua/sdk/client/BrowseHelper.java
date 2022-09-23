@@ -61,7 +61,7 @@ public class BrowseHelper {
         BrowseRequest browseRequest = new BrowseRequest(
             client.newRequestHeader(
                 session.getAuthenticationToken(),
-                client.getTransport().getConfig().getRequestTimeout()
+                client.getConfig().getRequestTimeout()
             ),
             new ViewDescription(
                 NodeId.NULL_VALUE,
@@ -117,7 +117,7 @@ public class BrowseHelper {
         BrowseNextRequest browseNextRequest = new BrowseNextRequest(
             client.newRequestHeader(
                 session.getAuthenticationToken(),
-                client.getTransport().getConfig().getRequestTimeout()
+                client.getConfig().getRequestTimeout()
             ),
             false,
             new ByteString[]{continuationPoint}

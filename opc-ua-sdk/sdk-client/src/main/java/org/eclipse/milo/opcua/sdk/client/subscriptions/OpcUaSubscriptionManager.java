@@ -426,7 +426,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         double maxKeepAlive = subscriptions.values().stream()
             .map(s -> s.getRevisedPublishingInterval() * s.getRevisedMaxKeepAliveCount().doubleValue())
             .max(Comparator.naturalOrder())
-            .orElse(client.getTransport().getConfig().getRequestTimeout().doubleValue());
+            .orElse(client.getConfig().getRequestTimeout().doubleValue());
 
         long maxPendingPublishes = getMaxPendingPublishes();
 

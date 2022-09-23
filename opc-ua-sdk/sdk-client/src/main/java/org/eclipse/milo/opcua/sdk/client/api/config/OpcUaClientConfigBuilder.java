@@ -39,8 +39,9 @@ public class OpcUaClientConfigBuilder {
 
     private Supplier<String> sessionName;
     private String[] sessionLocaleIds = new String[0];
-    private UInteger sessionTimeout = uint(120000);
+    private UInteger sessionTimeout = uint(120_000);
 
+    private UInteger requestTimeout = uint(60_000);
     private IdentityProvider identityProvider = new AnonymousProvider();
 
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
@@ -79,6 +80,11 @@ public class OpcUaClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setSessionTimeout(UInteger sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
+        this.requestTimeout = requestTimeout;
         return this;
     }
 
@@ -167,7 +173,9 @@ public class OpcUaClientConfigBuilder {
             sessionName,
             sessionLocaleIds,
             sessionTimeout,
-            encodingLimits, maxResponseMessageSize,
+            requestTimeout,
+            encodingLimits,
+            maxResponseMessageSize,
             maxPendingPublishRequests,
             identityProvider,
             keepAliveFailuresAllowed,
@@ -191,6 +199,7 @@ public class OpcUaClientConfigBuilder {
         private final String[] sessionLocaleIds;
         private final UInteger sessionTimeout;
 
+        private final UInteger requestTimeout;
         private final EncodingLimits encodingLimits;
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
@@ -212,6 +221,7 @@ public class OpcUaClientConfigBuilder {
             Supplier<String> sessionName,
             String[] sessionLocaleIds,
             UInteger sessionTimeout,
+            UInteger requestTimeout,
             EncodingLimits encodingLimits,
             UInteger maxResponseMessageSize,
             UInteger maxPendingPublishRequests,
@@ -232,6 +242,7 @@ public class OpcUaClientConfigBuilder {
             this.sessionName = sessionName;
             this.sessionLocaleIds = sessionLocaleIds;
             this.sessionTimeout = sessionTimeout;
+            this.requestTimeout = requestTimeout;
             this.encodingLimits = encodingLimits;
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
@@ -295,6 +306,11 @@ public class OpcUaClientConfigBuilder {
         @Override
         public UInteger getSessionTimeout() {
             return sessionTimeout;
+        }
+
+        @Override
+        public UInteger getRequestTimeout() {
+            return requestTimeout;
         }
 
         @Override

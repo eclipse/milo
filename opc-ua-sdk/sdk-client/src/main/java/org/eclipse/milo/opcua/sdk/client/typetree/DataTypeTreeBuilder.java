@@ -144,7 +144,7 @@ public final class DataTypeTreeBuilder {
     private static CompletableFuture<NamespaceTable> readNamespaceTable(OpcUaClient client, OpcUaSession session) {
         RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            client.getTransport().getConfig().getRequestTimeout()
+            client.getConfig().getRequestTimeout()
         );
 
         CompletableFuture<UaResponseMessageType> readFuture = client.getTransport().sendRequestMessage(
@@ -297,7 +297,7 @@ public final class DataTypeTreeBuilder {
         var request = new ReadRequest(
             client.newRequestHeader(
                 session.getAuthenticationToken(),
-                client.getTransport().getConfig().getRequestTimeout()
+                client.getConfig().getRequestTimeout()
             ),
             0.0,
             TimestampsToReturn.Neither,

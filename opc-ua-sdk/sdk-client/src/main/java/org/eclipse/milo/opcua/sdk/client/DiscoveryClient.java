@@ -93,6 +93,11 @@ public class DiscoveryClient {
             public EncodingContext getEncodingContext() {
                 return new DefaultEncodingContext();
             }
+
+            @Override
+            public UInteger getRequestTimeout() {
+                return uint(60_000);
+            }
         };
     }
 
@@ -127,7 +132,7 @@ public class DiscoveryClient {
 
         RequestHeader requestHeader = newRequestHeader(
             NodeId.NULL_VALUE,
-            transport.getConfig().getRequestTimeout()
+            uint(60_000)
         );
 
         FindServersRequest request = new FindServersRequest(
@@ -158,7 +163,7 @@ public class DiscoveryClient {
 
         RequestHeader header = newRequestHeader(
             NodeId.NULL_VALUE,
-            transport.getConfig().getRequestTimeout()
+            uint(60_000)
         );
 
         GetEndpointsRequest request = new GetEndpointsRequest(

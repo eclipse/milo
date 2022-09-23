@@ -21,8 +21,6 @@ public interface OpcClientTransportConfig {
 
     UInteger getConnectTimeout();
 
-    UInteger getRequestTimeout();
-
     ExecutorService getExecutor();
 
     ScheduledExecutorService getScheduledExecutor();

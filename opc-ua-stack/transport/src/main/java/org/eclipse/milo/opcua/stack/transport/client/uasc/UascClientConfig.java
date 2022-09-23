@@ -17,8 +17,6 @@ public interface UascClientConfig {
 
     UInteger getConnectTimeout();
 
-    UInteger getRequestTimeout();
-
     UInteger getAcknowledgeTimeout();
 
     UInteger getChannelLifetime();

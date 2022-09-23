@@ -25,7 +25,6 @@ public class OpcTcpClientTransportConfigBuilder {
 
     private UInteger connectTimeout = uint(5_000);
     private UInteger acknowledgeTimeout = uint(5_000);
-    private UInteger requestTimeout = uint(60_000);
     private UInteger channelLifetime = uint(60 * 60 * 1000);
 
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
@@ -42,11 +41,6 @@ public class OpcTcpClientTransportConfigBuilder {
 
     public OpcTcpClientTransportConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
         this.acknowledgeTimeout = acknowledgeTimeout;
-        return this;
-    }
-
-    public OpcTcpClientTransportConfigBuilder setRequestTimeout(UInteger requestTimeout) {
-        this.requestTimeout = requestTimeout;
         return this;
     }
 
@@ -92,7 +86,6 @@ public class OpcTcpClientTransportConfigBuilder {
         return new OpcTcpClientTransportConfigImpl(
             connectTimeout,
             acknowledgeTimeout,
-            requestTimeout,
             channelLifetime,
             executor,
             scheduledExecutor,
@@ -105,7 +98,6 @@ public class OpcTcpClientTransportConfigBuilder {
 
         private final UInteger connectTimeout;
         private final UInteger acknowledgeTimeout;
-        private final UInteger requestTimeout;
         private final UInteger channelLifetime;
         private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutor;
@@ -115,7 +107,6 @@ public class OpcTcpClientTransportConfigBuilder {
         public OpcTcpClientTransportConfigImpl(
             UInteger connectTimeout,
             UInteger acknowledgeTimeout,
-            UInteger requestTimeout,
             UInteger channelLifetime,
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutor,
@@ -125,7 +116,6 @@ public class OpcTcpClientTransportConfigBuilder {
 
             this.connectTimeout = connectTimeout;
             this.acknowledgeTimeout = acknowledgeTimeout;
-            this.requestTimeout = requestTimeout;
             this.channelLifetime = channelLifetime;
             this.executor = executor;
             this.scheduledExecutor = scheduledExecutor;
@@ -142,11 +132,6 @@ public class OpcTcpClientTransportConfigBuilder {
         @Override
         public UInteger getAcknowledgeTimeout() {
             return acknowledgeTimeout;
-        }
-
-        @Override
-        public UInteger getRequestTimeout() {
-            return requestTimeout;
         }
 
         @Override
