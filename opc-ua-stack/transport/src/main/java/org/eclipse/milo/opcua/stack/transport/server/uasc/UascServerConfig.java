@@ -10,12 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface UascServerConfig {
-
-    EncodingLimits getEncodingLimits();
 
     UInteger getHelloDeadline();
 

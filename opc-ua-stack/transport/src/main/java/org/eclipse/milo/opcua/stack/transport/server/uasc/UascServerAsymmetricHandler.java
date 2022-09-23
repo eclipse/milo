@@ -115,7 +115,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         binaryDecoder = new OpcUaBinaryDecoder(application.getEncodingContext());
 
         chunkEncoder = new ChunkEncoder(channelParameters);
-        chunkDecoder = new ChunkDecoder(channelParameters, config.getEncodingLimits());
+        chunkDecoder = new ChunkDecoder(channelParameters, application.getEncodingContext().getEncodingLimits());
 
         maxChunkCount = channelParameters.getLocalMaxChunkCount();
         maxChunkSize = channelParameters.getLocalReceiveBufferSize();
@@ -208,7 +208,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             final AsymmetricSecurityHeader header = AsymmetricSecurityHeader.decode(
                 buffer,
-                config.getEncodingLimits()
+                application.getEncodingContext().getEncodingLimits()
             );
 
             if (!headerRef.compareAndSet(null, header)) {
