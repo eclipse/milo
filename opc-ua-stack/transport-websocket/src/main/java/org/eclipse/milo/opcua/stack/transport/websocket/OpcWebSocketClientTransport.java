@@ -53,6 +53,7 @@ import io.netty.util.TimerTask;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -179,7 +180,9 @@ public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
                             channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
                         }
 
-                        int maxMessageSize = config.getEncodingLimits().getMaxMessageSize();
+                        EncodingLimits encodingLimits = application.getEncodingContext().getEncodingLimits();
+
+                        int maxMessageSize = encodingLimits.getMaxMessageSize();
 
                         channel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
                         channel.pipeline().addLast(new HttpClientCodec());
@@ -193,13 +196,13 @@ public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
                                     subprotocol,
                                     true,
                                     new DefaultHttpHeaders(),
-                                    config.getEncodingLimits().getMaxChunkSize()
+                                    encodingLimits.getMaxChunkSize()
                                 )
                             )
                         );
 
                         channel.pipeline().addLast(
-                            new WebSocketFrameAggregator(config.getEncodingLimits().getMaxMessageSize())
+                            new WebSocketFrameAggregator(encodingLimits.getMaxMessageSize())
                         );
 
                         // TODO when/where does the InboundUascResponseHandler get added?

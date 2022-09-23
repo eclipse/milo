@@ -55,11 +55,6 @@ public class OpcTcpClientTransportConfigBuilder {
         return this;
     }
 
-    public OpcTcpClientTransportConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
-        return this;
-    }
-
     public OpcTcpClientTransportConfigBuilder setExecutor(ExecutorService executor) {
         this.executor = executor;
         return this;
@@ -99,7 +94,6 @@ public class OpcTcpClientTransportConfigBuilder {
             acknowledgeTimeout,
             requestTimeout,
             channelLifetime,
-            encodingLimits,
             executor,
             scheduledExecutor,
             eventLoop,
@@ -113,7 +107,6 @@ public class OpcTcpClientTransportConfigBuilder {
         private final UInteger acknowledgeTimeout;
         private final UInteger requestTimeout;
         private final UInteger channelLifetime;
-        private final EncodingLimits encodingLimits;
         private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutor;
         private final NioEventLoopGroup eventLoop;
@@ -124,7 +117,6 @@ public class OpcTcpClientTransportConfigBuilder {
             UInteger acknowledgeTimeout,
             UInteger requestTimeout,
             UInteger channelLifetime,
-            EncodingLimits encodingLimits,
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutor,
             NioEventLoopGroup eventLoop,
@@ -135,7 +127,6 @@ public class OpcTcpClientTransportConfigBuilder {
             this.acknowledgeTimeout = acknowledgeTimeout;
             this.requestTimeout = requestTimeout;
             this.channelLifetime = channelLifetime;
-            this.encodingLimits = encodingLimits;
             this.executor = executor;
             this.scheduledExecutor = scheduledExecutor;
             this.eventLoop = eventLoop;
@@ -161,11 +152,6 @@ public class OpcTcpClientTransportConfigBuilder {
         @Override
         public UInteger getChannelLifetime() {
             return channelLifetime;
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return encodingLimits;
         }
 
         @Override

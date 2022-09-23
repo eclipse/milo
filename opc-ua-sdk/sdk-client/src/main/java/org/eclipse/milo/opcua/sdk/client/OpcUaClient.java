@@ -321,7 +321,7 @@ public class OpcUaClient implements UaClient {
 
             @Override
             public EncodingLimits getEncodingLimits() {
-                return transport.getConfig().getEncodingLimits();
+                return config.getEncodingLimits();
             }
 
             @Override
@@ -348,7 +348,7 @@ public class OpcUaClient implements UaClient {
 
             @Override
             public EncodingLimits getEncodingLimits() {
-                return transport.getConfig().getEncodingLimits();
+                return config.getEncodingLimits();
             }
 
             @Override

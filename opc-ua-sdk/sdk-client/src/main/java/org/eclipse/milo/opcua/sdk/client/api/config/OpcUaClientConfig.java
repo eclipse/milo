@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -94,6 +95,11 @@ public interface OpcUaClientConfig {
      * @return the session timeout, in milliseconds, to request.
      */
     UInteger getSessionTimeout();
+
+    /**
+     * @return the {@link EncodingLimits} used by this client.
+     */
+    EncodingLimits getEncodingLimits();
 
     /**
      * @return the maximum size for a response from the server.

@@ -116,7 +116,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
         binaryDecoder = new OpcUaBinaryDecoder(application.getEncodingContext());
         binaryEncoder = new OpcUaBinaryEncoder(application.getEncodingContext());
 
-        chunkDecoder = new ChunkDecoder(channelParameters, config.getEncodingLimits());
+        chunkDecoder = new ChunkDecoder(channelParameters, application.getEncodingContext().getEncodingLimits());
         chunkEncoder = new ChunkEncoder(channelParameters);
 
         handshakeFuture.thenAccept(sc -> {
@@ -380,7 +380,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
 
         AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(
             buffer,
-            config.getEncodingLimits()
+            application.getEncodingContext().getEncodingLimits()
         );
 
         if (headerRef.compareAndSet(null, securityHeader)) {

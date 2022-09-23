@@ -11,12 +11,9 @@
 package org.eclipse.milo.opcua.stack.transport.client.uasc;
 
 import io.netty.util.HashedWheelTimer;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface UascClientConfig {
-
-    EncodingLimits getEncodingLimits();
 
     UInteger getConnectTimeout();
 
@@ -27,6 +24,5 @@ public interface UascClientConfig {
     UInteger getChannelLifetime();
 
     HashedWheelTimer getWheelTimer();
-
 
 }

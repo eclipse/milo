@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -42,6 +43,7 @@ public class OpcUaClientConfigBuilder {
 
     private IdentityProvider identityProvider = new AnonymousProvider();
 
+    private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
     private UInteger maxResponseMessageSize = uint(0);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
 
@@ -77,6 +79,11 @@ public class OpcUaClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setSessionTimeout(UInteger sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
         return this;
     }
 
@@ -160,7 +167,7 @@ public class OpcUaClientConfigBuilder {
             sessionName,
             sessionLocaleIds,
             sessionTimeout,
-            maxResponseMessageSize,
+            encodingLimits, maxResponseMessageSize,
             maxPendingPublishRequests,
             identityProvider,
             keepAliveFailuresAllowed,
@@ -183,6 +190,8 @@ public class OpcUaClientConfigBuilder {
         private final Supplier<String> sessionName;
         private final String[] sessionLocaleIds;
         private final UInteger sessionTimeout;
+
+        private final EncodingLimits encodingLimits;
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
         private final IdentityProvider identityProvider;
@@ -203,6 +212,7 @@ public class OpcUaClientConfigBuilder {
             Supplier<String> sessionName,
             String[] sessionLocaleIds,
             UInteger sessionTimeout,
+            EncodingLimits encodingLimits,
             UInteger maxResponseMessageSize,
             UInteger maxPendingPublishRequests,
             IdentityProvider identityProvider,
@@ -222,6 +232,7 @@ public class OpcUaClientConfigBuilder {
             this.sessionName = sessionName;
             this.sessionLocaleIds = sessionLocaleIds;
             this.sessionTimeout = sessionTimeout;
+            this.encodingLimits = encodingLimits;
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
             this.identityProvider = identityProvider;
@@ -284,6 +295,11 @@ public class OpcUaClientConfigBuilder {
         @Override
         public UInteger getSessionTimeout() {
             return sessionTimeout;
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return encodingLimits;
         }
 
         @Override

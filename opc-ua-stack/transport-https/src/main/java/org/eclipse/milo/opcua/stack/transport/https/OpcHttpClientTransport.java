@@ -140,7 +140,7 @@ public class OpcHttpClientTransport implements OpcClientTransport {
                         channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
                     }
 
-                    int maxMessageSize = config.getEncodingLimits().getMaxMessageSize();
+                    int maxMessageSize = application.getEncodingContext().getEncodingLimits().getMaxMessageSize();
 
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());

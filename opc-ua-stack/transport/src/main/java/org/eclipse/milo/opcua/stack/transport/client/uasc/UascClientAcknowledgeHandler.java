@@ -121,12 +121,14 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
 
         String endpointUrl = application.getEndpoint().getEndpointUrl();
 
+        EncodingLimits encodingLimits = application.getEncodingContext().getEncodingLimits();
+
         var hello = new HelloMessage(
             PROTOCOL_VERSION,
-            config.getEncodingLimits().getMaxChunkSize(),
-            config.getEncodingLimits().getMaxChunkSize(),
-            config.getEncodingLimits().getMaxMessageSize(),
-            config.getEncodingLimits().getMaxChunkCount(),
+            encodingLimits.getMaxChunkSize(),
+            encodingLimits.getMaxChunkSize(),
+            encodingLimits.getMaxMessageSize(),
+            encodingLimits.getMaxChunkCount(),
             endpointUrl
         );
 
@@ -160,7 +162,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> list) throws Exception {
-        int maxChunkSize = config.getEncodingLimits().getMaxChunkSize();
+        int maxChunkSize = application.getEncodingContext().getEncodingLimits().getMaxChunkSize();
 
         if (buffer.readableBytes() >= 8) {
             int messageLength = getMessageLength(buffer, maxChunkSize);
@@ -216,7 +218,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
             );
         }
 
-        EncodingLimits encodingLimits = config.getEncodingLimits();
+        EncodingLimits encodingLimits = application.getEncodingContext().getEncodingLimits();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
         long localReceiveBufferSize = Math.min(remoteSendBufferSize, encodingLimits.getMaxChunkSize());
