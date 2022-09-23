@@ -13,25 +13,24 @@ package org.eclipse.milo.opcua.sdk.client.api.config;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Supplier;
 
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
-import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.transport.client.security.ClientCertificateValidator;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
+public class OpcUaClientConfigBuilder {
+
+    private EndpointDescription endpoint;
+    private KeyPair keyPair;
+    private X509Certificate certificate;
+    private X509Certificate[] certificateChain;
+    private ClientCertificateValidator certificateValidator = new ClientCertificateValidator.InsecureValidator();
 
     private LocalizedText applicationName = LocalizedText.english("Eclipse Milo application name not configured");
     private String applicationUri = "urn:eclipse:milo:client:applicationUriNotConfigured";
@@ -116,94 +115,32 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         return this;
     }
 
-    @Override
     public OpcUaClientConfigBuilder setEndpoint(EndpointDescription endpoint) {
-        super.setEndpoint(endpoint);
+        this.endpoint = endpoint;
         return this;
     }
 
-    @Override
     public OpcUaClientConfigBuilder setKeyPair(KeyPair keyPair) {
-        super.setKeyPair(keyPair);
+        this.keyPair = keyPair;
         return this;
     }
 
-    @Override
     public OpcUaClientConfigBuilder setCertificate(X509Certificate certificate) {
-        super.setCertificate(certificate);
+        this.certificate = certificate;
         return this;
     }
 
-    @Override
     public OpcUaClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
-        super.setCertificateChain(certificateChain);
+        this.certificateChain = certificateChain;
         return this;
     }
 
-    @Override
     public OpcUaClientConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
-        super.setCertificateValidator(certificateValidator);
+        this.certificateValidator = certificateValidator;
         return this;
     }
 
-    @Override
-    public OpcUaClientConfigBuilder setChannelLifetime(UInteger channelLifetime) {
-        super.setChannelLifetime(channelLifetime);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setExecutor(ExecutorService executor) {
-        super.setExecutor(executor);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setEventLoop(NioEventLoopGroup eventLoop) {
-        super.setEventLoop(eventLoop);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
-        super.setScheduledExecutor(scheduledExecutor);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setWheelTimer(HashedWheelTimer wheelTimer) {
-        super.setWheelTimer(wheelTimer);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
-        super.setEncodingLimits(encodingLimits);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setConnectTimeout(UInteger connectTimeout) {
-        super.setConnectTimeout(connectTimeout);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
-        super.setAcknowledgeTimeout(acknowledgeTimeout);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
-        super.setRequestTimeout(requestTimeout);
-        return this;
-    }
-
-    @Override
     public OpcUaClientConfig build() {
-        UaStackClientConfig stackClientConfig = super.build();
-
         if (sessionName == null) {
             sessionName = () -> String.format("UaSession:%s:%s",
                 applicationName.getText(),
@@ -212,7 +149,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         }
 
         return new OpcUaClientConfigImpl(
-            stackClientConfig,
+            endpoint,
+            keyPair,
+            certificate,
+            certificateChain,
+            certificateValidator,
             applicationName,
             applicationUri,
             productUri,
@@ -231,7 +172,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     static class OpcUaClientConfigImpl implements OpcUaClientConfig {
 
-        private final UaStackClientConfig stackClientConfig;
+        private final EndpointDescription endpoint;
+        private final KeyPair keyPair;
+        private final X509Certificate certificate;
+        private final X509Certificate[] certificateChain;
+        private final ClientCertificateValidator certificateValidator;
         private final LocalizedText applicationName;
         private final String applicationUri;
         private final String productUri;
@@ -247,7 +192,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final double subscriptionWatchdogMultiplier;
 
         OpcUaClientConfigImpl(
-            UaStackClientConfig stackClientConfig,
+            EndpointDescription endpoint,
+            KeyPair keyPair,
+            X509Certificate certificate,
+            X509Certificate[] certificateChain,
+            ClientCertificateValidator certificateValidator,
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
@@ -262,8 +211,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             UInteger keepAliveTimeout,
             double subscriptionWatchdogMultiplier
         ) {
-
-            this.stackClientConfig = stackClientConfig;
+            this.endpoint = endpoint;
+            this.keyPair = keyPair;
+            this.certificate = certificate;
+            this.certificateChain = certificateChain;
+            this.certificateValidator = certificateValidator;
             this.applicationName = applicationName;
             this.applicationUri = applicationUri;
             this.productUri = productUri;
@@ -277,6 +229,31 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.keepAliveInterval = keepAliveInterval;
             this.keepAliveTimeout = keepAliveTimeout;
             this.subscriptionWatchdogMultiplier = subscriptionWatchdogMultiplier;
+        }
+
+        @Override
+        public EndpointDescription getEndpoint() {
+            return endpoint;
+        }
+
+        @Override
+        public Optional<KeyPair> getKeyPair() {
+            return Optional.ofNullable(keyPair);
+        }
+
+        @Override
+        public Optional<X509Certificate> getCertificate() {
+            return Optional.ofNullable(certificate);
+        }
+
+        @Override
+        public Optional<X509Certificate[]> getCertificateChain() {
+            return Optional.ofNullable(certificateChain);
+        }
+
+        @Override
+        public ClientCertificateValidator getCertificateValidator() {
+            return certificateValidator;
         }
 
         @Override
@@ -342,76 +319,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public double getSubscriptionWatchdogMultiplier() {
             return subscriptionWatchdogMultiplier;
-        }
-
-        @Override
-        public EndpointDescription getEndpoint() {
-            return stackClientConfig.getEndpoint();
-        }
-
-        @Override
-        public Optional<KeyPair> getKeyPair() {
-            return stackClientConfig.getKeyPair();
-        }
-
-        @Override
-        public Optional<X509Certificate> getCertificate() {
-            return stackClientConfig.getCertificate();
-        }
-
-        @Override
-        public Optional<X509Certificate[]> getCertificateChain() {
-            return stackClientConfig.getCertificateChain();
-        }
-
-        @Override
-        public ClientCertificateValidator getCertificateValidator() {
-            return stackClientConfig.getCertificateValidator();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return stackClientConfig.getEncodingLimits();
-        }
-
-        @Override
-        public UInteger getChannelLifetime() {
-            return stackClientConfig.getChannelLifetime();
-        }
-
-        @Override
-        public ExecutorService getExecutor() {
-            return stackClientConfig.getExecutor();
-        }
-
-        @Override
-        public ScheduledExecutorService getScheduledExecutor() {
-            return stackClientConfig.getScheduledExecutor();
-        }
-
-        @Override
-        public NioEventLoopGroup getEventLoop() {
-            return stackClientConfig.getEventLoop();
-        }
-
-        @Override
-        public HashedWheelTimer getWheelTimer() {
-            return stackClientConfig.getWheelTimer();
-        }
-
-        @Override
-        public UInteger getConnectTimeout() {
-            return stackClientConfig.getConnectTimeout();
-        }
-
-        @Override
-        public UInteger getAcknowledgeTimeout() {
-            return stackClientConfig.getAcknowledgeTimeout();
-        }
-
-        @Override
-        public UInteger getRequestTimeout() {
-            return stackClientConfig.getRequestTimeout();
         }
 
     }

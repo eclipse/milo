@@ -37,7 +37,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -48,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
@@ -65,8 +65,12 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
 
     private final ChannelFsm channelFsm;
 
+    private final OpcTcpClientTransportConfig config;
+
     public OpcTcpClientTransport(OpcTcpClientTransportConfig config) {
         super(config);
+
+        this.config = config;
 
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
             .setLazy(false) // reconnect immediately
@@ -82,6 +86,11 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
         var factory = new ChannelFsmFactory(fsmConfig);
 
         channelFsm = factory.newChannelFsm();
+    }
+
+    @Override
+    public OpcTcpClientTransportConfig getConfig() {
+        return config;
     }
 
     @Override
@@ -102,6 +111,10 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
     @Override
     protected CompletableFuture<Channel> getChannel() {
         return channelFsm.getChannel();
+    }
+
+    public ChannelFsm getChannelFsm() {
+        return channelFsm;
     }
 
     private class ClientChannelActions implements ChannelActions {

@@ -89,8 +89,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     public OpcUaSubscriptionManager(OpcUaClient client) {
         this.client = client;
 
-        deliveryQueue = new ExecutionQueue(client.getConfig().getExecutor());
-        processingQueue = new ExecutionQueue(client.getConfig().getExecutor());
+        deliveryQueue = new ExecutionQueue(client.getTransport().getConfig().getExecutor());
+        processingQueue = new ExecutionQueue(client.getTransport().getConfig().getExecutor());
 
         client.addSessionActivityListener(new SessionActivityListener() {
             @Override
@@ -426,7 +426,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         double maxKeepAlive = subscriptions.values().stream()
             .map(s -> s.getRevisedPublishingInterval() * s.getRevisedMaxKeepAliveCount().doubleValue())
             .max(Comparator.naturalOrder())
-            .orElse(client.getConfig().getRequestTimeout().doubleValue());
+            .orElse(client.getTransport().getConfig().getRequestTimeout().doubleValue());
 
         long maxPendingPublishes = getMaxPendingPublishes();
 
@@ -483,7 +483,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             }
         });
 
-        RequestHeader requestHeader = client.getStackClient().newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
             getTimeoutHint()
         );
@@ -506,12 +506,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 requestHandle, Arrays.toString(ackStrings));
         }
 
-        client.<PublishResponse>sendRequest(request).whenComplete((response, ex) -> {
-            if (response != null) {
+        client.getTransport().sendRequestMessage(request).whenComplete((response, ex) -> {
+            if (response instanceof PublishResponse) {
+                PublishResponse publishResponse = (PublishResponse) response;
                 logger.debug("Received PublishResponse, sequenceNumber={}",
-                    response.getNotificationMessage().getSequenceNumber());
+                    publishResponse.getNotificationMessage().getSequenceNumber());
 
-                processingQueue.submit(() -> onPublishComplete(response, pendingCount));
+                processingQueue.submit(() -> onPublishComplete(publishResponse, pendingCount));
             } else {
                 StatusCode statusCode = UaException.extract(ex)
                     .map(UaException::getStatusCode)
@@ -623,7 +624,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                 maybeSendPublishRequests();
             },
-            client.getConfig().getExecutor()
+            client.getTransport().getConfig().getExecutor()
         );
     }
 
@@ -883,8 +884,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             long delay = Math.round(subscription.getRevisedPublishingInterval() *
                 subscription.getRevisedMaxKeepAliveCount().longValue() * multiplier);
 
-            ScheduledFuture<?> nextSf = client.getConfig().getScheduledExecutor().schedule(
-                () -> client.getConfig().getExecutor().execute(this::notifyListeners),
+            ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
+                () -> client.getTransport().getConfig().getExecutor().execute(this::notifyListeners),
                 delay,
                 TimeUnit.MILLISECONDS
             );

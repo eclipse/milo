@@ -34,9 +34,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import jakarta.xml.bind.JAXBException;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.core.dtd.BsdParser;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -85,11 +85,11 @@ public class BinaryDataTypeDictionaryReader {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaStackClient stackClient;
+    private final OpcUaClient client;
     private final OpcUaSession session;
 
-    public BinaryDataTypeDictionaryReader(UaStackClient stackClient, OpcUaSession session) {
-        this.stackClient = stackClient;
+    public BinaryDataTypeDictionaryReader(OpcUaClient client, OpcUaSession session) {
+        this.client = client;
         this.session = session;
     }
 
@@ -107,7 +107,7 @@ public class BinaryDataTypeDictionaryReader {
             references ->
                 references.stream()
                     .filter(r -> r.getTypeDefinition().equalTo(NodeIds.DataTypeDictionaryType))
-                    .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
+                    .flatMap(r -> opt2stream(r.getNodeId().toNodeId(client.getNamespaceTable())))
         );
 
         return dictionaryNodeIds
@@ -250,7 +250,7 @@ public class BinaryDataTypeDictionaryReader {
 
                 return completedFuture(fragmentBuffer);
             }
-        }, stackClient.getConfig().getExecutor());
+        }, client.getTransport().getConfig().getExecutor());
     }
 
     private CompletableFuture<TypeDictionaryInfo> createTypeDictionaryInfo(NodeId dictionaryNodeId, ByteString bs) {
@@ -426,7 +426,7 @@ public class BinaryDataTypeDictionaryReader {
         return browseResult.thenApply(references ->
             references.stream()
                 .filter(r -> NodeIds.DataTypeDescriptionType.equalTo(r.getTypeDefinition()))
-                .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
+                .flatMap(r -> opt2stream(r.getNodeId().toNodeId(client.getNamespaceTable())))
                 .collect(Collectors.toList())
         );
     }
@@ -491,7 +491,7 @@ public class BinaryDataTypeDictionaryReader {
 
                 return ref.map(r ->
                     r.getNodeId()
-                        .toNodeId(stackClient.getNamespaceTable())
+                        .toNodeId(client.getNamespaceTable())
                         .orElse(NodeId.NULL_VALUE)
                 ).orElse(NodeId.NULL_VALUE);
             });
@@ -516,7 +516,7 @@ public class BinaryDataTypeDictionaryReader {
 
                 return ref.map(r ->
                     r.getNodeId()
-                        .toNodeId(stackClient.getNamespaceTable())
+                        .toNodeId(client.getNamespaceTable())
                         .orElse(NodeId.NULL_VALUE)
                 ).orElse(NodeId.NULL_VALUE);
             });
@@ -526,9 +526,9 @@ public class BinaryDataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<ReferenceDescription>> browseNode(BrowseDescription browseDescription) {
-        RequestHeader requestHeader = stackClient.newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            stackClient.getConfig().getRequestTimeout()
+            client.getTransport().getConfig().getRequestTimeout()
         );
 
         BrowseRequest browseRequest = new BrowseRequest(
@@ -538,7 +538,8 @@ public class BinaryDataTypeDictionaryReader {
             new BrowseDescription[]{browseDescription}
         );
 
-        return stackClient.sendRequest(browseRequest)
+        return client.getTransport()
+            .sendRequestMessage(browseRequest)
             .thenApply(BrowseResponse.class::cast)
             .thenApply(r -> Objects.requireNonNull(r.getResults())[0])
             .thenCompose(result -> {
@@ -577,9 +578,9 @@ public class BinaryDataTypeDictionaryReader {
         ByteString continuationPoint,
         List<ReferenceDescription> references) {
 
-        RequestHeader requestHeader = stackClient.newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            stackClient.getConfig().getRequestTimeout()
+            client.getTransport().getConfig().getRequestTimeout()
         );
 
         BrowseNextRequest request = new BrowseNextRequest(
@@ -588,7 +589,8 @@ public class BinaryDataTypeDictionaryReader {
             new ByteString[]{continuationPoint}
         );
 
-        return stackClient.sendRequest(request)
+        return client.getTransport()
+            .sendRequestMessage(request)
             .thenApply(BrowseNextResponse.class::cast)
             .thenCompose(response -> {
                 BrowseResult result = l(response.getResults()).get(0);
@@ -602,9 +604,9 @@ public class BinaryDataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<DataValue>> readNodes(List<ReadValueId> readValueIds) {
-        RequestHeader requestHeader = stackClient.newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
-            stackClient.getConfig().getRequestTimeout()
+            client.getTransport().getConfig().getRequestTimeout()
         );
 
         ReadRequest readRequest = new ReadRequest(
@@ -614,7 +616,8 @@ public class BinaryDataTypeDictionaryReader {
             readValueIds.toArray(new ReadValueId[0])
         );
 
-        return stackClient.sendRequest(readRequest)
+        return client.getTransport()
+            .sendRequestMessage(readRequest)
             .thenApply(ReadResponse.class::cast)
             .thenApply(r -> l(r.getResults()));
     }

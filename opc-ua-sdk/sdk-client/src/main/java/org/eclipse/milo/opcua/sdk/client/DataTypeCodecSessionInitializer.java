@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicCodecFactory;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
@@ -50,27 +49,27 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
     }
 
     @Override
-    public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {
+    public CompletableFuture<Unit> initialize(OpcUaClient client, OpcUaSession session) {
         String treeKey = DataTypeTreeSessionInitializer.SESSION_ATTRIBUTE_KEY;
 
         Object dataTypeTree = session.getAttribute(treeKey);
 
         if (dataTypeTree instanceof DataTypeTree) {
-            registerCodecs(stackClient, (DataTypeTree) dataTypeTree);
+            registerCodecs(client, (DataTypeTree) dataTypeTree);
 
             return CompletableFuture.completedFuture(Unit.VALUE);
         } else {
-            return DataTypeTreeBuilder.buildAsync(stackClient, session)
+            return DataTypeTreeBuilder.buildAsync(client, session)
                 .thenAccept(tree -> {
                     session.setAttribute(treeKey, tree);
 
-                    registerCodecs(stackClient, tree);
+                    registerCodecs(client, tree);
                 })
                 .thenApply(v -> Unit.VALUE);
         }
     }
 
-    private void registerCodecs(UaStackClient stackClient, DataTypeTree dataTypeTree) {
+    private void registerCodecs(OpcUaClient client, DataTypeTree dataTypeTree) {
         Tree<DataType> structureNode = dataTypeTree.getTreeNode(NodeIds.Structure);
 
         if (structureNode != null) {
@@ -81,7 +80,7 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
                         dataType.getBrowseName(), dataType.getNodeId()
                     );
 
-                    stackClient.getDynamicDataTypeManager().registerType(
+                    client.getDynamicDataTypeManager().registerType(
                         dataType.getNodeId(),
                         codecFactory.create(dataType, dataTypeTree),
                         dataType.getBinaryEncodingId(),

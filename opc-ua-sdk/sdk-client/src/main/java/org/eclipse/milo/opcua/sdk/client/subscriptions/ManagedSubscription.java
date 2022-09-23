@@ -1232,7 +1232,8 @@ public class ManagedSubscription {
      */
     private class ManagedSubscriptionNotificationListener implements UaSubscription.NotificationListener {
 
-        private final ExecutionQueue executionQueue = new ExecutionQueue(client.getConfig().getExecutor());
+        private final ExecutionQueue executionQueue =
+            new ExecutionQueue(client.getTransport().getConfig().getExecutor());
 
         //region UaSubscription.NotificationListener
 

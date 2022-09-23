@@ -50,7 +50,6 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -63,6 +62,7 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +78,12 @@ public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
 
     private final ChannelFsm channelFsm;
 
+    private final OpcWebSocketClientTransportConfig config;
+
     public OpcWebSocketClientTransport(OpcWebSocketClientTransportConfig config) {
         super(config);
+
+        this.config = config;
 
         // TODO use configurable executors
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
@@ -96,6 +100,11 @@ public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
         var factory = new ChannelFsmFactory(fsmConfig);
 
         channelFsm = factory.newChannelFsm();
+    }
+
+    @Override
+    public OpcWebSocketClientTransportConfig getConfig() {
+        return config;
     }
 
     @Override

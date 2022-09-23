@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionaryReader.TypeDictionaryInfo;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary.BinaryType;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
@@ -38,7 +38,7 @@ public class BinaryDataTypeDictionarySessionInitializer implements SessionFsm.Se
     }
 
     @Override
-    public CompletableFuture<Unit> initialize(UaStackClient client, OpcUaSession session) {
+    public CompletableFuture<Unit> initialize(OpcUaClient client, OpcUaSession session) {
         logger.debug("SessionInitializer: DataTypeDictionary");
 
         var dictionaryReader = new BinaryDataTypeDictionaryReader(client, session);

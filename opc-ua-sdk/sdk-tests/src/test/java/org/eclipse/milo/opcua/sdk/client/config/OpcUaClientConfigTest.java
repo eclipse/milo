@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,7 +46,6 @@ public class OpcUaClientConfigTest {
             .setEndpoint(endpoint)
             .setSessionName(() -> "testSessionName")
             .setSessionTimeout(uint(60000 * 60))
-            .setRequestTimeout(uint(120000))
             .setMaxResponseMessageSize(UInteger.MAX)
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
@@ -58,7 +57,6 @@ public class OpcUaClientConfigTest {
 
         assertEquals(copy.getSessionName(), original.getSessionName());
         assertEquals(copy.getSessionTimeout(), original.getSessionTimeout());
-        assertEquals(copy.getRequestTimeout(), original.getRequestTimeout());
         assertEquals(copy.getMaxResponseMessageSize(), original.getMaxResponseMessageSize());
         assertEquals(copy.getMaxPendingPublishRequests(), original.getMaxPendingPublishRequests());
         assertEquals(copy.getIdentityProvider(), original.getIdentityProvider());
@@ -75,7 +73,6 @@ public class OpcUaClientConfigTest {
             .setEndpoint(endpoint)
             .setSessionName(() -> "testSessionName")
             .setSessionTimeout(uint(60000 * 60))
-            .setRequestTimeout(uint(120000))
             .setMaxResponseMessageSize(UInteger.MAX)
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
@@ -86,7 +83,6 @@ public class OpcUaClientConfigTest {
             builder ->
                 builder.setSessionName(() -> "foo")
                     .setSessionTimeout(uint(0))
-                    .setRequestTimeout(uint(0))
                     .setMaxResponseMessageSize(uint(0))
                     .setMaxPendingPublishRequests(uint(0))
                     .setIdentityProvider(new AnonymousProvider())
@@ -101,7 +97,6 @@ public class OpcUaClientConfigTest {
         assertNotEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
 
         assertEquals(copy.getSessionTimeout(), uint(0));
-        assertEquals(copy.getRequestTimeout(), uint(0));
         assertEquals(copy.getMaxResponseMessageSize(), uint(0));
         assertEquals(copy.getMaxPendingPublishRequests(), uint(0));
         assertEquals(copy.getKeepAliveFailuresAllowed(), uint(2));

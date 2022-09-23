@@ -25,21 +25,12 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.util.AttributeKey;
-import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
@@ -48,10 +39,7 @@ import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTransportRequest> {
-
-    private static final AttributeKey<UaTransportRequest> KEY_PENDING_REQUEST =
-        AttributeKey.newInstance("pendingRequest");
+public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaRequestMessageType> {
 
     private static final String UABINARY_CONTENT_TYPE =
         HttpHeaderValues.APPLICATION_OCTET_STREAM.toString();
@@ -75,20 +63,19 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
     @Override
     protected void encode(
         ChannelHandlerContext ctx,
-        UaTransportRequest transportRequest,
-        List<Object> out) throws Exception {
+        UaRequestMessageType requestMessage,
+        List<Object> out
+    ) throws Exception {
 
-        logger.debug("encoding: " + transportRequest.getRequest());
-
-        ctx.channel().attr(KEY_PENDING_REQUEST).set(transportRequest);
+        logger.debug("encoding: " + requestMessage);
 
         ByteBuf content = Unpooled.buffer();
 
         switch (transportProfile) {
             case HTTPS_UABINARY: {
-                var encoder = new OpcUaBinaryEncoder(newEncodingContext(config.getEncodingLimits()));
+                var encoder = new OpcUaBinaryEncoder(application.getEncodingContext());
                 encoder.setBuffer(content);
-                encoder.encodeMessage(null, transportRequest.getRequest());
+                encoder.encodeMessage(null, requestMessage);
                 break;
             }
 
@@ -129,10 +116,6 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
         logger.trace("channelRead0: " + httpResponse);
 
-        UaTransportRequest transportRequest = ctx.channel()
-            .attr(KEY_PENDING_REQUEST)
-            .getAndSet(null);
-
         if (httpResponse instanceof FullHttpResponse) {
             String contentType = httpResponse.headers().get(HttpHeaderNames.CONTENT_TYPE);
 
@@ -148,7 +131,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                             "unexpected content-type: " + contentType);
                     }
 
-                    var decoder = new OpcUaBinaryDecoder(newEncodingContext(config.getEncodingLimits()));
+                    var decoder = new OpcUaBinaryDecoder(application.getEncodingContext());
                     decoder.setBuffer(content);
                     responseMessage = (UaResponseMessageType) decoder.decodeMessage(null);
                     break;
@@ -165,61 +148,21 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                         "no decoder for transport: " + transportProfile);
             }
 
-            transportRequest.getFuture().complete(responseMessage);
+            out.add(responseMessage);
         } else {
             HttpResponseStatus status = httpResponse.status();
 
             if (status.equals(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)) {
-                transportRequest.getFuture().completeExceptionally(
-                    new UaException(StatusCodes.Bad_ResponseTooLarge));
+                // TODO
+//                transportRequest.getFuture().completeExceptionally(
+//                    new UaException(StatusCodes.Bad_ResponseTooLarge));
             } else {
-                transportRequest.getFuture().completeExceptionally(
-                    new UaException(StatusCodes.Bad_UnexpectedError,
-                        String.format("%s: %s", status.code(), status.reasonPhrase())));
+                // TODO
+//                transportRequest.getFuture().completeExceptionally(
+//                    new UaException(StatusCodes.Bad_UnexpectedError,
+//                        String.format("%s: %s", status.code(), status.reasonPhrase())));
             }
         }
-    }
-
-    private static EncodingContext newEncodingContext(EncodingLimits encodingLimits) {
-        return new DefaultEncodingContext(encodingLimits);
-    }
-
-    private static class DefaultEncodingContext implements EncodingContext {
-
-        private final NamespaceTable namespaceTable = new NamespaceTable();
-        private final ServerTable serverTable = new ServerTable();
-
-        private final EncodingLimits encodingLimits;
-
-        private DefaultEncodingContext(EncodingLimits encodingLimits) {
-            this.encodingLimits = encodingLimits;
-        }
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return OpcUaEncodingManager.getInstance();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return encodingLimits;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceTable;
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return serverTable;
-        }
-
     }
 
 }

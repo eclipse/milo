@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,15 +17,14 @@ import java.util.concurrent.ScheduledFuture;
 
 import com.digitalpetri.strictmachine.Fsm;
 import com.digitalpetri.strictmachine.FsmContext;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class SessionFsm {
 
     static final String LOGGER_NAME = "org.eclipse.milo.opcua.sdk.client.SessionFsm";
-
 
     private final List<SessionInitializer> sessionInitializers;
     private final List<SessionActivityListener> sessionActivityListeners;
@@ -155,7 +154,7 @@ public class SessionFsm {
 
     public interface SessionInitializer {
 
-        CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session);
+        CompletableFuture<Unit> initialize(OpcUaClient client, OpcUaSession session);
 
     }
 

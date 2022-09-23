@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.client.security.DefaultClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.transport.client.security.DefaultClientCertificateValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +90,10 @@ public class ClientExampleRunner {
                 endpoints.stream()
                     .filter(clientExample.endpointFilter())
                     .findFirst(),
-            configBuilder ->
-                configBuilder
+            transportConfigBuilder ->
+                transportConfigBuilder.setRequestTimeout(uint(5000)),
+            clientConfigBuilder ->
+                clientConfigBuilder
                     .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
                     .setApplicationUri("urn:eclipse:milo:examples:client")
                     .setKeyPair(loader.getClientKeyPair())
@@ -99,8 +101,6 @@ public class ClientExampleRunner {
                     .setCertificateChain(loader.getClientCertificateChain())
                     .setCertificateValidator(certificateValidator)
                     .setIdentityProvider(clientExample.getIdentityProvider())
-                    .setRequestTimeout(uint(5000))
-                    .build()
         );
     }
 
