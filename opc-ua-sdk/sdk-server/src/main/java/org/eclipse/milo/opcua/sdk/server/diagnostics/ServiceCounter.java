@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.LongAdder;
 
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
@@ -23,7 +24,11 @@ public class ServiceCounter {
     private final LongAdder errorCount = new LongAdder();
 
     public void record(ServiceRequest service) {
-        service.getFuture().whenComplete((r, ex) -> {
+        record(service.getFuture());
+    }
+
+    public void record(CompletionStage<?> completionStage) {
+        completionStage.whenComplete((r, ex) -> {
             totalCount.increment();
 
             if (ex != null) {

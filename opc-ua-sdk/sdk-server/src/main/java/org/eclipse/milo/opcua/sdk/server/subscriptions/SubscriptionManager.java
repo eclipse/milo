@@ -91,15 +91,18 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
+import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class SubscriptionManager {
 
@@ -425,6 +428,101 @@ public class SubscriptionManager {
             );
 
             service.setResponse(response);
+        });
+    }
+
+    public CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(
+        ServiceRequestContext context,
+        CreateMonitoredItemsRequest request
+    ) {
+
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        TimestampsToReturn timestamps = request.getTimestampsToReturn();
+        List<MonitoredItemCreateRequest> itemsToCreate = List.of(request.getItemsToCreate());
+
+        if (subscription == null) {
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (timestamps == null) {
+            return failedUaFuture(StatusCodes.Bad_TimestampsToReturnInvalid);
+        }
+        if (itemsToCreate.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+
+        List<NodeId> distinctNodeIds = itemsToCreate.stream()
+            .map(item -> item.getItemToMonitor().getNodeId())
+            .distinct()
+            .collect(toList());
+
+        CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
+
+        return attributesFuture.thenApply(attributeGroups -> {
+            MonitoredItemCreateResult[] createResults = new MonitoredItemCreateResult[itemsToCreate.size()];
+
+            List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
+
+            long globalMax = server.getConfig()
+                .getLimits().getMaxMonitoredItems().longValue();
+
+            long sessionMax = server.getConfig()
+                .getLimits().getMaxMonitoredItemsPerSession().longValue();
+
+            for (int i = 0; i < itemsToCreate.size(); i++) {
+                MonitoredItemCreateRequest createRequest = itemsToCreate.get(i);
+
+                try {
+                    long globalCount = server.getMonitoredItemCount().incrementAndGet();
+                    long sessionCount = monitoredItemCount.incrementAndGet();
+
+                    if (globalCount <= globalMax && sessionCount <= sessionMax) {
+                        BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
+                            createRequest,
+                            subscription,
+                            timestamps,
+                            attributeGroups
+                        );
+
+                        monitoredItems.add(monitoredItem);
+
+                        createResults[i] = new MonitoredItemCreateResult(
+                            StatusCode.GOOD,
+                            monitoredItem.getId(),
+                            monitoredItem.getSamplingInterval(),
+                            uint(monitoredItem.getQueueSize()),
+                            monitoredItem.getFilterResult()
+                        );
+                    } else {
+                        throw new UaException(StatusCodes.Bad_TooManyMonitoredItems);
+                    }
+                } catch (UaException e) {
+                    monitoredItemCount.decrementAndGet();
+                    server.getMonitoredItemCount().decrementAndGet();
+
+                    createResults[i] = new MonitoredItemCreateResult(
+                        e.getStatusCode(),
+                        UInteger.MIN,
+                        0.0,
+                        UInteger.MIN,
+                        null
+                    );
+                }
+            }
+
+            subscription.addMonitoredItems(monitoredItems);
+
+            // Notify AddressSpaces of the items we just created.
+
+            byMonitoredItemType(
+                monitoredItems,
+                dataItems -> server.getAddressSpaceManager().onDataItemsCreated(dataItems),
+                eventItems -> server.getAddressSpaceManager().onEventItemsCreated(eventItems)
+            );
+
+            ResponseHeader header = createResponseHeader(request);
+
+            return new CreateMonitoredItemsResponse(header, createResults, new DiagnosticInfo[0]);
         });
     }
 
@@ -759,6 +857,99 @@ public class SubscriptionManager {
         });
     }
 
+
+    public CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(
+        ServiceRequestContext context,
+        ModifyMonitoredItemsRequest request
+    ) {
+
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        TimestampsToReturn timestamps = request.getTimestampsToReturn();
+        List<MonitoredItemModifyRequest> itemsToModify = List.of(request.getItemsToModify());
+
+        if (subscription == null) {
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (timestamps == null) {
+            return failedUaFuture(StatusCodes.Bad_TimestampsToReturnInvalid);
+        }
+        if (itemsToModify.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+
+        List<NodeId> distinctNodeIds = itemsToModify.stream()
+            .map(item -> {
+                UInteger itemId = item.getMonitoredItemId();
+                BaseMonitoredItem<?> monitoredItem = subscription.getMonitoredItems().get(itemId);
+                return monitoredItem != null ? monitoredItem.getReadValueId().getNodeId() : NodeId.NULL_VALUE;
+            })
+            .filter(NodeId::isNotNull)
+            .distinct()
+            .collect(toList());
+
+        CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
+
+        return attributesFuture.thenApply(attributeGroups -> {
+            MonitoredItemModifyResult[] modifyResults = new MonitoredItemModifyResult[itemsToModify.size()];
+
+            List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
+
+            for (int i = 0; i < itemsToModify.size(); i++) {
+                MonitoredItemModifyRequest modifyRequest = itemsToModify.get(i);
+
+                try {
+                    BaseMonitoredItem<?> monitoredItem = modifyMonitoredItem(
+                        modifyRequest,
+                        timestamps,
+                        subscription,
+                        attributeGroups
+                    );
+
+                    monitoredItems.add(monitoredItem);
+
+                    modifyResults[i] = new MonitoredItemModifyResult(
+                        StatusCode.GOOD,
+                        monitoredItem.getSamplingInterval(),
+                        uint(monitoredItem.getQueueSize()),
+                        monitoredItem.getFilterResult()
+                    );
+                } catch (UaException e) {
+                    modifyResults[i] = new MonitoredItemModifyResult(
+                        e.getStatusCode(),
+                        0.0,
+                        UInteger.MIN,
+                        null
+                    );
+                }
+            }
+
+            subscription.resetLifetimeCounter();
+
+            /*
+             * Notify AddressSpaces of the items we just modified.
+             */
+
+            byMonitoredItemType(
+                monitoredItems,
+                dataItems -> server.getAddressSpaceManager().onDataItemsModified(dataItems),
+                eventItems -> server.getAddressSpaceManager().onEventItemsModified(eventItems)
+            );
+
+            /*
+             * AddressSpaces have been notified; send response.
+             */
+
+            ResponseHeader header = createResponseHeader(request);
+
+            return new ModifyMonitoredItemsResponse(
+                header,
+                modifyResults,
+                new DiagnosticInfo[0]
+            );
+        });
+    }
+
     private BaseMonitoredItem<?> modifyMonitoredItem(
         MonitoredItemModifyRequest request,
         TimestampsToReturn timestamps,
@@ -1028,6 +1219,70 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
+    public CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItems(
+        ServiceRequestContext context,
+        DeleteMonitoredItemsRequest request
+    ) {
+
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        List<UInteger> itemsToDelete = List.of(request.getMonitoredItemIds());
+
+        if (subscription == null) {
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (itemsToDelete.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+
+        var deleteResults = new StatusCode[itemsToDelete.size()];
+        var deletedItems = new ArrayList<BaseMonitoredItem<?>>(itemsToDelete.size());
+
+        synchronized (subscription) {
+            for (int i = 0; i < itemsToDelete.size(); i++) {
+                UInteger itemId = itemsToDelete.get(i);
+                BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
+
+                if (item == null) {
+                    deleteResults[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+                } else {
+                    deletedItems.add(item);
+
+                    deleteResults[i] = StatusCode.GOOD;
+
+                    monitoredItemCount.decrementAndGet();
+                    server.getMonitoredItemCount().decrementAndGet();
+                }
+            }
+
+            subscription.removeMonitoredItems(deletedItems);
+        }
+
+        /*
+         * Notify AddressSpaces of the items that have been deleted.
+         */
+
+        byMonitoredItemType(
+            deletedItems,
+            dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
+            eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
+        );
+
+        /*
+         * Build and return results.
+         */
+
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new DeleteMonitoredItemsResponse(
+            header,
+            deleteResults,
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
+    }
+
     public void setMonitoringMode(ServiceRequest service) {
         SetMonitoringModeRequest request = (SetMonitoringModeRequest) service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
@@ -1087,6 +1342,62 @@ public class SubscriptionManager {
         } catch (UaException e) {
             service.setServiceFault(e);
         }
+    }
+
+    public CompletableFuture<SetMonitoringModeResponse> setMonitoringMode(ServiceRequestContext context, SetMonitoringModeRequest request) {
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        List<UInteger> itemsToModify = List.of(request.getMonitoredItemIds());
+
+        if (subscription == null) {
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (itemsToModify.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+
+        /*
+         * Set MonitoringMode on each monitored item, if it exists.
+         */
+
+        MonitoringMode monitoringMode = request.getMonitoringMode();
+        var results = new StatusCode[itemsToModify.size()];
+        var modified = new ArrayList<MonitoredItem>(itemsToModify.size());
+
+        for (int i = 0; i < itemsToModify.size(); i++) {
+            UInteger itemId = itemsToModify.get(i);
+            BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
+
+            if (item != null) {
+                item.setMonitoringMode(monitoringMode);
+
+                modified.add(item);
+
+                results[i] = StatusCode.GOOD;
+            } else {
+                results[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+            }
+        }
+
+        /*
+         * Notify AddressSpace of the items whose MonitoringMode has been modified.
+         */
+
+        server.getAddressSpaceManager().onMonitoringModeChanged(modified);
+
+        /*
+         * Build and return results.
+         */
+
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new SetMonitoringModeResponse(
+            header,
+            results,
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
     public void publish(ServiceRequest service) {
@@ -1243,6 +1554,77 @@ public class SubscriptionManager {
         );
 
         service.setResponse(response);
+    }
+
+
+    public CompletableFuture<SetTriggeringResponse> setTriggering(
+        ServiceRequestContext context,
+        SetTriggeringRequest request
+    ) {
+
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+
+        if (subscription == null) {
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+
+        UInteger triggerId = request.getTriggeringItemId();
+        List<UInteger> linksToAdd = List.of(request.getLinksToAdd());
+        List<UInteger> linksToRemove = List.of(request.getLinksToRemove());
+
+        if (linksToAdd.isEmpty() && linksToRemove.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+
+        StatusCode[] addResults;
+        StatusCode[] removeResults;
+
+        synchronized (subscription) {
+            Map<UInteger, BaseMonitoredItem<?>> itemsById = subscription.getMonitoredItems();
+
+            BaseMonitoredItem<?> triggerItem = itemsById.get(triggerId);
+            if (triggerItem == null) {
+                return failedUaFuture(StatusCodes.Bad_MonitoredItemIdInvalid);
+            }
+
+            removeResults = linksToRemove.stream()
+                .map(linkedItemId -> {
+                    BaseMonitoredItem<?> item = itemsById.get(linkedItemId);
+                    if (item != null) {
+                        if (triggerItem.getTriggeredItems().remove(linkedItemId) != null) {
+                            return StatusCode.GOOD;
+                        } else {
+                            return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+                        }
+                    } else {
+                        return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+                    }
+                })
+                .toArray(StatusCode[]::new);
+
+            addResults = linksToAdd.stream()
+                .map(linkedItemId -> {
+                    BaseMonitoredItem<?> linkedItem = itemsById.get(linkedItemId);
+                    if (linkedItem != null) {
+                        triggerItem.getTriggeredItems().put(linkedItemId, linkedItem);
+                        return StatusCode.GOOD;
+                    } else {
+                        return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+                    }
+                })
+                .toArray(StatusCode[]::new);
+        }
+
+        var response = new SetTriggeringResponse(
+            createResponseHeader(request),
+            addResults,
+            new DiagnosticInfo[0],
+            removeResults,
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
     public void sessionClosed(boolean deleteSubscriptions) {

@@ -28,6 +28,10 @@ public class ServerDiagnosticsSummary {
     private final LongAdder sessionAbortCount = new LongAdder();
     private final LongAdder cumulatedSubscriptionCount = new LongAdder();
 
+    private final LongAdder securityRejectedRequestCount = new LongAdder();
+
+    private final LongAdder rejectedRequestCount = new LongAdder();
+
     private final OpcUaServer server;
 
     public ServerDiagnosticsSummary(OpcUaServer server) {
@@ -122,7 +126,7 @@ public class ServerDiagnosticsSummary {
      * restarted). The requests include all Services defined in Part 4, and also requests to create sessions.
      */
     public UInteger getSecurityRejectedRequestCount() {
-        return uint(server.getStackServer().getSecurityRejectedRequestCount().sum());
+        return uint(securityRejectedRequestCount.sum());
     }
 
     /**
@@ -132,7 +136,7 @@ public class ServerDiagnosticsSummary {
      * @see #getSecurityRejectedRequestCount()
      */
     public UInteger getRejectedRequestCount() {
-        return uint(server.getStackServer().getRejectedRequestCount().sum());
+        return uint(rejectedRequestCount.sum());
     }
 
     /**

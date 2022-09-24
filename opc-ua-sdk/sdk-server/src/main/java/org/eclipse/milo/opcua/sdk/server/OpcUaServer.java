@@ -38,15 +38,26 @@ import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
+import org.eclipse.milo.opcua.sdk.server.services2.Service;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultAttributeServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMethodServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMonitoredItemServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -62,10 +73,12 @@ import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcUaServer {
+public class OpcUaServer extends AbstractServiceHandler implements ServerApplication {
 
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
@@ -93,6 +106,9 @@ public class OpcUaServer {
     private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
 
     private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
+
+    private final AtomicLong secureChannelIds = new AtomicLong();
+    private final AtomicLong secureChannelTokenIds = new AtomicLong();
 
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
@@ -124,6 +140,15 @@ public class OpcUaServer {
             stackServer.addServiceSet(path, (SessionServiceSet) sessionManager);
             stackServer.addServiceSet(path, (SubscriptionServiceSet) sessionManager);
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
+        });
+
+        // TODO should service sets that require a session all be implemented by SessionManager?
+        // Session-less eligible: View (minus register/unregister), Attribute, Method, Node Management, Query
+        paths.filter(path -> !path.endsWith("/discovery")).forEach(path -> {
+            addServiceSet(path, new DefaultAttributeServiceSet2(OpcUaServer.this));
+            addServiceSet(path, new DefaultMethodServiceSet2(OpcUaServer.this));
+            addServiceSet(path, new DefaultMonitoredItemServiceSet2(OpcUaServer.this));
+            addServiceSet(path, sessionManager);
         });
 
         ObjectTypeInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
@@ -163,10 +188,6 @@ public class OpcUaServer {
 
         return stackServer.shutdown()
             .thenApply(s -> OpcUaServer.this);
-    }
-
-    public UaStackServer getStackServer() {
-        return stackServer;
     }
 
     public AddressSpaceManager getAddressSpaceManager() {
@@ -280,6 +301,7 @@ public class OpcUaServer {
         return config.getScheduledExecutorService();
     }
 
+    @Override
     public List<EndpointDescription> getEndpointDescriptions() {
         return stackServer.getEndpointDescriptions();
     }
@@ -287,6 +309,99 @@ public class OpcUaServer {
     public Map<NodeId, ReferenceType> getReferenceTypes() {
         return referenceTypes;
     }
+
+    @Override
+    public CertificateManager getCertificateManager() {
+        return config.getCertificateManager();
+    }
+
+    @Override
+    public CertificateValidator getCertificateValidator() {
+        return config.getCertificateValidator();
+    }
+
+    @Override
+    public Long getNextSecureChannelId() {
+        return secureChannelIds.getAndIncrement();
+    }
+
+    @Override
+    public Long getNextSecureChannelTokenId() {
+        return secureChannelTokenIds.getAndIncrement();
+    }
+
+    /**
+     * Return {@code true} if {@code requestMessage} is one of the Discovery service requests:
+     * <ul>
+     *     <li>FindServersRequest</li>
+     *     <li>GetEndpointsRequest</li>
+     *     <li>RegisterServerRequest</li>
+     *     <li>FindServersOnNetworkRequest</li>
+     *     <li>RegisterServer2Request</li>
+     * </ul>
+     *
+     * @param requestMessage the {@link UaRequestMessageType} to check.
+     * @return {@code true} if {@code requestMessage} is one of the Discovery service requests.
+     */
+    private static boolean isDiscoveryService(UaRequestMessageType requestMessage) {
+        UInteger id = (UInteger) requestMessage.getTypeId().getIdentifier();
+
+        switch (id.intValue()) {
+            case 420:   // FindServers
+            case 426:   // GetEndpoints
+            case 435:   // RegisterServer
+            case 12190: // FindServersOnNetwork
+            case 12193: // RegisterServer2
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public CompletableFuture<UaResponseMessageType> handleServiceRequest(
+        ServiceRequestContext context,
+        UaRequestMessageType requestMessage
+    ) {
+
+        String path = EndpointUtil.getPath(context.getEndpointUrl());
+
+        if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
+            if (getEndpointDescriptions().stream()
+                .filter(e -> EndpointUtil.getPath(e.getEndpointUrl()).equals(path))
+                .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))) {
+
+                // TODO filter on transport profile as well?
+
+                if (!isDiscoveryService(requestMessage)) {
+                    var errorMessage = new ErrorMessage(
+                        StatusCodes.Bad_SecurityPolicyRejected,
+                        StatusCodes.lookup(StatusCodes.Bad_SecurityPolicyRejected)
+                            .map(ss -> ss[1]).orElse("")
+                    );
+
+                    context.getChannel().pipeline().fireUserEventTriggered(errorMessage);
+
+                    // won't complete, doesn't matter, we're closing down
+                    return new CompletableFuture<>();
+                }
+            }
+        }
+
+        Service service = Service.from(requestMessage.getTypeId());
+
+        ServiceHandler serviceHandler = service != null ?
+            getServiceHandler(path, service) : null;
+
+        if (serviceHandler != null) {
+            return serviceHandler.handle(context, requestMessage);
+        } else {
+            // TODO ServiceFault Bad_NotImplemented
+        }
+        return null;
+    }
+
 
     private static class ServerEventNotifier implements EventNotifier {
 

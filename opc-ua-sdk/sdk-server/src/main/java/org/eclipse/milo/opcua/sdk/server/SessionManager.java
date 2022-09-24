@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -30,11 +32,14 @@ import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
+import org.eclipse.milo.opcua.sdk.server.services2.SessionServiceSet2;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
+import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -48,11 +53,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
@@ -72,12 +80,14 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNullElse;
+import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
@@ -90,6 +100,7 @@ public class SessionManager implements
     NodeManagementServiceSet,
     QueryServiceSet,
     SessionServiceSet,
+    SessionServiceSet2,
     SubscriptionServiceSet,
     ViewServiceSet {
 
@@ -198,7 +209,91 @@ public class SessionManager implements
         }
     }
 
+    public Session getSession(ServiceRequestContext context, RequestHeader requestHeader) throws UaException {
+        long secureChannelId = context.getSecureChannel().getChannelId();
+        NodeId authToken = requestHeader.getAuthenticationToken();
+
+        Session session = activeSessions.get(authToken);
+
+        if (session == null) {
+            // session is either not activated or doesn't exist
+            session = createdSessions.get(authToken);
+
+            if (session != null) {
+                session.close(true);
+
+                throw new UaException(StatusCodes.Bad_SessionNotActivated);
+            } else {
+                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
+            }
+        } else {
+            // session exists and is activated
+            if (session.getSecureChannelId() != secureChannelId) {
+                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
+            }
+
+            session.updateLastActivity();
+
+            return session;
+        }
+    }
+
     //region Session Services
+
+
+    @Override
+    public CompletableFuture<CreateSessionResponse> onCreateSession(
+        ServiceRequestContext context,
+        CreateSessionRequest request
+    ) {
+
+        ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
+
+        try {
+            CreateSessionResponse response = createSession(context, request);
+
+            serverDiagnosticsSummary.getCumulatedSessionCount().increment();
+
+            return CompletableFuture.completedFuture(response);
+        } catch (UaException e) {
+            serverDiagnosticsSummary.getRejectedSessionCount().increment();
+
+            if (e.getStatusCode().isSecurityError()) {
+                serverDiagnosticsSummary.getSecurityRejectedSessionCount().increment();
+            }
+
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Override
+    public CompletableFuture<ActivateSessionResponse> onActivateSession(
+        ServiceRequestContext context,
+        ActivateSessionRequest request
+    ) {
+
+        return null; // TODO
+    }
+
+    @Override
+    public CompletableFuture<CloseSessionResponse> onCloseSession(
+        ServiceRequestContext context,
+        CloseSessionRequest request
+    ) {
+
+        return null; // TODO
+    }
+
+    @Override
+    public CompletableFuture<CancelResponse> onCancel(
+        ServiceRequestContext context,
+        CancelRequest request
+    ) {
+
+        return null; // TODO
+    }
+
     @Override
     public void onCreateSession(ServiceRequest serviceRequest) {
         ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
@@ -374,9 +469,168 @@ public class SessionManager implements
         );
     }
 
+    private CreateSessionResponse createSession(
+        ServiceRequestContext context,
+        CreateSessionRequest request
+    ) throws UaException {
+
+        long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
+        if (createdSessions.size() + activeSessions.size() >= maxSessionCount) {
+            throw new UaException(StatusCodes.Bad_TooManySessions);
+        }
+
+        ByteString serverNonce = NonceUtil.generateNonce(32);
+        NodeId authenticationToken = new NodeId(0, NonceUtil.generateNonce(32));
+        long maxRequestMessageSize = server.getConfig().getEncodingLimits().getMaxMessageSize();
+        double revisedSessionTimeout = Math.max(
+            5000,
+            Math.min(server.getConfig().getLimits().getMaxSessionTimeout(), request.getRequestedSessionTimeout())
+        );
+
+        ApplicationDescription clientDescription = request.getClientDescription();
+
+        long secureChannelId = context.getSecureChannel().getChannelId();
+        SecurityPolicy securityPolicy = context.getSecureChannel().getSecurityPolicy();
+        // TODO get from ServiceRequestContext
+        String transportProfileUri = TransportProfile.TCP_UASC_UABINARY.getUri();
+
+        EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
+            .stream()
+            .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+            .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
+            .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
+            .map(SessionManager::stripNonEssentialFields)
+            .toArray(EndpointDescription[]::new);
+
+        if (serverEndpoints.length == 0) {
+            // GetEndpoints in UaStackServer returns *all* endpoints regardless of a hostname
+            // match in the endpoint URL if the result after filtering is 0 endpoints. Do the
+            // same here.
+            serverEndpoints = server.getEndpointDescriptions()
+                .stream()
+                .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+                .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
+                .map(SessionManager::stripNonEssentialFields)
+                .toArray(EndpointDescription[]::new);
+        }
+
+        ByteString clientNonce = request.getClientNonce();
+
+        if (securityPolicy != SecurityPolicy.None) {
+            NonceUtil.validateNonce(clientNonce);
+
+            if (clientNonces.contains(clientNonce)) {
+                throw new UaException(StatusCodes.Bad_NonceInvalid);
+            }
+        }
+
+        if (securityPolicy != SecurityPolicy.None && clientNonce.isNotNull()) {
+            clientNonces.add(clientNonce);
+            while (clientNonces.size() > 64) {
+                clientNonces.remove(0);
+            }
+        }
+
+        ByteString clientCertificateBytesFromRequest = request.getClientCertificate();
+
+        ByteString clientCertificateBytesFromSecureChannel;
+        try {
+            clientCertificateBytesFromSecureChannel =
+                ByteString.of(context.getSecureChannel().getRemoteCertificate().getEncoded());
+        } catch (CertificateEncodingException e) {
+            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+        }
+
+        if (securityPolicy != SecurityPolicy.None) {
+            if (!Objects.equal(clientCertificateBytesFromRequest, clientCertificateBytesFromSecureChannel)) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    "certificate used to open secure channel " +
+                        "differs from certificate used to create session"
+                );
+            }
+        }
+
+        SecurityConfiguration securityConfiguration =
+            createSecurityConfiguration(context.getSecureChannel());
+
+        if (securityPolicy != SecurityPolicy.None) {
+            X509Certificate clientCertificate =
+                securityConfiguration.getClientCertificate();
+
+            List<X509Certificate> clientCertificateChain =
+                securityConfiguration.getClientCertificateChain();
+
+            if (clientCertificate == null || clientCertificateChain == null) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    "client certificate must be non-null"
+                );
+            }
+
+            server.getConfig().getCertificateValidator().validateCertificateChain(
+                clientCertificateChain,
+                clientDescription.getApplicationUri()
+            );
+        }
+
+        // SignatureData must be created using only the bytes of the client
+        // leaf certificate, not the bytes of the client certificate chain.
+        SignatureData serverSignature = getServerSignature(
+            securityPolicy,
+            securityConfiguration.getKeyPair(),
+            clientNonce,
+            securityConfiguration.getClientCertificateBytes()
+        );
+
+        NodeId sessionId = new NodeId(1, "Session:" + UUID.randomUUID());
+        String sessionName = request.getSessionName();
+        Duration sessionTimeout = Duration.ofMillis(DoubleMath.roundToLong(revisedSessionTimeout, RoundingMode.UP));
+
+        Session session = new Session(
+            server,
+            sessionId,
+            sessionName,
+            sessionTimeout,
+            clientDescription,
+            request.getServerUri(),
+            request.getMaxResponseMessageSize(),
+            null, // TODO
+            secureChannelId,
+            securityConfiguration
+        );
+
+        session.setLastNonce(serverNonce);
+
+        session.addLifecycleListener((s, remove) -> {
+            createdSessions.remove(authenticationToken);
+            activeSessions.remove(authenticationToken);
+
+            sessionListeners.forEach(l -> l.onSessionClosed(s));
+        });
+
+        createdSessions.put(authenticationToken, session);
+
+        sessionListeners.forEach(l -> l.onSessionCreated(session));
+
+        return new CreateSessionResponse(
+            createResponseHeader(request),
+            sessionId,
+            authenticationToken,
+            revisedSessionTimeout,
+            serverNonce,
+            securityConfiguration.getServerCertificateBytes(),
+            serverEndpoints,
+            new SignedSoftwareCertificate[0],
+            serverSignature,
+            uint(maxRequestMessageSize)
+        );
+    }
+
     private SecurityConfiguration createSecurityConfiguration(
         EndpointDescription endpoint,
-        ByteString clientCertificateBytes) throws UaException {
+        ByteString clientCertificateBytes
+    ) throws UaException {
 
         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
         MessageSecurityMode securityMode = endpoint.getSecurityMode();
@@ -411,6 +665,51 @@ public class SessionManager implements
 
             serverCertificateChain = server
                 .getConfig()
+                .getCertificateManager()
+                .getCertificateChain(thumbprint)
+                .map(List::of)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+        }
+
+        return new SecurityConfiguration(
+            securityPolicy,
+            securityMode,
+            keyPair,
+            serverCertificate,
+            serverCertificateChain,
+            clientCertificate,
+            clientCertificateChain
+        );
+    }
+
+    private SecurityConfiguration createSecurityConfiguration(SecureChannel secureChannel) throws UaException {
+        SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
+        MessageSecurityMode securityMode = secureChannel.getMessageSecurityMode();
+
+        X509Certificate clientCertificate = null;
+        List<X509Certificate> clientCertificateChain = null;
+
+        KeyPair keyPair = null;
+        X509Certificate serverCertificate = null;
+        List<X509Certificate> serverCertificateChain = null;
+
+        if (securityPolicy != SecurityPolicy.None) {
+            clientCertificate = secureChannel.getRemoteCertificate();
+            clientCertificateChain = secureChannel.getRemoteCertificateChain();
+
+            ByteString thumbprint = ByteString.of(sha1(secureChannel.getLocalCertificateBytes().bytes()));
+
+            keyPair = server.getConfig()
+                .getCertificateManager()
+                .getKeyPair(thumbprint)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+
+            serverCertificate = server.getConfig()
+                .getCertificateManager()
+                .getCertificate(thumbprint)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+
+            serverCertificateChain = server.getConfig()
                 .getCertificateManager()
                 .getCertificateChain(thumbprint)
                 .map(List::of)
