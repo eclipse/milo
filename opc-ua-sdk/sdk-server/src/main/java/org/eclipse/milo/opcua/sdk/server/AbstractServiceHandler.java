@@ -1,35 +1,51 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-import com.google.common.collect.ForwardingTable;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
 import org.eclipse.milo.opcua.sdk.server.services2.AttributeServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.MethodServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.MonitoredItemServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.NodeManagementServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.Service;
 import org.eclipse.milo.opcua.sdk.server.services2.SessionServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.SubscriptionServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.ViewServiceSet2;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractServiceHandler {
@@ -109,6 +125,33 @@ public abstract class AbstractServiceHandler {
         );
     }
 
+    public void addServiceSet(String path, NodeManagementServiceSet2 serviceSet) {
+        serviceHandlerTable.put(
+            path,
+            Service.NODE_MANAGEMENT_ADD_NODES,
+            (context, request) ->
+                serviceSet.onAddNodes(context, (AddNodesRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.NODE_MANAGEMENT_DELETE_NODES,
+            (context, request) ->
+                serviceSet.onDeleteNodes(context, (DeleteNodesRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.NODE_MANAGEMENT_ADD_REFERENCES,
+            (context, request) ->
+                serviceSet.onAddReferences(context, (AddReferencesRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.NODE_MANAGEMENT_DELETE_REFERENCES,
+            (context, request) ->
+                serviceSet.onDeleteReferences(context, (DeleteReferencesRequest) request).thenApply(Function.identity())
+        );
+    }
+
     public void addServiceSet(String path, SessionServiceSet2 serviceSet) {
         serviceHandlerTable.put(
             path,
@@ -136,6 +179,92 @@ public abstract class AbstractServiceHandler {
         );
     }
 
+    public void addServiceSet(String path, SubscriptionServiceSet2 serviceSet) {
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_CREATE_SUBSCRIPTION,
+            (context, request) ->
+                serviceSet.onCreateSubscription(context, (CreateSubscriptionRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_MODIFY_SUBSCRIPTION,
+            (context, request) ->
+                serviceSet.onModifySubscription(context, (ModifySubscriptionRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_DELETE_SUBSCRIPTIONS,
+            (context, request) ->
+                serviceSet.onDeleteSubscriptions(context, (DeleteSubscriptionsRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_TRANSFER_SUBSCRIPTIONS,
+            (context, request) ->
+                serviceSet.onTransferSubscriptions(context, (TransferSubscriptionsRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_SET_PUBLISHING_MODE,
+            (context, request) ->
+                serviceSet.onSetPublishingMode(context, (SetPublishingModeRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_PUBLISH,
+            (context, request) ->
+                serviceSet.onPublish(context, (PublishRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.SUBSCRIPTION_REPUBLISH,
+            (context, request) ->
+                serviceSet.onRepublish(context, (RepublishRequest) request)
+                    .thenApply(Function.identity())
+        );
+    }
+
+    public void addServiceSet(String path, ViewServiceSet2 serviceSet) {
+        serviceHandlerTable.put(
+            path,
+            Service.VIEW_BROWSE,
+            (context, request) ->
+                serviceSet.onBrowse(context, (BrowseRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.VIEW_BROWSE_NEXT,
+            (context, request) ->
+                serviceSet.onBrowseNext(context, (BrowseNextRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.VIEW_BROWSE_TRANSLATE_BROWSE_PATHS,
+            (context, request) ->
+                serviceSet.onTranslateBrowsePaths(context, (TranslateBrowsePathsToNodeIdsRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.VIEW_BROWSE_REGISTER_NODES,
+            (context, request) ->
+                serviceSet.onRegisterNodes(context, (RegisterNodesRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.VIEW_BROWSE_UNREGISTER_NODES,
+            (context, request) ->
+                serviceSet.onUnregisterNodes(context, (UnregisterNodesRequest) request).thenApply(Function.identity())
+        );
+    }
+
     protected void addServiceHandler(String path, Service service, ServiceHandler serviceHandler) {
         serviceHandlerTable.put(path, service, serviceHandler);
     }
@@ -151,16 +280,26 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    private static class ServiceHandlerTable extends
-        ForwardingTable<String, Service, ServiceHandler> {
+    private static class ServiceHandlerTable {
 
+        private final ConcurrentMap<String, ConcurrentMap<Service, ServiceHandler>> table = new ConcurrentHashMap<>();
 
-        private final Table<String, Service, ServiceHandler> delegate =
-            Tables.synchronizedTable(HashBasedTable.create());
+        public @Nullable ServiceHandler get(String path, Service service) {
+            ConcurrentMap<Service, ServiceHandler> handlers = table.get(path);
+            if (handlers != null) {
+                return handlers.get(service);
+            } else {
+                return null;
+            }
+        }
 
-        @Override
-        protected @NotNull Table<String, Service, ServiceHandler> delegate() {
-            return delegate;
+        public void put(String path, Service service, ServiceHandler handler) {
+            ConcurrentMap<Service, ServiceHandler> handlers = table.computeIfAbsent(
+                path,
+                k -> new ConcurrentHashMap<>()
+            );
+
+            handlers.put(service, handler);
         }
 
     }

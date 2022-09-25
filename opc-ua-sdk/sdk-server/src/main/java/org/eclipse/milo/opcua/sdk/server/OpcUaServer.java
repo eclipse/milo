@@ -42,6 +42,9 @@ import org.eclipse.milo.opcua.sdk.server.services2.Service;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultAttributeServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMethodServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMonitoredItemServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultNodeManagementServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultSubscriptionServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultViewServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -142,13 +145,14 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        // TODO should service sets that require a session all be implemented by SessionManager?
-        // Session-less eligible: View (minus register/unregister), Attribute, Method, Node Management, Query
         paths.filter(path -> !path.endsWith("/discovery")).forEach(path -> {
             addServiceSet(path, new DefaultAttributeServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultMethodServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultMonitoredItemServiceSet2(OpcUaServer.this));
+            addServiceSet(path, new DefaultNodeManagementServiceSet2(OpcUaServer.this));
             addServiceSet(path, sessionManager);
+            addServiceSet(path, new DefaultSubscriptionServiceSet2(OpcUaServer.this));
+            addServiceSet(path, new DefaultViewServiceSet2(OpcUaServer.this));
         });
 
         ObjectTypeInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
