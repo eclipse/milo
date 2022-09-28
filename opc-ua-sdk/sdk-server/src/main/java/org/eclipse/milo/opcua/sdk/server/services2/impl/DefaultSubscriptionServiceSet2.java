@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.server.services2.impl;
 
 import java.util.ArrayList;
@@ -58,10 +68,8 @@ public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
             return CompletableFuture.failedFuture(e);
         }
 
-        var future = new CompletableFuture<CreateSubscriptionResponse>();
-        future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
-        // TODO CompletableFuture<CreateSubscriptionResponse> future =
-        //  session.getSubscriptionManager().createSubscription(...);
+        CompletableFuture<CreateSubscriptionResponse> future =
+            session.getSubscriptionManager().createSubscription(request);
 
         session.getSessionDiagnostics().getCreateSubscriptionCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);
@@ -83,10 +91,8 @@ public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
             return CompletableFuture.failedFuture(e);
         }
 
-        var future = new CompletableFuture<ModifySubscriptionResponse>();
-        future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
-        // TODO CompletableFuture<ModifySubscriptionResponse> future =
-        //  session.getSubscriptionManager().modifySubscription(...);
+        CompletableFuture<ModifySubscriptionResponse> future =
+            session.getSubscriptionManager().modifySubscription(request);
 
         session.getSessionDiagnostics().getModifySubscriptionCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);
@@ -108,10 +114,8 @@ public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
             return CompletableFuture.failedFuture(e);
         }
 
-        var future = new CompletableFuture<DeleteSubscriptionsResponse>();
-        future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
-        // TODO CompletableFuture<DeleteSubscriptionsResponse> future =
-        //  session.getSubscriptionManager().deleteSubscriptions(...);
+        CompletableFuture<DeleteSubscriptionsResponse> future =
+            session.getSubscriptionManager().deleteSubscriptions(request);
 
         session.getSessionDiagnostics().getDeleteSubscriptionsCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);
@@ -147,10 +151,8 @@ public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
             return CompletableFuture.failedFuture(e);
         }
 
-        var future = new CompletableFuture<SetPublishingModeResponse>();
-        future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
-        // TODO CompletableFuture<SetPublishingModeResponse> future =
-        //  session.getSubscriptionManager().setPublishingMode(...);
+        CompletableFuture<SetPublishingModeResponse> future =
+            session.getSubscriptionManager().setPublishingMode(request);
 
         session.getSessionDiagnostics().getSetPublishingModeCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);
@@ -168,10 +170,8 @@ public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
             return CompletableFuture.failedFuture(e);
         }
 
-        var future = new CompletableFuture<PublishResponse>();
-        future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
-        // TODO CompletableFuture<PublishResponse> future =
-        //  session.getSubscriptionManager().publish(...);
+        CompletableFuture<PublishResponse> future =
+            session.getSubscriptionManager().publish(context, request);
 
         session.getSessionDiagnostics().getPublishCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);
@@ -189,10 +189,8 @@ public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
             return CompletableFuture.failedFuture(e);
         }
 
-        var future = new CompletableFuture<RepublishResponse>();
-        future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
-        // TODO CompletableFuture<RepublishResponse> future =
-        //  session.getSubscriptionManager().republish(...);
+        CompletableFuture<RepublishResponse> future =
+            session.getSubscriptionManager().republish(request);
 
         session.getSessionDiagnostics().getRepublishCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);

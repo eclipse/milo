@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.services2.Service;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultAttributeServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultDiscoveryServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMethodServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMonitoredItemServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultNodeManagementServiceSet2;
@@ -68,14 +69,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
-import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.slf4j.Logger;
@@ -129,24 +122,14 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
 
         stackServer = new UaStackServer(config);
 
-        Stream<String> paths = stackServer.getConfig().getEndpoints()
+        Stream<String> paths = config.getEndpoints()
             .stream()
             .map(e -> EndpointUtil.getPath(e.getEndpointUrl()))
             .distinct();
 
         paths.filter(path -> !path.endsWith("/discovery")).forEach(path -> {
-            stackServer.addServiceSet(path, (AttributeServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (AttributeHistoryServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (MethodServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (MonitoredItemServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (NodeManagementServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (SessionServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (SubscriptionServiceSet) sessionManager);
-            stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
-        });
-
-        paths.filter(path -> !path.endsWith("/discovery")).forEach(path -> {
             addServiceSet(path, new DefaultAttributeServiceSet2(OpcUaServer.this));
+            addServiceSet(path, new DefaultDiscoveryServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultMethodServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultMonitoredItemServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultNodeManagementServiceSet2(OpcUaServer.this));

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.concurrent.CompletableFuture;
@@ -6,6 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.server.services2.AttributeServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.DiscoveryServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.MethodServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.MonitoredItemServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.NodeManagementServiceSet2;
@@ -30,6 +41,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRe
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
@@ -37,6 +51,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
@@ -76,6 +92,40 @@ public abstract class AbstractServiceHandler {
             Service.ATTRIBUTE_HISTORY_UPDATE,
             (context, request) ->
                 serviceSet.onHistoryUpdate(context, (HistoryUpdateRequest) request).thenApply(Function.identity())
+        );
+    }
+
+    public void addServiceSet(String path, DiscoveryServiceSet2 serviceSet) {
+        serviceHandlerTable.put(
+            path,
+            Service.DISCOVERY_FIND_SERVERS,
+            (context, request) ->
+                serviceSet.onFindServers(context, (FindServersRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.DISCOVERY_FIND_SERVERS_ON_NETWORK,
+            (context, request) ->
+                serviceSet.onFindServersOnNetwork(context, (FindServersOnNetworkRequest) request)
+                    .thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.DISCOVERY_GET_ENDPOINTS,
+            (context, request) ->
+                serviceSet.onGetEndpoints(context, (GetEndpointsRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.DISCOVERY_REGISTER_SERVER,
+            (context, request) ->
+                serviceSet.onRegisterServer(context, (RegisterServerRequest) request).thenApply(Function.identity())
+        );
+        serviceHandlerTable.put(
+            path,
+            Service.DISCOVERY_REGISTER_SERVER_2,
+            (context, request) ->
+                serviceSet.onRegisterServer2(context, (RegisterServer2Request) request).thenApply(Function.identity())
         );
     }
 

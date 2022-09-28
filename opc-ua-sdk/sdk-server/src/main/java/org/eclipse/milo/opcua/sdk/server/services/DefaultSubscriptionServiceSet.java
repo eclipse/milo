@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,32 +44,32 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
 
     @Override
     public void onCreateSubscription(ServiceRequest service) {
-        subscriptionManager.createSubscription(service);
+//        subscriptionManager.createSubscription(service);
     }
 
     @Override
     public void onModifySubscription(ServiceRequest service) throws UaException {
-        subscriptionManager.modifySubscription(service);
+//        subscriptionManager.modifySubscription(service);
     }
 
     @Override
     public void onDeleteSubscriptions(ServiceRequest service) throws UaException {
-        subscriptionManager.deleteSubscription(service);
+//        subscriptionManager.deleteSubscription(service);
     }
 
     @Override
     public void onSetPublishingMode(ServiceRequest service) {
-        subscriptionManager.setPublishingMode(service);
+//        subscriptionManager.setPublishingMode(service);
     }
 
     @Override
     public void onPublish(ServiceRequest service) {
-        subscriptionManager.publish(service);
+//        subscriptionManager.publish(service);
     }
 
     @Override
     public void onRepublish(ServiceRequest service) {
-        subscriptionManager.republish(service);
+//        subscriptionManager.republish(service);
     }
 
     @Override
