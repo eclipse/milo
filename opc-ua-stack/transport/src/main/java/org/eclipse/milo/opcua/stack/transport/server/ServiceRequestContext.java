@@ -11,6 +11,9 @@
 package org.eclipse.milo.opcua.stack.transport.server;
 
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 
@@ -23,5 +26,9 @@ public interface ServiceRequestContext {
     SecureChannel getSecureChannel();
 
     Long receivedAtNanos();
+
+    default InetAddress clientAddress() {
+        return ((InetSocketAddress) getChannel().remoteAddress()).getAddress();
+    }
 
 }

@@ -595,7 +595,7 @@ public class SessionManager implements
             clientDescription,
             request.getServerUri(),
             request.getMaxResponseMessageSize(),
-            null, // TODO
+            findSessionEndpoint(TransportProfile.TCP_UASC_UABINARY, context), // TODO TransportProfile from context
             secureChannelId,
             securityConfiguration
         );
@@ -945,8 +945,199 @@ public class SessionManager implements
         }
     }
 
-    public ActivateSessionResponse activateSession(ServiceRequestContext context, ActivateSessionRequest request) {
-        return null; // TODO
+    public ActivateSessionResponse activateSession(ServiceRequestContext context, ActivateSessionRequest request) throws UaException {
+        long secureChannelId = context.getSecureChannel().getChannelId();
+        NodeId authToken = request.getRequestHeader().getAuthenticationToken();
+        List<SignedSoftwareCertificate> clientSoftwareCertificates = l(request.getClientSoftwareCertificates());
+
+        Session session = createdSessions.get(authToken);
+
+        if (session == null) {
+            session = activeSessions.get(authToken);
+
+            if (session == null) {
+                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
+            } else {
+                verifyClientSignature(session, request);
+
+                SecurityConfiguration securityConfiguration = session.getSecurityConfiguration();
+
+                if (session.getSecureChannelId() == secureChannelId) {
+                    /*
+                     * Identity change
+                     */
+                    UserIdentityToken identityToken = decodeIdentityToken(
+                        request.getUserIdentityToken(),
+                        session.getEndpoint().getUserIdentityTokens()
+                    );
+
+                    Object identityObject = validateIdentityToken(
+                        session,
+                        identityToken,
+                        request.getUserTokenSignature()
+                    );
+
+                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+                    Arrays.fill(results, StatusCode.GOOD);
+
+                    ByteString serverNonce = NonceUtil.generateNonce(32);
+
+                    session.setClientAddress(context.clientAddress());
+                    session.setIdentityObject(identityObject, identityToken);
+                    session.setLastNonce(serverNonce);
+                    session.setLocaleIds(request.getLocaleIds());
+
+                    return new ActivateSessionResponse(
+                        createResponseHeader(request),
+                        serverNonce,
+                        results,
+                        new DiagnosticInfo[0]
+                    );
+                } else {
+                    /*
+                     * Associate session with new secure channel if client certificate and identity token match.
+                     */
+                    ByteString clientCertificateBytes = context.getSecureChannel().getRemoteCertificateBytes();
+
+                    UserIdentityToken identityToken = decodeIdentityToken(
+                        request.getUserIdentityToken(),
+                        session.getEndpoint().getUserIdentityTokens()
+                    );
+
+                    Object identityObject = validateIdentityToken(
+                        session,
+                        identityToken,
+                        request.getUserTokenSignature()
+                    );
+
+                    boolean sameIdentity = Objects.equal(
+                        identityObject,
+                        session.getIdentityObject()
+                    );
+
+                    boolean sameCertificate = Objects.equal(
+                        clientCertificateBytes,
+                        securityConfiguration.getClientCertificateBytes()
+                    );
+
+                    if (sameIdentity && sameCertificate) {
+                        SecurityConfiguration newSecurityConfiguration = createSecurityConfiguration(
+                            context.getSecureChannel()
+                        );
+
+                        EndpointDescription endpoint =
+                            findSessionEndpoint(TransportProfile.TCP_UASC_UABINARY, context);
+                        session.setEndpoint(endpoint);
+
+                        session.setSecureChannelId(secureChannelId);
+                        session.setSecurityConfiguration(newSecurityConfiguration);
+
+                        logger.debug("Session id={} is now associated with secureChannelId={}",
+                            session.getSessionId(), secureChannelId);
+
+                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+                        Arrays.fill(results, StatusCode.GOOD);
+
+                        ByteString serverNonce = NonceUtil.generateNonce(32);
+
+                        session.setClientAddress(context.clientAddress());
+                        session.setLastNonce(serverNonce);
+                        session.setLocaleIds(request.getLocaleIds());
+
+                        return new ActivateSessionResponse(
+                            createResponseHeader(request),
+                            serverNonce,
+                            results,
+                            new DiagnosticInfo[0]
+                        );
+                    } else {
+                        throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+                    }
+                }
+            }
+        } else {
+            if (secureChannelId != session.getSecureChannelId()) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+            }
+
+            verifyClientSignature(session, request);
+
+            UserIdentityToken identityToken = decodeIdentityToken(
+                request.getUserIdentityToken(),
+                session.getEndpoint().getUserIdentityTokens()
+            );
+
+            Object identityObject = validateIdentityToken(
+                session,
+                identityToken,
+                request.getUserTokenSignature()
+            );
+
+            createdSessions.remove(authToken);
+            activeSessions.put(authToken, session);
+
+            StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+            Arrays.fill(results, StatusCode.GOOD);
+
+            ByteString serverNonce = NonceUtil.generateNonce(32);
+
+            session.setClientAddress(context.clientAddress());
+            session.setIdentityObject(identityObject, identityToken);
+            session.setLocaleIds(request.getLocaleIds());
+            session.setLastNonce(serverNonce);
+
+            return new ActivateSessionResponse(
+                createResponseHeader(request),
+                serverNonce,
+                results,
+                new DiagnosticInfo[0]
+            );
+        }
+    }
+
+    private EndpointDescription findSessionEndpoint(
+        TransportProfile transportProfile,
+        ServiceRequestContext context
+    ) throws UaException {
+
+        return server.getEndpointDescriptions()
+            .stream()
+            .filter(e -> {
+                boolean transportMatch = java.util.Objects.equals(
+                    e.getTransportProfileUri(),
+                    transportProfile.getUri()
+                );
+
+                boolean pathMatch = java.util.Objects.equals(
+                    EndpointUtil.getPath(e.getEndpointUrl()),
+                    EndpointUtil.getPath(context.getEndpointUrl())
+                );
+
+                boolean securityPolicyMatch = java.util.Objects.equals(
+                    e.getSecurityPolicyUri(),
+                    context.getSecureChannel().getSecurityPolicy().getUri()
+                );
+
+                boolean securityModeMatch = java.util.Objects.equals(
+                    e.getSecurityMode(),
+                    context.getSecureChannel().getMessageSecurityMode()
+                );
+
+                return transportMatch && pathMatch && securityPolicyMatch && securityModeMatch;
+            })
+            .findFirst()
+            .orElseThrow(() -> {
+                String message = String.format(
+                    "no matching endpoint found: transportProfile=%s, " +
+                        "endpointUrl=%s, securityPolicy=%s, securityMode=%s",
+                    transportProfile,
+                    context.getEndpointUrl(),
+                    context.getSecureChannel().getSecurityPolicy(),
+                    context.getSecureChannel().getMessageSecurityMode()
+                );
+
+                return new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
+            });
     }
 
     private static void verifyClientSignature(Session session, ActivateSessionRequest request) throws UaException {
@@ -1125,6 +1316,39 @@ public class SessionManager implements
                 createdSessions.remove(authToken);
                 session.close(request.getDeleteSubscriptions());
                 return new CloseSessionResponse(service.createResponseHeader());
+            }
+        }
+    }
+
+    public CloseSessionResponse closeSession(
+        CloseSessionRequest request,
+        ServiceRequestContext context
+    ) throws UaException {
+
+        long secureChannelId = context.getSecureChannel().getChannelId();
+        NodeId authToken = request.getRequestHeader().getAuthenticationToken();
+
+        Session session = activeSessions.get(authToken);
+
+        if (session != null) {
+            if (session.getSecureChannelId() != secureChannelId) {
+                throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
+            } else {
+                activeSessions.remove(authToken);
+                session.close(request.getDeleteSubscriptions());
+                return new CloseSessionResponse(createResponseHeader(request));
+            }
+        } else {
+            session = createdSessions.get(authToken);
+
+            if (session == null) {
+                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
+            } else if (session.getSecureChannelId() != secureChannelId) {
+                throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
+            } else {
+                createdSessions.remove(authToken);
+                session.close(request.getDeleteSubscriptions());
+                return new CloseSessionResponse(createResponseHeader(request));
             }
         }
     }
