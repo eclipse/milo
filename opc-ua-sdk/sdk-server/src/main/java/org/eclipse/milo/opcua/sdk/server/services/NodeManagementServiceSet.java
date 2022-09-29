@@ -1,4 +1,14 @@
-package org.eclipse.milo.opcua.sdk.server.services2;
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesReques
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-public interface NodeManagementServiceSet2 {
+public interface NodeManagementServiceSet {
 
     CompletableFuture<AddNodesResponse> onAddNodes(ServiceRequestContext context, AddNodesRequest request);
 

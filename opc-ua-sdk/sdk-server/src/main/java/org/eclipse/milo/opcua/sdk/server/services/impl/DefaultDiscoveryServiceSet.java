@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2.impl;
+package org.eclipse.milo.opcua.sdk.server.services.impl;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.services2.DiscoveryServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
@@ -39,17 +39,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class DefaultDiscoveryServiceSet2 implements DiscoveryServiceSet2 {
+public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final OpcUaServer server;
 
-    public DefaultDiscoveryServiceSet2(OpcUaServer server) {
+    public DefaultDiscoveryServiceSet(OpcUaServer server) {
         this.server = server;
     }
 

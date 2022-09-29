@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services.helpers;
+package org.eclipse.milo.opcua.sdk.server.services.impl.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
-import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -42,11 +41,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
-import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -61,44 +59,6 @@ public class BrowsePathsHelper {
     public BrowsePathsHelper(AccessContext context, OpcUaServer server) {
         this.context = context;
         this.server = server;
-    }
-
-    public void onTranslateBrowsePaths(ServiceRequest service) {
-        TranslateBrowsePathsToNodeIdsRequest request = (TranslateBrowsePathsToNodeIdsRequest) service.getRequest();
-
-        OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
-
-        List<BrowsePath> browsePaths = l(request.getBrowsePaths());
-
-        if (browsePaths.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NothingToDo);
-            return;
-        }
-
-        if (browsePaths.size() >
-            server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {
-
-            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
-            return;
-        }
-
-        var futures = new ArrayList<CompletableFuture<BrowsePathResult>>(browsePaths.size());
-
-        for (BrowsePath browsePath : browsePaths) {
-            futures.add(translate(browsePath));
-        }
-
-        sequence(futures).thenAcceptAsync(results -> {
-            ResponseHeader header = service.createResponseHeader();
-
-            TranslateBrowsePathsToNodeIdsResponse response = new TranslateBrowsePathsToNodeIdsResponse(
-                header,
-                a(results, BrowsePathResult.class),
-                new DiagnosticInfo[0]
-            );
-
-            service.setResponse(response);
-        }, server.getExecutorService());
     }
 
     public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePaths(

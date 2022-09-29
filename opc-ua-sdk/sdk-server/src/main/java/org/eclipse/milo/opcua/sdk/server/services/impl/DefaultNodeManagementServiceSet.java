@@ -1,4 +1,14 @@
-package org.eclipse.milo.opcua.sdk.server.services2.impl;
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+package org.eclipse.milo.opcua.sdk.server.services.impl;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -10,7 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.Add
 import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.AddReferencesContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.DeleteNodesContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.DeleteReferencesContext;
-import org.eclipse.milo.opcua.sdk.server.services2.NodeManagementServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -31,16 +41,16 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRespon
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class DefaultNodeManagementServiceSet2 implements NodeManagementServiceSet2 {
+public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
 
     private final OpcUaServer server;
 
-    public DefaultNodeManagementServiceSet2(OpcUaServer server) {
+    public DefaultNodeManagementServiceSet(OpcUaServer server) {
         this.server = server;
     }
 

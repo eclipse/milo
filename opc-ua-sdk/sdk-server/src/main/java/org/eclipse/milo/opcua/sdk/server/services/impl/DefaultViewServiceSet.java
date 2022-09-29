@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2.impl;
+package org.eclipse.milo.opcua.sdk.server.services.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +19,9 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.RegisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.UnregisterNodesContext;
-import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
-import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowsePathsHelper;
-import org.eclipse.milo.opcua.sdk.server.services2.ViewServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.ViewServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.helpers.BrowseHelper;
+import org.eclipse.milo.opcua.sdk.server.services.impl.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -42,16 +42,16 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRespons
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class DefaultViewServiceSet2 implements ViewServiceSet2 {
+public class DefaultViewServiceSet implements ViewServiceSet {
 
     private final BrowseHelper browseHelper;
 
     private final OpcUaServer server;
 
-    public DefaultViewServiceSet2(OpcUaServer server) {
+    public DefaultViewServiceSet(OpcUaServer server) {
         this.server = server;
 
         browseHelper = new BrowseHelper(server.getConfig().getExecutor());

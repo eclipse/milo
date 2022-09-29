@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2.impl;
+package org.eclipse.milo.opcua.sdk.server.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
-import org.eclipse.milo.opcua.sdk.server.services2.SubscriptionServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -43,14 +43,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsR
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class DefaultSubscriptionServiceSet2 implements SubscriptionServiceSet2 {
+public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
 
     private final OpcUaServer server;
 
-    public DefaultSubscriptionServiceSet2(OpcUaServer server) {
+    public DefaultSubscriptionServiceSet(OpcUaServer server) {
         this.server = server;
     }
 

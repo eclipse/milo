@@ -42,15 +42,15 @@ import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.services2.Service;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultAttributeServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultDiscoveryServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMethodServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMonitoredItemServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultNodeManagementServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultSessionServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultSubscriptionServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultViewServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.Service;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultAttributeServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultDiscoveryServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultMethodServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultMonitoredItemServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultNodeManagementServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultSessionServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultSubscriptionServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.impl.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -185,14 +185,14 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
             .distinct();
 
         paths.filter(path -> !path.endsWith("/discovery")).forEach(path -> {
-            addServiceSet(path, new DefaultAttributeServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultDiscoveryServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultMethodServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultMonitoredItemServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultNodeManagementServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultSessionServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultSubscriptionServiceSet2(OpcUaServer.this));
-            addServiceSet(path, new DefaultViewServiceSet2(OpcUaServer.this));
+            addServiceSet(path, new DefaultAttributeServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultDiscoveryServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultMethodServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultMonitoredItemServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultNodeManagementServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultSessionServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultSubscriptionServiceSet(OpcUaServer.this));
+            addServiceSet(path, new DefaultViewServiceSet(OpcUaServer.this));
         });
 
         ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);

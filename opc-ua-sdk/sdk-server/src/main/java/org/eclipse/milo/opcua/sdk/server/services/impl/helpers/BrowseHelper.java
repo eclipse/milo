@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services.helpers;
+package org.eclipse.milo.opcua.sdk.server.services.impl.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,13 +25,11 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
-import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -43,23 +41,19 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.browseResultMasks;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.nodeClasses;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class BrowseHelper {
@@ -127,22 +121,6 @@ public class BrowseHelper {
     ) {
 
         return new BrowseNext2(server, session, request).browseNext();
-    }
-
-    public void browseNext(ServiceRequest service) {
-        OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
-
-        BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
-
-        List<ByteString> continuationPoints = l(request.getContinuationPoints());
-
-        if (continuationPoints.size() >
-            server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
-
-            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
-        } else {
-            server.getExecutorService().execute(new BrowseNext(server, service));
-        }
     }
 
     private class Browse {
@@ -474,93 +452,6 @@ public class BrowseHelper {
             }
 
             return CompletableFuture.completedFuture(results.toArray(BrowseResult[]::new));
-        }
-
-        private BrowseResult release(ByteString bs) {
-            BrowseContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
-
-            return c != null ?
-                new BrowseResult(StatusCode.GOOD, null, null) :
-                new BrowseResult(BAD_CONTINUATION_POINT_INVALID, null, null);
-        }
-
-        private BrowseResult references(ByteString bs) {
-            BrowseContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
-
-            if (c != null) {
-                int max = c.max;
-                List<ReferenceDescription> references = c.references;
-
-                if (references.size() > max) {
-                    List<ReferenceDescription> subList = references.subList(0, max);
-                    List<ReferenceDescription> current = List.copyOf(subList);
-                    subList.clear();
-
-                    session.getBrowseContinuationPoints().put(c.identifier, c);
-
-                    return new BrowseResult(
-                        StatusCode.GOOD,
-                        c.identifier,
-                        current.toArray(new ReferenceDescription[0])
-                    );
-                } else {
-                    return new BrowseResult(
-                        StatusCode.GOOD,
-                        null,
-                        references.toArray(new ReferenceDescription[0])
-                    );
-                }
-            } else {
-                return new BrowseResult(BAD_CONTINUATION_POINT_INVALID, null, null);
-            }
-        }
-
-    }
-
-    private static class BrowseNext implements Runnable {
-
-        private final Session session;
-
-        private final OpcUaServer server;
-        private final ServiceRequest service;
-
-        private BrowseNext(OpcUaServer server, ServiceRequest service) {
-            this.server = server;
-            this.service = service;
-
-            session = service.attr(ServiceAttributes.SESSION_KEY).get();
-        }
-
-        @Override
-        public void run() {
-            BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
-
-            List<ByteString> continuationPoints = l(request.getContinuationPoints());
-
-            if (continuationPoints.isEmpty()) {
-                service.setServiceFault(StatusCodes.Bad_NothingToDo);
-                return;
-            }
-
-            var results = new ArrayList<BrowseResult>();
-
-            for (ByteString bs : continuationPoints) {
-                if (request.getReleaseContinuationPoints()) {
-                    results.add(release(bs));
-                } else {
-                    results.add(references(bs));
-                }
-            }
-
-            ResponseHeader header = service.createResponseHeader();
-
-            BrowseNextResponse response = new BrowseNextResponse(
-                header,
-                results.toArray(new BrowseResult[0]),
-                new DiagnosticInfo[0]
-            );
-
-            service.setResponse(response);
         }
 
         private BrowseResult release(ByteString bs) {

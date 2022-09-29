@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2;
+package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-public interface AttributeServiceSet2 {
+public interface AttributeServiceSet {
 
     CompletableFuture<ReadResponse> onRead(ServiceRequestContext context, ReadRequest request);
 

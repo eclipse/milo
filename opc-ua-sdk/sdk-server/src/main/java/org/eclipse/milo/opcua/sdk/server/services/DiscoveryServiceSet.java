@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2;
+package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-public interface DiscoveryServiceSet2 {
+public interface DiscoveryServiceSet {
 
 
     CompletableFuture<FindServersResponse> onFindServers(ServiceRequestContext context, FindServersRequest request);

@@ -15,15 +15,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-import org.eclipse.milo.opcua.sdk.server.services2.AttributeServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.DiscoveryServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.MethodServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.MonitoredItemServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.NodeManagementServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.Service;
-import org.eclipse.milo.opcua.sdk.server.services2.SessionServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.SubscriptionServiceSet2;
-import org.eclipse.milo.opcua.sdk.server.services2.ViewServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DiscoveryServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.Service;
+import org.eclipse.milo.opcua.sdk.server.services.SessionServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
@@ -68,7 +68,7 @@ public abstract class AbstractServiceHandler {
 
     private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
 
-    public void addServiceSet(String path, AttributeServiceSet2 serviceSet) {
+    public void addServiceSet(String path, AttributeServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.ATTRIBUTE_READ,
@@ -95,7 +95,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, DiscoveryServiceSet2 serviceSet) {
+    public void addServiceSet(String path, DiscoveryServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.DISCOVERY_FIND_SERVERS,
@@ -129,7 +129,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, MethodServiceSet2 serviceSet) {
+    public void addServiceSet(String path, MethodServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.METHOD_CALL,
@@ -138,7 +138,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, MonitoredItemServiceSet2 serviceSet) {
+    public void addServiceSet(String path, MonitoredItemServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.MONITORED_ITEM_CREATE_MONITORED_ITEMS,
@@ -175,7 +175,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, NodeManagementServiceSet2 serviceSet) {
+    public void addServiceSet(String path, NodeManagementServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.NODE_MANAGEMENT_ADD_NODES,
@@ -202,7 +202,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, SessionServiceSet2 serviceSet) {
+    public void addServiceSet(String path, SessionServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.SESSION_CREATE_SESSION,
@@ -229,7 +229,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, SubscriptionServiceSet2 serviceSet) {
+    public void addServiceSet(String path, SubscriptionServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.SUBSCRIPTION_CREATE_SUBSCRIPTION,
@@ -281,7 +281,7 @@ public abstract class AbstractServiceHandler {
         );
     }
 
-    public void addServiceSet(String path, ViewServiceSet2 serviceSet) {
+    public void addServiceSet(String path, ViewServiceSet serviceSet) {
         serviceHandlerTable.put(
             path,
             Service.VIEW_BROWSE,

@@ -8,14 +8,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2.impl;
+package org.eclipse.milo.opcua.sdk.server.services.impl;
 
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.SessionManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
-import org.eclipse.milo.opcua.sdk.server.services2.SessionServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
@@ -28,13 +28,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 
-public class DefaultSessionServiceSet2 implements SessionServiceSet2 {
+public class DefaultSessionServiceSet implements SessionServiceSet {
 
     private final OpcUaServer server;
 
-    public DefaultSessionServiceSet2(OpcUaServer server) {
+    public DefaultSessionServiceSet(OpcUaServer server) {
         this.server = server;
     }
 

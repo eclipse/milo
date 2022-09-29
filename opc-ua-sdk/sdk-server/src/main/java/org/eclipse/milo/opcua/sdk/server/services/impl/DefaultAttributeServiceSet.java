@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.services2.impl;
+package org.eclipse.milo.opcua.sdk.server.services.impl;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,8 +22,8 @@ import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.H
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.HistoryUpdateContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.WriteContext;
-import org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services2.AttributeServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -51,11 +51,11 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class DefaultAttributeServiceSet2 extends AbstractServiceSet implements AttributeServiceSet2 {
+public class DefaultAttributeServiceSet extends AbstractServiceSet implements AttributeServiceSet {
 
     private final OpcUaServer server;
 
-    public DefaultAttributeServiceSet2(OpcUaServer server) {
+    public DefaultAttributeServiceSet(OpcUaServer server) {
         this.server = server;
     }
 
