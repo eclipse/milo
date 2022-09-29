@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.server.services2.impl;
 
 import java.util.List;
@@ -10,6 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.RegisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.UnregisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
+import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.sdk.server.services2.ViewServiceSet2;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -71,8 +82,26 @@ public class DefaultViewServiceSet2 implements ViewServiceSet2 {
         BrowseNextRequest request
     ) {
 
-        // TODO
-        return failedUaFuture(StatusCodes.Bad_NotImplemented);
+        Session session;
+        try {
+            session = server.getSessionManager()
+                .getSession(context, request.getRequestHeader());
+        } catch (UaException e) {
+            // TODO Session-less service invocation?
+            return CompletableFuture.failedFuture(e);
+        }
+
+        CompletableFuture<BrowseNextResponse> future = browseHelper.browseNext(server, session, request)
+            .thenApply(results -> {
+                ResponseHeader header = createResponseHeader(request);
+
+                return new BrowseNextResponse(header, results, new DiagnosticInfo[0]);
+            });
+
+        session.getSessionDiagnostics().getBrowseNextCount().record(future);
+        session.getSessionDiagnostics().getTotalRequestCount().record(future);
+
+        return future;
     }
 
     @Override
@@ -81,8 +110,24 @@ public class DefaultViewServiceSet2 implements ViewServiceSet2 {
         TranslateBrowsePathsToNodeIdsRequest request
     ) {
 
-        // TODO
-        return failedUaFuture(StatusCodes.Bad_NotImplemented);
+        Session session;
+        try {
+            session = server.getSessionManager()
+                .getSession(context, request.getRequestHeader());
+        } catch (UaException e) {
+            // TODO Session-less service invocation?
+            return CompletableFuture.failedFuture(e);
+        }
+
+        var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
+
+        CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> future =
+            browsePathsHelper.translateBrowsePaths(request);
+
+        session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().record(future);
+        session.getSessionDiagnostics().getTotalRequestCount().record(future);
+
+        return future;
     }
 
     @Override

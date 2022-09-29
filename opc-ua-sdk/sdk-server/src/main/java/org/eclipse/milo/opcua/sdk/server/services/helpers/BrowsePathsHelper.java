@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,6 +46,7 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
+import static org.eclipse.milo.opcua.sdk.server.services2.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -97,6 +98,40 @@ public class BrowsePathsHelper {
             );
 
             service.setResponse(response);
+        }, server.getExecutorService());
+    }
+
+    public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePaths(
+        TranslateBrowsePathsToNodeIdsRequest request
+    ) {
+
+        List<BrowsePath> browsePaths = List.of(request.getBrowsePaths());
+
+        if (browsePaths.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+        if (browsePaths.size() >
+            server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {
+
+            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+        }
+
+        var futures = new ArrayList<CompletableFuture<BrowsePathResult>>(browsePaths.size());
+
+        for (BrowsePath browsePath : browsePaths) {
+            futures.add(translate(browsePath));
+        }
+
+        return sequence(futures).thenComposeAsync(results -> {
+            ResponseHeader header = createResponseHeader(request);
+
+            var response = new TranslateBrowsePathsToNodeIdsResponse(
+                header,
+                results.toArray(BrowsePathResult[]::new),
+                new DiagnosticInfo[0]
+            );
+
+            return CompletableFuture.completedFuture(response);
         }, server.getExecutorService());
     }
 

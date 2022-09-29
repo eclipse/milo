@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -60,6 +60,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.browseResultMasks;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.nodeClasses;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class BrowseHelper {
 
@@ -117,6 +118,15 @@ public class BrowseHelper {
 
             return browse.browse();
         }
+    }
+
+    public CompletableFuture<BrowseResult[]> browseNext(
+        OpcUaServer server,
+        Session session,
+        BrowseNextRequest request
+    ) {
+
+        return new BrowseNext2(server, session, request).browseNext();
     }
 
     public void browseNext(ServiceRequest service) {
@@ -428,6 +438,85 @@ public class BrowseHelper {
 
     }
 
+    private static class BrowseNext2 {
+
+        private final OpcUaServer server;
+        private final Session session;
+        private final BrowseNextRequest request;
+
+
+        private BrowseNext2(OpcUaServer server, Session session, BrowseNextRequest request) {
+            this.server = server;
+            this.session = session;
+            this.request = request;
+        }
+
+        public CompletableFuture<BrowseResult[]> browseNext() {
+            List<ByteString> continuationPoints = List.of(request.getContinuationPoints());
+
+            if (continuationPoints.isEmpty()) {
+                return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            }
+            if (continuationPoints.size() >
+                server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
+
+                return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            }
+
+            var results = new ArrayList<BrowseResult>();
+
+            for (ByteString bs : continuationPoints) {
+                if (request.getReleaseContinuationPoints()) {
+                    results.add(release(bs));
+                } else {
+                    results.add(references(bs));
+                }
+            }
+
+            return CompletableFuture.completedFuture(results.toArray(BrowseResult[]::new));
+        }
+
+        private BrowseResult release(ByteString bs) {
+            BrowseContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
+
+            return c != null ?
+                new BrowseResult(StatusCode.GOOD, null, null) :
+                new BrowseResult(BAD_CONTINUATION_POINT_INVALID, null, null);
+        }
+
+        private BrowseResult references(ByteString bs) {
+            BrowseContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
+
+            if (c != null) {
+                int max = c.max;
+                List<ReferenceDescription> references = c.references;
+
+                if (references.size() > max) {
+                    List<ReferenceDescription> subList = references.subList(0, max);
+                    List<ReferenceDescription> current = List.copyOf(subList);
+                    subList.clear();
+
+                    session.getBrowseContinuationPoints().put(c.identifier, c);
+
+                    return new BrowseResult(
+                        StatusCode.GOOD,
+                        c.identifier,
+                        current.toArray(new ReferenceDescription[0])
+                    );
+                } else {
+                    return new BrowseResult(
+                        StatusCode.GOOD,
+                        null,
+                        references.toArray(new ReferenceDescription[0])
+                    );
+                }
+            } else {
+                return new BrowseResult(BAD_CONTINUATION_POINT_INVALID, null, null);
+            }
+        }
+
+    }
+
     private static class BrowseNext implements Runnable {
 
         private final Session session;
@@ -505,7 +594,8 @@ public class BrowseHelper {
                     return new BrowseResult(
                         StatusCode.GOOD,
                         null,
-                        references.toArray(new ReferenceDescription[0]));
+                        references.toArray(new ReferenceDescription[0])
+                    );
                 }
             } else {
                 return new BrowseResult(BAD_CONTINUATION_POINT_INVALID, null, null);
