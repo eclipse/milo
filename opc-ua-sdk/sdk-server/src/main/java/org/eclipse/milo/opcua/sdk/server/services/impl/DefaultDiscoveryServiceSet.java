@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.config.EndpointConfig;
 import org.eclipse.milo.opcua.sdk.server.services.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
@@ -33,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Respons
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,7 +162,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
     private ApplicationDescription getFilteredApplicationDescription(String endpointUrl) {
         List<String> allDiscoveryUrls = server.getConfig().getEndpoints()
             .stream()
-            .map(EndpointConfiguration::getEndpointUrl)
+            .map(EndpointConfig::getEndpointUrl)
             .filter(url -> url.endsWith("/discovery"))
             .distinct()
             .collect(toList());
@@ -170,7 +170,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
         if (allDiscoveryUrls.isEmpty()) {
             allDiscoveryUrls = server.getConfig().getEndpoints()
                 .stream()
-                .map(EndpointConfiguration::getEndpointUrl)
+                .map(EndpointConfig::getEndpointUrl)
                 .distinct()
                 .collect(toList());
         }

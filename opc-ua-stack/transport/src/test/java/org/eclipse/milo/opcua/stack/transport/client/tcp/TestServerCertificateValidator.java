@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 
 public class TestServerCertificateValidator implements ServerCertificateValidator {
 

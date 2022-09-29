@@ -18,7 +18,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 

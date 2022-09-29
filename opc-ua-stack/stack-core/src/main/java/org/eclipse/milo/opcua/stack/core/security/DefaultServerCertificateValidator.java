@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.server.security;
+package org.eclipse.milo.opcua.stack.core.security;
 
 import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.X509CRL;
@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
 import org.slf4j.Logger;

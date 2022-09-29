@@ -34,6 +34,7 @@ import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.EventListener;
 import org.eclipse.milo.opcua.sdk.server.api.EventNotifier;
+import org.eclipse.milo.opcua.sdk.server.api.config.EndpointConfig;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
@@ -82,7 +83,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
@@ -219,7 +219,7 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
 
         config.getEndpoints()
             .stream()
-            .sorted(Comparator.comparing(EndpointConfiguration::getTransportProfile))
+            .sorted(Comparator.comparing(EndpointConfig::getTransportProfile))
             .forEach(endpoint -> {
                 logger.info(
                     "Binding endpoint {} to {}:{} [{}/{}]",
@@ -476,7 +476,7 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     }
 
 
-    private EndpointDescription transformEndpoint(EndpointConfiguration endpoint) {
+    private EndpointDescription transformEndpoint(EndpointConfig endpoint) {
         return new EndpointDescription(
             endpoint.getEndpointUrl(),
             getApplicationDescription(),
@@ -541,7 +541,7 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         return applicationDescription.getOrCompute(() -> {
             List<String> discoveryUrls = config.getEndpoints()
                 .stream()
-                .map(EndpointConfiguration::getEndpointUrl)
+                .map(EndpointConfig::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
                 .distinct()
                 .collect(toList());
@@ -549,7 +549,7 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
             if (discoveryUrls.isEmpty()) {
                 discoveryUrls = config.getEndpoints()
                     .stream()
-                    .map(EndpointConfiguration::getEndpointUrl)
+                    .map(EndpointConfig::getEndpointUrl)
                     .distinct()
                     .collect(toList());
             }

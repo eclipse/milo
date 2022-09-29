@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,14 +24,13 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
-import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
 public interface OpcUaServerConfig {
 
@@ -66,9 +65,9 @@ public interface OpcUaServerConfig {
     );
 
     /**
-     * @return the {@link EndpointConfiguration}s for this server.
+     * @return the {@link EndpointConfig}s for this server.
      */
-    Set<EndpointConfiguration> getEndpoints();
+    Set<EndpointConfig> getEndpoints();
 
     /**
      * Get the application name for the server.

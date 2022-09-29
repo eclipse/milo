@@ -20,16 +20,15 @@ import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
-import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
 public class OpcUaServerConfigBuilder {
 
-    private Set<EndpointConfiguration> endpoints = new HashSet<>();
+    private Set<EndpointConfig> endpoints = new HashSet<>();
 
     private LocalizedText applicationName = LocalizedText
         .english("server application name not configured");
@@ -61,8 +60,8 @@ public class OpcUaServerConfigBuilder {
     private ScheduledExecutorService scheduledExecutor;
 
 
-    public OpcUaServerConfigBuilder setEndpoints(Set<EndpointConfiguration> endpointConfigurations) {
-        this.endpoints = endpointConfigurations;
+    public OpcUaServerConfigBuilder setEndpoints(Set<EndpointConfig> endpointConfigs) {
+        this.endpoints = endpointConfigs;
         return this;
     }
 
@@ -154,7 +153,7 @@ public class OpcUaServerConfigBuilder {
 
     public static final class OpcUaServerConfigImpl implements OpcUaServerConfig {
 
-        private final Set<EndpointConfiguration> endpoints;
+        private final Set<EndpointConfig> endpoints;
         private final LocalizedText applicationName;
         private final String applicationUri;
         private final String productUri;
@@ -169,7 +168,7 @@ public class OpcUaServerConfigBuilder {
         private final ScheduledExecutorService scheduledExecutorService;
 
         public OpcUaServerConfigImpl(
-            Set<EndpointConfiguration> endpoints,
+            Set<EndpointConfig> endpoints,
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
@@ -210,7 +209,7 @@ public class OpcUaServerConfigBuilder {
         }
 
         @Override
-        public Set<EndpointConfiguration> getEndpoints() {
+        public Set<EndpointConfig> getEndpoints() {
             return endpoints;
         }
 

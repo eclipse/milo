@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -241,15 +240,11 @@ public class SessionManager {
             }
         }
 
-        ByteString clientCertificateBytesFromRequest = request.getClientCertificate();
+        ByteString clientCertificateBytesFromRequest =
+            request.getClientCertificate();
 
-        ByteString clientCertificateBytesFromSecureChannel;
-        try {
-            clientCertificateBytesFromSecureChannel =
-                ByteString.of(context.getSecureChannel().getRemoteCertificate().getEncoded());
-        } catch (CertificateEncodingException e) {
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
-        }
+        ByteString clientCertificateBytesFromSecureChannel =
+            context.getSecureChannel().getRemoteCertificateBytes();
 
         if (securityPolicy != SecurityPolicy.None) {
             if (!Objects.equal(clientCertificateBytesFromRequest, clientCertificateBytesFromSecureChannel)) {

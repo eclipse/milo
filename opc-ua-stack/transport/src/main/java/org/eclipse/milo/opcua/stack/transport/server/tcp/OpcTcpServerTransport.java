@@ -22,8 +22,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
-import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
-import org.eclipse.milo.opcua.stack.server.transport.ServerChannelManager;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.eclipse.milo.opcua.stack.transport.server.uasc.UascServerHelloHandler;
@@ -43,7 +41,7 @@ public class OpcTcpServerTransport implements OpcServerTransport {
         var bootstrap = new ServerBootstrap();
 
         bootstrap.group(Stack.sharedEventLoop())
-            .handler(new LoggingHandler(ServerChannelManager.class))
+            .handler(new LoggingHandler(OpcTcpServerTransport.class))
             .channel(NioServerSocketChannel.class)
             .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .childOption(ChannelOption.TCP_NODELAY, true)
