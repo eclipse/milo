@@ -42,6 +42,8 @@ import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransport;
+import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransportConfig;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
@@ -150,13 +152,21 @@ public final class TestServer {
             .setCertificateManager(certificateManager)
             .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
-            .setHttpsKeyPair(httpsKeyPair)
-            .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
             .setIdentityValidator(identityValidator)
             .setProductUri("urn:eclipse:milo:example-server")
             .build();
 
-        return new OpcUaServer(serverConfig);
+
+        return new OpcUaServer(serverConfig, transportProfile -> {
+            if (transportProfile == TransportProfile.TCP_UASC_UABINARY) {
+                OpcTcpServerTransportConfig transportConfig =
+                    OpcTcpServerTransportConfig.newBuilder().build();
+
+                return new OpcTcpServerTransport(transportConfig);
+            } else {
+                throw new RuntimeException("unexpected TransportProfile: " + transportProfile);
+            }
+        });
     }
 
     private static Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate, int port) {

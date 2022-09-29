@@ -14,10 +14,6 @@ import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 
 public interface OpcServerTransportConfig {
 
-    String getBindAddress();
-
-    int getBindPort();
-
     EncodingLimits getEncodingLimits();
 
 }

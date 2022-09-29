@@ -378,7 +378,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         OpcTcpServerTransportConfig config = OpcTcpServerTransportConfig.newBuilder().build();
 
         var transport = new OpcTcpServerTransport(config);
-        transport.bind(application);
+        transport.bind(application, "localhost", 12685);
         return transport;
     }
 

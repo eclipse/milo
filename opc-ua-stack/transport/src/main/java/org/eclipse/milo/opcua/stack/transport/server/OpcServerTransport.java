@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.stack.transport.server;
 
 public interface OpcServerTransport {
 
-    void bind(ServerApplication application) throws Exception;
+    void bind(ServerApplication application, String bindAddress, int bindPort) throws Exception;
 
     void unbind() throws Exception;
 

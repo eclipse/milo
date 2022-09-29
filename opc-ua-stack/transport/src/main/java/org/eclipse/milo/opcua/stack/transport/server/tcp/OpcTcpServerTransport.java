@@ -39,7 +39,7 @@ public class OpcTcpServerTransport implements OpcServerTransport {
     }
 
     @Override
-    public void bind(ServerApplication application) throws Exception {
+    public void bind(ServerApplication application, String bindAddress, int bindPort) throws Exception {
         var bootstrap = new ServerBootstrap();
 
         bootstrap.group(Stack.sharedEventLoop())
@@ -55,7 +55,7 @@ public class OpcTcpServerTransport implements OpcServerTransport {
                 }
             });
 
-        Channel channel = bootstrap.bind(config.getBindAddress(), config.getBindPort()).await().channel();
+        Channel channel = bootstrap.bind(bindAddress, bindPort).await().channel();
         channelReference.set(channel);
     }
 

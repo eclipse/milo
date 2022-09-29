@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
@@ -19,13 +21,19 @@ import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
+import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
-public interface OpcUaServerConfig extends UaStackServerConfig {
+public interface OpcUaServerConfig {
 
     /**
      * A {@link UserTokenPolicy} for anonymous access.
@@ -58,6 +66,45 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
     );
 
     /**
+     * @return the {@link EndpointConfiguration}s for this server.
+     */
+    Set<EndpointConfiguration> getEndpoints();
+
+    /**
+     * Get the application name for the server.
+     * <p/>
+     * This will be used in the {@link ApplicationDescription} returned to clients.
+     *
+     * @return the application name for the server.
+     */
+    LocalizedText getApplicationName();
+
+    /**
+     * Get the application uri for the server.
+     * <p/>
+     * This will be used in the {@link ApplicationDescription} returned to clients.
+     * <p/>
+     * <b>The application uri must match the application uri used on the server's application instance certificate.</b>
+     *
+     * @return the application uri for the server.
+     */
+    String getApplicationUri();
+
+    /**
+     * Get the product uri for the server.
+     * <p/>
+     * This will be used in the {@link ApplicationDescription} returned to clients.
+     *
+     * @return the product uri for the server.
+     */
+    String getProductUri();
+
+    /**
+     * @return the server {@link BuildInfo}.
+     */
+    BuildInfo getBuildInfo();
+
+    /**
      * Get the {@link IdentityValidator} for the server.
      *
      * @return the {@link IdentityValidator} for the server.
@@ -69,14 +116,34 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
     IdentityValidator getIdentityValidator();
 
     /**
-     * @return the server {@link BuildInfo}.
+     * @return the configured {@link EncodingLimits}.
      */
-    BuildInfo getBuildInfo();
+    EncodingLimits getEncodingLimits();
 
     /**
      * @return the {@link OpcUaServerConfigLimits}.
      */
     OpcUaServerConfigLimits getLimits();
+
+    /**
+     * @return the {@link CertificateManager} for this server.
+     */
+    CertificateManager getCertificateManager();
+
+    /**
+     * @return the {@link TrustListManager} for this server.
+     */
+    TrustListManager getTrustListManager();
+
+    /**
+     * @return the {@link ServerCertificateValidator} for this server.
+     */
+    ServerCertificateValidator getCertificateValidator();
+
+    /**
+     * @return the {@link ExecutorService} for this server.
+     */
+    ExecutorService getExecutor();
 
     /**
      * @return the {@link ScheduledExecutorService} used by the {@link OpcUaServer} being configured.
@@ -99,28 +166,21 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
      * @return a {@link OpcUaServerConfigBuilder} pre-populated with values from {@code config}.
      */
     static OpcUaServerConfigBuilder copy(OpcUaServerConfig config) {
-        OpcUaServerConfigBuilder builder = new OpcUaServerConfigBuilder();
+        var builder = new OpcUaServerConfigBuilder();
 
-        // UaStackServerConfig values
         builder.setEndpoints(config.getEndpoints());
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
+        builder.setBuildInfo(config.getBuildInfo());
         builder.setEncodingLimits(config.getEncodingLimits());
-        builder.setMinimumSecureChannelLifetime(config.getMinimumSecureChannelLifetime());
-        builder.setMaximumSecureChannelLifetime(config.getMaximumSecureChannelLifetime());
+        builder.setLimits(config.getLimits());
+        builder.setIdentityValidator(config.getIdentityValidator());
         builder.setCertificateManager(config.getCertificateManager());
         builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());
-        builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
-        builder.setHttpsCertificateChain(config.getHttpsCertificateChain().orElse(null));
         builder.setExecutor(config.getExecutor());
-
-        // OpcUaServerConfig values
-        builder.setIdentityValidator(config.getIdentityValidator());
-        builder.setBuildInfo(config.getBuildInfo());
-        builder.setLimits(config.getLimits());
-        builder.setScheduledExecutorService(config.getScheduledExecutorService());
+        builder.setScheduledExecutor(config.getScheduledExecutorService());
 
         return builder;
     }
@@ -133,10 +193,7 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
      * @param consumer a {@link Consumer} that may modify the builder.
      * @return a {@link OpcUaServerConfig} built from the builder provided to {@code consumer}.
      */
-    static OpcUaServerConfig copy(
-        OpcUaServerConfig config,
-        Consumer<OpcUaServerConfigBuilder> consumer) {
-
+    static OpcUaServerConfig copy(OpcUaServerConfig config, Consumer<OpcUaServerConfigBuilder> consumer) {
         OpcUaServerConfigBuilder builder = copy(config);
 
         consumer.accept(builder);

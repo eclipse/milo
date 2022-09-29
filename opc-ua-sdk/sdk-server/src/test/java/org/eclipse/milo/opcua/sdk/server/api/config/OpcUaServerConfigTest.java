@@ -42,7 +42,7 @@ public class OpcUaServerConfigTest {
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})
-            .setScheduledExecutorService(scheduledExecutorService)
+            .setScheduledExecutor(scheduledExecutorService)
             .build();
 
         OpcUaServerConfig copy = OpcUaServerConfig.copy(original).build();

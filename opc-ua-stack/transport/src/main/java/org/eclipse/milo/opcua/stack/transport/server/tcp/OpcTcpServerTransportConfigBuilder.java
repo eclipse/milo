@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.tcp;
 
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -18,23 +17,11 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcTcpServerTransportConfigBuilder {
 
-    private String bindAddress = "localhost";
-    private int bindPort = Stack.DEFAULT_TCP_PORT;
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
     private UInteger helloDeadline = uint(10_000);
     private UInteger minimumSecureChannelLifetime = uint(60_000);
     private UInteger maximumSecureChannelLifetime = uint(60_000 * 60 * 24);
-
-    public OpcTcpServerTransportConfigBuilder setBindAddress(String bindAddress) {
-        this.bindAddress = bindAddress;
-        return this;
-    }
-
-    public OpcTcpServerTransportConfigBuilder setBindPort(int bindPort) {
-        this.bindPort = bindPort;
-        return this;
-    }
 
     public OpcTcpServerTransportConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
         this.encodingLimits = encodingLimits;
@@ -58,8 +45,6 @@ public class OpcTcpServerTransportConfigBuilder {
 
     public OpcTcpServerTransportConfig build() {
         return new OpcTcpServerTransportConfigImpl(
-            bindAddress,
-            bindPort,
             encodingLimits,
             helloDeadline,
             minimumSecureChannelLifetime,
@@ -69,38 +54,22 @@ public class OpcTcpServerTransportConfigBuilder {
 
     static class OpcTcpServerTransportConfigImpl implements OpcTcpServerTransportConfig {
 
-        private final String bindAddress;
-        private final int bindPort;
         private final EncodingLimits encodingLimits;
         private final UInteger helloDeadline;
         private final UInteger minimumSecureChannelLifetime;
         private final UInteger maximumSecureChannelLifetime;
 
         public OpcTcpServerTransportConfigImpl(
-            String bindAddress,
-            int bindPort,
             EncodingLimits encodingLimits,
             UInteger helloDeadline,
             UInteger minimumSecureChannelLifetime,
             UInteger maximumSecureChannelLifetime
         ) {
 
-            this.bindAddress = bindAddress;
-            this.bindPort = bindPort;
             this.encodingLimits = encodingLimits;
             this.helloDeadline = helloDeadline;
             this.minimumSecureChannelLifetime = minimumSecureChannelLifetime;
             this.maximumSecureChannelLifetime = maximumSecureChannelLifetime;
-        }
-
-        @Override
-        public String getBindAddress() {
-            return bindAddress;
-        }
-
-        @Override
-        public int getBindPort() {
-            return bindPort;
         }
 
         @Override

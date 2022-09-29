@@ -469,7 +469,7 @@ public class SessionManager implements
         );
     }
 
-    private CreateSessionResponse createSession(
+    public CreateSessionResponse createSession(
         ServiceRequestContext context,
         CreateSessionRequest request
     ) throws UaException {
@@ -943,6 +943,10 @@ public class SessionManager implements
                 new DiagnosticInfo[0]
             );
         }
+    }
+
+    public ActivateSessionResponse activateSession(ServiceRequestContext context, ActivateSessionRequest request) {
+        return null; // TODO
     }
 
     private static void verifyClientSignature(Session session, ActivateSessionRequest request) throws UaException {

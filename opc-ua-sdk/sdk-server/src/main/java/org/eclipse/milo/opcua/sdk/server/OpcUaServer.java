@@ -11,9 +11,11 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.security.KeyPair;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
@@ -44,6 +48,7 @@ import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultDiscoveryServiceS
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMethodServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultMonitoredItemServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultNodeManagementServiceSet2;
+import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultSessionServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultSubscriptionServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.services2.impl.DefaultViewServiceSet2;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -53,26 +58,41 @@ import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
-import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toList;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaServer extends AbstractServiceHandler implements ServerApplication {
 
@@ -88,16 +108,26 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<NodeId, ReferenceType> referenceTypes = new ConcurrentHashMap<>();
+    private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
     private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
-
     private final AtomicLong monitoredItemCount = new AtomicLong(0L);
+
+    private final NamespaceTable namespaceTable = new NamespaceTable();
+    private final ServerTable serverTable = new ServerTable();
 
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
+
+    private final EncodingManager encodingManager =
+        DefaultEncodingManager.createAndInitialize();
+
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final DataTypeManager dataTypeManager =
+        DefaultDataTypeManager.createAndInitialize(namespaceTable);
+    private final Map<NodeId, ReferenceType> referenceTypes = new ConcurrentHashMap<>();
 
     private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
 
@@ -110,17 +140,44 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     private final EventFactory eventFactory = new EventFactory(this);
     private final EventNotifier eventNotifier = new ServerEventNotifier();
 
-    private final UaStackServer stackServer;
+    private final EncodingContext encodingContext;
 
     private final OpcUaNamespace opcUaNamespace;
     private final ServerNamespace serverNamespace;
 
     private final OpcUaServerConfig config;
+    private final Function<TransportProfile, OpcServerTransport> transportFactory;
 
-    public OpcUaServer(OpcUaServerConfig config) {
+    public OpcUaServer(OpcUaServerConfig config, Function<TransportProfile, OpcServerTransport> transportFactory) {
         this.config = config;
+        this.transportFactory = transportFactory;
 
-        stackServer = new UaStackServer(config);
+        encodingContext = new EncodingContext() {
+            @Override
+            public DataTypeManager getDataTypeManager() {
+                return dataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
+            }
+
+            @Override
+            public EncodingLimits getEncodingLimits() {
+                return config.getEncodingLimits();
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return namespaceTable;
+            }
+
+            @Override
+            public ServerTable getServerTable() {
+                return serverTable;
+            }
+        };
 
         Stream<String> paths = config.getEndpoints()
             .stream()
@@ -133,14 +190,14 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
             addServiceSet(path, new DefaultMethodServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultMonitoredItemServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultNodeManagementServiceSet2(OpcUaServer.this));
-            addServiceSet(path, sessionManager);
+            addServiceSet(path, new DefaultSessionServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultSubscriptionServiceSet2(OpcUaServer.this));
             addServiceSet(path, new DefaultViewServiceSet2(OpcUaServer.this));
         });
 
-        ObjectTypeInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
+        ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);
 
-        VariableTypeInitializer.initialize(stackServer.getNamespaceTable(), variableTypeManager);
+        VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
 
         opcUaNamespace = new OpcUaNamespace(this);
         opcUaNamespace.startup();
@@ -160,8 +217,34 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     public CompletableFuture<OpcUaServer> startup() {
         eventFactory.startup();
 
-        return stackServer.startup()
-            .thenApply(s -> OpcUaServer.this);
+        config.getEndpoints()
+            .stream()
+            .sorted(Comparator.comparing(EndpointConfiguration::getTransportProfile))
+            .forEach(endpoint -> {
+                logger.info(
+                    "Binding endpoint {} to {}:{} [{}/{}]",
+                    endpoint.getEndpointUrl(),
+                    endpoint.getBindAddress(),
+                    endpoint.getBindPort(),
+                    endpoint.getSecurityPolicy(),
+                    endpoint.getSecurityMode()
+                );
+
+                TransportProfile transportProfile = endpoint.getTransportProfile();
+                OpcServerTransport transport = transportFactory.apply(transportProfile);
+
+                if (transport != null) {
+                    try {
+                        transport.bind(OpcUaServer.this, endpoint.getBindAddress(), endpoint.getBindPort());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    logger.warn("No OpcServerTransport for TransportProfile: {}", transportProfile);
+                }
+            });
+
+        return CompletableFuture.completedFuture(this);
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
@@ -173,8 +256,9 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         subscriptions.values()
             .forEach(Subscription::deleteSubscription);
 
-        return stackServer.shutdown()
-            .thenApply(s -> OpcUaServer.this);
+        // TODO unbind transports?
+
+        return CompletableFuture.completedFuture(this);
     }
 
     public AddressSpaceManager getAddressSpaceManager() {
@@ -194,23 +278,23 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     }
 
     public DataTypeManager getDataTypeManager() {
-        return stackServer.getDataTypeManager();
+        return dataTypeManager;
     }
 
     public EncodingManager getEncodingManager() {
-        return stackServer.getEncodingManager();
+        return encodingManager;
     }
 
     public NamespaceTable getNamespaceTable() {
-        return stackServer.getNamespaceTable();
+        return namespaceTable;
     }
 
     public ServerTable getServerTable() {
-        return stackServer.getServerTable();
+        return serverTable;
     }
 
     public EncodingContext getEncodingContext() {
-        return stackServer.getEncodingContext();
+        return encodingContext;
     }
 
     public ServerDiagnosticsSummary getDiagnosticsSummary() {
@@ -269,28 +353,30 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     }
 
     public Optional<KeyPair> getKeyPair(ByteString thumbprint) {
-        return stackServer.getConfig().getCertificateManager().getKeyPair(thumbprint);
+        return config.getCertificateManager().getKeyPair(thumbprint);
     }
 
     public Optional<X509Certificate> getCertificate(ByteString thumbprint) {
-        return stackServer.getConfig().getCertificateManager().getCertificate(thumbprint);
+        return config.getCertificateManager().getCertificate(thumbprint);
     }
 
     public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
-        return stackServer.getConfig().getCertificateManager().getCertificateChain(thumbprint);
+        return config.getCertificateManager().getCertificateChain(thumbprint);
     }
 
     public ExecutorService getExecutorService() {
-        return stackServer.getConfig().getExecutor();
+        return config.getExecutor();
     }
 
     public ScheduledExecutorService getScheduledExecutorService() {
         return config.getScheduledExecutorService();
     }
 
-    @Override
     public List<EndpointDescription> getEndpointDescriptions() {
-        return stackServer.getEndpointDescriptions();
+        return config.getEndpoints()
+            .stream()
+            .map(this::transformEndpoint)
+            .collect(Collectors.toUnmodifiableList());
     }
 
     public Map<NodeId, ReferenceType> getReferenceTypes() {
@@ -389,6 +475,96 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         return null;
     }
 
+
+    private EndpointDescription transformEndpoint(EndpointConfiguration endpoint) {
+        return new EndpointDescription(
+            endpoint.getEndpointUrl(),
+            getApplicationDescription(),
+            certificateByteString(endpoint.getCertificate()),
+            endpoint.getSecurityMode(),
+            endpoint.getSecurityPolicy().getUri(),
+            a(endpoint.getTokenPolicies(), UserTokenPolicy.class),
+            endpoint.getTransportProfile().getUri(),
+            ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))
+        );
+    }
+
+    private ByteString certificateByteString(@Nullable X509Certificate certificate) {
+        if (certificate != null) {
+            try {
+                return ByteString.of(certificate.getEncoded());
+            } catch (CertificateEncodingException e) {
+                logger.error("Error decoding certificate.", e);
+                return ByteString.NULL_VALUE;
+            }
+        } else {
+            return ByteString.NULL_VALUE;
+        }
+    }
+
+    private static short getSecurityLevel(SecurityPolicy securityPolicy, MessageSecurityMode securityMode) {
+        short securityLevel = 0;
+
+        switch (securityPolicy) {
+            case Aes256_Sha256_RsaPss:
+            case Basic256Sha256:
+                securityLevel |= 0x08;
+                break;
+            case Aes128_Sha256_RsaOaep:
+                securityLevel |= 0x04;
+                break;
+            case Basic256:
+            case Basic128Rsa15:
+                securityLevel |= 0x01;
+                break;
+            case None:
+            default:
+                break;
+        }
+
+        switch (securityMode) {
+            case SignAndEncrypt:
+                securityLevel |= 0x80;
+                break;
+            case Sign:
+                securityLevel |= 0x40;
+                break;
+            default:
+                securityLevel |= 0x20;
+                break;
+        }
+
+        return securityLevel;
+    }
+
+    private ApplicationDescription getApplicationDescription() {
+        return applicationDescription.getOrCompute(() -> {
+            List<String> discoveryUrls = config.getEndpoints()
+                .stream()
+                .map(EndpointConfiguration::getEndpointUrl)
+                .filter(url -> url.endsWith("/discovery"))
+                .distinct()
+                .collect(toList());
+
+            if (discoveryUrls.isEmpty()) {
+                discoveryUrls = config.getEndpoints()
+                    .stream()
+                    .map(EndpointConfiguration::getEndpointUrl)
+                    .distinct()
+                    .collect(toList());
+            }
+
+            return new ApplicationDescription(
+                config.getApplicationUri(),
+                config.getProductUri(),
+                config.getApplicationName(),
+                ApplicationType.Server,
+                null,
+                null,
+                a(discoveryUrls, String.class)
+            );
+        });
+    }
 
     private static class ServerEventNotifier implements EventNotifier {
 

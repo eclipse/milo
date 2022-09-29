@@ -296,20 +296,20 @@ public abstract class AbstractServiceHandler {
         );
         serviceHandlerTable.put(
             path,
-            Service.VIEW_BROWSE_TRANSLATE_BROWSE_PATHS,
+            Service.VIEW_TRANSLATE_BROWSE_PATHS,
             (context, request) ->
                 serviceSet.onTranslateBrowsePaths(context, (TranslateBrowsePathsToNodeIdsRequest) request)
                     .thenApply(Function.identity())
         );
         serviceHandlerTable.put(
             path,
-            Service.VIEW_BROWSE_REGISTER_NODES,
+            Service.VIEW_REGISTER_NODES,
             (context, request) ->
                 serviceSet.onRegisterNodes(context, (RegisterNodesRequest) request).thenApply(Function.identity())
         );
         serviceHandlerTable.put(
             path,
-            Service.VIEW_BROWSE_UNREGISTER_NODES,
+            Service.VIEW_UNREGISTER_NODES,
             (context, request) ->
                 serviceSet.onUnregisterNodes(context, (UnregisterNodesRequest) request).thenApply(Function.identity())
         );
