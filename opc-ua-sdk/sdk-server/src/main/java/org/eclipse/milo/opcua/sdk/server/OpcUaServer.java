@@ -59,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
@@ -464,15 +465,15 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
 
         Service service = Service.from(requestMessage.getTypeId());
 
-        ServiceHandler serviceHandler = service != null ?
-            getServiceHandler(path, service) : null;
+        ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
 
         if (serviceHandler != null) {
             return serviceHandler.handle(context, requestMessage);
         } else {
-            // TODO ServiceFault Bad_NotImplemented
+            logger.warn("No ServiceHandler registered for path={} service={}", path, service);
+
+            return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_NotImplemented));
         }
-        return null;
     }
 
 

@@ -15,9 +15,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -38,6 +38,11 @@ public class PublishQueue {
 
     private final LinkedHashMap<UInteger, WaitingSubscription> waitList = new LinkedHashMap<>();
 
+    private final ExecutorService executor;
+
+    public PublishQueue(ExecutorService executor) {
+        this.executor = executor;
+    }
 
     public synchronized void addRequest(PendingPublish pending) {
         List<WaitingSubscription> waitingSubscriptions = List.copyOf(waitList.values());
@@ -96,8 +101,7 @@ public class PublishQueue {
 
                 final WaitingSubscription ws = subscription;
 
-                // TODO use configured executor
-                Stack.sharedExecutor().execute(() -> ws.subscription.onPublish(pending));
+                executor.execute(() -> ws.subscription.onPublish(pending));
             } else {
                 pendingQueue.add(pending);
             }
@@ -122,8 +126,7 @@ public class PublishQueue {
             PendingPublish pending = poll();
 
             if (pending != null) {
-                // TODO use configured executor
-                Stack.sharedExecutor().execute(() -> subscription.onPublish(pending));
+                executor.execute(() -> subscription.onPublish(pending));
             } else {
                 waitList.putIfAbsent(subscription.getId(), new WaitingSubscription(subscription));
             }

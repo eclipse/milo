@@ -117,12 +117,13 @@ public class SubscriptionManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final PublishQueue publishQueue = new PublishQueue();
 
     private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
     private final List<Subscription> transferred = new CopyOnWriteArrayList<>();
 
     private final AtomicLong monitoredItemCount = new AtomicLong(0L);
+
+    private final PublishQueue publishQueue;
 
     private final Session session;
     private final OpcUaServer server;
@@ -130,6 +131,8 @@ public class SubscriptionManager {
     public SubscriptionManager(Session session, OpcUaServer server) {
         this.session = session;
         this.server = server;
+
+        publishQueue = new PublishQueue(server.getConfig().getExecutor());
     }
 
     public Session getSession() {

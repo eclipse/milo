@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.services;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 
 public enum Service {
 
@@ -125,6 +126,8 @@ public enum Service {
             case 845:   return SUBSCRIPTION_DELETE_SUBSCRIPTIONS;
             //@formatter:on
             default:
+                LoggerFactory.getLogger(Service.class)
+                    .warn("Unknown service id: " + id);
                 return null;
         }
     }
