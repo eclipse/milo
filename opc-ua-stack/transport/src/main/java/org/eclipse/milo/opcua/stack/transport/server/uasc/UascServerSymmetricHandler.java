@@ -209,6 +209,8 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
 
     private void sendServiceResponse(UascServiceResponse response, ByteBuf outBuffer) {
         ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+        CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
         try {
             binaryEncoder.setBuffer(messageBuffer);
             binaryEncoder.encodeMessage(null, response.getResponseMessage());
@@ -222,7 +224,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
                 MessageType.SecureMessage
             );
 
-            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
 
             for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
                 chunkComposite.addComponent(chunk);
@@ -240,6 +241,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
             sendServiceFault(response, outBuffer, e);
         } finally {
             messageBuffer.release();
+            chunkComposite.release();
         }
     }
 
@@ -258,6 +260,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
         );
 
         ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+        CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
 
         try {
             binaryEncoder.setBuffer(messageBuffer);
@@ -272,8 +275,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
                 MessageType.SecureMessage
             );
 
-            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
             for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
                 chunkComposite.addComponent(chunk);
                 chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
@@ -286,6 +287,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
             logger.error("Error serializing ServiceFault: {}", e.getStatusCode(), e);
         } finally {
             messageBuffer.release();
+            chunkComposite.release();
         }
     }
 
