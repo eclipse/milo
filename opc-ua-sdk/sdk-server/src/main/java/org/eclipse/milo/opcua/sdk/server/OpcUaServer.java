@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,6 +84,7 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
+import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransportFactory;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.jetbrains.annotations.Nullable;
@@ -147,9 +147,9 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     private final ServerNamespace serverNamespace;
 
     private final OpcUaServerConfig config;
-    private final Function<TransportProfile, OpcServerTransport> transportFactory;
+    private final OpcServerTransportFactory transportFactory;
 
-    public OpcUaServer(OpcUaServerConfig config, Function<TransportProfile, OpcServerTransport> transportFactory) {
+    public OpcUaServer(OpcUaServerConfig config, OpcServerTransportFactory transportFactory) {
         this.config = config;
         this.transportFactory = transportFactory;
 
@@ -232,7 +232,7 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
                 );
 
                 TransportProfile transportProfile = endpoint.getTransportProfile();
-                OpcServerTransport transport = transportFactory.apply(transportProfile);
+                OpcServerTransport transport = transportFactory.create(transportProfile);
 
                 if (transport != null) {
                     try {
