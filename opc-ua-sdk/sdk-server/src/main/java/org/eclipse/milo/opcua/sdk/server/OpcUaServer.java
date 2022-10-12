@@ -185,15 +185,18 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
             .map(e -> EndpointUtil.getPath(e.getEndpointUrl()))
             .distinct();
 
-        paths.filter(path -> !path.endsWith("/discovery")).forEach(path -> {
-            addServiceSet(path, new DefaultAttributeServiceSet(OpcUaServer.this));
+        paths.forEach(path -> {
             addServiceSet(path, new DefaultDiscoveryServiceSet(OpcUaServer.this));
-            addServiceSet(path, new DefaultMethodServiceSet(OpcUaServer.this));
-            addServiceSet(path, new DefaultMonitoredItemServiceSet(OpcUaServer.this));
-            addServiceSet(path, new DefaultNodeManagementServiceSet(OpcUaServer.this));
-            addServiceSet(path, new DefaultSessionServiceSet(OpcUaServer.this));
-            addServiceSet(path, new DefaultSubscriptionServiceSet(OpcUaServer.this));
-            addServiceSet(path, new DefaultViewServiceSet(OpcUaServer.this));
+
+            if (!path.endsWith("/discovery")) {
+                addServiceSet(path, new DefaultAttributeServiceSet(OpcUaServer.this));
+                addServiceSet(path, new DefaultMethodServiceSet(OpcUaServer.this));
+                addServiceSet(path, new DefaultMonitoredItemServiceSet(OpcUaServer.this));
+                addServiceSet(path, new DefaultNodeManagementServiceSet(OpcUaServer.this));
+                addServiceSet(path, new DefaultSessionServiceSet(OpcUaServer.this));
+                addServiceSet(path, new DefaultSubscriptionServiceSet(OpcUaServer.this));
+                addServiceSet(path, new DefaultViewServiceSet(OpcUaServer.this));
+            }
         });
 
         ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);
