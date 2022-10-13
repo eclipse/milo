@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
@@ -137,6 +138,8 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     private final AtomicLong secureChannelIds = new AtomicLong();
     private final AtomicLong secureChannelTokenIds = new AtomicLong();
 
+    private final List<OpcServerTransport> transports = new CopyOnWriteArrayList<>();
+
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
     private final EventNotifier eventNotifier = new ServerEventNotifier();
@@ -240,6 +243,8 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
                 if (transport != null) {
                     try {
                         transport.bind(OpcUaServer.this, endpoint.getBindAddress(), endpoint.getBindPort());
+
+                        transports.add(transport);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -260,7 +265,14 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         subscriptions.values()
             .forEach(Subscription::deleteSubscription);
 
-        // TODO unbind transports?
+        transports.forEach(t -> {
+            try {
+                t.unbind();
+            } catch (Exception e) {
+                logger.warn("Error unbinding transport", e);
+            }
+        });
+        transports.clear();
 
         return CompletableFuture.completedFuture(this);
     }
@@ -421,19 +433,23 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
      * @return {@code true} if {@code requestMessage} is one of the Discovery service requests.
      */
     private static boolean isDiscoveryService(UaRequestMessageType requestMessage) {
-        UInteger id = (UInteger) requestMessage.getTypeId().getIdentifier();
+        Service service = Service.from(requestMessage.getTypeId());
 
-        switch (id.intValue()) {
-            case 420:   // FindServers
-            case 426:   // GetEndpoints
-            case 435:   // RegisterServer
-            case 12190: // FindServersOnNetwork
-            case 12193: // RegisterServer2
-                return true;
+        if (service != null) {
+            switch (service) {
+                case DISCOVERY_FIND_SERVERS:
+                case DISCOVERY_GET_ENDPOINTS:
+                case DISCOVERY_REGISTER_SERVER:
+                case DISCOVERY_FIND_SERVERS_ON_NETWORK:
+                case DISCOVERY_REGISTER_SERVER_2:
+                    return true;
 
-            default:
-                return false;
+                default:
+                    return false;
+            }
         }
+
+        return false;
     }
 
     @Override
