@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
@@ -35,8 +34,7 @@ public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascS
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UascServiceRequest serviceRequest) {
-        // TODO use a configured executor
-        Stack.sharedExecutor().execute(() -> dispatchServiceRequest(serviceRequest));
+        application.getExecutor().execute(() -> dispatchServiceRequest(serviceRequest));
     }
 
     private void dispatchServiceRequest(UascServiceRequest serviceRequest) {

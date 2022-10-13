@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
@@ -344,6 +346,11 @@ class OpcTcpTransportTest extends SecurityFixture {
             @Override
             public Long getNextSecureChannelTokenId() {
                 return secureChannelTokenId.getAndIncrement();
+            }
+
+            @Override
+            public ExecutorService getExecutor() {
+                return Stack.sharedExecutor();
             }
 
             @Override

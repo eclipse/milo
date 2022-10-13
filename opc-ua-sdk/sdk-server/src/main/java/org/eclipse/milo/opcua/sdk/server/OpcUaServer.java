@@ -453,6 +453,11 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     }
 
     @Override
+    public ExecutorService getExecutor() {
+        return config.getExecutor();
+    }
+
+    @Override
     public CompletableFuture<UaResponseMessageType> handleServiceRequest(
         ServiceRequestContext context,
         UaRequestMessageType requestMessage
