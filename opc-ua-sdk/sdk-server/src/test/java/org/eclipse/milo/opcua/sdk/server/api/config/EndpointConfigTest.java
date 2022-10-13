@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.server;
+package org.eclipse.milo.opcua.sdk.server.api.config;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.expectThrows;
 
-public class EndpointConfigurationTest {
+public class EndpointConfigTest {
 
     @Test
     public void securityMismatchThrows() {
@@ -29,7 +29,7 @@ public class EndpointConfigurationTest {
             IllegalArgumentException.class,
             () ->
                 // mismatch between securityPolicy and securityMode
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setSecurityPolicy(SecurityPolicy.Basic128Rsa15)
                     .setSecurityMode(MessageSecurityMode.None)
                     .build()
@@ -39,7 +39,7 @@ public class EndpointConfigurationTest {
             IllegalArgumentException.class,
             () ->
                 // mismatch between securityPolicy and securityMode
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setSecurityPolicy(SecurityPolicy.None)
                     .setSecurityMode(MessageSecurityMode.SignAndEncrypt)
                     .build()
@@ -52,7 +52,7 @@ public class EndpointConfigurationTest {
             IllegalStateException.class,
             () ->
                 // missing certificate
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setSecurityPolicy(SecurityPolicy.Basic128Rsa15)
                     .setSecurityMode(MessageSecurityMode.SignAndEncrypt)
                     .build()
@@ -64,7 +64,7 @@ public class EndpointConfigurationTest {
         expectThrows(
             IllegalArgumentException.class,
             () ->
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setTransportProfile(TransportProfile.HTTPS_UAXML)
                     .build()
         );
@@ -72,7 +72,7 @@ public class EndpointConfigurationTest {
         expectThrows(
             IllegalArgumentException.class,
             () ->
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setTransportProfile(TransportProfile.HTTPS_UAJSON)
                     .build()
         );
@@ -80,7 +80,7 @@ public class EndpointConfigurationTest {
         expectThrows(
             IllegalArgumentException.class,
             () ->
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setTransportProfile(TransportProfile.WSS_UAJSON)
                     .build()
         );
@@ -88,7 +88,7 @@ public class EndpointConfigurationTest {
         expectThrows(
             IllegalArgumentException.class,
             () ->
-                EndpointConfiguration.newBuilder()
+                EndpointConfig.newBuilder()
                     .setTransportProfile(TransportProfile.WSS_UASC_UABINARY)
                     .build()
         );
@@ -96,12 +96,12 @@ public class EndpointConfigurationTest {
 
     @Test
     public void missingTokenPolicyDefaultsToAnonymous() {
-        EndpointConfiguration endpointConfiguration =
-            EndpointConfiguration.newBuilder().build();
+        EndpointConfig endpointConfig =
+            EndpointConfig.newBuilder().build();
 
-        List<UserTokenPolicy> tokenPolicies = endpointConfiguration.getTokenPolicies();
+        List<UserTokenPolicy> tokenPolicies = endpointConfig.getTokenPolicies();
         assertEquals(tokenPolicies.size(), 1);
-        assertEquals(tokenPolicies.get(0), EndpointConfiguration.Builder.USER_TOKEN_POLICY_ANONYMOUS);
+        assertEquals(tokenPolicies.get(0), EndpointConfig.Builder.USER_TOKEN_POLICY_ANONYMOUS);
     }
 
 }

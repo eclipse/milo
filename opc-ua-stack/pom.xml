@@ -26,9 +26,7 @@
         <module>encoding-json</module>
         <module>encoding-xml</module>
         <module>guava-dependencies</module>
-        <module>stack-client</module>
         <module>stack-core</module>
-        <module>stack-server</module>
         <module>stack-tests</module>
         <module>transport</module>
         <module>transport-https</module>
