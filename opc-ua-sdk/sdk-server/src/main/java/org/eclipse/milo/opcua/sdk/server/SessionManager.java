@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Stream;
 
 import com.google.common.base.Objects;
 import com.google.common.math.DoubleMath;
@@ -57,7 +58,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -327,61 +327,6 @@ public class SessionManager {
             new SignedSoftwareCertificate[0],
             serverSignature,
             uint(maxRequestMessageSize)
-        );
-    }
-
-    private SecurityConfiguration createSecurityConfiguration(
-        EndpointDescription endpoint,
-        ByteString clientCertificateBytes
-    ) throws UaException {
-
-        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
-        MessageSecurityMode securityMode = endpoint.getSecurityMode();
-
-        X509Certificate clientCertificate = null;
-        List<X509Certificate> clientCertificateChain = null;
-
-        KeyPair keyPair = null;
-        X509Certificate serverCertificate = null;
-        List<X509Certificate> serverCertificateChain = null;
-
-        if (securityPolicy != SecurityPolicy.None) {
-            clientCertificate = CertificateUtil
-                .decodeCertificate(clientCertificateBytes.bytes());
-
-            clientCertificateChain = CertificateUtil
-                .decodeCertificates(clientCertificateBytes.bytes());
-
-            ByteString thumbprint = ByteString.of(sha1(endpoint.getServerCertificate().bytesOrEmpty()));
-
-            keyPair = server
-                .getConfig()
-                .getCertificateManager()
-                .getKeyPair(thumbprint)
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
-
-            serverCertificate = server
-                .getConfig()
-                .getCertificateManager()
-                .getCertificate(thumbprint)
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
-
-            serverCertificateChain = server
-                .getConfig()
-                .getCertificateManager()
-                .getCertificateChain(thumbprint)
-                .map(List::of)
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
-        }
-
-        return new SecurityConfiguration(
-            securityPolicy,
-            securityMode,
-            keyPair,
-            serverCertificate,
-            serverCertificateChain,
-            clientCertificate,
-            clientCertificateChain
         );
     }
 
@@ -746,8 +691,8 @@ public class SessionManager {
             }
         }
 
-        String policyId = l(tokenPolicies).stream()
-            .filter(p -> p.getTokenType() == UserTokenType.Anonymous)
+        String policyId = Stream.of(tokenPolicies)
+            .filter(p -> p != null && p.getTokenType() == UserTokenType.Anonymous)
             .findFirst()
             .map(UserTokenPolicy::getPolicyId)
             .orElse(null);
