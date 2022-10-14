@@ -41,6 +41,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
@@ -175,6 +178,24 @@ public class DiscoveryClient {
 
         return transport.sendRequestMessage(request)
             .thenApply(GetEndpointsResponse.class::cast);
+    }
+
+    /**
+     * Call the RegisterServer service to register {@code server}.
+     *
+     * @param server the {@link RegisteredServer} to register.
+     * @return the {@link RegisterServerResponse} returned by the RegisterServer service.
+     */
+    public CompletableFuture<RegisterServerResponse> registerServer(RegisteredServer server) {
+        RequestHeader header = newRequestHeader(
+            NodeId.NULL_VALUE,
+            uint(60_000)
+        );
+
+        var request = new RegisterServerRequest(header, server);
+
+        return transport.sendRequestMessage(request)
+            .thenApply(RegisterServerResponse.class::cast);
     }
 
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
