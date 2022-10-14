@@ -16,10 +16,13 @@ import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 
 public interface ServiceRequestContext {
 
     String getEndpointUrl();
+
+    TransportProfile getTransportProfile();
 
     Channel getChannel();
 

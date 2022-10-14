@@ -35,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -57,6 +58,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     private final OpcUaBinaryDecoder binaryDecoder;
 
     private final ServerApplication application;
+    private final TransportProfile transportProfile;
     private final ChannelParameters channelParameters;
     private final ChunkEncoder chunkEncoder;
     private final ChunkDecoder chunkDecoder;
@@ -64,6 +66,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
 
     UascServerSymmetricHandler(
         ServerApplication application,
+        TransportProfile transportProfile,
         ChannelParameters channelParameters,
         ChunkEncoder chunkEncoder,
         ChunkDecoder chunkDecoder,
@@ -71,6 +74,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     ) {
 
         this.application = application;
+        this.transportProfile = transportProfile;
         this.channelParameters = channelParameters;
         this.chunkEncoder = chunkEncoder;
         this.chunkDecoder = chunkDecoder;
@@ -181,6 +185,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
 
                     var serviceRequest = new UascServiceRequest(
                         endpointUrl,
+                        transportProfile,
                         ctx.channel(),
                         secureChannel,
                         requestMessage,

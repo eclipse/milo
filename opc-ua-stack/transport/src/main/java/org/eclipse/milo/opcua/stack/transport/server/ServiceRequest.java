@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.transport.server;
 
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 
 public class ServiceRequest implements ServiceRequestContext {
@@ -19,18 +20,21 @@ public class ServiceRequest implements ServiceRequestContext {
     private final long receivedAtNanos = System.nanoTime();
 
     private final String endpointUrl;
+    private final TransportProfile transportProfile;
     private final Channel channel;
     private final SecureChannel secureChannel;
     private final UaRequestMessageType requestMessage;
 
     public ServiceRequest(
         String endpointUrl,
+        TransportProfile transportProfile,
         Channel channel,
         SecureChannel secureChannel,
         UaRequestMessageType requestMessage
     ) {
 
         this.endpointUrl = endpointUrl;
+        this.transportProfile = transportProfile;
         this.channel = channel;
         this.secureChannel = secureChannel;
         this.requestMessage = requestMessage;
@@ -43,6 +47,11 @@ public class ServiceRequest implements ServiceRequestContext {
     @Override
     public String getEndpointUrl() {
         return endpointUrl;
+    }
+
+    @Override
+    public TransportProfile getTransportProfile() {
+        return transportProfile;
     }
 
     @Override

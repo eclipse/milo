@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -200,8 +199,7 @@ public class SessionManager {
 
         long secureChannelId = context.getSecureChannel().getChannelId();
         SecurityPolicy securityPolicy = context.getSecureChannel().getSecurityPolicy();
-        // TODO get from ServiceRequestContext
-        String transportProfileUri = TransportProfile.TCP_UASC_UABINARY.getUri();
+        String transportProfileUri = context.getTransportProfile().getUri();
 
         EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
             .stream()
@@ -300,7 +298,7 @@ public class SessionManager {
             clientDescription,
             request.getServerUri(),
             request.getMaxResponseMessageSize(),
-            findSessionEndpoint(TransportProfile.TCP_UASC_UABINARY, context), // TODO TransportProfile from context
+            findSessionEndpoint(context),
             secureChannelId,
             securityConfiguration
         );
@@ -561,8 +559,7 @@ public class SessionManager {
                             context.getSecureChannel()
                         );
 
-                        EndpointDescription endpoint =
-                            findSessionEndpoint(TransportProfile.TCP_UASC_UABINARY, context);
+                        EndpointDescription endpoint = findSessionEndpoint(context);
                         session.setEndpoint(endpoint);
 
                         session.setSecureChannelId(secureChannelId);
@@ -631,17 +628,13 @@ public class SessionManager {
         }
     }
 
-    private EndpointDescription findSessionEndpoint(
-        TransportProfile transportProfile,
-        ServiceRequestContext context
-    ) throws UaException {
-
+    private EndpointDescription findSessionEndpoint(ServiceRequestContext context) throws UaException {
         return server.getEndpointDescriptions()
             .stream()
             .filter(e -> {
                 boolean transportMatch = java.util.Objects.equals(
                     e.getTransportProfileUri(),
-                    transportProfile.getUri()
+                    context.getTransportProfile().getUri()
                 );
 
                 boolean pathMatch = java.util.Objects.equals(
@@ -666,7 +659,7 @@ public class SessionManager {
                 String message = String.format(
                     "no matching endpoint found: transportProfile=%s, " +
                         "endpointUrl=%s, securityPolicy=%s, securityMode=%s",
-                    transportProfile,
+                    context.getTransportProfile(),
                     context.getEndpointUrl(),
                     context.getSecureChannel().getSecurityPolicy(),
                     context.getSecureChannel().getMessageSecurityMode()

@@ -359,6 +359,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             if (!symmetricHandlerAdded) {
                 var symmetricHandler = new UascServerSymmetricHandler(
                     application,
+                    transportProfile,
                     channelParameters,
                     chunkEncoder,
                     chunkDecoder,

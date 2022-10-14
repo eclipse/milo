@@ -419,39 +419,6 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         return secureChannelTokenIds.getAndIncrement();
     }
 
-    /**
-     * Return {@code true} if {@code requestMessage} is one of the Discovery service requests:
-     * <ul>
-     *     <li>FindServersRequest</li>
-     *     <li>GetEndpointsRequest</li>
-     *     <li>RegisterServerRequest</li>
-     *     <li>FindServersOnNetworkRequest</li>
-     *     <li>RegisterServer2Request</li>
-     * </ul>
-     *
-     * @param requestMessage the {@link UaRequestMessageType} to check.
-     * @return {@code true} if {@code requestMessage} is one of the Discovery service requests.
-     */
-    private static boolean isDiscoveryService(UaRequestMessageType requestMessage) {
-        Service service = Service.from(requestMessage.getTypeId());
-
-        if (service != null) {
-            switch (service) {
-                case DISCOVERY_FIND_SERVERS:
-                case DISCOVERY_GET_ENDPOINTS:
-                case DISCOVERY_REGISTER_SERVER:
-                case DISCOVERY_FIND_SERVERS_ON_NETWORK:
-                case DISCOVERY_REGISTER_SERVER_2:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public ExecutorService getExecutor() {
         return config.getExecutor();
@@ -468,9 +435,8 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
             if (getEndpointDescriptions().stream()
                 .filter(e -> EndpointUtil.getPath(e.getEndpointUrl()).equals(path))
+                .filter(e -> e.getTransportProfileUri().equals(context.getTransportProfile().getUri()))
                 .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))) {
-
-                // TODO filter on transport profile as well?
 
                 if (!isDiscoveryService(requestMessage)) {
                     var errorMessage = new ErrorMessage(
@@ -500,7 +466,6 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         }
     }
 
-
     private EndpointDescription transformEndpoint(EndpointConfig endpoint) {
         return new EndpointDescription(
             endpoint.getEndpointUrl(),
@@ -525,6 +490,36 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         } else {
             return ByteString.NULL_VALUE;
         }
+    }
+
+
+    private ApplicationDescription getApplicationDescription() {
+        return applicationDescription.getOrCompute(() -> {
+            List<String> discoveryUrls = config.getEndpoints()
+                .stream()
+                .map(EndpointConfig::getEndpointUrl)
+                .filter(url -> url.endsWith("/discovery"))
+                .distinct()
+                .collect(toList());
+
+            if (discoveryUrls.isEmpty()) {
+                discoveryUrls = config.getEndpoints()
+                    .stream()
+                    .map(EndpointConfig::getEndpointUrl)
+                    .distinct()
+                    .collect(toList());
+            }
+
+            return new ApplicationDescription(
+                config.getApplicationUri(),
+                config.getProductUri(),
+                config.getApplicationName(),
+                ApplicationType.Server,
+                null,
+                null,
+                a(discoveryUrls, String.class)
+            );
+        });
     }
 
     private static short getSecurityLevel(SecurityPolicy securityPolicy, MessageSecurityMode securityMode) {
@@ -562,33 +557,37 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         return securityLevel;
     }
 
-    private ApplicationDescription getApplicationDescription() {
-        return applicationDescription.getOrCompute(() -> {
-            List<String> discoveryUrls = config.getEndpoints()
-                .stream()
-                .map(EndpointConfig::getEndpointUrl)
-                .filter(url -> url.endsWith("/discovery"))
-                .distinct()
-                .collect(toList());
+    /**
+     * Return {@code true} if {@code requestMessage} is one of the Discovery service requests:
+     * <ul>
+     *     <li>FindServersRequest</li>
+     *     <li>GetEndpointsRequest</li>
+     *     <li>RegisterServerRequest</li>
+     *     <li>FindServersOnNetworkRequest</li>
+     *     <li>RegisterServer2Request</li>
+     * </ul>
+     *
+     * @param requestMessage the {@link UaRequestMessageType} to check.
+     * @return {@code true} if {@code requestMessage} is one of the Discovery service requests.
+     */
+    private static boolean isDiscoveryService(UaRequestMessageType requestMessage) {
+        Service service = Service.from(requestMessage.getTypeId());
 
-            if (discoveryUrls.isEmpty()) {
-                discoveryUrls = config.getEndpoints()
-                    .stream()
-                    .map(EndpointConfig::getEndpointUrl)
-                    .distinct()
-                    .collect(toList());
+        if (service != null) {
+            switch (service) {
+                case DISCOVERY_FIND_SERVERS:
+                case DISCOVERY_GET_ENDPOINTS:
+                case DISCOVERY_REGISTER_SERVER:
+                case DISCOVERY_FIND_SERVERS_ON_NETWORK:
+                case DISCOVERY_REGISTER_SERVER_2:
+                    return true;
+
+                default:
+                    return false;
             }
+        }
 
-            return new ApplicationDescription(
-                config.getApplicationUri(),
-                config.getProductUri(),
-                config.getApplicationName(),
-                ApplicationType.Server,
-                null,
-                null,
-                a(discoveryUrls, String.class)
-            );
-        });
+        return false;
     }
 
     private static class ServerEventNotifier implements EventNotifier {
