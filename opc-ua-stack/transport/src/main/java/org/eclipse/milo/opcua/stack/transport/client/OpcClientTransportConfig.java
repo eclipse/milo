@@ -15,11 +15,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.HashedWheelTimer;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface OpcClientTransportConfig {
-
-    UInteger getConnectTimeout();
 
     ExecutorService getExecutor();
 

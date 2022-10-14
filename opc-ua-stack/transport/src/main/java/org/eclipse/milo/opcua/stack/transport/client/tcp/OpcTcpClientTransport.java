@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.stack.transport.client.tcp;
 import java.net.ConnectException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import com.digitalpetri.netty.fsm.ChannelActions;
 import com.digitalpetri.netty.fsm.ChannelFsm;
@@ -96,7 +95,7 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
     @Override
     public CompletableFuture<Unit> connect(ClientApplication application) {
         channelFsm.getFsm().withContext(
-            (Consumer<FsmContext<State, Event>>) ctx ->
+            ctx ->
                 ctx.set(KEY_CLIENT_APPLICATION, application)
         );
 
@@ -138,7 +137,8 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
             bootstrap.group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config.getConnectTimeout().intValue())
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                    OpcTcpClientTransport.this.config.getConnectTimeout().intValue())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

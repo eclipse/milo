@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 
 public interface OpcTcpClientTransportConfig extends OpcClientTransportConfig, UascClientConfig {
+
+    UInteger getConnectTimeout();
 
     static OpcTcpClientTransportConfigBuilder newBuilder() {
         return new OpcTcpClientTransportConfigBuilder();

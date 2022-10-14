@@ -15,8 +15,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface UascClientConfig {
 
-    UInteger getConnectTimeout();
-
     UInteger getAcknowledgeTimeout();
 
     UInteger getChannelLifetime();

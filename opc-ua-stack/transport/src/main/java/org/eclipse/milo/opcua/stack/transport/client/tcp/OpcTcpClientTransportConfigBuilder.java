@@ -16,7 +16,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -26,8 +25,6 @@ public class OpcTcpClientTransportConfigBuilder {
     private UInteger connectTimeout = uint(5_000);
     private UInteger acknowledgeTimeout = uint(5_000);
     private UInteger channelLifetime = uint(60 * 60 * 1000);
-
-    private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
     private ExecutorService executor;
     private ScheduledExecutorService scheduledExecutor;
