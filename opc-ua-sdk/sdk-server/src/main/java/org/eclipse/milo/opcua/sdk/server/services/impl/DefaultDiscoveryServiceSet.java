@@ -59,7 +59,8 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
             List.of(request.getProfileUris()) :
             Collections.emptyList();
 
-        List<EndpointDescription> allEndpoints = server.getEndpointDescriptions()
+        List<EndpointDescription> allEndpoints = server.getApplicationContext()
+            .getEndpointDescriptions()
             .stream()
             .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
             .filter(ed -> filterProfileUris(ed, profileUris))
@@ -80,8 +81,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
             .distinct()
             .collect(toList());
 
-
-        GetEndpointsResponse response = new GetEndpointsResponse(
+        var response = new GetEndpointsResponse(
             createResponseHeader(request),
             matchingEndpoints.isEmpty() ?
                 allEndpoints.toArray(new EndpointDescription[0]) :
@@ -104,7 +104,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
             .filter(ad -> filterServerUris(ad, serverUris))
             .collect(toList());
 
-        FindServersResponse response = new FindServersResponse(
+        var response = new FindServersResponse(
             createResponseHeader(request),
             a(applicationDescriptions, ApplicationDescription.class)
         );

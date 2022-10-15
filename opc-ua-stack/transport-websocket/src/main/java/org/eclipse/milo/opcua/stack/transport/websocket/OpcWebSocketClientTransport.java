@@ -108,10 +108,10 @@ public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
     }
 
     @Override
-    public CompletableFuture<Unit> connect(ClientApplicationContext application) {
+    public CompletableFuture<Unit> connect(ClientApplicationContext applicationContext) {
         channelFsm.getFsm().withContext(
             (Consumer<FsmContext<State, Event>>) ctx ->
-                ctx.set(KEY_CLIENT_APPLICATION, application)
+                ctx.set(KEY_CLIENT_APPLICATION, applicationContext)
         );
 
         return channelFsm.connect().thenApply(c -> Unit.VALUE);

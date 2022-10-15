@@ -54,9 +54,9 @@ public class OpcHttpClientTransport implements OpcClientTransport {
     }
 
     @Override
-    public synchronized CompletableFuture<Unit> connect(ClientApplicationContext application) {
+    public synchronized CompletableFuture<Unit> connect(ClientApplicationContext applicationContext) {
         if (channelPool == null) {
-            channelPool = createChannelPool(config, application);
+            channelPool = createChannelPool(config, applicationContext);
         }
 
         return CompletableFuture.completedFuture(Unit.VALUE);

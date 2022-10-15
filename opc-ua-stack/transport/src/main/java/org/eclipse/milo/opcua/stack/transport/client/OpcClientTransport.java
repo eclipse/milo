@@ -28,11 +28,11 @@ public interface OpcClientTransport {
     /**
      * Connect this transport implementation.
      *
-     * @param application the {@link ClientApplicationContext} associated with this transport.
+     * @param applicationContext the {@link ClientApplicationContext} associated with this transport.
      * @return a {@link CompletableFuture} that completes successfully when this transport
      * connects, or completes exceptionally if an error occurred.
      */
-    CompletableFuture<Unit> connect(ClientApplicationContext application);
+    CompletableFuture<Unit> connect(ClientApplicationContext applicationContext);
 
     /**
      * Disconnect this transport implementation.

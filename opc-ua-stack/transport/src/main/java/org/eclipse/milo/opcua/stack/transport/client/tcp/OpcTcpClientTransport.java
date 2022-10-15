@@ -92,10 +92,10 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
     }
 
     @Override
-    public CompletableFuture<Unit> connect(ClientApplicationContext application) {
+    public CompletableFuture<Unit> connect(ClientApplicationContext applicationContext) {
         channelFsm.getFsm().withContext(
             ctx ->
-                ctx.set(KEY_CLIENT_APPLICATION, application)
+                ctx.set(KEY_CLIENT_APPLICATION, applicationContext)
         );
 
         return channelFsm.connect().thenApply(c -> Unit.VALUE);

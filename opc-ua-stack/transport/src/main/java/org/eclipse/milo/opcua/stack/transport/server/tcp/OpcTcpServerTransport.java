@@ -36,7 +36,7 @@ public class OpcTcpServerTransport implements OpcServerTransport {
     }
 
     @Override
-    public void bind(ServerApplicationContext application, String bindAddress, int bindPort) throws Exception {
+    public void bind(ServerApplicationContext applicationContext, String bindAddress, int bindPort) throws Exception {
         var bootstrap = new ServerBootstrap();
 
         bootstrap.channel(NioServerSocketChannel.class)
@@ -48,7 +48,7 @@ public class OpcTcpServerTransport implements OpcServerTransport {
                 @Override
                 protected void initChannel(SocketChannel channel) {
                     channel.pipeline().addLast(RateLimitingHandler.getInstance());
-                    channel.pipeline().addLast(new UascServerHelloHandler(config, application, TransportProfile.TCP_UASC_UABINARY));
+                    channel.pipeline().addLast(new UascServerHelloHandler(config, applicationContext, TransportProfile.TCP_UASC_UABINARY));
                 }
             });
 

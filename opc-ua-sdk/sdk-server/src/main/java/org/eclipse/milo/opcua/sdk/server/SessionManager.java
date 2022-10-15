@@ -201,7 +201,8 @@ public class SessionManager {
         SecurityPolicy securityPolicy = context.getSecureChannel().getSecurityPolicy();
         String transportProfileUri = context.getTransportProfile().getUri();
 
-        EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
+        EndpointDescription[] serverEndpoints = server.getApplicationContext()
+            .getEndpointDescriptions()
             .stream()
             .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
             .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
@@ -213,7 +214,8 @@ public class SessionManager {
             // GetEndpoints in UaStackServer returns *all* endpoints regardless of a hostname
             // match in the endpoint URL if the result after filtering is 0 endpoints. Do the
             // same here.
-            serverEndpoints = server.getEndpointDescriptions()
+            serverEndpoints = server.getApplicationContext()
+                .getEndpointDescriptions()
                 .stream()
                 .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
@@ -574,7 +576,8 @@ public class SessionManager {
     }
 
     private EndpointDescription findSessionEndpoint(ServiceRequestContext context) throws UaException {
-        return server.getEndpointDescriptions()
+        return server.getApplicationContext()
+            .getEndpointDescriptions()
             .stream()
             .filter(e -> {
                 boolean transportMatch = java.util.Objects.equals(

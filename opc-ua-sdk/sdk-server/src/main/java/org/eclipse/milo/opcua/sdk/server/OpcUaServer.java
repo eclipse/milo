@@ -96,7 +96,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
-public class OpcUaServer extends AbstractServiceHandler implements ServerApplicationContext {
+public class OpcUaServer extends AbstractServiceHandler {
 
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
@@ -149,12 +149,16 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     private final OpcUaNamespace opcUaNamespace;
     private final ServerNamespace serverNamespace;
 
+
     private final OpcUaServerConfig config;
     private final OpcServerTransportFactory transportFactory;
+    private final ServerApplicationContext applicationContext;
 
     public OpcUaServer(OpcUaServerConfig config, OpcServerTransportFactory transportFactory) {
         this.config = config;
         this.transportFactory = transportFactory;
+
+        applicationContext = new ServerApplicationContextImpl();
 
         encodingContext = new EncodingContext() {
             @Override
@@ -217,10 +221,6 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         }
     }
 
-    public OpcUaServerConfig getConfig() {
-        return config;
-    }
-
     public CompletableFuture<OpcUaServer> startup() {
         eventFactory.startup();
 
@@ -242,7 +242,7 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
 
                 if (transport != null) {
                     try {
-                        transport.bind(OpcUaServer.this, endpoint.getBindAddress(), endpoint.getBindPort());
+                        transport.bind(applicationContext, endpoint.getBindAddress(), endpoint.getBindPort());
 
                         transports.add(transport);
                     } catch (Exception e) {
@@ -275,6 +275,14 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         transports.clear();
 
         return CompletableFuture.completedFuture(this);
+    }
+
+    public OpcUaServerConfig getConfig() {
+        return config;
+    }
+
+    public ServerApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     public AddressSpaceManager getAddressSpaceManager() {
@@ -388,201 +396,213 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
         return config.getScheduledExecutorService();
     }
 
-    public List<EndpointDescription> getEndpointDescriptions() {
-        return config.getEndpoints()
-            .stream()
-            .map(this::transformEndpoint)
-            .collect(Collectors.toUnmodifiableList());
-    }
-
     public Map<NodeId, ReferenceType> getReferenceTypes() {
         return referenceTypes;
     }
 
-    @Override
-    public CertificateManager getCertificateManager() {
-        return config.getCertificateManager();
-    }
 
-    @Override
-    public CertificateValidator getCertificateValidator() {
-        return config.getCertificateValidator();
-    }
+    private class ServerApplicationContextImpl implements ServerApplicationContext {
 
-    @Override
-    public Long getNextSecureChannelId() {
-        return secureChannelIds.getAndIncrement();
-    }
+        @Override
+        public List<EndpointDescription> getEndpointDescriptions() {
+            return config.getEndpoints()
+                .stream()
+                .map(this::transformEndpoint)
+                .collect(Collectors.toUnmodifiableList());
+        }
 
-    @Override
-    public Long getNextSecureChannelTokenId() {
-        return secureChannelTokenIds.getAndIncrement();
-    }
+        @Override
+        public EncodingContext getEncodingContext() {
+            return encodingContext;
+        }
 
-    @Override
-    public CompletableFuture<UaResponseMessageType> handleServiceRequest(
-        ServiceRequestContext context,
-        UaRequestMessageType requestMessage
-    ) {
+        @Override
+        public CertificateManager getCertificateManager() {
+            return config.getCertificateManager();
+        }
 
-        String path = EndpointUtil.getPath(context.getEndpointUrl());
+        @Override
+        public CertificateValidator getCertificateValidator() {
+            return config.getCertificateValidator();
+        }
 
-        if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
-            if (getEndpointDescriptions().stream()
-                .filter(e -> EndpointUtil.getPath(e.getEndpointUrl()).equals(path))
-                .filter(e -> e.getTransportProfileUri().equals(context.getTransportProfile().getUri()))
-                .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))) {
+        @Override
+        public Long getNextSecureChannelId() {
+            return secureChannelIds.getAndIncrement();
+        }
 
-                if (!isDiscoveryService(requestMessage)) {
-                    var errorMessage = new ErrorMessage(
-                        StatusCodes.Bad_SecurityPolicyRejected,
-                        StatusCodes.lookup(StatusCodes.Bad_SecurityPolicyRejected)
-                            .map(ss -> ss[1]).orElse("")
-                    );
+        @Override
+        public Long getNextSecureChannelTokenId() {
+            return secureChannelTokenIds.getAndIncrement();
+        }
 
-                    context.getChannel().pipeline().fireUserEventTriggered(errorMessage);
+        @Override
+        public CompletableFuture<UaResponseMessageType> handleServiceRequest(
+            ServiceRequestContext context,
+            UaRequestMessageType requestMessage
+        ) {
 
-                    // won't complete, doesn't matter, we're closing down
-                    return new CompletableFuture<>();
+            String path = EndpointUtil.getPath(context.getEndpointUrl());
+
+            if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
+                if (getEndpointDescriptions().stream()
+                    .filter(e -> EndpointUtil.getPath(e.getEndpointUrl()).equals(path))
+                    .filter(e -> e.getTransportProfileUri().equals(context.getTransportProfile().getUri()))
+                    .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))
+                ) {
+
+                    if (!isDiscoveryService(requestMessage)) {
+                        var errorMessage = new ErrorMessage(
+                            StatusCodes.Bad_SecurityPolicyRejected,
+                            StatusCodes.lookup(StatusCodes.Bad_SecurityPolicyRejected)
+                                .map(ss -> ss[1]).orElse("")
+                        );
+
+                        context.getChannel().pipeline().fireUserEventTriggered(errorMessage);
+
+                        // won't complete, doesn't matter, we're closing down
+                        return new CompletableFuture<>();
+                    }
                 }
             }
+
+            Service service = Service.from(requestMessage.getTypeId());
+
+            ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
+
+            if (serviceHandler != null) {
+                return serviceHandler.handle(context, requestMessage);
+            } else {
+                logger.warn("No ServiceHandler registered for path={} service={}", path, service);
+
+                return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_NotImplemented));
+            }
         }
 
-        Service service = Service.from(requestMessage.getTypeId());
+        /**
+         * Return {@code true} if {@code requestMessage} is one of the Discovery service requests:
+         * <ul>
+         *     <li>FindServersRequest</li>
+         *     <li>GetEndpointsRequest</li>
+         *     <li>RegisterServerRequest</li>
+         *     <li>FindServersOnNetworkRequest</li>
+         *     <li>RegisterServer2Request</li>
+         * </ul>
+         *
+         * @param requestMessage the {@link UaRequestMessageType} to check.
+         * @return {@code true} if {@code requestMessage} is one of the Discovery service requests.
+         */
+        private boolean isDiscoveryService(UaRequestMessageType requestMessage) {
+            Service service = Service.from(requestMessage.getTypeId());
 
-        ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
+            if (service != null) {
+                switch (service) {
+                    case DISCOVERY_FIND_SERVERS:
+                    case DISCOVERY_GET_ENDPOINTS:
+                    case DISCOVERY_REGISTER_SERVER:
+                    case DISCOVERY_FIND_SERVERS_ON_NETWORK:
+                    case DISCOVERY_REGISTER_SERVER_2:
+                        return true;
 
-        if (serviceHandler != null) {
-            return serviceHandler.handle(context, requestMessage);
-        } else {
-            logger.warn("No ServiceHandler registered for path={} service={}", path, service);
+                    default:
+                        return false;
+                }
+            }
 
-            return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_NotImplemented));
+            return false;
         }
-    }
 
-    private EndpointDescription transformEndpoint(EndpointConfig endpoint) {
-        return new EndpointDescription(
-            endpoint.getEndpointUrl(),
-            getApplicationDescription(),
-            certificateByteString(endpoint.getCertificate()),
-            endpoint.getSecurityMode(),
-            endpoint.getSecurityPolicy().getUri(),
-            a(endpoint.getTokenPolicies(), UserTokenPolicy.class),
-            endpoint.getTransportProfile().getUri(),
-            ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))
-        );
-    }
+        private EndpointDescription transformEndpoint(EndpointConfig endpoint) {
+            return new EndpointDescription(
+                endpoint.getEndpointUrl(),
+                getApplicationDescription(),
+                certificateByteString(endpoint.getCertificate()),
+                endpoint.getSecurityMode(),
+                endpoint.getSecurityPolicy().getUri(),
+                a(endpoint.getTokenPolicies(), UserTokenPolicy.class),
+                endpoint.getTransportProfile().getUri(),
+                ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))
+            );
+        }
 
-    private ByteString certificateByteString(@Nullable X509Certificate certificate) {
-        if (certificate != null) {
-            try {
-                return ByteString.of(certificate.getEncoded());
-            } catch (CertificateEncodingException e) {
-                logger.error("Error decoding certificate.", e);
+        private ByteString certificateByteString(@Nullable X509Certificate certificate) {
+            if (certificate != null) {
+                try {
+                    return ByteString.of(certificate.getEncoded());
+                } catch (CertificateEncodingException e) {
+                    logger.error("Error decoding certificate.", e);
+                    return ByteString.NULL_VALUE;
+                }
+            } else {
                 return ByteString.NULL_VALUE;
             }
-        } else {
-            return ByteString.NULL_VALUE;
         }
-    }
 
 
-    private ApplicationDescription getApplicationDescription() {
-        return applicationDescription.getOrCompute(() -> {
-            List<String> discoveryUrls = config.getEndpoints()
-                .stream()
-                .map(EndpointConfig::getEndpointUrl)
-                .filter(url -> url.endsWith("/discovery"))
-                .distinct()
-                .collect(toList());
-
-            if (discoveryUrls.isEmpty()) {
-                discoveryUrls = config.getEndpoints()
+        private ApplicationDescription getApplicationDescription() {
+            return applicationDescription.getOrCompute(() -> {
+                List<String> discoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfig::getEndpointUrl)
+                    .filter(url -> url.endsWith("/discovery"))
                     .distinct()
                     .collect(toList());
-            }
 
-            return new ApplicationDescription(
-                config.getApplicationUri(),
-                config.getProductUri(),
-                config.getApplicationName(),
-                ApplicationType.Server,
-                null,
-                null,
-                a(discoveryUrls, String.class)
-            );
-        });
-    }
+                if (discoveryUrls.isEmpty()) {
+                    discoveryUrls = config.getEndpoints()
+                        .stream()
+                        .map(EndpointConfig::getEndpointUrl)
+                        .distinct()
+                        .collect(toList());
+                }
 
-    private static short getSecurityLevel(SecurityPolicy securityPolicy, MessageSecurityMode securityMode) {
-        short securityLevel = 0;
-
-        switch (securityPolicy) {
-            case Aes256_Sha256_RsaPss:
-            case Basic256Sha256:
-                securityLevel |= 0x08;
-                break;
-            case Aes128_Sha256_RsaOaep:
-                securityLevel |= 0x04;
-                break;
-            case Basic256:
-            case Basic128Rsa15:
-                securityLevel |= 0x01;
-                break;
-            case None:
-            default:
-                break;
+                return new ApplicationDescription(
+                    config.getApplicationUri(),
+                    config.getProductUri(),
+                    config.getApplicationName(),
+                    ApplicationType.Server,
+                    null,
+                    null,
+                    a(discoveryUrls, String.class)
+                );
+            });
         }
 
-        switch (securityMode) {
-            case SignAndEncrypt:
-                securityLevel |= 0x80;
-                break;
-            case Sign:
-                securityLevel |= 0x40;
-                break;
-            default:
-                securityLevel |= 0x20;
-                break;
-        }
+        private short getSecurityLevel(SecurityPolicy securityPolicy, MessageSecurityMode securityMode) {
+            short securityLevel = 0;
 
-        return securityLevel;
-    }
-
-    /**
-     * Return {@code true} if {@code requestMessage} is one of the Discovery service requests:
-     * <ul>
-     *     <li>FindServersRequest</li>
-     *     <li>GetEndpointsRequest</li>
-     *     <li>RegisterServerRequest</li>
-     *     <li>FindServersOnNetworkRequest</li>
-     *     <li>RegisterServer2Request</li>
-     * </ul>
-     *
-     * @param requestMessage the {@link UaRequestMessageType} to check.
-     * @return {@code true} if {@code requestMessage} is one of the Discovery service requests.
-     */
-    private static boolean isDiscoveryService(UaRequestMessageType requestMessage) {
-        Service service = Service.from(requestMessage.getTypeId());
-
-        if (service != null) {
-            switch (service) {
-                case DISCOVERY_FIND_SERVERS:
-                case DISCOVERY_GET_ENDPOINTS:
-                case DISCOVERY_REGISTER_SERVER:
-                case DISCOVERY_FIND_SERVERS_ON_NETWORK:
-                case DISCOVERY_REGISTER_SERVER_2:
-                    return true;
-
+            switch (securityPolicy) {
+                case Aes256_Sha256_RsaPss:
+                case Basic256Sha256:
+                    securityLevel |= 0x08;
+                    break;
+                case Aes128_Sha256_RsaOaep:
+                    securityLevel |= 0x04;
+                    break;
+                case Basic256:
+                case Basic128Rsa15:
+                    securityLevel |= 0x01;
+                    break;
+                case None:
                 default:
-                    return false;
+                    break;
             }
+
+            switch (securityMode) {
+                case SignAndEncrypt:
+                    securityLevel |= 0x80;
+                    break;
+                case Sign:
+                    securityLevel |= 0x40;
+                    break;
+                default:
+                    securityLevel |= 0x20;
+                    break;
+            }
+
+            return securityLevel;
         }
 
-        return false;
     }
 
     private static class ServerEventNotifier implements EventNotifier {
