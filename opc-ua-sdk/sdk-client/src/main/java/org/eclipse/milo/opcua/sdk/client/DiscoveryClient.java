@@ -46,7 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
@@ -60,13 +60,13 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 public class DiscoveryClient {
 
-    private final ClientApplication clientApplication;
+    private final ClientApplicationContext applicationContext;
     private final OpcClientTransport transport;
 
     public DiscoveryClient(EndpointDescription endpoint, OpcClientTransport transport) {
         this.transport = transport;
 
-        clientApplication = new ClientApplication() {
+        applicationContext = new ClientApplicationContext() {
             @Override
             public EndpointDescription getEndpoint() {
                 return endpoint;
@@ -105,7 +105,7 @@ public class DiscoveryClient {
     }
 
     public CompletableFuture<DiscoveryClient> connect() {
-        return transport.connect(clientApplication).thenApply(c -> DiscoveryClient.this);
+        return transport.connect(applicationContext).thenApply(c -> DiscoveryClient.this);
     }
 
     public CompletableFuture<DiscoveryClient> disconnect() {

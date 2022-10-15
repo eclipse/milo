@@ -17,14 +17,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
@@ -52,10 +50,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransportConfig;
@@ -96,7 +94,7 @@ class OpcTcpTransportTest extends SecurityFixture {
             messageSecurityMode
         );
 
-        var application = new ClientApplication() {
+        var applicationContext = new ClientApplicationContext() {
             @Override
             public EndpointDescription getEndpoint() {
                 return newEndpointDescription(securityPolicy, messageSecurityMode);
@@ -138,7 +136,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         var transport = new OpcTcpClientTransport(config);
 
         System.out.println("connecting...");
-        transport.connect(application).get();
+        transport.connect(applicationContext).get();
         System.out.println("connected");
 
         System.out.println("disconnecting...");
@@ -162,7 +160,7 @@ class OpcTcpTransportTest extends SecurityFixture {
             MessageSecurityMode.SignAndEncrypt
         );
 
-        var application = new ClientApplication() {
+        var applicationContext = new ClientApplicationContext() {
             @Override
             public EndpointDescription getEndpoint() {
                 return newEndpointDescription(SecurityPolicy.None, MessageSecurityMode.None);
@@ -204,7 +202,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         var transport = new OpcTcpClientTransport(config);
 
         System.out.println("connecting...");
-        transport.connect(application).get();
+        transport.connect(applicationContext).get();
         System.out.println("connected");
 
         System.out.println("disconnecting...");
@@ -226,7 +224,7 @@ class OpcTcpTransportTest extends SecurityFixture {
             MessageSecurityMode.SignAndEncrypt
         );
 
-        var application = new ClientApplication() {
+        var applicationContext = new ClientApplicationContext() {
             @Override
             public EndpointDescription getEndpoint() {
                 return newEndpointDescription(SecurityPolicy.None, MessageSecurityMode.None);
@@ -268,7 +266,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         var transport = new OpcTcpClientTransport(config);
 
         System.out.println("connecting...");
-        transport.connect(application).get();
+        transport.connect(applicationContext).get();
         System.out.println("connected");
 
         assertThrows(ExecutionException.class, () -> createSession(transport));
@@ -313,7 +311,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         MessageSecurityMode messageSecurityMode
     ) throws Exception {
 
-        var application = new ServerApplication() {
+        var applicationContext = new ServerApplicationContext() {
 
             private final AtomicLong secureChannelId = new AtomicLong(0L);
             private final AtomicLong secureChannelTokenId = new AtomicLong(0L);
@@ -349,11 +347,6 @@ class OpcTcpTransportTest extends SecurityFixture {
             }
 
             @Override
-            public ExecutorService getExecutor() {
-                return Stack.sharedExecutor();
-            }
-
-            @Override
             public CompletableFuture<UaResponseMessageType> handleServiceRequest(
                 ServiceRequestContext context,
                 UaRequestMessageType requestMessage
@@ -385,7 +378,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         OpcTcpServerTransportConfig config = OpcTcpServerTransportConfig.newBuilder().build();
 
         var transport = new OpcTcpServerTransport(config);
-        transport.bind(application, "localhost", 12685);
+        transport.bind(applicationContext, "localhost", 12685);
         return transport;
     }
 

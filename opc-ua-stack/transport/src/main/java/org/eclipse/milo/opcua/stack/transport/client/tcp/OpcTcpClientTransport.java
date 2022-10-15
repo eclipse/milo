@@ -31,7 +31,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ConnectTimeoutException;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Timeout;
@@ -45,7 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.AbstractUascClientTransport;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
@@ -57,8 +56,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcTcpClientTransport extends AbstractUascClientTransport {
 
-    private static final FsmContext.Key<ClientApplication> KEY_CLIENT_APPLICATION =
-        new FsmContext.Key<>("clientApplication", ClientApplication.class);
+    private static final FsmContext.Key<ClientApplicationContext> KEY_CLIENT_APPLICATION =
+        new FsmContext.Key<>("clientApplication", ClientApplicationContext.class);
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
@@ -93,7 +92,7 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
     }
 
     @Override
-    public CompletableFuture<Unit> connect(ClientApplication application) {
+    public CompletableFuture<Unit> connect(ClientApplicationContext application) {
         channelFsm.getFsm().withContext(
             ctx ->
                 ctx.set(KEY_CLIENT_APPLICATION, application)
@@ -128,14 +127,14 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
 
         @Override
         public CompletableFuture<Channel> connect(FsmContext<State, Event> ctx) {
-            ClientApplication application = (ClientApplication) ctx.get(KEY_CLIENT_APPLICATION);
+            ClientApplicationContext application = (ClientApplicationContext) ctx.get(KEY_CLIENT_APPLICATION);
 
             var handshakeFuture = new CompletableFuture<ClientSecureChannel>();
 
             var bootstrap = new Bootstrap();
 
-            bootstrap.group(new NioEventLoopGroup())
-                .channel(NioSocketChannel.class)
+            bootstrap.channel(NioSocketChannel.class)
+                .group(OpcTcpClientTransport.this.config.getEventLoop())
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
                     OpcTcpClientTransport.this.config.getConnectTimeout().intValue())

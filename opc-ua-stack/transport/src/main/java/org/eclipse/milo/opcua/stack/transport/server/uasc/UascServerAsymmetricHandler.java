@@ -64,7 +64,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,13 +95,13 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     private final int maxChunkSize;
 
     private final UascServerConfig config;
-    private final ServerApplication application;
+    private final ServerApplicationContext application;
     private final TransportProfile transportProfile;
     private final ChannelParameters channelParameters;
 
     UascServerAsymmetricHandler(
         UascServerConfig config,
-        ServerApplication application,
+        ServerApplicationContext application,
         TransportProfile transportProfile,
         ChannelParameters channelParameters
     ) {
@@ -358,6 +358,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             if (!symmetricHandlerAdded) {
                 var symmetricHandler = new UascServerSymmetricHandler(
+                    config,
                     application,
                     transportProfile,
                     channelParameters,

@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class OpcHttpClientTransport implements OpcClientTransport {
     }
 
     @Override
-    public synchronized CompletableFuture<Unit> connect(ClientApplication application) {
+    public synchronized CompletableFuture<Unit> connect(ClientApplicationContext application) {
         if (channelPool == null) {
             channelPool = createChannelPool(config, application);
         }
@@ -110,7 +110,7 @@ public class OpcHttpClientTransport implements OpcClientTransport {
         }
     }
 
-    private static ChannelPool createChannelPool(OpcClientTransportConfig config, ClientApplication application) {
+    private static ChannelPool createChannelPool(OpcClientTransportConfig config, ClientApplicationContext application) {
         final String endpointUrl = application.getEndpoint().getEndpointUrl();
 
         String host = EndpointUtil.getHost(endpointUrl);

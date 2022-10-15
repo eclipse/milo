@@ -137,7 +137,7 @@ import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportConfig;
@@ -297,7 +297,7 @@ public class OpcUaClient implements UaClient {
 
     private final SessionFsm sessionFsm;
 
-    private final ClientApplication clientApplication;
+    private final ClientApplicationContext applicationContext;
 
     private final OpcUaClientConfig config;
 
@@ -362,7 +362,7 @@ public class OpcUaClient implements UaClient {
             }
         };
 
-        clientApplication = new ClientApplication() {
+        applicationContext = new ClientApplicationContext() {
             @Override
             public EndpointDescription getEndpoint() {
                 return config.getEndpoint();
@@ -723,7 +723,7 @@ public class OpcUaClient implements UaClient {
 
     @Override
     public CompletableFuture<UaClient> connect() {
-        return transport.connect(clientApplication)
+        return transport.connect(applicationContext)
             .thenCompose(c -> sessionFsm.openSession())
             .thenApply(s -> OpcUaClient.this);
     }

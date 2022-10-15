@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
-public interface ClientApplication {
+public interface ClientApplicationContext {
 
     EndpointDescription getEndpoint();
 

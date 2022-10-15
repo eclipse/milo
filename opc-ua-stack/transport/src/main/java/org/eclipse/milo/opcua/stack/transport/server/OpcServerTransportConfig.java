@@ -10,10 +10,24 @@
 
 package org.eclipse.milo.opcua.stack.transport.server;
 
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import java.util.concurrent.ExecutorService;
+
+import io.netty.channel.EventLoopGroup;
 
 public interface OpcServerTransportConfig {
 
-    EncodingLimits getEncodingLimits();
+    /**
+     * Get the {@link ExecutorService} to be used by this transport.
+     *
+     * @return the {@link ExecutorService} to be used by this transport.
+     */
+    ExecutorService getExecutor();
+
+    /**
+     * Get the {@link EventLoopGroup} to be used by this transport.
+     *
+     * @return the {@link EventLoopGroup} to be used by this transport.
+     */
+    EventLoopGroup getEventLoop();
 
 }

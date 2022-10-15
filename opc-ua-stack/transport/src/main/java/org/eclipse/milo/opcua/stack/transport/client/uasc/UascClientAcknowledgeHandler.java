@@ -35,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +53,13 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestMe
     private Timeout helloTimeout;
 
     private final UascClientConfig config;
-    private final ClientApplication application;
+    private final ClientApplicationContext application;
     private final Supplier<Long> requestIdSupplier;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
     public UascClientAcknowledgeHandler(
         UascClientConfig config,
-        ClientApplication application,
+        ClientApplicationContext application,
         Supplier<Long> requestIdSupplier,
         CompletableFuture<ClientSecureChannel> handshakeFuture
     ) {

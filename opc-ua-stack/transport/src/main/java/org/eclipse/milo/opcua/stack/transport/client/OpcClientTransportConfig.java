@@ -18,12 +18,32 @@ import io.netty.util.HashedWheelTimer;
 
 public interface OpcClientTransportConfig {
 
+    /**
+     * Get the {@link ExecutorService} to be used by this transport.
+     *
+     * @return the {@link ExecutorService} to be used by this transport.
+     */
     ExecutorService getExecutor();
 
+    /**
+     * Get the {@link ScheduledExecutorService} to be used by this transport.
+     *
+     * @return the {@link ScheduledExecutorService} to be used by this transport.
+     */
     ScheduledExecutorService getScheduledExecutor();
 
+    /**
+     * Get the {@link EventLoopGroup} to be used by this transport.
+     *
+     * @return the {@link EventLoopGroup} to be used by this transport.
+     */
     EventLoopGroup getEventLoop();
 
+    /**
+     * Get the {@link HashedWheelTimer} to be used by this transport.
+     *
+     * @return the {@link HashedWheelTimer} to be used by this transport.
+     */
     HashedWheelTimer getWheelTimer();
 
 }

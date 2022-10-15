@@ -35,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +56,12 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
     private volatile boolean receivedHello = false;
 
     private final UascServerConfig config;
-    private final ServerApplication application;
+    private final ServerApplicationContext application;
     private final TransportProfile transportProfile;
 
     public UascServerHelloHandler(
         UascServerConfig config,
-        ServerApplication application,
+        ServerApplicationContext application,
         TransportProfile transportProfile
     ) {
 

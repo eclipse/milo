@@ -66,7 +66,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,14 +93,14 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
     private final ChunkEncoder chunkEncoder;
 
     private final UascClientConfig config;
-    private final ClientApplication application;
+    private final ClientApplicationContext application;
     private final Supplier<Long> requestIdSupplier;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
     private final ChannelParameters channelParameters;
 
     public UascClientMessageHandler(
         UascClientConfig config,
-        ClientApplication application,
+        ClientApplicationContext application,
         Supplier<Long> requestIdSupplier,
         CompletableFuture<ClientSecureChannel> handshakeFuture,
         List<UaRequestMessageType> awaitingHandshake,
@@ -717,7 +717,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
         return channelParameters.getLocalReceiveBufferSize();
     }
 
-    private static ClientSecureChannel newSecureChannel(ClientApplication application) throws UaException {
+    private static ClientSecureChannel newSecureChannel(ClientApplicationContext application) throws UaException {
         EndpointDescription endpoint = application.getEndpoint();
 
         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());

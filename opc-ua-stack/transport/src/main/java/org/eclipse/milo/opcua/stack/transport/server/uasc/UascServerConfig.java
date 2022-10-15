@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
+import java.util.concurrent.ExecutorService;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface UascServerConfig {
+
+    ExecutorService getExecutor();
 
     UInteger getHelloDeadline();
 

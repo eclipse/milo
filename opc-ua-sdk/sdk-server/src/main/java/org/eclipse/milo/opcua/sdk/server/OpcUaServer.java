@@ -86,7 +86,7 @@ import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransportFactory;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
-public class OpcUaServer extends AbstractServiceHandler implements ServerApplication {
+public class OpcUaServer extends AbstractServiceHandler implements ServerApplicationContext {
 
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
@@ -417,11 +417,6 @@ public class OpcUaServer extends AbstractServiceHandler implements ServerApplica
     @Override
     public Long getNextSecureChannelTokenId() {
         return secureChannelTokenIds.getAndIncrement();
-    }
-
-    @Override
-    public ExecutorService getExecutor() {
-        return config.getExecutor();
     }
 
     @Override

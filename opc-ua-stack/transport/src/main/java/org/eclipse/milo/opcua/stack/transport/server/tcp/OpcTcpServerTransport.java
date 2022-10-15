@@ -20,10 +20,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.server.uasc.UascServerHelloHandler;
 
 public class OpcTcpServerTransport implements OpcServerTransport {
@@ -37,12 +36,12 @@ public class OpcTcpServerTransport implements OpcServerTransport {
     }
 
     @Override
-    public void bind(ServerApplication application, String bindAddress, int bindPort) throws Exception {
+    public void bind(ServerApplicationContext application, String bindAddress, int bindPort) throws Exception {
         var bootstrap = new ServerBootstrap();
 
-        bootstrap.group(Stack.sharedEventLoop())
+        bootstrap.channel(NioServerSocketChannel.class)
+            .group(config.getEventLoop())
             .handler(new LoggingHandler(OpcTcpServerTransport.class))
-            .channel(NioServerSocketChannel.class)
             .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .childOption(ChannelOption.TCP_NODELAY, true)
             .childHandler(new ChannelInitializer<SocketChannel>() {

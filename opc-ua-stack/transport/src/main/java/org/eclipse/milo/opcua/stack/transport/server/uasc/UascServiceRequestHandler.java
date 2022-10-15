@@ -22,23 +22,25 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 
 public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascServiceRequest> {
 
-    private final ServerApplication application;
+    private final UascServerConfig config;
+    private final ServerApplicationContext applicationContext;
 
-    public UascServiceRequestHandler(ServerApplication application) {
-        this.application = application;
+    public UascServiceRequestHandler(UascServerConfig config, ServerApplicationContext applicationContext) {
+        this.config = config;
+        this.applicationContext = applicationContext;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UascServiceRequest serviceRequest) {
-        application.getExecutor().execute(() -> dispatchServiceRequest(serviceRequest));
+        config.getExecutor().execute(() -> dispatchServiceRequest(serviceRequest));
     }
 
     private void dispatchServiceRequest(UascServiceRequest serviceRequest) {
-        CompletableFuture<UaResponseMessageType> future = application.handleServiceRequest(
+        CompletableFuture<UaResponseMessageType> future = applicationContext.handleServiceRequest(
             serviceRequest,
             serviceRequest.getRequestMessage()
         );

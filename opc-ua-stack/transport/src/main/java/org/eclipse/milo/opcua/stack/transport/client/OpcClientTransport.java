@@ -18,12 +18,37 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface OpcClientTransport {
 
+    /**
+     * Get the {@link OpcClientTransportConfig} associated with this transport.
+     *
+     * @return the {@link OpcClientTransportConfig} associated with this transport.
+     */
     OpcClientTransportConfig getConfig();
 
-    CompletableFuture<Unit> connect(ClientApplication application);
+    /**
+     * Connect this transport implementation.
+     *
+     * @param application the {@link ClientApplicationContext} associated with this transport.
+     * @return a {@link CompletableFuture} that completes successfully when this transport
+     * connects, or completes exceptionally if an error occurred.
+     */
+    CompletableFuture<Unit> connect(ClientApplicationContext application);
 
+    /**
+     * Disconnect this transport implementation.
+     *
+     * @return a {@link CompletableFuture} that completes successfully when this transport
+     * disconnects, or completes exceptionally if an error occurred.
+     */
     CompletableFuture<Unit> disconnect();
 
+    /**
+     * Send a {@link UaRequestMessageType} on this transport implementation.
+     *
+     * @param requestMessage the {@link UaRequestMessageType} to send.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     * {@link UaResponseMessageType} or completes exceptionally if an error occurred.
+     */
     CompletableFuture<UaResponseMessageType> sendRequestMessage(UaRequestMessageType requestMessage);
 
 }

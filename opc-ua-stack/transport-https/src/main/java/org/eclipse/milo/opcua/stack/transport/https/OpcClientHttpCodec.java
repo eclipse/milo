@@ -34,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.transport.client.ClientApplication;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +50,9 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaRe
     private final TransportProfile transportProfile;
 
     private final OpcClientTransportConfig config;
-    private final ClientApplication application;
+    private final ClientApplicationContext application;
 
-    OpcClientHttpCodec(OpcClientTransportConfig config, ClientApplication application) {
+    OpcClientHttpCodec(OpcClientTransportConfig config, ClientApplicationContext application) {
         this.config = config;
         this.application = application;
 

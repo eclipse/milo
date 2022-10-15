@@ -10,21 +10,29 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.tcp;
 
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import java.util.concurrent.ExecutorService;
+
+import io.netty.channel.EventLoopGroup;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcTcpServerTransportConfigBuilder {
 
-    private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
-
+    private ExecutorService executor;
+    private EventLoopGroup eventLoop;
     private UInteger helloDeadline = uint(10_000);
     private UInteger minimumSecureChannelLifetime = uint(60_000);
     private UInteger maximumSecureChannelLifetime = uint(60_000 * 60 * 24);
 
-    public OpcTcpServerTransportConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
+    public OpcTcpServerTransportConfigBuilder setExecutor(ExecutorService executor) {
+        this.executor = executor;
+        return this;
+    }
+
+    public OpcTcpServerTransportConfigBuilder setEventLoop(EventLoopGroup eventLoop) {
+        this.eventLoop = eventLoop;
         return this;
     }
 
@@ -44,8 +52,16 @@ public class OpcTcpServerTransportConfigBuilder {
     }
 
     public OpcTcpServerTransportConfig build() {
+        if (executor == null) {
+            executor = Stack.sharedExecutor();
+        }
+        if (eventLoop == null) {
+            eventLoop = Stack.sharedEventLoop();
+        }
+
         return new OpcTcpServerTransportConfigImpl(
-            encodingLimits,
+            executor,
+            eventLoop,
             helloDeadline,
             minimumSecureChannelLifetime,
             maximumSecureChannelLifetime
@@ -54,27 +70,35 @@ public class OpcTcpServerTransportConfigBuilder {
 
     static class OpcTcpServerTransportConfigImpl implements OpcTcpServerTransportConfig {
 
-        private final EncodingLimits encodingLimits;
+        private final ExecutorService executor;
+        private final EventLoopGroup eventLoop;
         private final UInteger helloDeadline;
         private final UInteger minimumSecureChannelLifetime;
         private final UInteger maximumSecureChannelLifetime;
 
         public OpcTcpServerTransportConfigImpl(
-            EncodingLimits encodingLimits,
+            ExecutorService executor,
+            EventLoopGroup eventLoop,
             UInteger helloDeadline,
             UInteger minimumSecureChannelLifetime,
             UInteger maximumSecureChannelLifetime
         ) {
 
-            this.encodingLimits = encodingLimits;
+            this.executor = executor;
+            this.eventLoop = eventLoop;
             this.helloDeadline = helloDeadline;
             this.minimumSecureChannelLifetime = minimumSecureChannelLifetime;
             this.maximumSecureChannelLifetime = maximumSecureChannelLifetime;
         }
 
         @Override
-        public EncodingLimits getEncodingLimits() {
-            return encodingLimits;
+        public ExecutorService getExecutor() {
+            return executor;
+        }
+
+        @Override
+        public EventLoopGroup getEventLoop() {
+            return eventLoop;
         }
 
         @Override

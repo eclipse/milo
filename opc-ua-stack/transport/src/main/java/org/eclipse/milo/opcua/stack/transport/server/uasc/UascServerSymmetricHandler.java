@@ -42,7 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
-import org.eclipse.milo.opcua.stack.transport.server.ServerApplication;
+import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,8 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     private final OpcUaBinaryEncoder binaryEncoder;
     private final OpcUaBinaryDecoder binaryDecoder;
 
-    private final ServerApplication application;
+    private final UascServerConfig config;
+    private final ServerApplicationContext applicationContext;
     private final TransportProfile transportProfile;
     private final ChannelParameters channelParameters;
     private final ChunkEncoder chunkEncoder;
@@ -65,7 +66,8 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
     private final ServerSecureChannel secureChannel;
 
     UascServerSymmetricHandler(
-        ServerApplication application,
+        UascServerConfig config,
+        ServerApplicationContext applicationContext,
         TransportProfile transportProfile,
         ChannelParameters channelParameters,
         ChunkEncoder chunkEncoder,
@@ -73,15 +75,16 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
         ServerSecureChannel secureChannel
     ) {
 
-        this.application = application;
+        this.config = config;
+        this.applicationContext = applicationContext;
         this.transportProfile = transportProfile;
         this.channelParameters = channelParameters;
         this.chunkEncoder = chunkEncoder;
         this.chunkDecoder = chunkDecoder;
         this.secureChannel = secureChannel;
 
-        binaryEncoder = new OpcUaBinaryEncoder(application.getEncodingContext());
-        binaryDecoder = new OpcUaBinaryDecoder(application.getEncodingContext());
+        binaryEncoder = new OpcUaBinaryEncoder(applicationContext.getEncodingContext());
+        binaryDecoder = new OpcUaBinaryDecoder(applicationContext.getEncodingContext());
 
         maxChunkCount = channelParameters.getLocalMaxChunkCount();
         maxChunkSize = channelParameters.getLocalReceiveBufferSize();
@@ -91,7 +94,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        ctx.pipeline().addLast(new UascServiceRequestHandler(application));
+        ctx.pipeline().addLast(new UascServiceRequestHandler(config, applicationContext));
 
         super.handlerAdded(ctx);
     }
