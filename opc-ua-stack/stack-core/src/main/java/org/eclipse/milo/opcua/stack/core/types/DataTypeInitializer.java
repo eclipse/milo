@@ -213,6 +213,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReaderGroupDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReceiveQosPriorityDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RedundantServerDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescriptionDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceListEntryDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceNode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceTypeAttributes;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceTypeNode;
@@ -268,6 +270,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDFrame;
 import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDOrientation;
 import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDVector;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransactionErrorType;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
@@ -303,7 +306,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriterGroupDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 
-// TODO regenerate
 public class DataTypeInitializer {
     public void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) {
         try {
@@ -391,6 +393,13 @@ public class DataTypeInitializer {
             TrustListDataType.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             TrustListDataType.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             TrustListDataType.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            TransactionErrorType.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new TransactionErrorType.Codec(),
+            TransactionErrorType.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            TransactionErrorType.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            TransactionErrorType.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
             UABinaryFileDataType.TYPE_ID.toNodeIdOrThrow(namespaceTable),
@@ -755,6 +764,20 @@ public class DataTypeInitializer {
             PriorityMappingEntryType.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             PriorityMappingEntryType.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             PriorityMappingEntryType.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            ReferenceDescriptionDataType.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new ReferenceDescriptionDataType.Codec(),
+            ReferenceDescriptionDataType.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            ReferenceDescriptionDataType.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            ReferenceDescriptionDataType.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            ReferenceListEntryDataType.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new ReferenceListEntryDataType.Codec(),
+            ReferenceListEntryDataType.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            ReferenceListEntryDataType.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            ReferenceListEntryDataType.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
             RolePermissionType.TYPE_ID.toNodeIdOrThrow(namespaceTable),
@@ -2353,5 +2376,4 @@ public class DataTypeInitializer {
             DeleteSubscriptionsResponse.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
     }
-
 }

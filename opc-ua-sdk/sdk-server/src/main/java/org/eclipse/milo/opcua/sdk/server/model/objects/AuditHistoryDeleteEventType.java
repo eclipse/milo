@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.5">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.5</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.5">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.5</a>
  */
 public interface AuditHistoryDeleteEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(

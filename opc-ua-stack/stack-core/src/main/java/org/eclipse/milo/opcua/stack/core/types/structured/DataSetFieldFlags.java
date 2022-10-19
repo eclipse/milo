@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
@@ -41,13 +42,13 @@ public class DataSetFieldFlags extends OptionSetUI16<DataSetFieldFlags.Field> {
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<DataSetFieldFlags.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static DataSetFieldFlags of(Field... fields) {
+    public static DataSetFieldFlags of(DataSetFieldFlags.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -57,7 +58,7 @@ public class DataSetFieldFlags extends OptionSetUI16<DataSetFieldFlags.Field> {
         return new DataSetFieldFlags(UShort.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         PromotedField(0);
 
         private final int bitIndex;

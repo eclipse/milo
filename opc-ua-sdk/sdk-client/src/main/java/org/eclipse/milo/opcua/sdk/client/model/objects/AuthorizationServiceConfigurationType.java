@@ -19,6 +19,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/9.7.4">https://reference.opcfoundation.org/v105/Core/docs/Part12/9.7.4</a>
+ */
 public interface AuthorizationServiceConfigurationType extends BaseObjectType {
     QualifiedProperty<String> SERVICE_URI = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",

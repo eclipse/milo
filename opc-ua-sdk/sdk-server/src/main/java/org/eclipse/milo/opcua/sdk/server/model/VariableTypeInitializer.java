@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.model;
 
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AlarmRateVariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.AlarmStateVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogUnitRangeTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogUnitTypeNode;
@@ -47,6 +48,7 @@ import org.eclipse.milo.opcua.sdk.server.model.variables.ProgramDiagnosticTypeNo
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PubSubDiagnosticsCounterTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.RationalNumberTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.ReferenceDescriptionVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.SamplingIntervalDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.SamplingIntervalDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.SelectionListTypeNode;
@@ -407,6 +409,12 @@ public class VariableTypeInitializer {
             AlarmRateVariableTypeNode::new
         );
         variableTypeManager.registerVariableType(
+            NodeId.parse("i=32244")
+                .reindex(namespaceTable, "http://opcfoundation.org/UA/"),
+            AlarmStateVariableTypeNode.class,
+            AlarmStateVariableTypeNode::new
+        );
+        variableTypeManager.registerVariableType(
             NodeId.parse("i=2380")
                 .reindex(namespaceTable, "http://opcfoundation.org/UA/"),
             ProgramDiagnosticTypeNode.class,
@@ -423,6 +431,12 @@ public class VariableTypeInitializer {
                 .reindex(namespaceTable, "http://opcfoundation.org/UA/"),
             PubSubDiagnosticsCounterTypeNode.class,
             PubSubDiagnosticsCounterTypeNode::new
+        );
+        variableTypeManager.registerVariableType(
+            NodeId.parse("i=32657")
+                .reindex(namespaceTable, "http://opcfoundation.org/UA/"),
+            ReferenceDescriptionVariableTypeNode.class,
+            ReferenceDescriptionVariableTypeNode::new
         );
         variableTypeManager.registerVariableType(
             NodeId.parse("i=68")

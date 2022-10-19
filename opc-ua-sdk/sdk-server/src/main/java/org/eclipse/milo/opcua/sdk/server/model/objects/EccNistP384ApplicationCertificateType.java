@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7">https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.4/#7.8.4.8">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.4/#7.8.4.8</a>
  */
 public interface EccNistP384ApplicationCertificateType extends EccApplicationCertificateType {
 }

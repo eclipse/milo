@@ -18,6 +18,9 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.9">https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.9</a>
+ */
 public interface KeyCredentialDeletedAuditEventType extends KeyCredentialAuditEventType {
     QualifiedProperty<String> RESOURCE_URI = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",

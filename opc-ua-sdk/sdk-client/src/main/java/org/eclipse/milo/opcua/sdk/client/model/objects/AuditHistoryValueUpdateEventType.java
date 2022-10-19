@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.3">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.3</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.3">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.3</a>
  */
 public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(

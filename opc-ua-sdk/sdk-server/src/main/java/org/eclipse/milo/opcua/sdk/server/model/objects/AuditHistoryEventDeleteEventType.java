@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.8">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.8</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.8">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.8</a>
  */
 public interface AuditHistoryEventDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<ByteString[]> EVENT_IDS = new QualifiedProperty<>(

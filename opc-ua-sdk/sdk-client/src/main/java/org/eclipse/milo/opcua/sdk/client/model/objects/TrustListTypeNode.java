@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TrustListValidationOptions;
 
 public class TrustListTypeNode extends FileTypeNode implements TrustListType {
     public TrustListTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -164,6 +165,136 @@ public class TrustListTypeNode extends FileTypeNode implements TrustListType {
         CompletableFuture<UaNode> future = getMemberNodeAsync(
             "http://opcfoundation.org/UA/",
             "UpdateFrequency",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Double getActivityTimeout() throws UaException {
+        PropertyTypeNode node = getActivityTimeoutNode();
+        return (Double) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setActivityTimeout(Double value) throws UaException {
+        PropertyTypeNode node = getActivityTimeoutNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public Double readActivityTimeout() throws UaException {
+        try {
+            return readActivityTimeoutAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeActivityTimeout(Double value) throws UaException {
+        try {
+            writeActivityTimeoutAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Double> readActivityTimeoutAsync() {
+        return getActivityTimeoutNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (Double) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeActivityTimeoutAsync(Double activityTimeout) {
+        DataValue value = DataValue.valueOnly(new Variant(activityTimeout));
+        return getActivityTimeoutNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getActivityTimeoutNode() throws UaException {
+        try {
+            return getActivityTimeoutNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getActivityTimeoutNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ActivityTimeout",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public TrustListValidationOptions getDefaultValidationOptions() throws UaException {
+        PropertyTypeNode node = getDefaultValidationOptionsNode();
+        return (TrustListValidationOptions) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setDefaultValidationOptions(TrustListValidationOptions value) throws UaException {
+        PropertyTypeNode node = getDefaultValidationOptionsNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public TrustListValidationOptions readDefaultValidationOptions() throws UaException {
+        try {
+            return readDefaultValidationOptionsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeDefaultValidationOptions(TrustListValidationOptions value) throws UaException {
+        try {
+            writeDefaultValidationOptionsAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends TrustListValidationOptions> readDefaultValidationOptionsAsync(
+    ) {
+        return getDefaultValidationOptionsNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (TrustListValidationOptions) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeDefaultValidationOptionsAsync(
+        TrustListValidationOptions defaultValidationOptions) {
+        DataValue value = DataValue.valueOnly(new Variant(defaultValidationOptions));
+        return getDefaultValidationOptionsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultValidationOptionsNode() throws UaException {
+        try {
+            return getDefaultValidationOptionsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getDefaultValidationOptionsNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "DefaultValidationOptions",
             ExpandedNodeId.parse("ns=0;i=46"),
             false
         );

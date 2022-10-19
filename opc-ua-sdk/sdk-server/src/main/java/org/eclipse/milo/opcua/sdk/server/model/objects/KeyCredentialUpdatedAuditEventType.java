@@ -10,5 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.objects;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.8">https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.8</a>
+ */
 public interface KeyCredentialUpdatedAuditEventType extends KeyCredentialAuditEventType {
 }

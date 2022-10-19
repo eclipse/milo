@@ -623,4 +623,262 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
         );
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
+
+    @Override
+    public NodeId getConditionClassId() throws UaException {
+        PropertyTypeNode node = getConditionClassIdNode();
+        return (NodeId) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setConditionClassId(NodeId value) throws UaException {
+        PropertyTypeNode node = getConditionClassIdNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public NodeId readConditionClassId() throws UaException {
+        try {
+            return readConditionClassIdAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeConditionClassId(NodeId value) throws UaException {
+        try {
+            writeConditionClassIdAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends NodeId> readConditionClassIdAsync() {
+        return getConditionClassIdNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (NodeId) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeConditionClassIdAsync(NodeId conditionClassId) {
+        DataValue value = DataValue.valueOnly(new Variant(conditionClassId));
+        return getConditionClassIdNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getConditionClassIdNode() throws UaException {
+        try {
+            return getConditionClassIdNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getConditionClassIdNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ConditionClassId",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public LocalizedText getConditionClassName() throws UaException {
+        PropertyTypeNode node = getConditionClassNameNode();
+        return (LocalizedText) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setConditionClassName(LocalizedText value) throws UaException {
+        PropertyTypeNode node = getConditionClassNameNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public LocalizedText readConditionClassName() throws UaException {
+        try {
+            return readConditionClassNameAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeConditionClassName(LocalizedText value) throws UaException {
+        try {
+            writeConditionClassNameAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends LocalizedText> readConditionClassNameAsync() {
+        return getConditionClassNameNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (LocalizedText) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeConditionClassNameAsync(
+        LocalizedText conditionClassName) {
+        DataValue value = DataValue.valueOnly(new Variant(conditionClassName));
+        return getConditionClassNameNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getConditionClassNameNode() throws UaException {
+        try {
+            return getConditionClassNameNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getConditionClassNameNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ConditionClassName",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public NodeId[] getConditionSubClassId() throws UaException {
+        PropertyTypeNode node = getConditionSubClassIdNode();
+        return (NodeId[]) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setConditionSubClassId(NodeId[] value) throws UaException {
+        PropertyTypeNode node = getConditionSubClassIdNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public NodeId[] readConditionSubClassId() throws UaException {
+        try {
+            return readConditionSubClassIdAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeConditionSubClassId(NodeId[] value) throws UaException {
+        try {
+            writeConditionSubClassIdAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends NodeId[]> readConditionSubClassIdAsync() {
+        return getConditionSubClassIdNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (NodeId[]) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeConditionSubClassIdAsync(NodeId[] conditionSubClassId) {
+        DataValue value = DataValue.valueOnly(new Variant(conditionSubClassId));
+        return getConditionSubClassIdNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getConditionSubClassIdNode() throws UaException {
+        try {
+            return getConditionSubClassIdNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getConditionSubClassIdNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ConditionSubClassId",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public LocalizedText[] getConditionSubClassName() throws UaException {
+        PropertyTypeNode node = getConditionSubClassNameNode();
+        return (LocalizedText[]) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setConditionSubClassName(LocalizedText[] value) throws UaException {
+        PropertyTypeNode node = getConditionSubClassNameNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public LocalizedText[] readConditionSubClassName() throws UaException {
+        try {
+            return readConditionSubClassNameAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeConditionSubClassName(LocalizedText[] value) throws UaException {
+        try {
+            writeConditionSubClassNameAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends LocalizedText[]> readConditionSubClassNameAsync() {
+        return getConditionSubClassNameNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (LocalizedText[]) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeConditionSubClassNameAsync(
+        LocalizedText[] conditionSubClassName) {
+        DataValue value = DataValue.valueOnly(new Variant(conditionSubClassName));
+        return getConditionSubClassNameNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getConditionSubClassNameNode() throws UaException {
+        try {
+            return getConditionSubClassNameNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getConditionSubClassNameNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ConditionSubClassName",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
 }

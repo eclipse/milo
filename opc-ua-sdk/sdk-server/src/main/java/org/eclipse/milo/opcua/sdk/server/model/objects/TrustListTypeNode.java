@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TrustListValidationOptions;
 
 public class TrustListTypeNode extends FileTypeNode implements TrustListType {
     public TrustListTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
@@ -73,6 +74,38 @@ public class TrustListTypeNode extends FileTypeNode implements TrustListType {
     @Override
     public void setUpdateFrequency(Double value) {
         setProperty(TrustListType.UPDATE_FREQUENCY, value);
+    }
+
+    @Override
+    public PropertyTypeNode getActivityTimeoutNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(TrustListType.ACTIVITY_TIMEOUT);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Double getActivityTimeout() {
+        return getProperty(TrustListType.ACTIVITY_TIMEOUT).orElse(null);
+    }
+
+    @Override
+    public void setActivityTimeout(Double value) {
+        setProperty(TrustListType.ACTIVITY_TIMEOUT, value);
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultValidationOptionsNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(TrustListType.DEFAULT_VALIDATION_OPTIONS);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public TrustListValidationOptions getDefaultValidationOptions() {
+        return getProperty(TrustListType.DEFAULT_VALIDATION_OPTIONS).orElse(null);
+    }
+
+    @Override
+    public void setDefaultValidationOptions(TrustListValidationOptions value) {
+        setProperty(TrustListType.DEFAULT_VALIDATION_OPTIONS, value);
     }
 
     @Override

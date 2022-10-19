@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.6">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.6</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.6">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.6</a>
  */
 public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<Boolean> IS_DELETE_MODIFIED = new QualifiedProperty<>(

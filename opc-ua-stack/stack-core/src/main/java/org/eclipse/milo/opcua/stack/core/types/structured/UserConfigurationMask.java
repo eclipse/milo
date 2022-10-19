@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -53,13 +54,13 @@ public class UserConfigurationMask extends OptionSetUI32<UserConfigurationMask.F
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<UserConfigurationMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static UserConfigurationMask of(Field... fields) {
+    public static UserConfigurationMask of(UserConfigurationMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -69,7 +70,7 @@ public class UserConfigurationMask extends OptionSetUI32<UserConfigurationMask.F
         return new UserConfigurationMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         NoDelete(0),
 
         Disabled(1),

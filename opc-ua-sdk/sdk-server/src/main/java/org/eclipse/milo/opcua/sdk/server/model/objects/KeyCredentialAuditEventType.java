@@ -14,6 +14,9 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/8.5.8">https://reference.opcfoundation.org/v105/Core/docs/Part12/8.5.8</a>
+ */
 public interface KeyCredentialAuditEventType extends AuditUpdateMethodEventType {
     QualifiedProperty<String> RESOURCE_URI = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",

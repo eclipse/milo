@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.objects;
 
+import java.util.Optional;
+
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -19,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
-public class TrustListUpdatedAuditEventTypeNode extends AuditUpdateMethodEventTypeNode implements TrustListUpdatedAuditEventType {
+public class TrustListUpdatedAuditEventTypeNode extends AuditEventTypeNode implements TrustListUpdatedAuditEventType {
     public TrustListUpdatedAuditEventTypeNode(UaNodeContext context, NodeId nodeId,
                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
                                               UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
@@ -33,5 +37,21 @@ public class TrustListUpdatedAuditEventTypeNode extends AuditUpdateMethodEventTy
                                               UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
                                               RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
         super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
+    }
+
+    @Override
+    public PropertyTypeNode getTrustListIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(TrustListUpdatedAuditEventType.TRUST_LIST_ID);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public NodeId getTrustListId() {
+        return getProperty(TrustListUpdatedAuditEventType.TRUST_LIST_ID).orElse(null);
+    }
+
+    @Override
+    public void setTrustListId(NodeId value) {
+        setProperty(TrustListUpdatedAuditEventType.TRUST_LIST_ID, value);
     }
 }

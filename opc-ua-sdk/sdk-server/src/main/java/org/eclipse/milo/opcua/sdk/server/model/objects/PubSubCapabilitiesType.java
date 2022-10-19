@@ -67,6 +67,46 @@ public interface PubSubCapabilitiesType extends BaseObjectType {
         UInteger.class
     );
 
+    QualifiedProperty<UInteger> MAX_DATA_SET_WRITERS_PER_GROUP = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxDataSetWritersPerGroup",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_NETWORK_MESSAGE_SIZE_DATAGRAM = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxNetworkMessageSizeDatagram",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_NETWORK_MESSAGE_SIZE_BROKER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxNetworkMessageSizeBroker",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<Boolean> SUPPORT_SECURITY_KEY_PULL = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SupportSecurityKeyPull",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        -1,
+        Boolean.class
+    );
+
+    QualifiedProperty<Boolean> SUPPORT_SECURITY_KEY_PUSH = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SupportSecurityKeyPush",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        -1,
+        Boolean.class
+    );
+
     UInteger getMaxPubSubConnections();
 
     void setMaxPubSubConnections(UInteger value);
@@ -102,4 +142,34 @@ public interface PubSubCapabilitiesType extends BaseObjectType {
     void setMaxFieldsPerDataSet(UInteger value);
 
     PropertyType getMaxFieldsPerDataSetNode();
+
+    UInteger getMaxDataSetWritersPerGroup();
+
+    void setMaxDataSetWritersPerGroup(UInteger value);
+
+    PropertyType getMaxDataSetWritersPerGroupNode();
+
+    UInteger getMaxNetworkMessageSizeDatagram();
+
+    void setMaxNetworkMessageSizeDatagram(UInteger value);
+
+    PropertyType getMaxNetworkMessageSizeDatagramNode();
+
+    UInteger getMaxNetworkMessageSizeBroker();
+
+    void setMaxNetworkMessageSizeBroker(UInteger value);
+
+    PropertyType getMaxNetworkMessageSizeBrokerNode();
+
+    Boolean getSupportSecurityKeyPull();
+
+    void setSupportSecurityKeyPull(Boolean value);
+
+    PropertyType getSupportSecurityKeyPullNode();
+
+    Boolean getSupportSecurityKeyPush();
+
+    void setSupportSecurityKeyPush(Boolean value);
+
+    PropertyType getSupportSecurityKeyPushNode();
 }

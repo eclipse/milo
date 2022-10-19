@@ -24,6 +24,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.1">https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.1</a>
+ */
 public interface KeyCredentialConfigurationFolderType extends FolderType {
     MethodNode getCreateCredentialMethodNode();
 
@@ -42,6 +45,7 @@ public interface KeyCredentialConfigurationFolderType extends FolderType {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
+                    new Argument("Name", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
                     new Argument("ResourceUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
                     new Argument("ProfileUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
                     new Argument("EndpointUrls", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
@@ -63,16 +67,17 @@ public interface KeyCredentialConfigurationFolderType extends FolderType {
         @Override
         protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
-            String resourceUri = (String) inputValues[0].getValue();
-            String profileUri = (String) inputValues[1].getValue();
-            String[] endpointUrls = (String[]) inputValues[2].getValue();
+            String name = (String) inputValues[0].getValue();
+            String resourceUri = (String) inputValues[1].getValue();
+            String profileUri = (String) inputValues[2].getValue();
+            String[] endpointUrls = (String[]) inputValues[3].getValue();
             Out<NodeId> credentialNodeId = new Out<>();
-            invoke(context, resourceUri, profileUri, endpointUrls, credentialNodeId);
+            invoke(context, name, resourceUri, profileUri, endpointUrls, credentialNodeId);
             return new Variant[]{new Variant(credentialNodeId.get())};
         }
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
-                                       String resourceUri, String profileUri, String[] endpointUrls, Out<NodeId> credentialNodeId)
-            throws UaException;
+                                       String name, String resourceUri, String profileUri, String[] endpointUrls,
+                                       Out<NodeId> credentialNodeId) throws UaException;
     }
 }

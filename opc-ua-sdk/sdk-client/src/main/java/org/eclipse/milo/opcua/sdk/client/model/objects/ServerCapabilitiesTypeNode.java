@@ -1145,6 +1145,71 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
+    public UInteger getMaxMonitoredItemsQueueSize() throws UaException {
+        PropertyTypeNode node = getMaxMonitoredItemsQueueSizeNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxMonitoredItemsQueueSize(UInteger value) throws UaException {
+        PropertyTypeNode node = getMaxMonitoredItemsQueueSizeNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public UInteger readMaxMonitoredItemsQueueSize() throws UaException {
+        try {
+            return readMaxMonitoredItemsQueueSizeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxMonitoredItemsQueueSize(UInteger value) throws UaException {
+        try {
+            writeMaxMonitoredItemsQueueSizeAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxMonitoredItemsQueueSizeAsync() {
+        return getMaxMonitoredItemsQueueSizeNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeMaxMonitoredItemsQueueSizeAsync(
+        UInteger maxMonitoredItemsQueueSize) {
+        DataValue value = DataValue.valueOnly(new Variant(maxMonitoredItemsQueueSize));
+        return getMaxMonitoredItemsQueueSizeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getMaxMonitoredItemsQueueSizeNode() throws UaException {
+        try {
+            return getMaxMonitoredItemsQueueSizeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxMonitoredItemsQueueSizeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "MaxMonitoredItemsQueueSize",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
     public QualifiedName[] getConformanceUnits() throws UaException {
         PropertyTypeNode node = getConformanceUnitsNode();
         return (QualifiedName[]) node.getValue().getValue().getValue();

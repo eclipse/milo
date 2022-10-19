@@ -151,8 +151,11 @@ public interface UserManagementType extends BaseObjectType {
 
                 return new Argument[]{
                     new Argument("UserName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("ModifyPassword", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
                     new Argument("Password", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("ModifyUserConfiguration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
                     new Argument("UserConfiguration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24279").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("ModifyDescription", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
                     new Argument("Description", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
                 };
             });
@@ -167,16 +170,20 @@ public interface UserManagementType extends BaseObjectType {
         protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String userName = (String) inputValues[0].getValue();
-            String password = (String) inputValues[1].getValue();
-            UserConfigurationMask userConfiguration = (UserConfigurationMask) inputValues[2].getValue();
-            String description = (String) inputValues[3].getValue();
-            invoke(context, userName, password, userConfiguration, description);
+            Boolean modifyPassword = (Boolean) inputValues[1].getValue();
+            String password = (String) inputValues[2].getValue();
+            Boolean modifyUserConfiguration = (Boolean) inputValues[3].getValue();
+            UserConfigurationMask userConfiguration = (UserConfigurationMask) inputValues[4].getValue();
+            Boolean modifyDescription = (Boolean) inputValues[5].getValue();
+            String description = (String) inputValues[6].getValue();
+            invoke(context, userName, modifyPassword, password, modifyUserConfiguration, userConfiguration, modifyDescription, description);
             return new Variant[]{};
         }
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
-                                       String userName, String password, UserConfigurationMask userConfiguration,
-                                       String description) throws UaException;
+                                       String userName, Boolean modifyPassword, String password, Boolean modifyUserConfiguration,
+                                       UserConfigurationMask userConfiguration, Boolean modifyDescription, String description)
+            throws UaException;
     }
 
     abstract class RemoveUserMethod extends AbstractMethodInvocationHandler {
@@ -192,10 +199,7 @@ public interface UserManagementType extends BaseObjectType {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
-                    new Argument("UserName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("Password", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("UserConfiguration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24279").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("Description", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                    new Argument("UserName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
                 };
             });
         }
@@ -209,16 +213,12 @@ public interface UserManagementType extends BaseObjectType {
         protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String userName = (String) inputValues[0].getValue();
-            String password = (String) inputValues[1].getValue();
-            UserConfigurationMask userConfiguration = (UserConfigurationMask) inputValues[2].getValue();
-            String description = (String) inputValues[3].getValue();
-            invoke(context, userName, password, userConfiguration, description);
+            invoke(context, userName);
             return new Variant[]{};
         }
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
-                                       String userName, String password, UserConfigurationMask userConfiguration,
-                                       String description) throws UaException;
+                                       String userName) throws UaException;
     }
 
     abstract class ChangePasswordMethod extends AbstractMethodInvocationHandler {
@@ -234,10 +234,8 @@ public interface UserManagementType extends BaseObjectType {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
-                    new Argument("UserName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("Password", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("UserConfiguration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24279").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("Description", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                    new Argument("OldPassword", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("NewPassword", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
                 };
             });
         }
@@ -250,16 +248,13 @@ public interface UserManagementType extends BaseObjectType {
         @Override
         protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
-            String userName = (String) inputValues[0].getValue();
-            String password = (String) inputValues[1].getValue();
-            UserConfigurationMask userConfiguration = (UserConfigurationMask) inputValues[2].getValue();
-            String description = (String) inputValues[3].getValue();
-            invoke(context, userName, password, userConfiguration, description);
+            String oldPassword = (String) inputValues[0].getValue();
+            String newPassword = (String) inputValues[1].getValue();
+            invoke(context, oldPassword, newPassword);
             return new Variant[]{};
         }
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
-                                       String userName, String password, UserConfigurationMask userConfiguration,
-                                       String description) throws UaException;
+                                       String oldPassword, String newPassword) throws UaException;
     }
 }

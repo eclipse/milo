@@ -15,7 +15,10 @@ import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEventType {
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.10.14">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.10.14</a>
+ */
+public interface CertificateUpdatedAuditEventType extends AuditEventType {
     QualifiedProperty<NodeId> CERTIFICATE_GROUP = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CertificateGroup",

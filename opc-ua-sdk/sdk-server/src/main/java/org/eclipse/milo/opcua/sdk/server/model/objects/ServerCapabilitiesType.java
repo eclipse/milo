@@ -158,6 +158,14 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         UInteger.class
     );
 
+    QualifiedProperty<UInteger> MAX_MONITORED_ITEMS_QUEUE_SIZE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxMonitoredItemsQueueSize",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
     QualifiedProperty<QualifiedName[]> CONFORMANCE_UNITS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConformanceUnits",
@@ -267,6 +275,12 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     void setMaxWhereClauseParameters(UInteger value);
 
     PropertyType getMaxWhereClauseParametersNode();
+
+    UInteger getMaxMonitoredItemsQueueSize();
+
+    void setMaxMonitoredItemsQueueSize(UInteger value);
+
+    PropertyType getMaxMonitoredItemsQueueSizeNode();
 
     QualifiedName[] getConformanceUnits();
 

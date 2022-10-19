@@ -21,14 +21,13 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7">https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.4">https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.4</a>
  */
 public interface KeyCredentialConfigurationType extends BaseObjectType {
     QualifiedProperty<String> RESOURCE_URI = new QualifiedProperty<>(
@@ -121,7 +120,7 @@ public interface KeyCredentialConfigurationType extends BaseObjectType {
 
                 return new Argument[]{
                     new Argument("PublicKey", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("RevisedSecurityPolicyUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                    new Argument("RevisedSecurityPolicyUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
                 };
             });
         }
@@ -132,14 +131,14 @@ public interface KeyCredentialConfigurationType extends BaseObjectType {
             String credentialId = (String) inputValues[0].getValue();
             String requestedSecurityPolicyUri = (String) inputValues[1].getValue();
             Out<ByteString> publicKey = new Out<>();
-            Out<NodeId> revisedSecurityPolicyUri = new Out<>();
+            Out<String> revisedSecurityPolicyUri = new Out<>();
             invoke(context, credentialId, requestedSecurityPolicyUri, publicKey, revisedSecurityPolicyUri);
             return new Variant[]{new Variant(publicKey.get()), new Variant(revisedSecurityPolicyUri.get())};
         }
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String credentialId, String requestedSecurityPolicyUri, Out<ByteString> publicKey,
-                                       Out<NodeId> revisedSecurityPolicyUri) throws UaException;
+                                       Out<String> revisedSecurityPolicyUri) throws UaException;
     }
 
     abstract class UpdateCredentialMethod extends AbstractMethodInvocationHandler {

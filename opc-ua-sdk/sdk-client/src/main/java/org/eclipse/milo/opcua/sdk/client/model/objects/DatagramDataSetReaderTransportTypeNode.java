@@ -34,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReceiveQosDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
-public class DatagramDataSetReaderTransportTypeNode extends WriterGroupTransportTypeNode implements DatagramDataSetReaderTransportType {
+public class DatagramDataSetReaderTransportTypeNode extends DataSetReaderTransportTypeNode implements DatagramDataSetReaderTransportType {
     public DatagramDataSetReaderTransportTypeNode(OpcUaClient client, NodeId nodeId,
                                                   NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName,
                                                   LocalizedText description, UInteger writeMask, UInteger userWriteMask,
