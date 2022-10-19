@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
-public class CertificateUpdatedAuditEventTypeNode extends AuditUpdateMethodEventTypeNode implements CertificateUpdatedAuditEventType {
+public class CertificateUpdatedAuditEventTypeNode extends AuditEventTypeNode implements CertificateUpdatedAuditEventType {
     public CertificateUpdatedAuditEventTypeNode(OpcUaClient client, NodeId nodeId,
                                                 NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName,
                                                 LocalizedText description, UInteger writeMask, UInteger userWriteMask,

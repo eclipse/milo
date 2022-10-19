@@ -26,6 +26,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.KeyValuePair;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class PublishSubscribeTypeNode extends PubSubKeyServiceTypeNode implements PublishSubscribeType {
@@ -90,6 +92,38 @@ public class PublishSubscribeTypeNode extends PubSubKeyServiceTypeNode implement
     @Override
     public void setConfigurationVersion(UInteger value) {
         setProperty(PublishSubscribeType.CONFIGURATION_VERSION, value);
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultSecurityKeyServicesNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PublishSubscribeType.DEFAULT_SECURITY_KEY_SERVICES);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public EndpointDescription[] getDefaultSecurityKeyServices() {
+        return getProperty(PublishSubscribeType.DEFAULT_SECURITY_KEY_SERVICES).orElse(null);
+    }
+
+    @Override
+    public void setDefaultSecurityKeyServices(EndpointDescription[] value) {
+        setProperty(PublishSubscribeType.DEFAULT_SECURITY_KEY_SERVICES, value);
+    }
+
+    @Override
+    public PropertyTypeNode getConfigurationPropertiesNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PublishSubscribeType.CONFIGURATION_PROPERTIES);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public KeyValuePair[] getConfigurationProperties() {
+        return getProperty(PublishSubscribeType.CONFIGURATION_PROPERTIES).orElse(null);
+    }
+
+    @Override
+    public void setConfigurationProperties(KeyValuePair[] value) {
+        setProperty(PublishSubscribeType.CONFIGURATION_PROPERTIES, value);
     }
 
     @Override

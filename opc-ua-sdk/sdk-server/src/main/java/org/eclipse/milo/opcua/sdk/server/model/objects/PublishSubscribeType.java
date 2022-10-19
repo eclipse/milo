@@ -26,6 +26,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.KeyValuePair;
 import org.eclipse.milo.opcua.stack.core.types.structured.PubSubConnectionDataType;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
@@ -57,6 +59,22 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
         UInteger.class
     );
 
+    QualifiedProperty<EndpointDescription[]> DEFAULT_SECURITY_KEY_SERVICES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DefaultSecurityKeyServices",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=312"),
+        1,
+        EndpointDescription[].class
+    );
+
+    QualifiedProperty<KeyValuePair[]> CONFIGURATION_PROPERTIES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConfigurationProperties",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=14533"),
+        1,
+        KeyValuePair[].class
+    );
+
     String[] getSupportedTransportProfiles();
 
     void setSupportedTransportProfiles(String[] value);
@@ -74,6 +92,18 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
     void setConfigurationVersion(UInteger value);
 
     PropertyType getConfigurationVersionNode();
+
+    EndpointDescription[] getDefaultSecurityKeyServices();
+
+    void setDefaultSecurityKeyServices(EndpointDescription[] value);
+
+    PropertyType getDefaultSecurityKeyServicesNode();
+
+    KeyValuePair[] getConfigurationProperties();
+
+    void setConfigurationProperties(KeyValuePair[] value);
+
+    PropertyType getConfigurationPropertiesNode();
 
     MethodNode getSetSecurityKeysMethodNode();
 

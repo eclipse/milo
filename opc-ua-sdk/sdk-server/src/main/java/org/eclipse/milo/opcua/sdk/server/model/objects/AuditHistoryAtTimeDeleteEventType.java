@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.7">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.7</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.7">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.7</a>
  */
 public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<DateTime[]> REQ_TIMES = new QualifiedProperty<>(

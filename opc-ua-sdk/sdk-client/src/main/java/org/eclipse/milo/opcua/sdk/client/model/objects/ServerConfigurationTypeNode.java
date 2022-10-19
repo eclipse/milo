@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
@@ -39,6 +40,213 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
                                        RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
                                        UByte eventNotifier) {
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
+    }
+
+    @Override
+    public String getApplicationUri() throws UaException {
+        PropertyTypeNode node = getApplicationUriNode();
+        return (String) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setApplicationUri(String value) throws UaException {
+        PropertyTypeNode node = getApplicationUriNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public String readApplicationUri() throws UaException {
+        try {
+            return readApplicationUriAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeApplicationUri(String value) throws UaException {
+        try {
+            writeApplicationUriAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends String> readApplicationUriAsync() {
+        return getApplicationUriNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (String) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeApplicationUriAsync(String applicationUri) {
+        DataValue value = DataValue.valueOnly(new Variant(applicationUri));
+        return getApplicationUriNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getApplicationUriNode() throws UaException {
+        try {
+            return getApplicationUriNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getApplicationUriNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ApplicationUri",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public String getProductUri() throws UaException {
+        PropertyTypeNode node = getProductUriNode();
+        return (String) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setProductUri(String value) throws UaException {
+        PropertyTypeNode node = getProductUriNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public String readProductUri() throws UaException {
+        try {
+            return readProductUriAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeProductUri(String value) throws UaException {
+        try {
+            writeProductUriAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends String> readProductUriAsync() {
+        return getProductUriNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (String) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeProductUriAsync(String productUri) {
+        DataValue value = DataValue.valueOnly(new Variant(productUri));
+        return getProductUriNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getProductUriNode() throws UaException {
+        try {
+            return getProductUriNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getProductUriNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ProductUri",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public ApplicationType getApplicationType() throws UaException {
+        PropertyTypeNode node = getApplicationTypeNode();
+        Object value = node.getValue().getValue().getValue();
+
+        if (value instanceof Integer) {
+            return ApplicationType.from((Integer) value);
+        } else if (value instanceof ApplicationType) {
+            return (ApplicationType) value;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setApplicationType(ApplicationType value) throws UaException {
+        PropertyTypeNode node = getApplicationTypeNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public ApplicationType readApplicationType() throws UaException {
+        try {
+            return readApplicationTypeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeApplicationType(ApplicationType value) throws UaException {
+        try {
+            writeApplicationTypeAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends ApplicationType> readApplicationTypeAsync() {
+        return getApplicationTypeNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return ApplicationType.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeApplicationTypeAsync(ApplicationType applicationType) {
+        DataValue value = DataValue.valueOnly(new Variant(applicationType));
+        return getApplicationTypeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getApplicationTypeNode() throws UaException {
+        try {
+            return getApplicationTypeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getApplicationTypeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ApplicationType",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
@@ -299,6 +507,70 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
+    public Boolean getHasSecureElement() throws UaException {
+        PropertyTypeNode node = getHasSecureElementNode();
+        return (Boolean) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setHasSecureElement(Boolean value) throws UaException {
+        PropertyTypeNode node = getHasSecureElementNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public Boolean readHasSecureElement() throws UaException {
+        try {
+            return readHasSecureElementAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeHasSecureElement(Boolean value) throws UaException {
+        try {
+            writeHasSecureElementAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Boolean> readHasSecureElementAsync() {
+        return getHasSecureElementNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (Boolean) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeHasSecureElementAsync(Boolean hasSecureElement) {
+        DataValue value = DataValue.valueOnly(new Variant(hasSecureElement));
+        return getHasSecureElementNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getHasSecureElementNode() throws UaException {
+        try {
+            return getHasSecureElementNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getHasSecureElementNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "HasSecureElement",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
     public CertificateGroupFolderTypeNode getCertificateGroupsNode() throws UaException {
         try {
             return getCertificateGroupsNodeAsync().get();
@@ -317,5 +589,26 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
             false
         );
         return future.thenApply(node -> (CertificateGroupFolderTypeNode) node);
+    }
+
+    @Override
+    public TransactionDiagnosticsTypeNode getTransactionDiagnosticsNode() throws UaException {
+        try {
+            return getTransactionDiagnosticsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends TransactionDiagnosticsTypeNode> getTransactionDiagnosticsNodeAsync(
+    ) {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "TransactionDiagnostics",
+            ExpandedNodeId.parse("ns=0;i=47"),
+            false
+        );
+        return future.thenApply(node -> (TransactionDiagnosticsTypeNode) node);
     }
 }

@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.4">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.4</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24/#5.8.24.4">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24/#5.8.24.4</a>
  */
 public interface TripAlarmType extends OffNormalAlarmType {
 }

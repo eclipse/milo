@@ -21,7 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.4">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.4</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.4">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.4</a>
  */
 public interface AuditHistoryAnnotationUpdateEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<PerformUpdateType> PERFORM_INSERT_REPLACE = new QualifiedProperty<>(

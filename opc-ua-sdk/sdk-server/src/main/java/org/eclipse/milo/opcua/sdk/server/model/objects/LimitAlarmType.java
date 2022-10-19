@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.17">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.17</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.18">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.18</a>
  */
 public interface LimitAlarmType extends AlarmConditionType {
     QualifiedProperty<Double> HIGH_HIGH_LIMIT = new QualifiedProperty<>(

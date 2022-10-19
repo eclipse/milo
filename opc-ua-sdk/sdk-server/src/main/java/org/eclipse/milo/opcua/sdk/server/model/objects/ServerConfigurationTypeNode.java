@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
@@ -41,6 +42,54 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
                                        UInteger userWriteMask, RolePermissionType[] rolePermissions,
                                        RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
         super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
+    }
+
+    @Override
+    public PropertyTypeNode getApplicationUriNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.APPLICATION_URI);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public String getApplicationUri() {
+        return getProperty(ServerConfigurationType.APPLICATION_URI).orElse(null);
+    }
+
+    @Override
+    public void setApplicationUri(String value) {
+        setProperty(ServerConfigurationType.APPLICATION_URI, value);
+    }
+
+    @Override
+    public PropertyTypeNode getProductUriNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.PRODUCT_URI);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public String getProductUri() {
+        return getProperty(ServerConfigurationType.PRODUCT_URI).orElse(null);
+    }
+
+    @Override
+    public void setProductUri(String value) {
+        setProperty(ServerConfigurationType.PRODUCT_URI, value);
+    }
+
+    @Override
+    public PropertyTypeNode getApplicationTypeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.APPLICATION_TYPE);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public ApplicationType getApplicationType() {
+        return getProperty(ServerConfigurationType.APPLICATION_TYPE).orElse(null);
+    }
+
+    @Override
+    public void setApplicationType(ApplicationType value) {
+        setProperty(ServerConfigurationType.APPLICATION_TYPE, value);
     }
 
     @Override
@@ -108,6 +157,22 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
+    public PropertyTypeNode getHasSecureElementNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.HAS_SECURE_ELEMENT);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Boolean getHasSecureElement() {
+        return getProperty(ServerConfigurationType.HAS_SECURE_ELEMENT).orElse(null);
+    }
+
+    @Override
+    public void setHasSecureElement(Boolean value) {
+        setProperty(ServerConfigurationType.HAS_SECURE_ELEMENT, value);
+    }
+
+    @Override
     public CertificateGroupFolderTypeNode getCertificateGroupsNode() {
         Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "CertificateGroups");
         return (CertificateGroupFolderTypeNode) component.orElse(null);
@@ -120,8 +185,20 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
+    public UaMethodNode getGetCertificatesMethodNode() {
+        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetCertificates", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
+        return (UaMethodNode) methodNode.orElse(null);
+    }
+
+    @Override
     public UaMethodNode getApplyChangesMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ApplyChanges", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
+        return (UaMethodNode) methodNode.orElse(null);
+    }
+
+    @Override
+    public UaMethodNode getCancelChangesMethodNode() {
+        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CancelChanges", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
@@ -135,5 +212,17 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     public UaMethodNode getGetRejectedListMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetRejectedList", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
+    }
+
+    @Override
+    public UaMethodNode getResetToServerDefaultsMethodNode() {
+        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ResetToServerDefaults", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
+        return (UaMethodNode) methodNode.orElse(null);
+    }
+
+    @Override
+    public TransactionDiagnosticsTypeNode getTransactionDiagnosticsNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "TransactionDiagnostics");
+        return (TransactionDiagnosticsTypeNode) component.orElse(null);
     }
 }

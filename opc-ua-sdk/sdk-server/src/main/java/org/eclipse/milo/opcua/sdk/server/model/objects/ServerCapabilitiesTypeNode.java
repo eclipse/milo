@@ -315,6 +315,22 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
+    public PropertyTypeNode getMaxMonitoredItemsQueueSizeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerCapabilitiesType.MAX_MONITORED_ITEMS_QUEUE_SIZE);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getMaxMonitoredItemsQueueSize() {
+        return getProperty(ServerCapabilitiesType.MAX_MONITORED_ITEMS_QUEUE_SIZE).orElse(null);
+    }
+
+    @Override
+    public void setMaxMonitoredItemsQueueSize(UInteger value) {
+        setProperty(ServerCapabilitiesType.MAX_MONITORED_ITEMS_QUEUE_SIZE, value);
+    }
+
+    @Override
     public PropertyTypeNode getConformanceUnitsNode() {
         Optional<VariableNode> propertyNode = getPropertyNode(ServerCapabilitiesType.CONFORMANCE_UNITS);
         return (PropertyTypeNode) propertyNode.orElse(null);

@@ -65,8 +65,8 @@ public interface PubSubConfigurationType extends FileType {
 
                 return new Argument[]{
                     new Argument("DefaultPublisherId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("WriterGroupIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
-                    new Argument("DataSetWriterIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                    new Argument("WriterGroupIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", "")),
+                    new Argument("DataSetWriterIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
                 };
             });
         }
@@ -78,16 +78,16 @@ public interface PubSubConfigurationType extends FileType {
             UShort numReqWriterGroupIds = (UShort) inputValues[1].getValue();
             UShort numReqDataSetWriterIds = (UShort) inputValues[2].getValue();
             Out<Object> defaultPublisherId = new Out<>();
-            Out<UShort> writerGroupIds = new Out<>();
-            Out<UShort> dataSetWriterIds = new Out<>();
+            Out<UShort[]> writerGroupIds = new Out<>();
+            Out<UShort[]> dataSetWriterIds = new Out<>();
             invoke(context, transportProfileUri, numReqWriterGroupIds, numReqDataSetWriterIds, defaultPublisherId, writerGroupIds, dataSetWriterIds);
             return new Variant[]{new Variant(defaultPublisherId.get()), new Variant(writerGroupIds.get()), new Variant(dataSetWriterIds.get())};
         }
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String transportProfileUri, UShort numReqWriterGroupIds, UShort numReqDataSetWriterIds,
-                                       Out<Object> defaultPublisherId, Out<UShort> writerGroupIds, Out<UShort> dataSetWriterIds)
-            throws UaException;
+                                       Out<Object> defaultPublisherId, Out<UShort[]> writerGroupIds,
+                                       Out<UShort[]> dataSetWriterIds) throws UaException;
     }
 
     abstract class CloseAndUpdateMethod extends AbstractMethodInvocationHandler {

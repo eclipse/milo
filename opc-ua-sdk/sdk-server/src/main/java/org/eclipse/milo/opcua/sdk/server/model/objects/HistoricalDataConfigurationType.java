@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.2.2">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.2.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.2.2</a>
  */
 public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(

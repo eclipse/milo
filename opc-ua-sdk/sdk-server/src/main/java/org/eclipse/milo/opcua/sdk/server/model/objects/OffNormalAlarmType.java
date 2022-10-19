@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24/#5.8.24.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24/#5.8.24.2</a>
  */
 public interface OffNormalAlarmType extends DiscreteAlarmType {
     QualifiedProperty<NodeId> NORMAL_STATE = new QualifiedProperty<>(

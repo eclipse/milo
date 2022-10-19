@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -89,13 +90,13 @@ public class AccessLevelExType extends OptionSetUI32<AccessLevelExType.Field> {
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<AccessLevelExType.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static AccessLevelExType of(Field... fields) {
+    public static AccessLevelExType of(AccessLevelExType.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -105,7 +106,7 @@ public class AccessLevelExType extends OptionSetUI32<AccessLevelExType.Field> {
         return new AccessLevelExType(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         CurrentRead(0),
 
         CurrentWrite(1),

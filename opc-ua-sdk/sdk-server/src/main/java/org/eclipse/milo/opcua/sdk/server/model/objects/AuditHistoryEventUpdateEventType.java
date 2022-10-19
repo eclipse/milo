@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.2">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.6.2</a>
  */
 public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(

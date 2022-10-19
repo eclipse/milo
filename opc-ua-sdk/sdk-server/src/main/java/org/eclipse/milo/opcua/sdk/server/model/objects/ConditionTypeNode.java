@@ -81,38 +81,6 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public PropertyTypeNode getConditionSubClassIdNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ConditionType.CONDITION_SUB_CLASS_ID);
-        return (PropertyTypeNode) propertyNode.orElse(null);
-    }
-
-    @Override
-    public NodeId[] getConditionSubClassId() {
-        return getProperty(ConditionType.CONDITION_SUB_CLASS_ID).orElse(null);
-    }
-
-    @Override
-    public void setConditionSubClassId(NodeId[] value) {
-        setProperty(ConditionType.CONDITION_SUB_CLASS_ID, value);
-    }
-
-    @Override
-    public PropertyTypeNode getConditionSubClassNameNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ConditionType.CONDITION_SUB_CLASS_NAME);
-        return (PropertyTypeNode) propertyNode.orElse(null);
-    }
-
-    @Override
-    public LocalizedText[] getConditionSubClassName() {
-        return getProperty(ConditionType.CONDITION_SUB_CLASS_NAME).orElse(null);
-    }
-
-    @Override
-    public void setConditionSubClassName(LocalizedText[] value) {
-        setProperty(ConditionType.CONDITION_SUB_CLASS_NAME, value);
-    }
-
-    @Override
     public PropertyTypeNode getConditionNameNode() {
         Optional<VariableNode> propertyNode = getPropertyNode(ConditionType.CONDITION_NAME);
         return (PropertyTypeNode) propertyNode.orElse(null);
@@ -158,6 +126,22 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     @Override
     public void setRetain(Boolean value) {
         setProperty(ConditionType.RETAIN, value);
+    }
+
+    @Override
+    public PropertyTypeNode getSupportsFilteredRetainNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ConditionType.SUPPORTS_FILTERED_RETAIN);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Boolean getSupportsFilteredRetain() {
+        return getProperty(ConditionType.SUPPORTS_FILTERED_RETAIN).orElse(null);
+    }
+
+    @Override
+    public void setSupportsFilteredRetain(Boolean value) {
+        setProperty(ConditionType.SUPPORTS_FILTERED_RETAIN, value);
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -61,13 +62,13 @@ public class JsonNetworkMessageContentMask extends OptionSetUI32<JsonNetworkMess
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<JsonNetworkMessageContentMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static JsonNetworkMessageContentMask of(Field... fields) {
+    public static JsonNetworkMessageContentMask of(JsonNetworkMessageContentMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -77,7 +78,7 @@ public class JsonNetworkMessageContentMask extends OptionSetUI32<JsonNetworkMess
         return new JsonNetworkMessageContentMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         NetworkMessageHeader(0),
 
         DataSetMessageHeader(1),

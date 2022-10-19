@@ -14,6 +14,9 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.3/#7.8.3.3">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.3/#7.8.3.3</a>
+ */
 public interface CertificateGroupFolderType extends FolderType {
     /**
      * Get the DefaultApplicationGroup {@link CertificateGroupType} Node, or {@code null} if it does not exist.

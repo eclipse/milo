@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.stack.core.UaException;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.18/#5.8.18.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.18/#5.8.18.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.19/#5.8.19.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.19/#5.8.19.2</a>
  */
 public interface ExclusiveLimitStateMachineType extends FiniteStateMachineType {
     /**

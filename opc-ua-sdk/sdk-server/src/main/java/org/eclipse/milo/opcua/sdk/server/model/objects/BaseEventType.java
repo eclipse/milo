@@ -96,6 +96,38 @@ public interface BaseEventType extends BaseObjectType {
         UShort.class
     );
 
+    QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConditionClassId",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
+        -1,
+        NodeId.class
+    );
+
+    QualifiedProperty<LocalizedText> CONDITION_CLASS_NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConditionClassName",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
+        -1,
+        LocalizedText.class
+    );
+
+    QualifiedProperty<NodeId[]> CONDITION_SUB_CLASS_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConditionSubClassId",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
+        1,
+        NodeId[].class
+    );
+
+    QualifiedProperty<LocalizedText[]> CONDITION_SUB_CLASS_NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConditionSubClassName",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
+        1,
+        LocalizedText[].class
+    );
+
     ByteString getEventId();
 
     void setEventId(ByteString value);
@@ -149,4 +181,28 @@ public interface BaseEventType extends BaseObjectType {
     void setSeverity(UShort value);
 
     PropertyType getSeverityNode();
+
+    NodeId getConditionClassId();
+
+    void setConditionClassId(NodeId value);
+
+    PropertyType getConditionClassIdNode();
+
+    LocalizedText getConditionClassName();
+
+    void setConditionClassName(LocalizedText value);
+
+    PropertyType getConditionClassNameNode();
+
+    NodeId[] getConditionSubClassId();
+
+    void setConditionSubClassId(NodeId[] value);
+
+    PropertyType getConditionSubClassIdNode();
+
+    LocalizedText[] getConditionSubClassName();
+
+    void setConditionSubClassName(LocalizedText[] value);
+
+    PropertyType getConditionSubClassNameNode();
 }

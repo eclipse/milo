@@ -19,6 +19,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.KeyValuePair;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.2</a>
@@ -46,6 +48,22 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=20998"),
         -1,
         UInteger.class
+    );
+
+    QualifiedProperty<EndpointDescription[]> DEFAULT_SECURITY_KEY_SERVICES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DefaultSecurityKeyServices",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=312"),
+        1,
+        EndpointDescription[].class
+    );
+
+    QualifiedProperty<KeyValuePair[]> CONFIGURATION_PROPERTIES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConfigurationProperties",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=14533"),
+        1,
+        KeyValuePair[].class
     );
 
     /**
@@ -266,6 +284,152 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
      * getting the Node.
      */
     CompletableFuture<? extends PropertyType> getConfigurationVersionNodeAsync();
+
+    /**
+     * Get the local value of the DefaultSecurityKeyServices Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the DefaultSecurityKeyServices Node.
+     * @throws UaException if an error occurs creating or getting the DefaultSecurityKeyServices Node.
+     */
+    EndpointDescription[] getDefaultSecurityKeyServices() throws UaException;
+
+    /**
+     * Set the local value of the DefaultSecurityKeyServices Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param value the local value to set for the DefaultSecurityKeyServices Node.
+     * @throws UaException if an error occurs creating or getting the DefaultSecurityKeyServices Node.
+     */
+    void setDefaultSecurityKeyServices(EndpointDescription[] value) throws UaException;
+
+    /**
+     * Read the value of the DefaultSecurityKeyServices Node from the server and update the local value if
+     * the operation succeeds.
+     *
+     * @return the {@link EndpointDescription[]} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    EndpointDescription[] readDefaultSecurityKeyServices() throws UaException;
+
+    /**
+     * Write a new value for the DefaultSecurityKeyServices Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param value the {@link EndpointDescription[]} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeDefaultSecurityKeyServices(EndpointDescription[] value) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readDefaultSecurityKeyServices}.
+     *
+     * @return a CompletableFuture that completes successfully with the value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends EndpointDescription[]> readDefaultSecurityKeyServicesAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeDefaultSecurityKeyServices}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeDefaultSecurityKeyServicesAsync(EndpointDescription[] value);
+
+    /**
+     * Get the DefaultSecurityKeyServices {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the DefaultSecurityKeyServices {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getDefaultSecurityKeyServicesNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getDefaultSecurityKeyServicesNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * PropertyType Node or completes exceptionally if an error occurs creating or
+     * getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getDefaultSecurityKeyServicesNodeAsync();
+
+    /**
+     * Get the local value of the ConfigurationProperties Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the ConfigurationProperties Node.
+     * @throws UaException if an error occurs creating or getting the ConfigurationProperties Node.
+     */
+    KeyValuePair[] getConfigurationProperties() throws UaException;
+
+    /**
+     * Set the local value of the ConfigurationProperties Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param value the local value to set for the ConfigurationProperties Node.
+     * @throws UaException if an error occurs creating or getting the ConfigurationProperties Node.
+     */
+    void setConfigurationProperties(KeyValuePair[] value) throws UaException;
+
+    /**
+     * Read the value of the ConfigurationProperties Node from the server and update the local value if
+     * the operation succeeds.
+     *
+     * @return the {@link KeyValuePair[]} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    KeyValuePair[] readConfigurationProperties() throws UaException;
+
+    /**
+     * Write a new value for the ConfigurationProperties Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param value the {@link KeyValuePair[]} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeConfigurationProperties(KeyValuePair[] value) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readConfigurationProperties}.
+     *
+     * @return a CompletableFuture that completes successfully with the value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends KeyValuePair[]> readConfigurationPropertiesAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeConfigurationProperties}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeConfigurationPropertiesAsync(KeyValuePair[] value);
+
+    /**
+     * Get the ConfigurationProperties {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the ConfigurationProperties {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getConfigurationPropertiesNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getConfigurationPropertiesNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * PropertyType Node or completes exceptionally if an error occurs creating or
+     * getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getConfigurationPropertiesNodeAsync();
 
     /**
      * Get the PublishedDataSets {@link DataSetFolderType} Node, or {@code null} if it does not exist.

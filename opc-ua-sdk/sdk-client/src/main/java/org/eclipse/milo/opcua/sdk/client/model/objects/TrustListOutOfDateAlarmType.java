@@ -20,6 +20,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.9">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.9</a>
+ */
 public interface TrustListOutOfDateAlarmType extends SystemOffNormalAlarmType {
     QualifiedProperty<NodeId> TRUST_LIST_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",

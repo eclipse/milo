@@ -27,6 +27,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.3/#7.8.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.3/#7.8.3.1</a>
+ */
 public interface CertificateGroupType extends BaseObjectType {
     QualifiedProperty<NodeId[]> CERTIFICATE_TYPES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",

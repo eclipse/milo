@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -31,6 +32,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.KeyValuePair;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class PublishSubscribeTypeNode extends PubSubKeyServiceTypeNode implements PublishSubscribeType {
@@ -231,6 +234,140 @@ public class PublishSubscribeTypeNode extends PubSubKeyServiceTypeNode implement
         CompletableFuture<UaNode> future = getMemberNodeAsync(
             "http://opcfoundation.org/UA/",
             "ConfigurationVersion",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public EndpointDescription[] getDefaultSecurityKeyServices() throws UaException {
+        PropertyTypeNode node = getDefaultSecurityKeyServicesNode();
+        return cast(node.getValue().getValue().getValue(), EndpointDescription[].class);
+    }
+
+    @Override
+    public void setDefaultSecurityKeyServices(EndpointDescription[] value) throws UaException {
+        PropertyTypeNode node = getDefaultSecurityKeyServicesNode();
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
+        node.setValue(new Variant(encoded));
+    }
+
+    @Override
+    public EndpointDescription[] readDefaultSecurityKeyServices() throws UaException {
+        try {
+            return readDefaultSecurityKeyServicesAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeDefaultSecurityKeyServices(EndpointDescription[] value) throws UaException {
+        try {
+            writeDefaultSecurityKeyServicesAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends EndpointDescription[]> readDefaultSecurityKeyServicesAsync() {
+        return getDefaultSecurityKeyServicesNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> cast(v.getValue().getValue(), EndpointDescription[].class));
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeDefaultSecurityKeyServicesAsync(
+        EndpointDescription[] defaultSecurityKeyServices) {
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), defaultSecurityKeyServices);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
+        return getDefaultSecurityKeyServicesNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultSecurityKeyServicesNode() throws UaException {
+        try {
+            return getDefaultSecurityKeyServicesNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getDefaultSecurityKeyServicesNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "DefaultSecurityKeyServices",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public KeyValuePair[] getConfigurationProperties() throws UaException {
+        PropertyTypeNode node = getConfigurationPropertiesNode();
+        return cast(node.getValue().getValue().getValue(), KeyValuePair[].class);
+    }
+
+    @Override
+    public void setConfigurationProperties(KeyValuePair[] value) throws UaException {
+        PropertyTypeNode node = getConfigurationPropertiesNode();
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), value);
+        node.setValue(new Variant(encoded));
+    }
+
+    @Override
+    public KeyValuePair[] readConfigurationProperties() throws UaException {
+        try {
+            return readConfigurationPropertiesAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeConfigurationProperties(KeyValuePair[] value) throws UaException {
+        try {
+            writeConfigurationPropertiesAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends KeyValuePair[]> readConfigurationPropertiesAsync() {
+        return getConfigurationPropertiesNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> cast(v.getValue().getValue(), KeyValuePair[].class));
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeConfigurationPropertiesAsync(
+        KeyValuePair[] configurationProperties) {
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticEncodingContext(), configurationProperties);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
+        return getConfigurationPropertiesNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getConfigurationPropertiesNode() throws UaException {
+        try {
+            return getConfigurationPropertiesNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getConfigurationPropertiesNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "ConfigurationProperties",
             ExpandedNodeId.parse("ns=0;i=46"),
             false
         );

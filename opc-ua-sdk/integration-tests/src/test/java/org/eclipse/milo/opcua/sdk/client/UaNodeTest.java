@@ -171,7 +171,7 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         values.forEach(v -> {
             assertNotNull(v.getStatusCode());
-            assertTrue(v.getStatusCode().isGood());
+            assertTrue(v.getStatusCode().isGood() || v.getValue().isNull());
         });
     }
 

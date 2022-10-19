@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
-public class CertificateUpdatedAuditEventTypeNode extends AuditUpdateMethodEventTypeNode implements CertificateUpdatedAuditEventType {
+public class CertificateUpdatedAuditEventTypeNode extends AuditEventTypeNode implements CertificateUpdatedAuditEventType {
     public CertificateUpdatedAuditEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
                                                 UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,

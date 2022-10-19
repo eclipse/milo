@@ -43,22 +43,6 @@ public interface ConditionType extends BaseEventType {
         LocalizedText.class
     );
 
-    QualifiedProperty<NodeId[]> CONDITION_SUB_CLASS_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ConditionSubClassId",
-        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
-        1,
-        NodeId[].class
-    );
-
-    QualifiedProperty<LocalizedText[]> CONDITION_SUB_CLASS_NAME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ConditionSubClassName",
-        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
-        1,
-        LocalizedText[].class
-    );
-
     QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConditionName",
@@ -78,6 +62,14 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Retain",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        -1,
+        Boolean.class
+    );
+
+    QualifiedProperty<Boolean> SUPPORTS_FILTERED_RETAIN = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SupportsFilteredRetain",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         -1,
         Boolean.class
@@ -236,152 +228,6 @@ public interface ConditionType extends BaseEventType {
      * getting the Node.
      */
     CompletableFuture<? extends PropertyType> getConditionClassNameNodeAsync();
-
-    /**
-     * Get the local value of the ConditionSubClassId Node.
-     * <p>
-     * The returned value is the last seen; it is not read live from the server.
-     *
-     * @return the local value of the ConditionSubClassId Node.
-     * @throws UaException if an error occurs creating or getting the ConditionSubClassId Node.
-     */
-    NodeId[] getConditionSubClassId() throws UaException;
-
-    /**
-     * Set the local value of the ConditionSubClassId Node.
-     * <p>
-     * The value is only updated locally; it is not written to the server.
-     *
-     * @param value the local value to set for the ConditionSubClassId Node.
-     * @throws UaException if an error occurs creating or getting the ConditionSubClassId Node.
-     */
-    void setConditionSubClassId(NodeId[] value) throws UaException;
-
-    /**
-     * Read the value of the ConditionSubClassId Node from the server and update the local value if
-     * the operation succeeds.
-     *
-     * @return the {@link NodeId[]} value read from the server.
-     * @throws UaException if a service- or operation-level error occurs.
-     */
-    NodeId[] readConditionSubClassId() throws UaException;
-
-    /**
-     * Write a new value for the ConditionSubClassId Node to the server and update the local value if
-     * the operation succeeds.
-     *
-     * @param value the {@link NodeId[]} value to write to the server.
-     * @throws UaException if a service- or operation-level error occurs.
-     */
-    void writeConditionSubClassId(NodeId[] value) throws UaException;
-
-    /**
-     * An asynchronous implementation of {@link #readConditionSubClassId}.
-     *
-     * @return a CompletableFuture that completes successfully with the value or completes
-     * exceptionally if an operation- or service-level error occurs.
-     */
-    CompletableFuture<? extends NodeId[]> readConditionSubClassIdAsync();
-
-    /**
-     * An asynchronous implementation of {@link #writeConditionSubClassId}.
-     *
-     * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if a service-level error occurs.
-     */
-    CompletableFuture<StatusCode> writeConditionSubClassIdAsync(NodeId[] value);
-
-    /**
-     * Get the ConditionSubClassId {@link PropertyType} Node, or {@code null} if it does not exist.
-     * <p>
-     * The Node is created when first accessed and cached for subsequent calls.
-     *
-     * @return the ConditionSubClassId {@link PropertyType} Node, or {@code null} if it does not exist.
-     * @throws UaException if an error occurs creating or getting the Node.
-     */
-    PropertyType getConditionSubClassIdNode() throws UaException;
-
-    /**
-     * Asynchronous implementation of {@link #getConditionSubClassIdNode()}.
-     *
-     * @return a CompletableFuture that completes successfully with the
-     * PropertyType Node or completes exceptionally if an error occurs creating or
-     * getting the Node.
-     */
-    CompletableFuture<? extends PropertyType> getConditionSubClassIdNodeAsync();
-
-    /**
-     * Get the local value of the ConditionSubClassName Node.
-     * <p>
-     * The returned value is the last seen; it is not read live from the server.
-     *
-     * @return the local value of the ConditionSubClassName Node.
-     * @throws UaException if an error occurs creating or getting the ConditionSubClassName Node.
-     */
-    LocalizedText[] getConditionSubClassName() throws UaException;
-
-    /**
-     * Set the local value of the ConditionSubClassName Node.
-     * <p>
-     * The value is only updated locally; it is not written to the server.
-     *
-     * @param value the local value to set for the ConditionSubClassName Node.
-     * @throws UaException if an error occurs creating or getting the ConditionSubClassName Node.
-     */
-    void setConditionSubClassName(LocalizedText[] value) throws UaException;
-
-    /**
-     * Read the value of the ConditionSubClassName Node from the server and update the local value if
-     * the operation succeeds.
-     *
-     * @return the {@link LocalizedText[]} value read from the server.
-     * @throws UaException if a service- or operation-level error occurs.
-     */
-    LocalizedText[] readConditionSubClassName() throws UaException;
-
-    /**
-     * Write a new value for the ConditionSubClassName Node to the server and update the local value if
-     * the operation succeeds.
-     *
-     * @param value the {@link LocalizedText[]} value to write to the server.
-     * @throws UaException if a service- or operation-level error occurs.
-     */
-    void writeConditionSubClassName(LocalizedText[] value) throws UaException;
-
-    /**
-     * An asynchronous implementation of {@link #readConditionSubClassName}.
-     *
-     * @return a CompletableFuture that completes successfully with the value or completes
-     * exceptionally if an operation- or service-level error occurs.
-     */
-    CompletableFuture<? extends LocalizedText[]> readConditionSubClassNameAsync();
-
-    /**
-     * An asynchronous implementation of {@link #writeConditionSubClassName}.
-     *
-     * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if a service-level error occurs.
-     */
-    CompletableFuture<StatusCode> writeConditionSubClassNameAsync(LocalizedText[] value);
-
-    /**
-     * Get the ConditionSubClassName {@link PropertyType} Node, or {@code null} if it does not exist.
-     * <p>
-     * The Node is created when first accessed and cached for subsequent calls.
-     *
-     * @return the ConditionSubClassName {@link PropertyType} Node, or {@code null} if it does not exist.
-     * @throws UaException if an error occurs creating or getting the Node.
-     */
-    PropertyType getConditionSubClassNameNode() throws UaException;
-
-    /**
-     * Asynchronous implementation of {@link #getConditionSubClassNameNode()}.
-     *
-     * @return a CompletableFuture that completes successfully with the
-     * PropertyType Node or completes exceptionally if an error occurs creating or
-     * getting the Node.
-     */
-    CompletableFuture<? extends PropertyType> getConditionSubClassNameNodeAsync();
 
     /**
      * Get the local value of the ConditionName Node.
@@ -601,6 +447,79 @@ public interface ConditionType extends BaseEventType {
      * getting the Node.
      */
     CompletableFuture<? extends PropertyType> getRetainNodeAsync();
+
+    /**
+     * Get the local value of the SupportsFilteredRetain Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the SupportsFilteredRetain Node.
+     * @throws UaException if an error occurs creating or getting the SupportsFilteredRetain Node.
+     */
+    Boolean getSupportsFilteredRetain() throws UaException;
+
+    /**
+     * Set the local value of the SupportsFilteredRetain Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param value the local value to set for the SupportsFilteredRetain Node.
+     * @throws UaException if an error occurs creating or getting the SupportsFilteredRetain Node.
+     */
+    void setSupportsFilteredRetain(Boolean value) throws UaException;
+
+    /**
+     * Read the value of the SupportsFilteredRetain Node from the server and update the local value if
+     * the operation succeeds.
+     *
+     * @return the {@link Boolean} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    Boolean readSupportsFilteredRetain() throws UaException;
+
+    /**
+     * Write a new value for the SupportsFilteredRetain Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param value the {@link Boolean} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeSupportsFilteredRetain(Boolean value) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readSupportsFilteredRetain}.
+     *
+     * @return a CompletableFuture that completes successfully with the value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends Boolean> readSupportsFilteredRetainAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeSupportsFilteredRetain}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeSupportsFilteredRetainAsync(Boolean value);
+
+    /**
+     * Get the SupportsFilteredRetain {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the SupportsFilteredRetain {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getSupportsFilteredRetainNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getSupportsFilteredRetainNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * PropertyType Node or completes exceptionally if an error occurs creating or
+     * getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getSupportsFilteredRetainNodeAsync();
 
     /**
      * Get the local value of the ClientUserId Node.

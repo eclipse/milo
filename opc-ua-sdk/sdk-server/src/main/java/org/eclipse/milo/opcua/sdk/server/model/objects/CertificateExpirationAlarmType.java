@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.7">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.7</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24/#5.8.24.7">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24/#5.8.24.7</a>
  */
 public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType {
     QualifiedProperty<DateTime> EXPIRATION_DATE = new QualifiedProperty<>(

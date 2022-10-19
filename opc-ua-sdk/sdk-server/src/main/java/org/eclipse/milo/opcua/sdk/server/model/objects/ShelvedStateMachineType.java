@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.16/#5.8.16.1">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.16/#5.8.16.1</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.17/#5.8.17.1">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.17/#5.8.17.1</a>
  */
 public interface ShelvedStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<Double> UNSHELVE_TIME = new QualifiedProperty<>(

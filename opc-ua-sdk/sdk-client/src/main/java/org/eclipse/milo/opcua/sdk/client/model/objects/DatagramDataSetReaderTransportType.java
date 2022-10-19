@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReceiveQosDataType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.3.1/#9.3.1.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.3.1/#9.3.1.4</a>
  */
-public interface DatagramDataSetReaderTransportType extends WriterGroupTransportType {
+public interface DatagramDataSetReaderTransportType extends DataSetReaderTransportType {
     QualifiedProperty<String> QOS_CATEGORY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "QosCategory",
