@@ -8,13 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.transport.client.security;
+package org.eclipse.milo.opcua.stack.core.security;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

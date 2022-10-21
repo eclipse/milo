@@ -210,6 +210,8 @@ public class OpcUaServer extends AbstractServiceHandler {
 
         VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
 
+        serverTable.add(config.getApplicationUri());
+
         opcUaNamespace = new OpcUaNamespace(this);
         opcUaNamespace.startup();
 

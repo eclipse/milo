@@ -247,16 +247,20 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
             logger.error("Error serializing response: {}", e.getStatusCode(), e);
 
             sendServiceFault(response, outBuffer, e);
+        } catch (Throwable t) {
+            logger.error("Uncaught error sending service response", t);
+
+            sendServiceFault(response, outBuffer, t);
         } finally {
             messageBuffer.release();
             chunkComposite.release();
         }
     }
 
-    private void sendServiceFault(UascServiceResponse response, ByteBuf outBuffer, Exception fault) {
+    private void sendServiceFault(UascServiceResponse response, ByteBuf outBuffer, Throwable fault) {
         StatusCode statusCode = UaException.extract(fault)
             .map(UaException::getStatusCode)
-            .orElse(StatusCode.BAD);
+            .orElse(new StatusCode(StatusCodes.Bad_InternalError));
 
         var serviceFault = new ServiceFault(
             new ResponseHeader(
