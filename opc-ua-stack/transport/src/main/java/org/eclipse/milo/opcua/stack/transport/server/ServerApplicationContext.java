@@ -22,18 +22,57 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface ServerApplicationContext {
 
+    /**
+     * Get the {@link EndpointDescription}s the server is providing.
+     *
+     * @return the {@link EndpointDescription}s the server is providing.
+     */
     List<EndpointDescription> getEndpointDescriptions();
 
-    EncodingContext getEncodingContext();
-
+    /**
+     * Get the server's {@link CertificateManager}.
+     *
+     * @return the server's {@link CertificateManager}.
+     */
     CertificateManager getCertificateManager();
 
+    /**
+     * Get the server's {@link CertificateValidator}.
+     *
+     * @return the server's {@link CertificateValidator}.
+     */
     CertificateValidator getCertificateValidator();
 
+    /**
+     * Get the server's static {@link EncodingContext}.
+     *
+     * @return the server's static {@link EncodingContext}.
+     */
+    EncodingContext getEncodingContext();
+
+    /**
+     * Get the next unique secure channel id to assign to a secure channel.
+     *
+     * @return the next unique secure channel id to assign to a secure channel.
+     */
     Long getNextSecureChannelId();
 
+    /**
+     * Get the next unique secure channel token id to assign when a secure channel is renewed.
+     *
+     * @return the next unique secure channel token id to assign when a secure channel is renewed.
+     */
     Long getNextSecureChannelTokenId();
 
+    /**
+     * Handle an inbound service request, returning a {@link CompletableFuture} that completes
+     * with the service response.
+     *
+     * @param context        the {@link ServiceRequestContext}.
+     * @param requestMessage the {@link UaRequestMessageType} to handle.
+     * @return a {@link CompletableFuture} that completes successfully with the service result, or
+     * completes exceptionally if there was a service fault.
+     */
     CompletableFuture<UaResponseMessageType> handleServiceRequest(
         ServiceRequestContext context,
         UaRequestMessageType requestMessage
