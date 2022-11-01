@@ -21,18 +21,59 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface ClientApplicationContext {
 
+    /**
+     * Get the {@link EndpointDescription} the client is connecting to.
+     *
+     * @return the {@link EndpointDescription} the client is connecting to.
+     */
     EndpointDescription getEndpoint();
 
+    /**
+     * Get the client {@link KeyPair}, if configured.
+     * <p>
+     * A KeyPair is required for secured connections.
+     *
+     * @return the client {@link KeyPair}, if configured.
+     */
     Optional<KeyPair> getKeyPair();
 
+    /**
+     * Get the client application instance certificate, if configured.
+     * <p>
+     * An application instance certificate is required for secured connections.
+     *
+     * @return the client application instance certificate, if configured.
+     */
     Optional<X509Certificate> getCertificate();
 
+    /**
+     * Get the client application instance certificate chain, if configured.
+     * <p>
+     * An application instance certificate chain is required for secured connections.
+     *
+     * @return the client application instance certificate chain, if configured.
+     */
     Optional<X509Certificate[]> getCertificateChain();
 
+    /**
+     * Get the client's {@link CertificateValidator}.
+     *
+     * @return the client's {@link CertificateValidator}.
+     */
     CertificateValidator getCertificateValidator();
 
+    /**
+     * Get the client's static {@link EncodingContext}.
+     *
+     * @return the client's static {@link EncodingContext}.
+     */
     EncodingContext getEncodingContext();
 
+    /**
+     * Get the client request timeout to use when opening or renewing a secure channel.
+     *
+     * @return the client request timeout to use when opening or renewing a secure channel.
+     */
     UInteger getRequestTimeout();
 
 }
