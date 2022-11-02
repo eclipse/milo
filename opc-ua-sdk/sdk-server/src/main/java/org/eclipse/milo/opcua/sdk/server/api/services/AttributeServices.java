@@ -17,7 +17,9 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
@@ -35,10 +37,7 @@ public interface AttributeServices {
      * @param timestamps   requested timestamp values.
      * @param readValueIds the values to read.
      */
-    void read(ReadContext context,
-              Double maxAge,
-              TimestampsToReturn timestamps,
-              List<ReadValueId> readValueIds);
+    void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds);
 
     /**
      * Write one or more values to nodes belonging to this {@link AttributeServices}.
@@ -59,10 +58,13 @@ public interface AttributeServices {
         public ReadContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<ReadValueId> diagnosticsContext
+            DiagnosticsContext<ReadValueId> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
@@ -76,10 +78,13 @@ public interface AttributeServices {
         public WriteContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<WriteValue> diagnosticsContext
+            DiagnosticsContext<WriteValue> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }

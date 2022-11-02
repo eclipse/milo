@@ -277,7 +277,7 @@ class OpcTcpTransportTest extends SecurityFixture {
     private static void createSession(OpcTcpClientTransport transport) throws Exception {
         var header = new RequestHeader(
             NodeId.NULL_VALUE,
-            DateTime.nowMillis(),
+            DateTime.now(),
             uint(0),
             uint(0),
             null,

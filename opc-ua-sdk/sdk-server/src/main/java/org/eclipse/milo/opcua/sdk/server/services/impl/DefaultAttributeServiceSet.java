@@ -90,7 +90,14 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
 
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
 
-        var readContext = new ReadContext(server, session, diagnosticsContext);
+        var readContext = new ReadContext(
+            server,
+            session,
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
+        );
 
         session.getSessionDiagnostics().getReadCount().record(readContext.getFuture());
         session.getSessionDiagnostics().getTotalRequestCount().record(readContext.getFuture());
@@ -146,7 +153,10 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         var historyReadContext = new HistoryReadContext(
             server,
             session,
-            diagnosticsContext
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         session.getSessionDiagnostics().getHistoryReadCount().record(historyReadContext.getFuture());
@@ -198,7 +208,10 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         var writeContext = new WriteContext(
             server,
             session,
-            diagnosticsContext
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         session.getSessionDiagnostics().getWriteCount().record(writeContext.getFuture());
@@ -248,7 +261,10 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         var historyUpdateContext = new HistoryUpdateContext(
             server,
             session,
-            diagnosticsContext
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         server.getAddressSpaceManager().historyUpdate(historyUpdateContext, historyUpdateDetailsList);

@@ -144,7 +144,10 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
         var addNodesContext = new AddNodesContext(
             server,
             session,
-            new DiagnosticsContext<>()
+            new DiagnosticsContext<>(),
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         server.getAddressSpaceManager().addNodes(addNodesContext, nodesToAdd);
@@ -174,7 +177,10 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
         var deleteNodesContext = new DeleteNodesContext(
             server,
             session,
-            new DiagnosticsContext<>()
+            new DiagnosticsContext<>(),
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         server.getAddressSpaceManager().deleteNodes(deleteNodesContext, nodesToDelete);
@@ -204,7 +210,10 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
         var addReferencesContext = new AddReferencesContext(
             server,
             session,
-            new DiagnosticsContext<>()
+            new DiagnosticsContext<>(),
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         server.getAddressSpaceManager().addReferences(addReferencesContext, referencesToAdd);
@@ -238,7 +247,10 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
         var deleteReferencesContext = new DeleteReferencesContext(
             server,
             session,
-            new DiagnosticsContext<>()
+            new DiagnosticsContext<>(),
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         server.getAddressSpaceManager().deleteReferences(deleteReferencesContext, referencesToDelete);

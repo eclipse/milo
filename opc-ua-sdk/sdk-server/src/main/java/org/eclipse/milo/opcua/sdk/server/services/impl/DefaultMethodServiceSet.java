@@ -65,7 +65,10 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         var callContext = new CallContext(
             server,
             session,
-            diagnosticsContext
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         session.getSessionDiagnostics().getCallCount().record(callContext.getFuture());
