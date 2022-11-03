@@ -151,7 +151,7 @@ class OpcTcpTransportTest extends SecurityFixture {
     @Test
     void openUnsecuredChannelAgainstSecuredEndpoint() throws Exception {
         // Opening a SecureChannel with no security should be allowed even if all the configured
-        // endpoints require security. This is to allow the receiving ServerApplication a chance
+        // endpoints require security. This is to give the receiving server application a chance
         // to allow unsecured Discovery services to be implemented even when security is otherwise
         // required.
 
@@ -218,7 +218,7 @@ class OpcTcpTransportTest extends SecurityFixture {
     void securityPolicyRejectedOnUnsecuredChannel() throws Exception {
         // We opened an unsecured channel even though only secured endpoints are available.
         // Only Discovery services should be allowed. This is simulated by the test server
-        // transport. In reality, it's the ServerApplication responsible for this behavior.
+        // transport. In reality, it's the server application responsible for this behavior.
         OpcServerTransport serverTransport = bindServerTransport(
             SecurityPolicy.Basic256Sha256,
             MessageSecurityMode.SignAndEncrypt
