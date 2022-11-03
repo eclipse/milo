@@ -34,19 +34,19 @@ public interface UascServerConfig {
     UInteger getHelloDeadline();
 
     /**
-     * Get the maximum allowed secure channel lifetime, in milliseconds. Requested lifetimes
-     * larger than this value will be reduced to this value.
-     *
-     * @return the maximum allowed secure channel lifetime, in milliseconds.
-     */
-    UInteger getMaximumSecureChannelLifetime();
-
-    /**
      * Get the minimum allowed secure channel lifetime, in milliseconds. Requested lifetimes
-     * smaller than this value will be increased to this value.
+     * smaller than this value will be revised to this value.
      *
      * @return the minimum allowed secure channel lifetime, in milliseconds.
      */
     UInteger getMinimumSecureChannelLifetime();
+
+    /**
+     * Get the maximum allowed secure channel lifetime, in milliseconds. Requested lifetimes
+     * larger than this value will be revised to this value.
+     *
+     * @return the maximum allowed secure channel lifetime, in milliseconds.
+     */
+    UInteger getMaximumSecureChannelLifetime();
 
 }

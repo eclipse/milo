@@ -15,10 +15,26 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface UascClientConfig {
 
+    /**
+     * Get the timeout, in milliseconds, that an "Acknowledge" message must arrive by in response
+     * to the client "Hello" message.
+     *
+     * @return the timeout, in milliseconds, that an "Acknowledge" message must arrive by.
+     */
     UInteger getAcknowledgeTimeout();
 
+    /**
+     * Get the requested secure channel lifetime. The server may revise this value.
+     *
+     * @return the requested secure channel lifetime.
+     */
     UInteger getChannelLifetime();
 
+    /**
+     * Get the Netty {@link HashedWheelTimer} to use for scheduling transport layer timeouts.
+     *
+     * @return the Netty {@link HashedWheelTimer} to use for scheduling transport layer timeouts.
+     */
     HashedWheelTimer getWheelTimer();
 
 }

@@ -10,18 +10,16 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.tcp;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransportConfig;
 import org.eclipse.milo.opcua.stack.transport.server.uasc.UascServerConfig;
 
 public interface OpcTcpServerTransportConfig extends OpcServerTransportConfig, UascServerConfig {
 
-    UInteger getHelloDeadline();
-
-    UInteger getMinimumSecureChannelLifetime();
-
-    UInteger getMaximumSecureChannelLifetime();
-
+    /**
+     * Create a new {@link OpcTcpServerTransportConfigBuilder}.
+     *
+     * @return a new {@link OpcTcpServerTransportConfigBuilder}.
+     */
     static OpcTcpServerTransportConfigBuilder newBuilder() {
         return new OpcTcpServerTransportConfigBuilder();
     }

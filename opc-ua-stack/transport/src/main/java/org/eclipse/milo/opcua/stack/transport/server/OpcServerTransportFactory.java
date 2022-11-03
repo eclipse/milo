@@ -14,6 +14,12 @@ import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 
 public interface OpcServerTransportFactory {
 
+    /**
+     * Create an {@link OpcServerTransport} instance for a {@link TransportProfile}.
+     *
+     * @param transportProfile the {@link TransportProfile}.
+     * @return a new {@link OpcServerTransport} for the provided {@link TransportProfile}.
+     */
     OpcServerTransport create(TransportProfile transportProfile);
 
 }

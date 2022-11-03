@@ -15,6 +15,9 @@ import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 
+/**
+ * Holds a received {@link UaRequestMessageType} with some additional transport layer details.
+ */
 public class ServiceRequest implements ServiceRequestContext {
 
     private final long receivedAtNanos = System.nanoTime();
@@ -40,10 +43,6 @@ public class ServiceRequest implements ServiceRequestContext {
         this.requestMessage = requestMessage;
     }
 
-    public UaRequestMessageType getRequestMessage() {
-        return requestMessage;
-    }
-
     @Override
     public String getEndpointUrl() {
         return endpointUrl;
@@ -67,6 +66,15 @@ public class ServiceRequest implements ServiceRequestContext {
     @Override
     public Long receivedAtNanos() {
         return receivedAtNanos;
+    }
+
+    /**
+     * Get the incoming {@link UaRequestMessageType}.
+     *
+     * @return the incoming {@link UaRequestMessageType}.
+     */
+    public UaRequestMessageType getRequestMessage() {
+        return requestMessage;
     }
 
 }

@@ -16,8 +16,18 @@ import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 
 public interface OpcTcpClientTransportConfig extends OpcClientTransportConfig, UascClientConfig {
 
+    /**
+     * Get the TCP socket connect timeout, in milliseconds.
+     *
+     * @return the TCP socket connect timeout, in milliseconds.
+     */
     UInteger getConnectTimeout();
 
+    /**
+     * Create a new {@link OpcTcpClientTransportConfigBuilder}.
+     *
+     * @return a new {@link OpcTcpClientTransportConfigBuilder}.
+     */
     static OpcTcpClientTransportConfigBuilder newBuilder() {
         return new OpcTcpClientTransportConfigBuilder();
     }
