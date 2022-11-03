@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
@@ -48,19 +49,21 @@ public class OpcTcpServerTransport implements OpcServerTransport {
                 @Override
                 protected void initChannel(SocketChannel channel) {
                     channel.pipeline().addLast(RateLimitingHandler.getInstance());
-                    channel.pipeline().addLast(new UascServerHelloHandler(config, applicationContext, TransportProfile.TCP_UASC_UABINARY));
+                    channel.pipeline().addLast(
+                        new UascServerHelloHandler(config, applicationContext, TransportProfile.TCP_UASC_UABINARY)
+                    );
                 }
             });
 
-        Channel channel = bootstrap.bind(bindAddress, bindPort).await().channel();
-        channelReference.set(channel);
+        ChannelFuture bindFuture = bootstrap.bind(bindAddress, bindPort).sync();
+        channelReference.set(bindFuture.channel());
     }
 
     @Override
     public void unbind() throws Exception {
         Channel channel = channelReference.getAndSet(null);
         if (channel != null) {
-            channel.close().get();
+            channel.close().sync();
         }
     }
 

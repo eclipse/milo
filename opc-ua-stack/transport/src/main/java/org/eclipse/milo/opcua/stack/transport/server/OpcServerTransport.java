@@ -12,8 +12,21 @@ package org.eclipse.milo.opcua.stack.transport.server;
 
 public interface OpcServerTransport {
 
+    /**
+     * Bind a {@link ServerApplicationContext} to the given bind address and port.
+     *
+     * @param applicationContext the {@link ServerApplicationContext} to bind.
+     * @param bindAddress        the local address to bind to.
+     * @param bindPort           the local port to bind to.
+     * @throws Exception if an error occurs binding to the address/port combination.
+     */
     void bind(ServerApplicationContext applicationContext, String bindAddress, int bindPort) throws Exception;
 
+    /**
+     * Unbind this transport (close the server channel).
+     *
+     * @throws Exception if an error occurs unbinding this transport.
+     */
     void unbind() throws Exception;
 
 }

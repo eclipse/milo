@@ -16,12 +16,37 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface UascServerConfig {
 
+    /**
+     * Get the {@link ExecutorService} to use when dispatching inbound {@link UascServiceRequest}s
+     * that arrive while on the Netty event loop thread.
+     *
+     * @return the {@link ExecutorService} to use when dispatching inbound
+     * {@link UascServiceRequest}s.
+     */
     ExecutorService getExecutor();
 
+    /**
+     * Get the deadline, in milliseconds, that a "Hello" message must arrive by after the
+     * underlying channel is activated.
+     *
+     * @return the "Hello" message deadline, in milliseconds.
+     */
     UInteger getHelloDeadline();
 
+    /**
+     * Get the maximum allowed secure channel lifetime, in milliseconds. Requested lifetimes
+     * larger than this value will be reduced to this value.
+     *
+     * @return the maximum allowed secure channel lifetime, in milliseconds.
+     */
     UInteger getMaximumSecureChannelLifetime();
 
+    /**
+     * Get the minimum allowed secure channel lifetime, in milliseconds. Requested lifetimes
+     * smaller than this value will be increased to this value.
+     *
+     * @return the minimum allowed secure channel lifetime, in milliseconds.
+     */
     UInteger getMinimumSecureChannelLifetime();
 
 }
