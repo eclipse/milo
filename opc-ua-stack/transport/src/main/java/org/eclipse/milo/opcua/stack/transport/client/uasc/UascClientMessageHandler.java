@@ -65,6 +65,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EccKeyExchange;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.slf4j.Logger;
@@ -486,7 +487,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
 
             secureChannel.setRemoteNonce(serverNonce);
 
-            newKeys = ChannelSecurity.generateKeyPair(
+            newKeys = ChannelSecurity.deriveSecurityKeys(
                 secureChannel,
                 secureChannel.getLocalNonce(),
                 secureChannel.getRemoteNonce()
@@ -578,11 +579,26 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UascRequest> {
     }
 
     private void sendOpenSecureChannelRequest(ChannelHandlerContext ctx, SecurityTokenRequestType requestType) {
-        ByteString clientNonce = secureChannel.isSymmetricSigningEnabled() ?
-            NonceUtil.generateNonce(secureChannel.getSecurityPolicy()) :
-            ByteString.NULL_VALUE;
+        switch (secureChannel.getSecurityPolicy()) {
+            case ECC_curve25519:
+            case ECC_nistP256: {
+                try {
+                    // TODO store this exchange for after we get the OpenSecureChannelResponse
+                    EccKeyExchange.ClientKeyExchange keyExchange =
+                        new EccKeyExchange.ClientKeyExchange();
 
-        secureChannel.setLocalNonce(clientNonce);
+                    secureChannel.setLocalNonce(ByteString.of(keyExchange.getClientNonce()));
+                } catch (UaException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            default: {
+                ByteString clientNonce =
+                    NonceUtil.generateNonce(secureChannel.getSecurityPolicy());
+
+                secureChannel.setLocalNonce(clientNonce);
+            }
+        }
 
         var header = new RequestHeader(
             null,
