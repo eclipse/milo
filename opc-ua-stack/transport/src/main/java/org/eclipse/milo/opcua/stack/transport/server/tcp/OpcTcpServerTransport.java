@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.transport.server.tcp;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.net.InetSocketAddress;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -22,13 +24,16 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.server.uasc.UascServerHelloHandler;
 
 public class OpcTcpServerTransport implements OpcServerTransport {
 
-    private final AtomicReference<Channel> channelReference = new AtomicReference<>();
+    private final Set<InetSocketAddress> boundAddresses = new HashSet<>();
+    private final Set<Channel> channelReferences = new HashSet<>();
+    private final Lazy<ServerBootstrap> serverBootstrap = new Lazy<>();
 
     private final OpcTcpServerTransportConfig config;
 
@@ -37,34 +42,48 @@ public class OpcTcpServerTransport implements OpcServerTransport {
     }
 
     @Override
-    public void bind(ServerApplicationContext applicationContext, String bindAddress, int bindPort) throws Exception {
-        var bootstrap = new ServerBootstrap();
+    public synchronized void bind(ServerApplicationContext applicationContext, InetSocketAddress bindAddress) throws Exception {
+        ServerBootstrap bootstrap = serverBootstrap.getOrCompute(() ->
+            new ServerBootstrap()
+                .channel(NioServerSocketChannel.class)
+                .group(config.getEventLoop())
+                .handler(new LoggingHandler(OpcTcpServerTransport.class))
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel channel) {
+                        channel.pipeline().addLast(RateLimitingHandler.getInstance());
+                        channel.pipeline().addLast(
+                            new UascServerHelloHandler(config, applicationContext, TransportProfile.TCP_UASC_UABINARY)
+                        );
+                    }
+                })
+        );
 
-        bootstrap.channel(NioServerSocketChannel.class)
-            .group(config.getEventLoop())
-            .handler(new LoggingHandler(OpcTcpServerTransport.class))
-            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .childOption(ChannelOption.TCP_NODELAY, true)
-            .childHandler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel channel) {
-                    channel.pipeline().addLast(RateLimitingHandler.getInstance());
-                    channel.pipeline().addLast(
-                        new UascServerHelloHandler(config, applicationContext, TransportProfile.TCP_UASC_UABINARY)
-                    );
-                }
-            });
+        assert bootstrap != null;
 
-        ChannelFuture bindFuture = bootstrap.bind(bindAddress, bindPort).sync();
-        channelReference.set(bindFuture.channel());
+        if (!boundAddresses.contains(bindAddress)) {
+            ChannelFuture bindFuture = bootstrap.bind(bindAddress).sync();
+
+            boundAddresses.add(bindAddress);
+            channelReferences.add(bindFuture.channel());
+        }
     }
 
     @Override
-    public void unbind() throws Exception {
-        Channel channel = channelReference.getAndSet(null);
-        if (channel != null) {
-            channel.close().sync();
-        }
+    public synchronized void unbind() {
+        boundAddresses.clear();
+
+        channelReferences.forEach(channel -> {
+            try {
+                channel.close().sync();
+            } catch (InterruptedException ignored) {
+            }
+        });
+        channelReferences.clear();
+
+        serverBootstrap.reset();
     }
 
 }

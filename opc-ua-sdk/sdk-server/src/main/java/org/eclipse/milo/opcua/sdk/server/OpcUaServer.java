@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -22,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
@@ -138,7 +138,7 @@ public class OpcUaServer extends AbstractServiceHandler {
     private final AtomicLong secureChannelIds = new AtomicLong();
     private final AtomicLong secureChannelTokenIds = new AtomicLong();
 
-    private final List<OpcServerTransport> transports = new CopyOnWriteArrayList<>();
+    private final Map<TransportProfile, OpcServerTransport> transports = new ConcurrentHashMap<>();
 
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
@@ -240,13 +240,18 @@ public class OpcUaServer extends AbstractServiceHandler {
                 );
 
                 TransportProfile transportProfile = endpoint.getTransportProfile();
-                OpcServerTransport transport = transportFactory.create(transportProfile);
+
+                OpcServerTransport transport = transports.computeIfAbsent(
+                    transportProfile,
+                    transportFactory::create
+                );
 
                 if (transport != null) {
                     try {
-                        transport.bind(applicationContext, endpoint.getBindAddress(), endpoint.getBindPort());
+                        var bindAddress = new InetSocketAddress(endpoint.getBindAddress(), endpoint.getBindPort());
+                        transport.bind(applicationContext, bindAddress);
 
-                        transports.add(transport);
+                        transports.put(transportProfile, transport);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -267,9 +272,9 @@ public class OpcUaServer extends AbstractServiceHandler {
         subscriptions.values()
             .forEach(Subscription::deleteSubscription);
 
-        transports.forEach(t -> {
+        transports.values().forEach(transport -> {
             try {
-                t.unbind();
+                transport.unbind();
             } catch (Exception e) {
                 logger.warn("Error unbinding transport", e);
             }

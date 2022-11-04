@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.transport.server;
 
+import java.net.InetSocketAddress;
+
 public interface OpcServerTransport {
 
     /**
@@ -17,10 +19,9 @@ public interface OpcServerTransport {
      *
      * @param applicationContext the {@link ServerApplicationContext} to bind.
      * @param bindAddress        the local address to bind to.
-     * @param bindPort           the local port to bind to.
      * @throws Exception if an error occurs binding to the address/port combination.
      */
-    void bind(ServerApplicationContext applicationContext, String bindAddress, int bindPort) throws Exception;
+    void bind(ServerApplicationContext applicationContext, InetSocketAddress bindAddress) throws Exception;
 
     /**
      * Unbind this transport (close the server channel).

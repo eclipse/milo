@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
+import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -378,7 +379,7 @@ class OpcTcpTransportTest extends SecurityFixture {
         OpcTcpServerTransportConfig config = OpcTcpServerTransportConfig.newBuilder().build();
 
         var transport = new OpcTcpServerTransport(config);
-        transport.bind(applicationContext, "localhost", 12685);
+        transport.bind(applicationContext, new InetSocketAddress("localhost", 12685));
         return transport;
     }
 
