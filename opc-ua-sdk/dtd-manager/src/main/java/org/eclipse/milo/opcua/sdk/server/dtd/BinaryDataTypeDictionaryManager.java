@@ -75,7 +75,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BinaryDataTypeDictionaryManager implements Lifecycle {
@@ -562,7 +561,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         QualifiedName parentTypeName = dataTypeNode.getReferences()
             .stream()
             .filter(Reference.SUBTYPE_OF)
-            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> addressSpaceManager.getManagedNode(r.getTargetNodeId()).stream())
             .findFirst()
             .map(UaNode::getBrowseName)
             .orElse(QualifiedName.NULL_VALUE);
@@ -574,7 +573,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
             .stream()
             .filter(Reference.HAS_ENCODING_PREDICATE)
-            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> addressSpaceManager.getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getBrowseName().equals(new QualifiedName(0, "Default Binary")))
             .findFirst()
             .orElse(null);
@@ -584,7 +583,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         UaNode dataTypeDescriptionNode = dataTypeEncodingNode.getReferences()
             .stream()
             .filter(Reference.HAS_DESCRIPTION_PREDICATE)
-            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> addressSpaceManager.getManagedNode(r.getTargetNodeId()).stream())
             .findFirst()
             .orElse(null);
 
@@ -594,7 +593,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
 
         UaNode dictionaryNode = dataTypeDescriptionNode.getReferences().stream()
             .filter(Reference.COMPONENT_OF_PREDICATE)
-            .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> addressSpaceManager.getManagedNode(r.getTargetNodeId()).stream())
             .findFirst()
             .orElse(null);
 

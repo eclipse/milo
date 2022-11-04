@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -73,9 +73,7 @@ public class BrowseAsyncExample implements ClientExample {
 
     private static String indent(int depth) {
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < depth; i++) {
-            s.append("  ");
-        }
+        s.append("  ".repeat(Math.max(0, depth)));
         return s.toString();
     }
 

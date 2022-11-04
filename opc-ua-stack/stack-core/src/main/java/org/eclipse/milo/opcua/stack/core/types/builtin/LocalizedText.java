@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 import org.jetbrains.annotations.Nullable;
@@ -69,8 +70,7 @@ public final class LocalizedText {
 
         LocalizedText that = (LocalizedText) o;
 
-        return !(locale != null ? !locale.equals(that.locale) : that.locale != null) &&
-            !(text != null ? !text.equals(that.text) : that.text != null);
+        return Objects.equals(locale, that.locale) && Objects.equals(text, that.text);
     }
 
     @Override

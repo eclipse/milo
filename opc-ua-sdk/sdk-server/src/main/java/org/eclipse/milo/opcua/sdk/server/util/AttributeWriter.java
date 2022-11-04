@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -42,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
@@ -434,7 +433,7 @@ public class AttributeWriter {
             return dataTypeNode.getReferences()
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(server.getNamespaceTable()).stream())
                 .findFirst()
                 .orElse(null);
         } else {

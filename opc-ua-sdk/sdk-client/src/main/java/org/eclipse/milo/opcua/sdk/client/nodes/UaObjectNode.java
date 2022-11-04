@@ -48,7 +48,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -532,7 +531,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
                                     .thenApply(n -> (UaObjectTypeNode) n)
                         );
 
-                    return opt2stream(opt);
+                    return opt.stream();
                 })
                 .findFirst();
 

@@ -65,7 +65,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -1283,7 +1282,7 @@ public abstract class UaNode implements Node {
                         .toNodeId(client.getNamespaceTable())
                         .map(id -> client.getAddressSpace().getNodeAsync(id));
 
-                    return opt2stream(opt);
+                    return opt.stream();
                 })
                 .findFirst();
 
@@ -1326,7 +1325,7 @@ public abstract class UaNode implements Node {
                                 .thenApply(n -> (PropertyTypeNode) n)
                         );
 
-                    return opt2stream(opt);
+                    return opt.stream();
                 })
                 .findFirst();
 

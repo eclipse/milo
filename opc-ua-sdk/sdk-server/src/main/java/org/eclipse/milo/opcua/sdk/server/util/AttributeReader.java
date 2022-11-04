@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
 import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
@@ -146,7 +145,7 @@ public class AttributeReader {
         if (dataTypeNode != null) {
             Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
                 .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(NodeIds.HasSubtype))
-                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(server.getNamespaceTable()).stream())
                 .findFirst();
 
             return superTypeId
@@ -212,7 +211,7 @@ public class AttributeReader {
         if (dataTypeNode != null) {
             return dataTypeNode.getReferences().stream()
                 .filter(r -> r.isForward() && NodeIds.HasEncoding.equals(r.getReferenceTypeId()))
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+                .flatMap(r -> addressSpaceManager.getManagedNode(r.getTargetNodeId()).stream())
                 .filter(n -> encodingName.equals(n.getBrowseName()))
                 .map(Node::getNodeId)
                 .findFirst()

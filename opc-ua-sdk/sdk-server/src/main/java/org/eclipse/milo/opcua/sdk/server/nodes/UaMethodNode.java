@@ -41,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import static org.eclipse.milo.opcua.sdk.core.Reference.ALWAYS_GENERATES_EVENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaMethodNode extends UaNode implements MethodNode {
 
@@ -172,7 +171,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
@@ -191,7 +190,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     public List<Node> getAlwaysGeneratesEventNodes() {
         return getReferences().stream()
             .filter(ALWAYS_GENERATES_EVENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 

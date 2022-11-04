@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -34,7 +34,7 @@ public class Operators {
     public static final Cast CAST = new Cast();
     public static final OfType OF_TYPE = new OfType();
 
-    public static final Operator<Object> UNSUPPORTED = new Operator<Object>() {
+    public static final Operator<Object> UNSUPPORTED = new Operator<>() {
         @Nullable
         @Override
         public Object apply(

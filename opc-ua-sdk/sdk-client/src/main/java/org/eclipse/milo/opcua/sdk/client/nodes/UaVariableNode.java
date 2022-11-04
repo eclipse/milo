@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
@@ -867,7 +866,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
                                     .thenApply(n -> (UaVariableTypeNode) n)
                         );
 
-                    return opt2stream(opt);
+                    return opt.stream();
                 })
                 .findFirst();
 

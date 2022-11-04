@@ -71,7 +71,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -107,7 +106,7 @@ public class BinaryDataTypeDictionaryReader {
             references ->
                 references.stream()
                     .filter(r -> r.getTypeDefinition().equalTo(NodeIds.DataTypeDictionaryType))
-                    .flatMap(r -> opt2stream(r.getNodeId().toNodeId(client.getNamespaceTable())))
+                    .flatMap(r -> r.getNodeId().toNodeId(client.getNamespaceTable()).stream())
         );
 
         return dictionaryNodeIds
@@ -426,7 +425,7 @@ public class BinaryDataTypeDictionaryReader {
         return browseResult.thenApply(references ->
             references.stream()
                 .filter(r -> NodeIds.DataTypeDescriptionType.equalTo(r.getTypeDefinition()))
-                .flatMap(r -> opt2stream(r.getNodeId().toNodeId(client.getNamespaceTable())))
+                .flatMap(r -> r.getNodeId().toNodeId(client.getNamespaceTable()).stream())
                 .collect(Collectors.toList())
         );
     }

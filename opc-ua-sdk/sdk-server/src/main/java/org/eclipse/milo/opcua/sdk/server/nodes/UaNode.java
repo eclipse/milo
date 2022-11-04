@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -504,7 +503,7 @@ public abstract class UaNode implements UaServerNode {
         Node node = getReferences()
             .stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -585,7 +584,7 @@ public abstract class UaNode implements UaServerNode {
         return getReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(nodePredicate)
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst();
@@ -609,7 +608,7 @@ public abstract class UaNode implements UaServerNode {
         return getReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(nodePredicate)
             .filter(n -> {
                 String nodeBrowseName = n.getBrowseName().getName();
@@ -640,7 +639,7 @@ public abstract class UaNode implements UaServerNode {
         ObjectNode node = (ObjectNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getNodeClass() == NodeClass.Object && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -665,7 +664,7 @@ public abstract class UaNode implements UaServerNode {
         VariableNode node = (VariableNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getNodeClass() == NodeClass.Variable && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 

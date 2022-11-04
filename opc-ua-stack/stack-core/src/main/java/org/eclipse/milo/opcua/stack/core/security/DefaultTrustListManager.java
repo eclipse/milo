@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -37,7 +38,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -207,9 +207,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
         return List.copyOf(
             Arrays.stream(files)
-                .flatMap(cert ->
-                    decodeCertificateFile(cert)
-                        .map(Stream::of).orElse(Stream.empty()))
+                .flatMap(cert -> decodeCertificateFile(cert).stream())
                 .collect(Collectors.toList())
         );
     }
@@ -405,9 +403,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         issuerCertificates.clear();
 
         Arrays.stream(files)
-            .flatMap(cert ->
-                decodeCertificateFile(cert)
-                    .map(Stream::of).orElse(Stream.empty()))
+            .flatMap(cert -> decodeCertificateFile(cert).stream())
             .forEach(issuerCertificates::add);
     }
 
@@ -420,9 +416,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         issuerCrls.clear();
 
         Arrays.stream(files)
-            .flatMap(crl ->
-                decodeCrlFile(crl)
-                    .map(Stream::of).orElse(Stream.empty()))
+            .flatMap(crl -> decodeCrlFile(crl).stream())
             .flatMap(List::stream)
             .forEach(issuerCrls::add);
     }
@@ -436,9 +430,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         trustedCertificates.clear();
 
         Arrays.stream(files)
-            .flatMap(cert ->
-                decodeCertificateFile(cert)
-                    .map(Stream::of).orElse(Stream.empty()))
+            .flatMap(cert -> decodeCertificateFile(cert).stream())
             .forEach(trustedCertificates::add);
     }
 
@@ -451,9 +443,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         trustedCrls.clear();
 
         Arrays.stream(files)
-            .flatMap(crl ->
-                decodeCrlFile(crl)
-                    .map(Stream::of).orElse(Stream.empty()))
+            .flatMap(crl -> decodeCrlFile(crl).stream())
             .flatMap(List::stream)
             .forEach(trustedCrls::add);
     }
@@ -534,8 +524,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return String.format("%s [%s].der", thumbprint, sanitizeForUseInFilename(name));
     }
 
-    static String sanitizeForUseInFilename(String name) throws Exception {
-        String encoded = URLEncoder.encode(name, "UTF-8");
+    static String sanitizeForUseInFilename(String name) {
+        String encoded = URLEncoder.encode(name, StandardCharsets.UTF_8);
 
         // '*' is excluded from escaping by URLEncoder
         return encoded.replaceAll("\\*", "_");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,7 @@ public final class ByteString implements Serializable {
 
     private final byte[] bytes;
 
-    public ByteString(@Nullable byte[] bytes) {
+    public ByteString(byte @Nullable [] bytes) {
         this.bytes = bytes;
     }
 
@@ -47,23 +47,19 @@ public final class ByteString implements Serializable {
         return bytes != null;
     }
 
-    @Nullable
-    public byte[] bytes() {
+    public byte @Nullable [] bytes() {
         return bytes;
     }
 
-    @NotNull
-    public byte[] bytesOrElse(@NotNull byte[] other) {
+    public byte @NotNull [] bytesOrElse(byte @NotNull [] other) {
         return bytes != null ? bytes : other;
     }
 
-    @NotNull
-    public byte[] bytesOrEmpty() {
+    public byte @NotNull [] bytesOrEmpty() {
         return bytesOrElse(new byte[0]);
     }
 
-    @Nullable
-    public UByte[] uBytes() {
+    public @Nullable UByte[] uBytes() {
         if (bytes == null) return null;
 
         UByte[] bs = new UByte[bytes.length];
@@ -73,15 +69,14 @@ public final class ByteString implements Serializable {
         return bs;
     }
 
-    @NotNull
-    public UByte[] uBytesOrElse(@NotNull UByte[] other) {
+
+    public @NotNull UByte[] uBytesOrElse(@NotNull UByte[] other) {
         UByte[] ubs = uBytes();
 
         return ubs != null ? ubs : other;
     }
 
-    @NotNull
-    public UByte[] uBytesOrEmpty() {
+    public @NotNull UByte[] uBytesOrEmpty() {
         return uBytesOrElse(new UByte[0]);
     }
 

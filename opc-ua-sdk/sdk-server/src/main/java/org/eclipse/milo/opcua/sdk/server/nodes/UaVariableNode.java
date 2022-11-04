@@ -56,7 +56,6 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_TYPE_DEFINITION_PREDICATE;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaVariableNode extends UaNode implements VariableNode {
 
@@ -416,14 +415,14 @@ public class UaVariableNode extends UaNode implements VariableNode {
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
     public List<Node> getComponentNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 

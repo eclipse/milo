@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -74,7 +74,7 @@ public class GroupMapCollate {
     }
 
     private static CompletableFuture<Void> allOf(Stream<CompletableFuture<Void>> futureStream) {
-        CompletableFuture[] fa = futureStream.toArray(CompletableFuture[]::new);
+        CompletableFuture<?>[] fa = futureStream.toArray(CompletableFuture[]::new);
 
         return CompletableFuture.allOf(fa);
     }

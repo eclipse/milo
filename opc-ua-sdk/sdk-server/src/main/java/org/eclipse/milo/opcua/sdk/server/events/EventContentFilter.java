@@ -65,8 +65,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
-
 public class EventContentFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventContentFilter.class);
@@ -508,7 +506,7 @@ public class EventContentFilter {
         return addressSpaceManager.getManagedReferences(node.getNodeId())
             .stream()
             .filter(Reference.SUBTYPE_OF)
-            .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(namespaceTable)))
+            .flatMap(r -> r.getTargetNodeId().toNodeId(namespaceTable).stream())
             .findFirst()
             .flatMap(addressSpaceManager::getManagedNode);
     }
