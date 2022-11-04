@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,30 +13,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.3/#6.4.3.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.3/#6.4.3.1</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=647");
+public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=647");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=649");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=649");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=648");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=648");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15263");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15263");
 
     private final Boolean isReadModified;
 
@@ -97,6 +102,21 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
         return returnBounds;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 649),
+            new NodeId(0, 641),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("IsReadModified", LocalizedText.NULL_VALUE, new NodeId(0, 1), -1, null, UInteger.valueOf(0), false),
+                new StructureField("StartTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("EndTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("NumValuesPerNode", LocalizedText.NULL_VALUE, new NodeId(0, 289), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ReturnBounds", LocalizedText.NULL_VALUE, new NodeId(0, 1), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<ReadRawModifiedDetails> {
         @Override
         public Class<ReadRawModifiedDetails> getType() {
@@ -104,23 +124,23 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
         }
 
         @Override
-        public ReadRawModifiedDetails decode(SerializationContext context, UaDecoder decoder) {
-            Boolean isReadModified = decoder.readBoolean("IsReadModified");
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime endTime = decoder.readDateTime("EndTime");
-            UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
-            Boolean returnBounds = decoder.readBoolean("ReturnBounds");
+        public ReadRawModifiedDetails decodeType(EncodingContext context, UaDecoder decoder) {
+            Boolean isReadModified = decoder.decodeBoolean("IsReadModified");
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime endTime = decoder.decodeDateTime("EndTime");
+            UInteger numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
+            Boolean returnBounds = decoder.decodeBoolean("ReturnBounds");
             return new ReadRawModifiedDetails(isReadModified, startTime, endTime, numValuesPerNode, returnBounds);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ReadRawModifiedDetails value) {
-            encoder.writeBoolean("IsReadModified", value.getIsReadModified());
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("EndTime", value.getEndTime());
-            encoder.writeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
-            encoder.writeBoolean("ReturnBounds", value.getReturnBounds());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               ReadRawModifiedDetails value) {
+            encoder.encodeBoolean("IsReadModified", value.getIsReadModified());
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("EndTime", value.getEndTime());
+            encoder.encodeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
+            encoder.encodeBoolean("ReturnBounds", value.getReturnBounds());
         }
     }
 }

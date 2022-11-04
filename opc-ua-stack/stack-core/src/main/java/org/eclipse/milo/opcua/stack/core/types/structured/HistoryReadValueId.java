@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,31 +13,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.3/#5.10.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.3/#5.10.3.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class HistoryReadValueId extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=635");
+public class HistoryReadValueId extends Structure implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=635");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=637");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=637");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=636");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=636");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15259");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15259");
 
     private final NodeId nodeId;
 
@@ -91,6 +96,20 @@ public class HistoryReadValueId extends Structure implements UaStructure {
         return continuationPoint;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 637),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("NodeId", LocalizedText.NULL_VALUE, new NodeId(0, 17), -1, null, UInteger.valueOf(0), false),
+                new StructureField("IndexRange", LocalizedText.NULL_VALUE, new NodeId(0, 291), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DataEncoding", LocalizedText.NULL_VALUE, new NodeId(0, 20), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ContinuationPoint", LocalizedText.NULL_VALUE, new NodeId(0, 521), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<HistoryReadValueId> {
         @Override
         public Class<HistoryReadValueId> getType() {
@@ -98,20 +117,20 @@ public class HistoryReadValueId extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryReadValueId decode(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            String indexRange = decoder.readString("IndexRange");
-            QualifiedName dataEncoding = decoder.readQualifiedName("DataEncoding");
-            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+        public HistoryReadValueId decodeType(EncodingContext context, UaDecoder decoder) {
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            String indexRange = decoder.decodeString("IndexRange");
+            QualifiedName dataEncoding = decoder.decodeQualifiedName("DataEncoding");
+            ByteString continuationPoint = decoder.decodeByteString("ContinuationPoint");
             return new HistoryReadValueId(nodeId, indexRange, dataEncoding, continuationPoint);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadValueId value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
-            encoder.writeQualifiedName("DataEncoding", value.getDataEncoding());
-            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryReadValueId value) {
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
+            encoder.encodeQualifiedName("DataEncoding", value.getDataEncoding());
+            encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
         }
     }
 }

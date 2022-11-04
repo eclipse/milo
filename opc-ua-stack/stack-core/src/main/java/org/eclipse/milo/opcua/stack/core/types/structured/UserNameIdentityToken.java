@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,29 +13,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.15/#12.3.15.3">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.15/#12.3.15.3</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class UserNameIdentityToken extends UserIdentityToken implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=322");
+public class UserNameIdentityToken extends UserIdentityToken implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=322");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=324");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=324");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=323");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=323");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15142");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15142");
 
     private final String userName;
 
@@ -83,6 +89,20 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         return encryptionAlgorithm;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 324),
+            new NodeId(0, 316),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("PolicyId", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("UserName", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("Password", LocalizedText.NULL_VALUE, new NodeId(0, 15), -1, null, UInteger.valueOf(0), false),
+                new StructureField("EncryptionAlgorithm", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<UserNameIdentityToken> {
         @Override
         public Class<UserNameIdentityToken> getType() {
@@ -90,21 +110,21 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         }
 
         @Override
-        public UserNameIdentityToken decode(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            String userName = decoder.readString("UserName");
-            ByteString password = decoder.readByteString("Password");
-            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
+        public UserNameIdentityToken decodeType(EncodingContext context, UaDecoder decoder) {
+            String policyId = decoder.decodeString("PolicyId");
+            String userName = decoder.decodeString("UserName");
+            ByteString password = decoder.decodeByteString("Password");
+            String encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
             return new UserNameIdentityToken(policyId, userName, password, encryptionAlgorithm);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UserNameIdentityToken value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeString("UserName", value.getUserName());
-            encoder.writeByteString("Password", value.getPassword());
-            encoder.writeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               UserNameIdentityToken value) {
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeString("UserName", value.getUserName());
+            encoder.encodeByteString("Password", value.getPassword());
+            encoder.encodeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
         }
     }
 }

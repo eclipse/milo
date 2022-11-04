@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,15 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum NodeAttributesMask implements UaEnumeration {
+public enum NodeAttributesMask implements UaEnumeratedType {
     None(0),
 
     AccessLevel(1),
@@ -100,8 +99,12 @@ public enum NodeAttributesMask implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static NodeAttributesMask from(int value) {
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
+    }
+
+    public static @Nullable NodeAttributesMask from(int value) {
         switch (value) {
             case 0:
                 return None;
@@ -178,24 +181,47 @@ public enum NodeAttributesMask implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=348");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "None"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "AccessLevel"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ArrayDimensions"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BrowseName"),
+            new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ContainsNoLoops"),
+            new EnumField(16L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "DataType"),
+            new EnumField(32L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Description"),
+            new EnumField(64L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "DisplayName"),
+            new EnumField(128L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "EventNotifier"),
+            new EnumField(256L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Executable"),
+            new EnumField(512L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Historizing"),
+            new EnumField(1024L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "InverseName"),
+            new EnumField(2048L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "IsAbstract"),
+            new EnumField(4096L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "MinimumSamplingInterval"),
+            new EnumField(8192L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "NodeClass"),
+            new EnumField(16384L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "NodeId"),
+            new EnumField(32768L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Symmetric"),
+            new EnumField(65536L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "UserAccessLevel"),
+            new EnumField(131072L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "UserExecutable"),
+            new EnumField(262144L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "UserWriteMask"),
+            new EnumField(524288L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ValueRank"),
+            new EnumField(1048576L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "WriteMask"),
+            new EnumField(2097152L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Value"),
+            new EnumField(4194304L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "DataTypeDefinition"),
+            new EnumField(8388608L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "RolePermissions"),
+            new EnumField(16777216L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "AccessRestrictions"),
+            new EnumField(33554431L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "All"),
+            new EnumField(26501220L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BaseNode"),
+            new EnumField(26501348L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Object"),
+            new EnumField(26503268L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ObjectType"),
+            new EnumField(26571383L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Variable"),
+            new EnumField(28600438L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "VariableType"),
+            new EnumField(26632548L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Method"),
+            new EnumField(26537060L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceType"),
+            new EnumField(26501356L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "View")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<NodeAttributesMask> {
-        @Override
-        public Class<NodeAttributesMask> getType() {
-            return NodeAttributesMask.class;
-        }
-
-        @Override
-        public NodeAttributesMask decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, NodeAttributesMask.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NodeAttributesMask value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=348");
     }
 }

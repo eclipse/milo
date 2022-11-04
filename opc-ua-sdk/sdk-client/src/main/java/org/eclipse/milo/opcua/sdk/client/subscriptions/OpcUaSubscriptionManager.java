@@ -18,7 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,9 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
@@ -63,7 +62,6 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -75,13 +73,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<UInteger, OpcUaSubscription> subscriptions = Maps.newConcurrentMap();
+    private final Map<UInteger, OpcUaSubscription> subscriptions = new ConcurrentHashMap<>();
 
-    private final Map<UInteger, WatchdogTimer> watchdogTimers = Maps.newConcurrentMap();
+    private final Map<UInteger, WatchdogTimer> watchdogTimers = new ConcurrentHashMap<>();
 
-    private final List<SubscriptionListener> subscriptionListeners = Lists.newCopyOnWriteArrayList();
+    private final List<SubscriptionListener> subscriptionListeners = new CopyOnWriteArrayList<>();
 
-    private final ConcurrentMap<NodeId, AtomicLong> pendingCountMap = Maps.newConcurrentMap();
+    private final ConcurrentMap<NodeId, AtomicLong> pendingCountMap = new ConcurrentHashMap<>();
 
     private final ExecutionQueue deliveryQueue;
     private final ExecutionQueue processingQueue;
@@ -91,8 +89,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     public OpcUaSubscriptionManager(OpcUaClient client) {
         this.client = client;
 
-        deliveryQueue = new ExecutionQueue(client.getConfig().getExecutor());
-        processingQueue = new ExecutionQueue(client.getConfig().getExecutor());
+        deliveryQueue = new ExecutionQueue(client.getTransport().getConfig().getExecutor());
+        processingQueue = new ExecutionQueue(client.getTransport().getConfig().getExecutor());
 
         client.addSessionActivityListener(new SessionActivityListener() {
             @Override
@@ -205,7 +203,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                     subscriptions.put(subscription.getSubscriptionId(), subscription);
 
-                    WatchdogTimer watchdogTimer = new WatchdogTimer(subscription);
+                    WatchdogTimer watchdogTimer = new WatchdogTimer(
+                        subscription,
+                        client.getConfig().getSubscriptionWatchdogMultiplier()
+                    );
                     watchdogTimers.put(subscription.getSubscriptionId(), watchdogTimer);
                     watchdogTimer.kick();
 
@@ -216,7 +217,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             } else {
                 subscriptions.put(subscription.getSubscriptionId(), subscription);
 
-                WatchdogTimer watchdogTimer = new WatchdogTimer(subscription);
+                WatchdogTimer watchdogTimer = new WatchdogTimer(
+                    subscription,
+                    client.getConfig().getSubscriptionWatchdogMultiplier()
+                );
                 watchdogTimers.put(subscription.getSubscriptionId(), watchdogTimer);
                 watchdogTimer.kick();
 
@@ -366,7 +370,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     @Override
     public CompletableFuture<UaSubscription> deleteSubscription(UInteger subscriptionId) {
-        List<UInteger> subscriptionIds = newArrayList(subscriptionId);
+        List<UInteger> subscriptionIds = List.of(subscriptionId);
 
         return client.deleteSubscriptions(subscriptionIds).thenApply(r -> {
             OpcUaSubscription subscription = subscriptions.remove(subscriptionId);
@@ -397,8 +401,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     }
 
     @Override
-    public ImmutableList<UaSubscription> getSubscriptions() {
-        return ImmutableList.copyOf(subscriptions.values());
+    public List<UaSubscription> getSubscriptions() {
+        return List.copyOf(subscriptions.values());
     }
 
     @Override
@@ -479,7 +483,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             }
         });
 
-        RequestHeader requestHeader = client.getStackClient().newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
             getTimeoutHint()
         );
@@ -502,12 +506,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 requestHandle, Arrays.toString(ackStrings));
         }
 
-        client.<PublishResponse>sendRequest(request).whenComplete((response, ex) -> {
-            if (response != null) {
+        client.getTransport().sendRequestMessage(request).whenComplete((response, ex) -> {
+            if (response instanceof PublishResponse) {
+                PublishResponse publishResponse = (PublishResponse) response;
                 logger.debug("Received PublishResponse, sequenceNumber={}",
-                    response.getNotificationMessage().getSequenceNumber());
+                    publishResponse.getNotificationMessage().getSequenceNumber());
 
-                processingQueue.submit(() -> onPublishComplete(response, pendingCount));
+                processingQueue.submit(() -> onPublishComplete(publishResponse, pendingCount));
             } else {
                 StatusCode statusCode = UaException.extract(ex)
                     .map(UaException::getStatusCode)
@@ -619,7 +624,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                 maybeSendPublishRequests();
             },
-            client.getConfig().getExecutor()
+            client.getTransport().getConfig().getExecutor()
         );
     }
 
@@ -710,7 +715,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 }
 
                 for (ExtensionObject xo : notificationData) {
-                    Object o = xo.decode(client.getStaticSerializationContext());
+                    Object o = xo.decode(client.getStaticEncodingContext());
 
                     if (o instanceof DataChangeNotification) {
                         DataChangeNotification dcn = (DataChangeNotification) o;
@@ -841,14 +846,26 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         deliveryQueue.resume();
     }
 
+    /**
+     * Cancel all WatchdogTimers and clear the map.
+     * <p>
+     * Used to clean up after subscriptions are deleted implicitly by closing the Session.
+     */
+    public void cancelWatchdogTimers() {
+        watchdogTimers.values().forEach(WatchdogTimer::cancel);
+        watchdogTimers.clear();
+    }
+
     private class WatchdogTimer {
 
         private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
 
         private final OpcUaSubscription subscription;
+        private final double multiplier;
 
-        WatchdogTimer(OpcUaSubscription subscription) {
+        WatchdogTimer(OpcUaSubscription subscription, double multiplier) {
             this.subscription = subscription;
+            this.multiplier = Math.max(1.0, multiplier);
         }
 
         void kick() {
@@ -865,10 +882,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         private void scheduleNext() {
             long delay = Math.round(subscription.getRevisedPublishingInterval() *
-                subscription.getRevisedMaxKeepAliveCount().longValue() * 1.25);
+                subscription.getRevisedMaxKeepAliveCount().longValue() * multiplier);
 
-            ScheduledFuture<?> nextSf = client.getConfig().getScheduledExecutor().schedule(
-                () -> client.getConfig().getExecutor().execute(this::notifyListeners),
+            ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
+                () -> client.getTransport().getConfig().getExecutor().execute(this::notifyListeners),
                 delay,
                 TimeUnit.MILLISECONDS
             );

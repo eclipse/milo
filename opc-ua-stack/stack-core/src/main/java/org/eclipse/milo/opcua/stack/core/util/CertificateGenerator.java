@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.security.KeyStore;
@@ -95,8 +94,7 @@ public class CertificateGenerator {
 
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 
-        try (FileInputStream fis = new FileInputStream(new File(keyStorePath))) {
-
+        try (FileInputStream fis = new FileInputStream(keyStorePath)) {
             keyStore.load(fis, keyStorePassword.toCharArray());
 
             return (X509Certificate) keyStore.getCertificate(certificateAlias);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,10 +20,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class ManifestUtil {
     }
 
     private static Map<String, String> load() {
-        Map<String, String> attributes = Maps.newConcurrentMap();
+        Map<String, String> attributes = new ConcurrentHashMap<>();
 
         for (URI uri : uris()) {
             try {
@@ -59,9 +59,9 @@ public class ManifestUtil {
     }
 
     private static Map<String, String> load(InputStream stream) {
-        Map<String, String> props = Maps.newConcurrentMap();
+        Map<String, String> props = new ConcurrentHashMap<>();
 
-        try {
+        try (stream) {
             Manifest manifest = new Manifest(stream);
             Attributes attributes = manifest.getMainAttributes();
 
@@ -71,12 +71,6 @@ public class ManifestUtil {
             }
         } catch (Throwable t) {
             logger.error("#load(): failed", t);
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                // ignored
-            }
         }
 
         return props;

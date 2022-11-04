@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,19 +11,18 @@
 package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.math.RoundingMode;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
@@ -41,9 +40,9 @@ import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SubscriptionModel extends AbstractLifecycle {
 
-    private final Set<DataItem> itemSet = Collections.newSetFromMap(Maps.newConcurrentMap());
+    private final Set<DataItem> itemSet = ConcurrentHashMap.newKeySet();
 
-    private final List<ScheduledUpdate> schedule = Lists.newCopyOnWriteArrayList();
+    private final List<ScheduledUpdate> schedule = new CopyOnWriteArrayList<>();
 
     private final ExecutorService executor;
     private final ScheduledExecutorService scheduler;
@@ -101,7 +100,7 @@ public class SubscriptionModel extends AbstractLifecycle {
         }
 
         executionQueue.submit(() -> {
-            itemSet.removeAll(items);
+            items.forEach(itemSet::remove);
             reschedule();
         });
     }

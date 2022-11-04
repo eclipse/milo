@@ -21,7 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -37,7 +37,7 @@ public class VendorServerInfoNodes {
     private static void addVendorServerInfoNodes(UaNodeContext context) {
         Optional<UaNode> maybeVendorServerInfo = context.getServer()
             .getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server_VendorServerInfo);
+            .getManagedNode(NodeIds.Server_VendorServerInfo);
 
         maybeVendorServerInfo.ifPresent(node -> {
             UaObjectNode vendorServerInfo = (UaObjectNode) node;
@@ -58,7 +58,7 @@ public class VendorServerInfoNodes {
             b.setNodeId(new NodeId(1, "VendorServerInfo/AvailableProcessors"))
                 .setBrowseName(new QualifiedName(1, "AvailableProcessors"))
                 .setDisplayName(LocalizedText.english("AvailableProcessors"))
-                .setDataType(Identifiers.Int32)
+                .setDataType(NodeIds.Int32)
                 .buildAndAdd()
         );
 
@@ -80,7 +80,7 @@ public class VendorServerInfoNodes {
             b.setNodeId(new NodeId(1, "VendorServerInfo/UsedMemory"))
                 .setBrowseName(new QualifiedName(1, "UsedMemory"))
                 .setDisplayName(LocalizedText.english("UsedMemory"))
-                .setDataType(Identifiers.Int64)
+                .setDataType(NodeIds.Int64)
                 .buildAndAdd()
         );
 
@@ -95,7 +95,7 @@ public class VendorServerInfoNodes {
             b.setNodeId(new NodeId(1, "VendorServerInfo/MaxMemory"))
                 .setBrowseName(new QualifiedName(1, "MaxMemory"))
                 .setDisplayName(LocalizedText.english("MaxMemory"))
-                .setDataType(Identifiers.Int64)
+                .setDataType(NodeIds.Int64)
                 .buildAndAdd()
         );
 
@@ -110,7 +110,7 @@ public class VendorServerInfoNodes {
             b.setNodeId(new NodeId(1, "VendorServerInfo/OsName"))
                 .setBrowseName(new QualifiedName(1, "OsName"))
                 .setDisplayName(LocalizedText.english("OsName"))
-                .setDataType(Identifiers.String)
+                .setDataType(NodeIds.String)
                 .buildAndAdd()
         );
 
@@ -125,7 +125,7 @@ public class VendorServerInfoNodes {
             b.setNodeId(new NodeId(1, "VendorServerInfo/OsArch"))
                 .setBrowseName(new QualifiedName(1, "OsArch"))
                 .setDisplayName(LocalizedText.english("OsArch"))
-                .setDataType(Identifiers.String)
+                .setDataType(NodeIds.String)
                 .buildAndAdd()
         );
 
@@ -140,7 +140,7 @@ public class VendorServerInfoNodes {
             b.setNodeId(new NodeId(1, "VendorServerInfo/OsVersion"))
                 .setBrowseName(new QualifiedName(1, "OsVersion"))
                 .setDisplayName(LocalizedText.english("OsVersion"))
-                .setDataType(Identifiers.String)
+                .setDataType(NodeIds.String)
                 .buildAndAdd()
         );
 
@@ -169,7 +169,7 @@ public class VendorServerInfoNodes {
                 b.setNodeId(new NodeId(1, "VendorServerInfo/ProcessCpuLoad"))
                     .setBrowseName(new QualifiedName(1, "ProcessCpuLoad"))
                     .setDisplayName(LocalizedText.english("ProcessCpuLoad"))
-                    .setDataType(Identifiers.Double)
+                    .setDataType(NodeIds.Double)
                     .buildAndAdd()
             );
 
@@ -184,7 +184,7 @@ public class VendorServerInfoNodes {
                 b.setNodeId(new NodeId(1, "VendorServerInfo/SystemCpuLoad"))
                     .setBrowseName(new QualifiedName(1, "SystemCpuLoad"))
                     .setDisplayName(LocalizedText.english("SystemCpuLoad"))
-                    .setDataType(Identifiers.Double)
+                    .setDataType(NodeIds.Double)
                     .buildAndAdd()
             );
 
@@ -205,7 +205,7 @@ public class VendorServerInfoNodes {
                     b.setNodeId(new NodeId(1, "VendorServerInfo/OpenFileDescriptors"))
                         .setBrowseName(new QualifiedName(1, "OpenFileDescriptors"))
                         .setDisplayName(LocalizedText.english("OpenFileDescriptors"))
-                        .setDataType(Identifiers.Int64)
+                        .setDataType(NodeIds.Int64)
                         .buildAndAdd()
                 );
 
@@ -220,7 +220,7 @@ public class VendorServerInfoNodes {
                     b.setNodeId(new NodeId(1, "VendorServerInfo/MaxFileDescriptors"))
                         .setBrowseName(new QualifiedName(1, "MaxFileDescriptors"))
                         .setDisplayName(LocalizedText.english("MaxFileDescriptors"))
-                        .setDataType(Identifiers.Int64)
+                        .setDataType(NodeIds.Int64)
                         .buildAndAdd()
                 );
 

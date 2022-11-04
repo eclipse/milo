@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,15 +11,15 @@
 package org.eclipse.milo.examples.server.types;
 
 import org.eclipse.milo.examples.server.ExampleNamespace;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.jetbrains.annotations.Nullable;
 
-public enum CustomEnumType implements UaEnumeration {
+public enum CustomEnumType implements UaEnumeratedType {
 
     Field0(0),
     Field1(1),
@@ -40,6 +40,11 @@ public enum CustomEnumType implements UaEnumeration {
     @Override
     public int getValue() {
         return value;
+    }
+
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
     @Nullable
@@ -63,13 +68,13 @@ public enum CustomEnumType implements UaEnumeration {
         }
 
         @Override
-        public CustomEnumType decode(SerializationContext context, UaDecoder decoder) {
-            return CustomEnumType.from(decoder.readInt32(null));
+        public CustomEnumType decodeType(EncodingContext context, UaDecoder decoder) {
+            return CustomEnumType.from(decoder.decodeInt32(null));
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CustomEnumType value) {
-            encoder.writeInt32(null, value.getValue());
+        public void encodeType(EncodingContext context, UaEncoder encoder, CustomEnumType value) {
+            encoder.encodeInt32(null, value.getValue());
         }
     }
 

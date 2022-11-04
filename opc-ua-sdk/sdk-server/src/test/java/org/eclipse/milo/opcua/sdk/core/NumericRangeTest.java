@@ -230,6 +230,8 @@ public class NumericRangeTest {
             {"4:9", new int[]{4, 5, 6, 7, 8, 9}},
             {"1:4", new int[]{1, 2, 3, 4}},
             {"5:8", new int[]{5, 6, 7, 8}},
+            {"0:10", new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
+            {"5:15", new int[]{5, 6, 7, 8, 9}},
             {"0", new int[]{0}},
             {"5", new int[]{5}},
             {"9", new int[]{9}}
@@ -249,6 +251,7 @@ public class NumericRangeTest {
         return new Object[][]{
             {"0:1,0:1", new int[][]{{0, 1}, {4, 5}}},
             {"1:2,1:3", new int[][]{{5, 6, 7}, {9, 10, 11}}},
+            {"2:5,2:5", new int[][]{{10, 11}, {14, 15}}},
             {"3,3", new int[][]{{15}}}
         };
     }

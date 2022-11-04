@@ -12,18 +12,19 @@ package org.eclipse.milo.opcua.stack.core;
 
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.util.annotations.Description;
 
 
 public class StatusCodes extends StatusCodes0 {
 
-    private static final ImmutableMap<Long, String[]> DESCRIPTIONS;
+    private static final Map<Long, String[]> DESCRIPTIONS;
 
     static {
-        ImmutableMap.Builder<Long, String[]> builder = ImmutableMap.builder();
+        var descriptions = new HashMap<Long, String[]>();
 
         for (Field f : StatusCodes.class.getFields()) {
             if (f.isAnnotationPresent(Description.class)) {
@@ -32,13 +33,13 @@ public class StatusCodes extends StatusCodes0 {
                     String name = f.getName();
                     String desc = f.getAnnotation(Description.class).value();
 
-                    builder.put(code, new String[]{name, desc});
+                    descriptions.put(code, new String[]{name, desc});
                 } catch (IllegalAccessException ignored) {
                 }
             }
         }
 
-        DESCRIPTIONS = builder.build();
+        DESCRIPTIONS = Map.copyOf(descriptions);
     }
 
     /**

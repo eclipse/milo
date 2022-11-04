@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,9 +23,9 @@ import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerDiagnosticsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.SubscriptionDiagnosticsArrayTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.SubscriptionDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -34,7 +34,7 @@ import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionCreatedEvent;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionDeletedEvent;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -94,14 +94,13 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
     @Override
     protected void onStartup() {
         ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server_ServerDiagnostics)
-            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+            .getManagedNode(NodeIds.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
         if (diagnosticsEnabled.get()) {
-            //noinspection UnstableApiUsage
-            server.getEventBus().register(eventSubscriber = new EventSubscriber());
+            server.getInternalEventBus().register(eventSubscriber = new EventSubscriber());
         }
 
         attributeObserver = (node, attributeId, value) -> {
@@ -116,13 +115,11 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                         getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
 
                         if (eventSubscriber == null) {
-                            //noinspection UnstableApiUsage
-                            server.getEventBus().register(eventSubscriber = new EventSubscriber());
+                            server.getInternalEventBus().register(eventSubscriber = new EventSubscriber());
                         }
                     } else if (previous && !current) {
                         if (eventSubscriber != null) {
-                            //noinspection UnstableApiUsage
-                            server.getEventBus().unregister(eventSubscriber);
+                            server.getInternalEventBus().unregister(eventSubscriber);
                             eventSubscriber = null;
                         }
 
@@ -136,7 +133,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
-                server.getSerializationContext(),
+                server.getEncodingContext(),
                 getSubscriptions()
                     .stream()
                     .map(s ->
@@ -154,16 +151,15 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         AttributeObserver observer = attributeObserver;
         if (observer != null) {
             ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
-                .getManagedNode(Identifiers.Server_ServerDiagnostics)
-                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+                .getManagedNode(NodeIds.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
             diagnosticsNode.getEnabledFlagNode().removeAttributeObserver(observer);
             attributeObserver = null;
         }
 
         if (eventSubscriber != null) {
-            //noinspection UnstableApiUsage
-            server.getEventBus().unregister(eventSubscriber);
+            server.getInternalEventBus().unregister(eventSubscriber);
             eventSubscriber = null;
         }
 
@@ -182,7 +178,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
             SubscriptionDiagnosticsTypeNode elementNode = (SubscriptionDiagnosticsTypeNode) nodeFactory.createNode(
                 elementNodeId,
-                Identifiers.SubscriptionDiagnosticsType
+                NodeIds.SubscriptionDiagnosticsType
             );
 
             elementNode.setBrowseName(new QualifiedName(1, subscription.getId().toString()));
@@ -192,13 +188,13 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
-            elementNode.setDataType(Identifiers.SubscriptionDiagnosticsDataType);
+            elementNode.setDataType(NodeIds.SubscriptionDiagnosticsDataType);
             elementNode.setAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
             elementNode.setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
 
             elementNode.addReference(new Reference(
                 elementNode.getNodeId(),
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 node.getNodeId().expanded(),
                 Reference.Direction.INVERSE
             ));

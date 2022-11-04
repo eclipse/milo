@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class EventSubscriptionExample implements ClientExample {
@@ -59,7 +58,7 @@ public class EventSubscriptionExample implements ClientExample {
             .createSubscription(1000.0).get();
 
         ReadValueId readValueId = new ReadValueId(
-            Identifiers.Server,
+            NodeIds.Server,
             AttributeId.EventNotifier.uid(),
             null,
             QualifiedName.NULL_VALUE
@@ -71,27 +70,27 @@ public class EventSubscriptionExample implements ClientExample {
         EventFilter eventFilter = new EventFilter(
             new SimpleAttributeOperand[]{
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventId")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventType")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Severity")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Time")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Message")},
                     AttributeId.Value.uid(),
                     null)
@@ -102,7 +101,7 @@ public class EventSubscriptionExample implements ClientExample {
         MonitoringParameters parameters = new MonitoringParameters(
             clientHandle,
             0.0,
-            ExtensionObject.encode(client.getStaticSerializationContext(), eventFilter),
+            ExtensionObject.encode(client.getStaticEncodingContext(), eventFilter),
             uint(10),
             true
         );
@@ -114,7 +113,7 @@ public class EventSubscriptionExample implements ClientExample {
         );
 
         List<UaMonitoredItem> items = subscription
-            .createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
+            .createMonitoredItems(TimestampsToReturn.Both, List.of(request)).get();
 
         // do something with the value updates
         UaMonitoredItem monitoredItem = items.get(0);

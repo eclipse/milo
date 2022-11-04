@@ -11,8 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util.validation;
 
 import java.util.EnumSet;
-
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 
 /**
  * Validation checks that are allowed to be suppressed (i.e. they are optional) according to the spec.
@@ -76,12 +75,11 @@ public enum ValidationCheck {
      * <p>
      * This set *does* still include {@link #APPLICATION_URI}, which is technically not optional.
      */
-    public static final ImmutableSet<ValidationCheck> NO_OPTIONAL_CHECKS = ImmutableSet.of(APPLICATION_URI);
+    public static final Set<ValidationCheck> NO_OPTIONAL_CHECKS = Set.of(APPLICATION_URI);
 
     /**
      * A set the includes all {@link ValidationCheck}s.
      */
-    public static final ImmutableSet<ValidationCheck> ALL_OPTIONAL_CHECKS =
-        ImmutableSet.copyOf(EnumSet.allOf(ValidationCheck.class));
+    public static final Set<ValidationCheck> ALL_OPTIONAL_CHECKS = Set.copyOf(EnumSet.allOf(ValidationCheck.class));
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,29 +13,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.36">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.36</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15006");
+public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15006");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15422");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15422");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15531");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=15531");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15714");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15714");
 
     private final String schemaLocation;
 
@@ -84,6 +90,23 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
         return body;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 15422),
+            new NodeId(0, 15534),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("Namespaces", LocalizedText.NULL_VALUE, new NodeId(0, 12), 1, null, UInteger.valueOf(0), false),
+                new StructureField("StructureDataTypes", LocalizedText.NULL_VALUE, new NodeId(0, 15487), 1, null, UInteger.valueOf(0), false),
+                new StructureField("EnumDataTypes", LocalizedText.NULL_VALUE, new NodeId(0, 15488), 1, null, UInteger.valueOf(0), false),
+                new StructureField("SimpleDataTypes", LocalizedText.NULL_VALUE, new NodeId(0, 15005), 1, null, UInteger.valueOf(0), false),
+                new StructureField("SchemaLocation", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("FileHeader", LocalizedText.NULL_VALUE, new NodeId(0, 14533), 1, null, UInteger.valueOf(0), false),
+                new StructureField("Body", LocalizedText.NULL_VALUE, new NodeId(0, 24), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<UABinaryFileDataType> {
         @Override
         public Class<UABinaryFileDataType> getType() {
@@ -91,27 +114,26 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
         }
 
         @Override
-        public UABinaryFileDataType decode(SerializationContext context, UaDecoder decoder) {
-            String[] namespaces = decoder.readStringArray("Namespaces");
-            StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.readStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
-            EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.readStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
-            SimpleTypeDescription[] simpleDataTypes = (SimpleTypeDescription[]) decoder.readStructArray("SimpleDataTypes", SimpleTypeDescription.TYPE_ID);
-            String schemaLocation = decoder.readString("SchemaLocation");
-            KeyValuePair[] fileHeader = (KeyValuePair[]) decoder.readStructArray("FileHeader", KeyValuePair.TYPE_ID);
-            Variant body = decoder.readVariant("Body");
+        public UABinaryFileDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            String[] namespaces = decoder.decodeStringArray("Namespaces");
+            StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.decodeStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
+            EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.decodeStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
+            SimpleTypeDescription[] simpleDataTypes = (SimpleTypeDescription[]) decoder.decodeStructArray("SimpleDataTypes", SimpleTypeDescription.TYPE_ID);
+            String schemaLocation = decoder.decodeString("SchemaLocation");
+            KeyValuePair[] fileHeader = (KeyValuePair[]) decoder.decodeStructArray("FileHeader", KeyValuePair.TYPE_ID);
+            Variant body = decoder.decodeVariant("Body");
             return new UABinaryFileDataType(namespaces, structureDataTypes, enumDataTypes, simpleDataTypes, schemaLocation, fileHeader, body);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UABinaryFileDataType value) {
-            encoder.writeStringArray("Namespaces", value.getNamespaces());
-            encoder.writeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
-            encoder.writeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);
-            encoder.writeStructArray("SimpleDataTypes", value.getSimpleDataTypes(), SimpleTypeDescription.TYPE_ID);
-            encoder.writeString("SchemaLocation", value.getSchemaLocation());
-            encoder.writeStructArray("FileHeader", value.getFileHeader(), KeyValuePair.TYPE_ID);
-            encoder.writeVariant("Body", value.getBody());
+        public void encodeType(EncodingContext context, UaEncoder encoder, UABinaryFileDataType value) {
+            encoder.encodeStringArray("Namespaces", value.getNamespaces());
+            encoder.encodeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
+            encoder.encodeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);
+            encoder.encodeStructArray("SimpleDataTypes", value.getSimpleDataTypes(), SimpleTypeDescription.TYPE_ID);
+            encoder.encodeString("SchemaLocation", value.getSchemaLocation());
+            encoder.encodeStructArray("FileHeader", value.getFileHeader(), KeyValuePair.TYPE_ID);
+            encoder.encodeVariant("Body", value.getBody());
         }
     }
 }

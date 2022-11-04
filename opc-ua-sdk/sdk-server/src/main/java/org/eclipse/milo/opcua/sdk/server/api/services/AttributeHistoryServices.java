@@ -18,7 +18,9 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
@@ -81,9 +83,13 @@ public interface AttributeHistoryServices {
         public HistoryReadContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<HistoryReadValueId> diagnosticsContext) {
+            DiagnosticsContext<HistoryReadValueId> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
+        ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
@@ -97,10 +103,13 @@ public interface AttributeHistoryServices {
         public HistoryUpdateContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext
+            DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }

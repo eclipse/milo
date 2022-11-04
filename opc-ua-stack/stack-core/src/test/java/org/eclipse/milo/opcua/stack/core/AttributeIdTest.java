@@ -25,7 +25,7 @@ public class AttributeIdTest {
         for (AttributeId attributeId : AttributeId.values()) {
             int id = attributeId.id();
 
-            assertEquals(attributeId, AttributeId.from(id).get());
+            assertEquals(attributeId, AttributeId.from(id).orElseThrow());
         }
 
         assertFalse(AttributeId.from(-1).isPresent());

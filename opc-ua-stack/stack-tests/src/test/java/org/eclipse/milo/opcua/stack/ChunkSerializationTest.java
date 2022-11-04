@@ -17,7 +17,6 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
@@ -31,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.ClientSecureChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.DataProvider;
@@ -165,12 +165,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
             ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
             ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
 
-            clientChannel
-                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-                .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
-
-            LongSequence requestId = clientChannel
-                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+            LongSequence requestId = new LongSequence(1L, UInteger.MAX_VALUE);
 
             byte[] messageBytes = new byte[messageSize];
             for (int i = 0; i < messageBytes.length; i++) {
@@ -227,12 +222,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
         ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
 
-        clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
-
-        LongSequence requestId = clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+        LongSequence requestId = new LongSequence(1L, UInteger.MAX_VALUE);
 
         for (int messageSize = 0; messageSize < 512; messageSize++) {
             byte[] messageBytes = new byte[messageSize];
@@ -336,12 +326,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                 ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
                 ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
 
-                clientChannel
-                    .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-                    .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
-
-                LongSequence requestId = clientChannel
-                    .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+                LongSequence requestId = new LongSequence(1L, UInteger.MAX_VALUE);
 
                 byte[] messageBytes = new byte[messageSize];
                 for (int i = 0; i < messageBytes.length; i++) {
@@ -399,12 +384,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
         ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
 
-        clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
-
-        LongSequence requestId = clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+        LongSequence requestId = new LongSequence(1L, UInteger.MAX_VALUE);
 
         for (int messageSize = 0; messageSize < 1024; messageSize++) {
             byte[] messageBytes = new byte[messageSize];

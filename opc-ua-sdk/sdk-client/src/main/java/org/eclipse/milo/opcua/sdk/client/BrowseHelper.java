@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -48,12 +47,12 @@ public class BrowseHelper {
 
         return client.getSession().thenCompose(
             session ->
-                browse(client.getStackClient(), session, browseDescription, maxReferencesPerNode)
+                browse(client, session, browseDescription, maxReferencesPerNode)
         );
     }
 
     public static CompletableFuture<List<ReferenceDescription>> browse(
-        UaStackClient client,
+        OpcUaClient client,
         OpcUaSession session,
         BrowseDescription browseDescription,
         UInteger maxReferencesPerNode
@@ -73,18 +72,21 @@ public class BrowseHelper {
             new BrowseDescription[]{browseDescription}
         );
 
-        return client.sendRequest(browseRequest).thenApply(BrowseResponse.class::cast).thenCompose(response -> {
-            BrowseResult result = response.getResults()[0];
+        return client.getTransport()
+            .sendRequestMessage(browseRequest)
+            .thenApply(BrowseResponse.class::cast)
+            .thenCompose(response -> {
+                BrowseResult result = response.getResults()[0];
 
-            List<ReferenceDescription> references =
-                Collections.synchronizedList(new ArrayList<>());
+                List<ReferenceDescription> references =
+                    Collections.synchronizedList(new ArrayList<>());
 
-            return maybeBrowseNext(client, session, references, result);
-        });
+                return maybeBrowseNext(client, session, references, result);
+            });
     }
 
     private static CompletableFuture<List<ReferenceDescription>> maybeBrowseNext(
-        UaStackClient client,
+        OpcUaClient client,
         OpcUaSession session,
         List<ReferenceDescription> references,
         BrowseResult result
@@ -106,7 +108,7 @@ public class BrowseHelper {
     }
 
     private static CompletableFuture<List<ReferenceDescription>> browseNext(
-        UaStackClient client,
+        OpcUaClient client,
         OpcUaSession session,
         ByteString continuationPoint,
         List<ReferenceDescription> references
@@ -121,11 +123,14 @@ public class BrowseHelper {
             new ByteString[]{continuationPoint}
         );
 
-        return client.sendRequest(browseNextRequest).thenApply(BrowseNextResponse.class::cast).thenCompose(response -> {
-            BrowseResult result = response.getResults()[0];
+        return client.getTransport()
+            .sendRequestMessage(browseNextRequest)
+            .thenApply(BrowseNextResponse.class::cast)
+            .thenCompose(response -> {
+                BrowseResult result = response.getResults()[0];
 
-            return maybeBrowseNext(client, session, references, result);
-        });
+                return maybeBrowseNext(client, session, references, result);
+            });
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -60,6 +60,32 @@ public class DefaultTrustListManagerTest {
         rejectedFiles = rejectedDir.listFiles();
         assertNotNull(rejectedFiles);
         assertEquals(rejectedFiles.length, DefaultTrustListManager.MAX_REJECTED_CERTIFICATES - 1);
+    }
+
+    @Test
+    public void testSanitizeForUseInFilename_Wildcard() throws Exception {
+        String sanitized = DefaultTrustListManager.sanitizeForUseInFilename("*.digitalpetri.com");
+
+        assertEquals(sanitized, "_.digitalpetri.com");
+    }
+
+    @Test
+    public void testSanitizeForUseInFilename_WindowsReserved() throws Exception {
+        /*
+        Reserved characters from https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+            < (less than)
+            > (greater than)
+            : (colon)
+            " (double quote)
+            / (forward slash)
+            \ (backslash)
+            | (vertical bar or pipe)
+            ? (question mark)
+            * (asterisk)
+         */
+        String sanitized = DefaultTrustListManager.sanitizeForUseInFilename("<>:\"/\\|?*");
+
+        assertEquals(sanitized, "%3C%3E%3A%22%2F%5C%7C%3F_");
     }
 
 }

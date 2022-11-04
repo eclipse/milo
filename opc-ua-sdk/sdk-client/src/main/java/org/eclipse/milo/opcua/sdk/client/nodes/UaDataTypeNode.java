@@ -187,7 +187,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
                 setDataTypeDefinition(null);
             } else {
                 DataTypeDefinition dataTypeDefinition =
-                    (DataTypeDefinition) xo.decode(client.getStaticSerializationContext());
+                    (DataTypeDefinition) xo.decode(client.getStaticEncodingContext());
                 setDataTypeDefinition(dataTypeDefinition);
             }
             return dataTypeDefinition;
@@ -335,7 +335,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
             }
             case DataTypeDefinition: {
                 ExtensionObject xo = (ExtensionObject) value.getValue().getValue();
-                setDataTypeDefinition((DataTypeDefinition) xo.decode(client.getStaticSerializationContext()));
+                setDataTypeDefinition((DataTypeDefinition) xo.decode(client.getStaticEncodingContext()));
                 break;
             }
             default: {

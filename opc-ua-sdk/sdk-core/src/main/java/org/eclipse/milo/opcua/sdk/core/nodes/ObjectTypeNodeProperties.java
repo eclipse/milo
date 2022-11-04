@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
@@ -29,7 +29,7 @@ public final class ObjectTypeNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -43,7 +43,7 @@ public final class ObjectTypeNodeProperties {
     public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "Icon",
-        Identifiers.Image.expanded(),
+        NodeIds.Image.expanded(),
         ValueRanks.Scalar,
         ByteString.class
     );

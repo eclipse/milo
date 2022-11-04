@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,12 +24,11 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -40,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
 import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
@@ -146,12 +144,12 @@ public class AttributeReader {
 
         if (dataTypeNode != null) {
             Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
-                .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(Identifiers.HasSubtype))
-                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
+                .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(NodeIds.HasSubtype))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(server.getNamespaceTable()).stream())
                 .findFirst();
 
             return superTypeId
-                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(server, id))
+                .map(id -> id.equals(NodeIds.Structure) || isStructureSubtype(server, id))
                 .orElse(false);
         } else {
             return false;
@@ -162,7 +160,8 @@ public class AttributeReader {
         AttributeContext context,
         UaServerNode node,
         ExtensionObject xo,
-        QualifiedName encodingName) {
+        QualifiedName encodingName
+    ) {
 
         if (xo == null || xo.isNull()) {
             return xo;
@@ -176,18 +175,15 @@ public class AttributeReader {
         DataTypeEncoding newEncoding;
         if (OpcUaDefaultBinaryEncoding.ENCODING_NAME.equals(encodingName)) {
             newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
-        } else if (OpcUaDefaultXmlEncoding.ENCODING_NAME.equals(encodingName)) {
-            newEncoding = OpcUaDefaultXmlEncoding.getInstance();
         } else {
-            // TODO look up registered alternate encodings
-            newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
+            newEncoding = context.getServer().getEncodingManager().getEncoding(encodingName);
         }
 
         NodeId newEncodingId = getEncodingId(context, node, encodingName);
 
         if (newEncodingId != null) {
             return xo.transcode(
-                context.getServer().getSerializationContext(),
+                context.getServer().getEncodingContext(),
                 newEncodingId,
                 newEncoding
             );
@@ -214,8 +210,8 @@ public class AttributeReader {
 
         if (dataTypeNode != null) {
             return dataTypeNode.getReferences().stream()
-                .filter(r -> r.isForward() && Identifiers.HasEncoding.equals(r.getReferenceTypeId()))
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+                .filter(r -> r.isForward() && NodeIds.HasEncoding.equals(r.getReferenceTypeId()))
+                .flatMap(r -> addressSpaceManager.getManagedNode(r.getTargetNodeId()).stream())
                 .filter(n -> encodingName.equals(n.getBrowseName()))
                 .map(Node::getNodeId)
                 .findFirst()

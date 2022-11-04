@@ -24,7 +24,7 @@ public class OpcUaDataTypeManager extends DefaultDataTypeManager {
         static {
             INSTANCE = new OpcUaDataTypeManager();
 
-            DataTypeInitializer.initialize(new NamespaceTable(), INSTANCE);
+            new DataTypeInitializer().initialize(new NamespaceTable(), INSTANCE);
         }
     }
 

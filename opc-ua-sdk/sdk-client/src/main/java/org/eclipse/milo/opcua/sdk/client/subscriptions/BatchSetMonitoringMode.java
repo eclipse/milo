@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -203,7 +203,7 @@ public class BatchSetMonitoringMode {
 
     private static CompletableFuture<UInteger> readOperationLimit(OpcUaClient client) {
         CompletableFuture<UaVariableNode> nodeFuture = client.getAddressSpace().getVariableNodeAsync(
-            Identifiers.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall
+            NodeIds.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall
         );
 
         return nodeFuture.thenCompose(

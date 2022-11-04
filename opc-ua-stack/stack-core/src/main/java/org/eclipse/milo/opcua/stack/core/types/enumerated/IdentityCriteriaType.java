@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,26 +10,56 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum IdentityCriteriaType implements UaEnumeration {
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.4">https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.4</a>
+ */
+public enum IdentityCriteriaType implements UaEnumeratedType {
+    /**
+     * The rule specifies a UserName from a UserNameIdentityToken.
+     */
     UserName(1),
 
+    /**
+     * The rule specifies the Thumbprint of a user or CA Certificate.
+     */
     Thumbprint(2),
 
+    /**
+     * The rule is a Role specified in an Access Token.
+     */
     Role(3),
 
+    /**
+     * The rule is a user group specified in the Access Token.
+     */
     GroupId(4),
 
+    /**
+     * The rule specifies Anonymous UserIdentityToken.
+     */
     Anonymous(5),
 
-    AuthenticatedUser(6);
+    /**
+     * The rule specifies any non Anonymous UserIdentityToken.
+     */
+    AuthenticatedUser(6),
+
+    /**
+     * The rule specifies the combination of an application identity and an Anonymous UserIdentityToken.
+     */
+    Application(7),
+
+    /**
+     * The rule specifies the X509 subject name of a user or CA Certificate.
+     */
+    X509Subject(8);
 
     private final int value;
 
@@ -42,8 +72,12 @@ public enum IdentityCriteriaType implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static IdentityCriteriaType from(int value) {
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
+    }
+
+    public static @Nullable IdentityCriteriaType from(int value) {
         switch (value) {
             case 1:
                 return UserName;
@@ -57,30 +91,29 @@ public enum IdentityCriteriaType implements UaEnumeration {
                 return Anonymous;
             case 6:
                 return AuthenticatedUser;
+            case 7:
+                return Application;
+            case 8:
+                return X509Subject;
             default:
                 return null;
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15632");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(1L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies a UserName from a UserNameIdentityToken."), "UserName"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies the Thumbprint of a user or CA Certificate."), "Thumbprint"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule is a Role specified in an Access Token."), "Role"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule is a user group specified in the Access Token."), "GroupId"),
+            new EnumField(5L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies Anonymous UserIdentityToken."), "Anonymous"),
+            new EnumField(6L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies any non Anonymous UserIdentityToken."), "AuthenticatedUser"),
+            new EnumField(7L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies the combination of an application identity and an Anonymous UserIdentityToken."), "Application"),
+            new EnumField(8L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies the X509 subject name of a user or CA Certificate."), "X509Subject")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<IdentityCriteriaType> {
-        @Override
-        public Class<IdentityCriteriaType> getType() {
-            return IdentityCriteriaType.class;
-        }
-
-        @Override
-        public IdentityCriteriaType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, IdentityCriteriaType.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           IdentityCriteriaType value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15632");
     }
 }

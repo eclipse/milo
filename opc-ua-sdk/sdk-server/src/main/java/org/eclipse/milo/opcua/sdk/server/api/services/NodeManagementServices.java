@@ -18,8 +18,10 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
@@ -65,10 +67,13 @@ public interface NodeManagementServices {
         public AddNodesContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<AddNodesItem> diagnosticsContext
+            DiagnosticsContext<AddNodesItem> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
@@ -82,9 +87,13 @@ public interface NodeManagementServices {
         public DeleteNodesContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<DeleteNodesItem> diagnosticsContext) {
+            DiagnosticsContext<DeleteNodesItem> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
+        ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
@@ -98,10 +107,13 @@ public interface NodeManagementServices {
         public AddReferencesContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<AddReferencesItem> diagnosticsContext
+            DiagnosticsContext<AddReferencesItem> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
@@ -115,9 +127,13 @@ public interface NodeManagementServices {
         public DeleteReferencesContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<DeleteReferencesItem> diagnosticsContext) {
+            DiagnosticsContext<DeleteReferencesItem> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
+        ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }

@@ -28,8 +28,8 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -49,7 +49,6 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_ORDERED_COMPONENT_PR
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_TYPE_DEFINITION_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.ORGANIZES_PREDICATE;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
 public class UaObjectNode extends UaNode implements ObjectNode {
@@ -254,7 +253,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         NodeId nodeId = asm.getManagedReferences(typeDefinitionId)
             .stream()
             .filter(HAS_COMPONENT_PREDICATE.or(HAS_ORDERED_COMPONENT_PREDICATE))
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n ->
                 (n instanceof UaMethodNode) &&
                     Objects.equals(n.getBrowseName(), methodName))
@@ -266,7 +265,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             NodeId parentTypeId = asm.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(namespaceTable)))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(namespaceTable).stream())
                 .findFirst()
                 .orElse(null);
 
@@ -283,21 +282,21 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public List<UaNode> getComponentNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
     public List<UaNode> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
     public List<UaMethodNode> getMethodNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE.or(HAS_ORDERED_COMPONENT_PREDICATE))
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> (n instanceof UaMethodNode))
             .map(UaMethodNode.class::cast)
             .collect(Collectors.toList());
@@ -316,21 +315,21 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public List<Node> getEventSourceNodes() {
         return getReferences().stream()
             .filter(HAS_EVENT_SOURCE_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
     public List<Node> getNotifierNodes() {
         return getReferences().stream()
             .filter(HAS_NOTIFIER_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
     public List<Node> getOrganizesNodes() {
         return getReferences().stream()
             .filter(ORGANIZES_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
@@ -343,7 +342,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public void addComponent(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
@@ -358,7 +357,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public void removeComponent(UaNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
@@ -504,10 +503,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
             long hasTypeDefinitionCount = references.stream()
-                .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
+                .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
 
             if (hasTypeDefinitionCount == 0) {
-                setTypeDefinition(Identifiers.BaseObjectType);
+                setTypeDefinition(NodeIds.BaseObjectType);
             } else {
                 Preconditions.checkState(
                     hasTypeDefinitionCount == 1,
@@ -646,7 +645,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
             references.add(new Reference(
                 nodeId,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 typeDefinition.expanded(),
                 true
             ));

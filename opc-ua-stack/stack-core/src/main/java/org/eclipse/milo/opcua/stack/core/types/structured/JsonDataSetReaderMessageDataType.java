@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,28 +13,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.4.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.4.3</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataType implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15665");
+public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataType implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15665");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15725");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15725");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=16019");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=16019");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=16404");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16404");
 
     private final JsonNetworkMessageContentMask networkMessageContentMask;
 
@@ -74,6 +80,18 @@ public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         return dataSetMessageContentMask;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 15725),
+            new NodeId(0, 15629),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("NetworkMessageContentMask", LocalizedText.NULL_VALUE, new NodeId(0, 15654), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DataSetMessageContentMask", LocalizedText.NULL_VALUE, new NodeId(0, 15658), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<JsonDataSetReaderMessageDataType> {
         @Override
         public Class<JsonDataSetReaderMessageDataType> getType() {
@@ -81,18 +99,17 @@ public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         }
 
         @Override
-        public JsonDataSetReaderMessageDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
-            JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
-            JsonDataSetMessageContentMask dataSetMessageContentMask = new JsonDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
+        public JsonDataSetReaderMessageDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));
+            JsonDataSetMessageContentMask dataSetMessageContentMask = new JsonDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
             return new JsonDataSetReaderMessageDataType(networkMessageContentMask, dataSetMessageContentMask);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           JsonDataSetReaderMessageDataType value) {
-            encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
-            encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               JsonDataSetReaderMessageDataType value) {
+            encoder.encodeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
+            encoder.encodeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
         }
     }
 }

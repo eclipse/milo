@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,30 +13,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class CreateSessionRequest extends Structure implements UaRequestMessage {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=459");
+public class CreateSessionRequest extends Structure implements UaRequestMessageType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=459");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=461");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=461");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=460");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=460");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15138");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15138");
 
     private final RequestHeader requestHeader;
 
@@ -91,7 +96,6 @@ public class CreateSessionRequest extends Structure implements UaRequestMessage 
         return JSON_ENCODING_ID;
     }
 
-    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }
@@ -128,6 +132,25 @@ public class CreateSessionRequest extends Structure implements UaRequestMessage 
         return maxResponseMessageSize;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 461),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("RequestHeader", LocalizedText.NULL_VALUE, new NodeId(0, 389), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ClientDescription", LocalizedText.NULL_VALUE, new NodeId(0, 308), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ServerUri", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("EndpointUrl", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SessionName", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ClientNonce", LocalizedText.NULL_VALUE, new NodeId(0, 15), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ClientCertificate", LocalizedText.NULL_VALUE, new NodeId(0, 311), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RequestedSessionTimeout", LocalizedText.NULL_VALUE, new NodeId(0, 290), -1, null, UInteger.valueOf(0), false),
+                new StructureField("MaxResponseMessageSize", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<CreateSessionRequest> {
         @Override
         public Class<CreateSessionRequest> getType() {
@@ -135,31 +158,30 @@ public class CreateSessionRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public CreateSessionRequest decode(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ApplicationDescription clientDescription = (ApplicationDescription) decoder.readStruct("ClientDescription", ApplicationDescription.TYPE_ID);
-            String serverUri = decoder.readString("ServerUri");
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String sessionName = decoder.readString("SessionName");
-            ByteString clientNonce = decoder.readByteString("ClientNonce");
-            ByteString clientCertificate = decoder.readByteString("ClientCertificate");
-            Double requestedSessionTimeout = decoder.readDouble("RequestedSessionTimeout");
-            UInteger maxResponseMessageSize = decoder.readUInt32("MaxResponseMessageSize");
+        public CreateSessionRequest decodeType(EncodingContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ApplicationDescription clientDescription = (ApplicationDescription) decoder.decodeStruct("ClientDescription", ApplicationDescription.TYPE_ID);
+            String serverUri = decoder.decodeString("ServerUri");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String sessionName = decoder.decodeString("SessionName");
+            ByteString clientNonce = decoder.decodeByteString("ClientNonce");
+            ByteString clientCertificate = decoder.decodeByteString("ClientCertificate");
+            Double requestedSessionTimeout = decoder.decodeDouble("RequestedSessionTimeout");
+            UInteger maxResponseMessageSize = decoder.decodeUInt32("MaxResponseMessageSize");
             return new CreateSessionRequest(requestHeader, clientDescription, serverUri, endpointUrl, sessionName, clientNonce, clientCertificate, requestedSessionTimeout, maxResponseMessageSize);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateSessionRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
-            encoder.writeString("ServerUri", value.getServerUri());
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeString("SessionName", value.getSessionName());
-            encoder.writeByteString("ClientNonce", value.getClientNonce());
-            encoder.writeByteString("ClientCertificate", value.getClientCertificate());
-            encoder.writeDouble("RequestedSessionTimeout", value.getRequestedSessionTimeout());
-            encoder.writeUInt32("MaxResponseMessageSize", value.getMaxResponseMessageSize());
+        public void encodeType(EncodingContext context, UaEncoder encoder, CreateSessionRequest value) {
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
+            encoder.encodeString("ServerUri", value.getServerUri());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeString("SessionName", value.getSessionName());
+            encoder.encodeByteString("ClientNonce", value.getClientNonce());
+            encoder.encodeByteString("ClientCertificate", value.getClientCertificate());
+            encoder.encodeDouble("RequestedSessionTimeout", value.getRequestedSessionTimeout());
+            encoder.encodeUInt32("MaxResponseMessageSize", value.getMaxResponseMessageSize());
         }
     }
 }

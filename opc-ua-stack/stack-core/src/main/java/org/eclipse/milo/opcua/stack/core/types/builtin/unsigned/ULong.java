@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -94,7 +94,7 @@ public final class ULong extends UNumber implements Comparable<ULong> {
     public static int compare(long x, long y) {
         x += Long.MIN_VALUE;
         y += Long.MIN_VALUE;
-        return (x < y) ? -1 : ((x == y) ? 0 : 1);
+        return Long.compare(x, y);
     }
 
     /**

@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -56,14 +56,13 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_TYPE_DEFINITION_PREDICATE;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaVariableNode extends UaNode implements VariableNode {
 
-    private static final DataValue INITIAL_VALUE = new DataValue(new StatusCode(StatusCodes.Uncertain_InitialValue));
+    static final DataValue INITIAL_VALUE = new DataValue(new StatusCode(StatusCodes.Uncertain_InitialValue));
 
     private DataValue value = INITIAL_VALUE;
-    private NodeId dataType = Identifiers.BaseDataType;
+    private NodeId dataType = NodeIds.BaseDataType;
     private Integer valueRank = ValueRanks.Scalar;
     private UInteger[] arrayDimensions = null;
     private UByte accessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
@@ -416,14 +415,14 @@ public class UaVariableNode extends UaNode implements VariableNode {
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
     public List<Node> getComponentNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .collect(Collectors.toList());
     }
 
@@ -446,7 +445,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     public void addComponent(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
@@ -461,7 +460,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     public void removeComponent(UaNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
@@ -702,7 +701,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
             DateTime.now()
         );
 
-        private NodeId dataType = Identifiers.BaseDataType;
+        private NodeId dataType = NodeIds.BaseDataType;
         private int valueRank = ValueRanks.Scalar;
         private UInteger[] arrayDimensions = null;
         private UByte accessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
@@ -738,10 +737,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
             long hasTypeDefinitionCount = references.stream()
-                .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
+                .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
 
             if (hasTypeDefinitionCount == 0) {
-                setTypeDefinition(Identifiers.BaseDataVariableType);
+                setTypeDefinition(NodeIds.BaseDataVariableType);
             } else {
                 Preconditions.checkState(
                     hasTypeDefinitionCount == 1,
@@ -1010,7 +1009,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             references.add(new Reference(
                 nodeId,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 typeDefinition.expanded(),
                 true
             ));

@@ -31,8 +31,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -297,7 +297,7 @@ public class NodeFactory {
                 NodeId referenceTypeId = t.nodeId;
                 ReferenceTable.RefTarget target = t.target;
 
-                if (!Identifiers.HasModellingRule.equals(referenceTypeId)) {
+                if (!NodeIds.HasModellingRule.equals(referenceTypeId)) {
                     if (target.targetNodeId != null) {
                         node.addReference(new Reference(
                             node.getNodeId(),
@@ -426,15 +426,15 @@ public class NodeFactory {
     protected boolean isOptionalDeclaration(UaNode node) {
         return node.getReferences()
             .stream()
-            .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
-            .anyMatch(r -> Identifiers.ModellingRule_Optional.equalTo(r.getTargetNodeId()));
+            .filter(r -> NodeIds.HasModellingRule.equals(r.getReferenceTypeId()))
+            .anyMatch(r -> NodeIds.ModellingRule_Optional.equalTo(r.getTargetNodeId()));
     }
 
     private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {
         return referenceTable
             .getReferences(browsePath)
             .stream()
-            .filter(t -> t.nodeId.equals(Identifiers.HasTypeDefinition))
+            .filter(t -> t.nodeId.equals(NodeIds.HasTypeDefinition))
             .map(t -> t.target.targetNodeId)
             .findFirst()
             .orElse(ExpandedNodeId.NULL_VALUE);

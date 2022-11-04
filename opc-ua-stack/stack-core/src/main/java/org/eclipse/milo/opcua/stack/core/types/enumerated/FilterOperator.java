@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,15 +10,17 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum FilterOperator implements UaEnumeration {
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.3</a>
+ */
+public enum FilterOperator implements UaEnumeratedType {
     Equals(0),
 
     IsNull(1),
@@ -66,8 +68,12 @@ public enum FilterOperator implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static FilterOperator from(int value) {
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
+    }
+
+    public static @Nullable FilterOperator from(int value) {
         switch (value) {
             case 0:
                 return Equals;
@@ -110,24 +116,30 @@ public enum FilterOperator implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=576");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Equals"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "IsNull"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "GreaterThan"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "LessThan"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "GreaterThanOrEqual"),
+            new EnumField(5L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "LessThanOrEqual"),
+            new EnumField(6L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Like"),
+            new EnumField(7L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Not"),
+            new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Between"),
+            new EnumField(9L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "InList"),
+            new EnumField(10L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "And"),
+            new EnumField(11L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Or"),
+            new EnumField(12L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Cast"),
+            new EnumField(13L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "InView"),
+            new EnumField(14L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "OfType"),
+            new EnumField(15L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "RelatedTo"),
+            new EnumField(16L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BitwiseAnd"),
+            new EnumField(17L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BitwiseOr")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<FilterOperator> {
-        @Override
-        public Class<FilterOperator> getType() {
-            return FilterOperator.class;
-        }
-
-        @Override
-        public FilterOperator decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, FilterOperator.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder, FilterOperator value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=576");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +51,14 @@ public final class LocalizedText {
         return text;
     }
 
+    public boolean isNull() {
+        return locale == null && text == null;
+    }
+
+    public boolean isNotNull() {
+        return !isNull();
+    }
+
     public static LocalizedText english(@Nullable String text) {
         return new LocalizedText(text);
     }
@@ -61,8 +70,7 @@ public final class LocalizedText {
 
         LocalizedText that = (LocalizedText) o;
 
-        return !(locale != null ? !locale.equals(that.locale) : that.locale != null) &&
-            !(text != null ? !text.equals(that.text) : that.text != null);
+        return Objects.equals(locale, that.locale) && Objects.equals(text, that.text);
     }
 
     @Override

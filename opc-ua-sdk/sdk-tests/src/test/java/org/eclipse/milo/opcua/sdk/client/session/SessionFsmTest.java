@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.testng.Assert.assertNotNull;
 
 public class SessionFsmTest {
@@ -39,7 +38,6 @@ public class SessionFsmTest {
             ))
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
             .setApplicationUri("urn:eclipse:milo:examples:client")
-            .setRequestTimeout(uint(60000))
             .build();
 
         OpcUaClient client = OpcUaClient.create(clientConfig);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,16 +10,60 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.config;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 
-public interface OpcUaClientConfig extends UaStackClientConfig {
+public interface OpcUaClientConfig {
+
+    /**
+     * Get the endpoint to connect to.
+     *
+     * @return the {@link EndpointDescription} to connect to.
+     */
+    EndpointDescription getEndpoint();
+
+    /**
+     * Get the {@link KeyPair} to use.
+     * <p>
+     * May be absent if connecting without security, must be present if connecting with security.
+     *
+     * @return an {@link Optional} containing the {@link KeyPair} to use.
+     */
+    Optional<KeyPair> getKeyPair();
+
+    /**
+     * Get the {@link X509Certificate} to use.
+     * <p>
+     * May be absent if connecting without security, must be present if connecting with security.
+     *
+     * @return an {@link Optional} containing the {@link X509Certificate} to use.
+     */
+    Optional<X509Certificate> getCertificate();
+
+    /**
+     * Get the {@link X509Certificate} to use as well as any certificates in the certificate chain.
+     *
+     * @return the {@link X509Certificate} to use as well as any certificates in the certificate chain.
+     */
+    Optional<X509Certificate[]> getCertificateChain();
+
+    /**
+     * Get the {@link ClientCertificateValidator} this client will use to validate server certificates when connecting.
+     *
+     * @return the validator this client will use to validate server certificates when connecting.
+     */
+    ClientCertificateValidator getCertificateValidator();
 
     /**
      * @return the name of the client application, as a {@link LocalizedText}.
@@ -53,6 +97,16 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     UInteger getSessionTimeout();
 
     /**
+     * @return the request timeout, in milliseconds.
+     */
+    UInteger getRequestTimeout();
+
+    /**
+     * @return the {@link EncodingLimits} used by this client.
+     */
+    EncodingLimits getEncodingLimits();
+
+    /**
      * @return the maximum size for a response from the server.
      */
     UInteger getMaxResponseMessageSize();
@@ -84,6 +138,14 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     UInteger getKeepAliveTimeout();
 
     /**
+     * The multiplier applied to a subscription's expected keep-alive interval, used by the
+     * watchdog timer to determine how "late" a keep-alive can arrive before it fires.
+     *
+     * @return the multiplier applied to a subscription's expected keep-alive interval.
+     */
+    double getSubscriptionWatchdogMultiplier();
+
+    /**
      * @return a new {@link OpcUaClientConfigBuilder}.
      */
     static OpcUaClientConfigBuilder builder() {
@@ -101,7 +163,6 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     static OpcUaClientConfigBuilder copy(OpcUaClientConfig config) {
         OpcUaClientConfigBuilder builder = new OpcUaClientConfigBuilder();
 
-        // UaStackClientConfig values
         builder.setEndpoint(config.getEndpoint());
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
@@ -109,17 +170,6 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
-        builder.setEncodingLimits(config.getEncodingLimits());
-        builder.setChannelLifetime(config.getChannelLifetime());
-        builder.setExecutor(config.getExecutor());
-        builder.setScheduledExecutor(config.getScheduledExecutor());
-        builder.setEventLoop(config.getEventLoop());
-        builder.setWheelTimer(config.getWheelTimer());
-        builder.setConnectTimeout(config.getConnectTimeout());
-        builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
-        builder.setRequestTimeout(config.getRequestTimeout());
-
-        // OpcUaClientConfig values
         builder.setSessionName(config.getSessionName());
         builder.setSessionTimeout(config.getSessionTimeout());
         builder.setRequestTimeout(config.getRequestTimeout());
@@ -130,6 +180,7 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
         builder.setKeepAliveInterval(config.getKeepAliveInterval());
         builder.setKeepAliveTimeout(config.getKeepAliveTimeout());
         builder.setSessionLocaleIds(config.getSessionLocaleIds());
+        builder.setSubscriptionWatchdogMultiplier(config.getSubscriptionWatchdogMultiplier());
 
         return builder;
     }

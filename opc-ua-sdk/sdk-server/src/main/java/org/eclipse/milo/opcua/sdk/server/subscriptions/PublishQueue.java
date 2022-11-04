@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,13 +14,18 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
-import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,28 +34,26 @@ public class PublishQueue {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final LinkedList<ServiceRequest> serviceQueue = new LinkedList<>();
+    private final LinkedList<PendingPublish> pendingQueue = new LinkedList<>();
 
     private final LinkedHashMap<UInteger, WaitingSubscription> waitList = new LinkedHashMap<>();
 
-    /**
-     * Add a Publish {@link ServiceRequest} to the queue.
-     * <p>
-     * If there are wait-listed Subscriptions this request will be used immediately, otherwise it will be queued for
-     * later use by a Subscription whose publish timer has expired and has notifications to send.
-     *
-     * @param service the Publish {@link ServiceRequest}.
-     */
-    public synchronized void addRequest(ServiceRequest service) {
-        List<WaitingSubscription> waitingSubscriptions = Lists.newArrayList(waitList.values());
+    private final ExecutorService executor;
+
+    public PublishQueue(ExecutorService executor) {
+        this.executor = executor;
+    }
+
+    public synchronized void addRequest(PendingPublish pending) {
+        List<WaitingSubscription> waitingSubscriptions = List.copyOf(waitList.values());
 
         if (waitingSubscriptions.isEmpty()) {
-            serviceQueue.add(service);
+            pendingQueue.add(pending);
 
             logger.debug(
                 "Queued PublishRequest requestHandle={}, size={}",
-                service.getRequest().getRequestHeader().getRequestHandle(),
-                serviceQueue.size()
+                pending.request.getRequestHeader().getRequestHandle(),
+                pendingQueue.size()
             );
         } else {
             logger.debug("{} subscriptions waiting", waitingSubscriptions.size());
@@ -98,11 +101,9 @@ public class PublishQueue {
 
                 final WaitingSubscription ws = subscription;
 
-                service.getServer().getConfig().getExecutor().execute(
-                    () -> ws.subscription.onPublish(service)
-                );
+                executor.execute(() -> ws.subscription.onPublish(pending));
             } else {
-                serviceQueue.add(service);
+                pendingQueue.add(pending);
             }
         }
     }
@@ -121,14 +122,11 @@ public class PublishQueue {
      * @param subscription the subscription to wait-list.
      */
     public synchronized void addSubscription(Subscription subscription) {
-        if (waitList.isEmpty() && !serviceQueue.isEmpty()) {
-            ServiceRequest request = poll();
+        if (waitList.isEmpty() && !pendingQueue.isEmpty()) {
+            PendingPublish pending = poll();
 
-            if (request != null) {
-                request.getServer().getConfig().getExecutor().execute(
-                    () ->
-                        subscription.onPublish(request)
-                );
+            if (pending != null) {
+                executor.execute(() -> subscription.onPublish(pending));
             } else {
                 waitList.putIfAbsent(subscription.getId(), new WaitingSubscription(subscription));
             }
@@ -138,45 +136,46 @@ public class PublishQueue {
     }
 
     public synchronized boolean isEmpty() {
-        return serviceQueue.isEmpty();
+        return pendingQueue.isEmpty();
     }
 
     public synchronized boolean isNotEmpty() {
         return !isEmpty();
     }
 
-    @Nullable
-    public synchronized ServiceRequest poll() {
+    public synchronized boolean isWaitListEmpty() {
+        return waitList.isEmpty();
+    }
+
+    public synchronized @Nullable PublishQueue.PendingPublish poll() {
         long nowNanos = System.nanoTime();
 
         while (true) {
-            ServiceRequest serviceRequest = serviceQueue.poll();
+            PendingPublish pending = pendingQueue.poll();
 
-            if (serviceRequest == null) {
+            if (pending == null) {
                 return null;
             } else {
-                RequestHeader requestHeader = serviceRequest
-                    .getRequest()
-                    .getRequestHeader();
+                RequestHeader requestHeader = pending.request.getRequestHeader();
 
                 long millisSinceReceived = TimeUnit.MILLISECONDS.convert(
-                    nowNanos - serviceRequest.getReceivedAtNanos(),
+                    nowNanos - pending.context.receivedAtNanos(),
                     TimeUnit.NANOSECONDS
                 );
 
                 long timeoutHint = requestHeader.getTimeoutHint().longValue();
 
                 if (timeoutHint == 0 || millisSinceReceived < timeoutHint) {
-                    return serviceRequest;
+                    return pending;
                 } else {
                     logger.debug(
                         "Discarding expired PublishRequest requestHandle={} timestamp={} timeoutHint={}",
-                        serviceRequest.getRequest().getRequestHeader().getRequestHandle(),
+                        pending.request.getRequestHeader().getRequestHandle(),
                         requestHeader.getTimestamp().getJavaDate(),
                         timeoutHint
                     );
 
-                    serviceRequest.setServiceFault(StatusCodes.Bad_Timeout);
+                    pending.responseFuture.completeExceptionally(new UaException(StatusCodes.Bad_Timeout));
                 }
             }
         }
@@ -188,7 +187,28 @@ public class PublishQueue {
      * @return the number of queued Publish ServiceRequests.
      */
     public synchronized int size() {
-        return serviceQueue.size();
+        return pendingQueue.size();
+    }
+
+    public static class PendingPublish {
+
+        public final CompletableFuture<PublishResponse> responseFuture = new CompletableFuture<>();
+
+        public final ServiceRequestContext context;
+        public final PublishRequest request;
+        public final StatusCode[] acknowledgeResults;
+
+        public PendingPublish(
+            ServiceRequestContext context,
+            PublishRequest request,
+            StatusCode[] acknowledgeResults
+        ) {
+
+            this.context = context;
+            this.request = request;
+            this.acknowledgeResults = acknowledgeResults;
+        }
+
     }
 
     public static class WaitingSubscription {

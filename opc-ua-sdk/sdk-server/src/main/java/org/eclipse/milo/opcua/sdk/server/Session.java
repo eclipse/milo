@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,24 +17,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultMethodServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultMonitoredItemServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultNodeManagementServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultQueryServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultSubscriptionServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultViewServiceSet;
-import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
+import org.eclipse.milo.opcua.sdk.server.services.impl.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -42,35 +33,29 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.IssuedIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-
-public class Session implements SessionServiceSet {
+public class Session {
 
     private static final int IDENTITY_HISTORY_MAX_SIZE = 10;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<LifecycleListener> listeners = Lists.newCopyOnWriteArrayList();
+    private final List<LifecycleListener> listeners = new CopyOnWriteArrayList<>();
 
     private final SubscriptionManager subscriptionManager;
 
     private final LinkedList<String> clientUserIdHistory = new LinkedList<>();
 
-    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
+    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = new ConcurrentHashMap<>();
 
     private volatile Object identityObject;
     private volatile UserIdentityToken identityToken;
@@ -79,15 +64,6 @@ public class Session implements SessionServiceSet {
 
     private volatile long lastActivityNanos = System.nanoTime();
     private volatile ScheduledFuture<?> checkTimeoutFuture;
-
-    private final DefaultAttributeServiceSet attributeServiceSet;
-    private final DefaultAttributeHistoryServiceSet attributeHistoryServiceSet;
-    private final DefaultMethodServiceSet methodServiceSet;
-    private final DefaultMonitoredItemServiceSet monitoredItemServiceSet;
-    private final DefaultNodeManagementServiceSet nodeManagementServiceSet;
-    private final DefaultQueryServiceSet queryServiceSet;
-    private final DefaultSubscriptionServiceSet subscriptionServiceSet;
-    private final DefaultViewServiceSet viewServiceSet;
 
     private volatile EndpointDescription endpoint;
     private volatile long secureChannelId;
@@ -136,15 +112,6 @@ public class Session implements SessionServiceSet {
         sessionSecurityDiagnostics = new SessionSecurityDiagnostics(this);
 
         subscriptionManager = new SubscriptionManager(this, server);
-
-        attributeServiceSet = new DefaultAttributeServiceSet();
-        attributeHistoryServiceSet = new DefaultAttributeHistoryServiceSet();
-        methodServiceSet = new DefaultMethodServiceSet();
-        monitoredItemServiceSet = new DefaultMonitoredItemServiceSet(subscriptionManager);
-        nodeManagementServiceSet = new DefaultNodeManagementServiceSet();
-        queryServiceSet = new DefaultQueryServiceSet();
-        subscriptionServiceSet = new DefaultSubscriptionServiceSet(subscriptionManager);
-        viewServiceSet = new DefaultViewServiceSet(server.getConfig().getExecutor());
 
         checkTimeoutFuture = server.getScheduledExecutorService().schedule(
             this::checkTimeout, sessionTimeout.toNanos(), TimeUnit.NANOSECONDS);
@@ -344,56 +311,8 @@ public class Session implements SessionServiceSet {
         this.localeIds = localeIds;
     }
 
-    public DefaultAttributeServiceSet getAttributeServiceSet() {
-        return attributeServiceSet;
-    }
-
-    public DefaultAttributeHistoryServiceSet getAttributeHistoryServiceSet() {
-        return attributeHistoryServiceSet;
-    }
-
-    public DefaultMethodServiceSet getMethodServiceSet() {
-        return methodServiceSet;
-    }
-
-    public DefaultMonitoredItemServiceSet getMonitoredItemServiceSet() {
-        return monitoredItemServiceSet;
-    }
-
-    public NodeManagementServiceSet getNodeManagementServiceSet() {
-        return nodeManagementServiceSet;
-    }
-
-    public DefaultQueryServiceSet getQueryServiceSet() {
-        return queryServiceSet;
-    }
-
-    public DefaultSubscriptionServiceSet getSubscriptionServiceSet() {
-        return subscriptionServiceSet;
-    }
-
-    public DefaultViewServiceSet getViewServiceSet() {
-        return viewServiceSet;
-    }
-
     public SubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
-    }
-    //region Session Services
-
-    @Override
-    public void onCreateSession(ServiceRequest serviceRequest) {
-        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
-    }
-
-    @Override
-    public void onActivateSession(ServiceRequest serviceRequest) {
-        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
-    }
-
-    @Override
-    public void onCloseSession(ServiceRequest serviceRequest) {
-        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     void close(boolean deleteSubscriptions) {
@@ -405,12 +324,6 @@ public class Session implements SessionServiceSet {
 
         listeners.forEach(listener -> listener.onSessionClosed(this, deleteSubscriptions));
     }
-
-    @Override
-    public void onCancel(ServiceRequest serviceRequest) {
-        serviceRequest.setResponse(new CancelResponse(serviceRequest.createResponseHeader(), uint(0)));
-    }
-    //endregion
 
     @Nullable
     private static String getClientUserId(UserIdentityToken identityToken) {

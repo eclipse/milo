@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,30 +13,32 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class TrustListDataType extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12554");
+public class TrustListDataType extends Structure implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12554");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12680");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=12680");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12676");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=12676");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15044");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15044");
 
     private final UInteger specifiedLists;
 
@@ -97,6 +99,21 @@ public class TrustListDataType extends Structure implements UaStructure {
         return issuerCrls;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 12680),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("SpecifiedLists", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TrustedCertificates", LocalizedText.NULL_VALUE, new NodeId(0, 15), 1, null, UInteger.valueOf(0), false),
+                new StructureField("TrustedCrls", LocalizedText.NULL_VALUE, new NodeId(0, 15), 1, null, UInteger.valueOf(0), false),
+                new StructureField("IssuerCertificates", LocalizedText.NULL_VALUE, new NodeId(0, 15), 1, null, UInteger.valueOf(0), false),
+                new StructureField("IssuerCrls", LocalizedText.NULL_VALUE, new NodeId(0, 15), 1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<TrustListDataType> {
         @Override
         public Class<TrustListDataType> getType() {
@@ -104,22 +121,22 @@ public class TrustListDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public TrustListDataType decode(SerializationContext context, UaDecoder decoder) {
-            UInteger specifiedLists = decoder.readUInt32("SpecifiedLists");
-            ByteString[] trustedCertificates = decoder.readByteStringArray("TrustedCertificates");
-            ByteString[] trustedCrls = decoder.readByteStringArray("TrustedCrls");
-            ByteString[] issuerCertificates = decoder.readByteStringArray("IssuerCertificates");
-            ByteString[] issuerCrls = decoder.readByteStringArray("IssuerCrls");
+        public TrustListDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            UInteger specifiedLists = decoder.decodeUInt32("SpecifiedLists");
+            ByteString[] trustedCertificates = decoder.decodeByteStringArray("TrustedCertificates");
+            ByteString[] trustedCrls = decoder.decodeByteStringArray("TrustedCrls");
+            ByteString[] issuerCertificates = decoder.decodeByteStringArray("IssuerCertificates");
+            ByteString[] issuerCrls = decoder.decodeByteStringArray("IssuerCrls");
             return new TrustListDataType(specifiedLists, trustedCertificates, trustedCrls, issuerCertificates, issuerCrls);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TrustListDataType value) {
-            encoder.writeUInt32("SpecifiedLists", value.getSpecifiedLists());
-            encoder.writeByteStringArray("TrustedCertificates", value.getTrustedCertificates());
-            encoder.writeByteStringArray("TrustedCrls", value.getTrustedCrls());
-            encoder.writeByteStringArray("IssuerCertificates", value.getIssuerCertificates());
-            encoder.writeByteStringArray("IssuerCrls", value.getIssuerCrls());
+        public void encodeType(EncodingContext context, UaEncoder encoder, TrustListDataType value) {
+            encoder.encodeUInt32("SpecifiedLists", value.getSpecifiedLists());
+            encoder.encodeByteStringArray("TrustedCertificates", value.getTrustedCertificates());
+            encoder.encodeByteStringArray("TrustedCrls", value.getTrustedCrls());
+            encoder.encodeByteStringArray("IssuerCertificates", value.getIssuerCertificates());
+            encoder.encodeByteStringArray("IssuerCrls", value.getIssuerCrls());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,11 +13,12 @@ package org.eclipse.milo.examples.client;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -47,7 +48,7 @@ public class MethodExample2 implements ClientExample {
 
         logArguments(client, sqrtMethod);
 
-        Variant[] inputs = {new Variant(16.0)};
+        Variant[] inputs = {Variant.ofDouble(16.0)};
         Variant[] outputs = sqrtMethod.call(inputs);
 
         logger.info("Input values: " + Arrays.toString(inputs));
@@ -72,14 +73,15 @@ public class MethodExample2 implements ClientExample {
             logger.info("{} arguments:", input ? "Input" : "Output");
             for (Argument argument : arguments) {
                 NodeId dataTypeId = argument.getDataType();
-                DataTypeTree.DataType dataType = dataTypeTree.getDataType(dataTypeId);
+                DataType dataType = dataTypeTree.getDataType(dataTypeId);
                 assert dataType != null;
                 String dataTypeName = dataType.getBrowseName().getName();
 
-                logger.info("  {}: {} ({})",
+                logger.info("  {}: {} ({}) \"{}\"",
                     argument.getName(),
                     dataTypeName,
-                    dataTypeId.toParseableString()
+                    dataTypeId.toParseableString(),
+                    argument.getDescription().getText()
                 );
             }
         }

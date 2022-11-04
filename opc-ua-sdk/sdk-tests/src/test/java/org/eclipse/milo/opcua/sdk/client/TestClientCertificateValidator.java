@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,13 +14,13 @@ import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Sets;
-import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
 
 public class TestClientCertificateValidator implements ClientCertificateValidator {
 
-    private final Set<X509Certificate> trustedCertificates = Sets.newConcurrentHashSet();
+    private final Set<X509Certificate> trustedCertificates = ConcurrentHashMap.newKeySet();
 
     public TestClientCertificateValidator(X509Certificate certificate) {
         trustedCertificates.add(certificate);

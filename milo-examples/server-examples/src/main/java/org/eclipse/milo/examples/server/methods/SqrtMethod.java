@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,7 @@ package org.eclipse.milo.examples.server.methods;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
@@ -24,18 +24,18 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
 
     public static final Argument X = new Argument(
         "x",
-        Identifiers.Double,
+        NodeIds.Double,
         ValueRanks.Scalar,
         null,
-        new LocalizedText("A value.")
+        new LocalizedText("The argument to the square root function.")
     );
 
     public static final Argument X_SQRT = new Argument(
         "x_sqrt",
-        Identifiers.Double,
+        NodeIds.Double,
         ValueRanks.Scalar,
         null,
-        new LocalizedText("A value.")
+        new LocalizedText("The square root of the input argument.")
     );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -61,7 +61,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
         double x = (double) inputValues[0].getValue();
         double xSqrt = Math.sqrt(x);
 
-        return new Variant[]{new Variant(xSqrt)};
+        return new Variant[]{Variant.ofDouble(xSqrt)};
     }
 
 }

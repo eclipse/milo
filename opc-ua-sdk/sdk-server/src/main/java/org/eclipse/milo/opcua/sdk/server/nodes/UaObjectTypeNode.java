@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -38,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_ORDERED_COMPONENT_PREDICATE;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
@@ -139,7 +138,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public UaMethodNode findMethodNode(NodeId methodId) {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE.or(HAS_ORDERED_COMPONENT_PREDICATE))
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> (n instanceof UaMethodNode) && Objects.equals(n.getNodeId(), methodId))
             .map(UaMethodNode.class::cast)
             .findFirst()
@@ -149,7 +148,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public List<UaMethodNode> getMethodNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE.or(HAS_ORDERED_COMPONENT_PREDICATE))
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> (n instanceof UaMethodNode))
             .map(UaMethodNode.class::cast)
             .collect(Collectors.toList());
@@ -164,14 +163,14 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public void addComponent(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             getNodeId().expanded(),
             false
         ));
@@ -186,14 +185,14 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public void addSubtype(UaObjectTypeNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasSubtype,
+            NodeIds.HasSubtype,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasSubtype,
+            NodeIds.HasSubtype,
             getNodeId().expanded(),
             false
         ));

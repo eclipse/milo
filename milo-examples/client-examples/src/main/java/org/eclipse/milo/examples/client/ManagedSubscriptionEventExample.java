@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.EventFilterBuilder;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedEventItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
@@ -58,14 +58,14 @@ public class ManagedSubscriptionEventExample implements ClientExample {
         });
 
         EventFilter eventFilter = new EventFilterBuilder()
-            .select(Identifiers.BaseEventType, new QualifiedName(0, "EventId"))
-            .select(Identifiers.BaseEventType, new QualifiedName(0, "EventType"))
-            .select(Identifiers.BaseEventType, new QualifiedName(0, "Severity"))
-            .select(Identifiers.BaseEventType, new QualifiedName(0, "Time"))
-            .select(Identifiers.BaseEventType, new QualifiedName(0, "Message"))
+            .select(NodeIds.BaseEventType, new QualifiedName(0, "EventId"))
+            .select(NodeIds.BaseEventType, new QualifiedName(0, "EventType"))
+            .select(NodeIds.BaseEventType, new QualifiedName(0, "Severity"))
+            .select(NodeIds.BaseEventType, new QualifiedName(0, "Time"))
+            .select(NodeIds.BaseEventType, new QualifiedName(0, "Message"))
             .build();
 
-        ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
+        ManagedEventItem eventItem = subscription.createEventItem(NodeIds.Server, eventFilter);
 
         // wait for some events to arrive before completing
         eventLatch.await();

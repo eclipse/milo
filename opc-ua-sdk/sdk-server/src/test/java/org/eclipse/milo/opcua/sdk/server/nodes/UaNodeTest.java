@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,12 +19,13 @@ import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -53,6 +54,8 @@ public class UaNodeTest {
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getObjectTypeManager()).thenReturn(objectTypeManager);
         Mockito.when(server.getVariableTypeManager()).thenReturn(variableTypeManager);
+        Mockito.when(server.getEncodingContext()).thenReturn(new TestEncodingContext());
+        Mockito.when(server.getEncodingManager()).thenReturn(OpcUaEncodingManager.getInstance());
 
         UaNodeManager nodeManager = new UaNodeManager();
         addressSpaceManager.register(nodeManager);
@@ -108,7 +111,7 @@ public class UaNodeTest {
             b.setNodeId(nodeId)
                 .setBrowseName(new QualifiedName(1, "TestObject"))
                 .setDisplayName(LocalizedText.english("TestObject"))
-                .setTypeDefinition(Identifiers.FolderType)
+                .setTypeDefinition(NodeIds.FolderType)
                 .build()
         );
 
@@ -116,20 +119,20 @@ public class UaNodeTest {
 
         objectNode.addReference(new Reference(
             nodeId,
-            Identifiers.HasComponent,
-            Identifiers.ObjectNode.expanded(),
+            NodeIds.HasComponent,
+            NodeIds.ObjectNode.expanded(),
             Reference.Direction.INVERSE
         ));
 
         assertTrue(nodeManager.containsNode(nodeId));
         assertTrue(nodeManager.getReferences(nodeId).size() > 0);
-        assertTrue(nodeManager.getReferences(Identifiers.ObjectNode).size() > 0);
+        assertTrue(nodeManager.getReferences(NodeIds.ObjectNode).size() > 0);
 
         objectNode.delete();
 
         assertFalse(nodeManager.containsNode(nodeId));
         assertEquals(0, nodeManager.getReferences(nodeId).size());
-        assertEquals(0, nodeManager.getReferences(Identifiers.ObjectNode).size());
+        assertEquals(0, nodeManager.getReferences(NodeIds.ObjectNode).size());
     }
 
     @Test
@@ -158,7 +161,7 @@ public class UaNodeTest {
 
         AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             nodeId,
-            Identifiers.AnalogItemType,
+            NodeIds.AnalogItemType,
             new NodeFactory.InstantiationCallback() {
                 @Override
                 public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {

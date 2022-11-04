@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -399,7 +399,7 @@ public final class NodeId {
             case Opaque:
                 ByteString bs = (ByteString) identifier;
                 if (bs.isNull()) sb.append("b=");
-                else sb.append("b=").append(DatatypeConverter.printBase64Binary(bs.bytes()));
+                else sb.append("b=").append(Base64.getEncoder().encodeToString(bs.bytes()));
                 break;
 
             default:
@@ -454,7 +454,7 @@ public final class NodeId {
                 }
             case "b=":
                 try {
-                    return new NodeId(namespaceIndex, ByteString.of(DatatypeConverter.parseBase64Binary(id)));
+                    return new NodeId(namespaceIndex, ByteString.of(Base64.getDecoder().decode(id)));
                 } catch (IllegalArgumentException e) {
                     throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
                 }

@@ -10,9 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Optional;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,19 +20,22 @@ import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
-import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
-import org.eclipse.milo.opcua.stack.server.UaStackServerConfigBuilder;
-import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
-public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
+public class OpcUaServerConfigBuilder {
 
-    private IdentityValidator<?> identityValidator = AnonymousIdentityValidator.INSTANCE;
+    private Set<EndpointConfig> endpoints = new HashSet<>();
+
+    private LocalizedText applicationName = LocalizedText
+        .english("server application name not configured");
+
+    private String applicationUri = "server application uri not configured";
+
+    private String productUri = "server product uri not configured";
 
     private BuildInfo buildInfo = new BuildInfo(
         "",
@@ -45,12 +46,37 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         DateTime.MIN_VALUE
     );
 
+    private IdentityValidator<?> identityValidator = AnonymousIdentityValidator.INSTANCE;
+
+    private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
+
     private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
 
-    private ScheduledExecutorService scheduledExecutorService;
+    private CertificateManager certificateManager;
+    private TrustListManager trustListManager;
+    private ServerCertificateValidator certificateValidator;
 
-    public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator<?> identityValidator) {
-        this.identityValidator = identityValidator;
+    private ExecutorService executor;
+    private ScheduledExecutorService scheduledExecutor;
+
+
+    public OpcUaServerConfigBuilder setEndpoints(Set<EndpointConfig> endpointConfigs) {
+        this.endpoints = endpointConfigs;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setApplicationName(LocalizedText applicationName) {
+        this.applicationName = applicationName;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setApplicationUri(String applicationUri) {
+        this.applicationUri = applicationUri;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setProductUri(String productUri) {
+        this.productUri = productUri;
         return this;
     }
 
@@ -59,144 +85,116 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         return this;
     }
 
+    public OpcUaServerConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
+        return this;
+    }
+
     public OpcUaServerConfigBuilder setLimits(OpcUaServerConfigLimits limits) {
         this.limits = limits;
         return this;
     }
 
-    public OpcUaServerConfigBuilder setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
-        this.scheduledExecutorService = scheduledExecutorService;
+    public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator<?> identityValidator) {
+        this.identityValidator = identityValidator;
         return this;
     }
 
-    @Override
-    public OpcUaServerConfigBuilder setEndpoints(Set<EndpointConfiguration> endpointConfigurations) {
-        super.setEndpoints(endpointConfigurations);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setApplicationName(LocalizedText applicationName) {
-        super.setApplicationName(applicationName);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setApplicationUri(String applicationUri) {
-        super.setApplicationUri(applicationUri);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setProductUri(String productUri) {
-        super.setProductUri(productUri);
-        return this;
-    }
-
-    @Override
     public OpcUaServerConfigBuilder setCertificateManager(CertificateManager certificateManager) {
-        super.setCertificateManager(certificateManager);
+        this.certificateManager = certificateManager;
         return this;
     }
 
-    @Override
     public OpcUaServerConfigBuilder setTrustListManager(TrustListManager trustListManager) {
-        super.setTrustListManager(trustListManager);
+        this.trustListManager = trustListManager;
         return this;
     }
 
-    @Override
     public OpcUaServerConfigBuilder setCertificateValidator(ServerCertificateValidator certificateValidator) {
-        super.setCertificateValidator(certificateValidator);
+        this.certificateValidator = certificateValidator;
         return this;
     }
 
-    @Override
-    public OpcUaServerConfigBuilder setHttpsKeyPair(KeyPair httpsKeyPair) {
-        super.setHttpsKeyPair(httpsKeyPair);
-        return this;
-    }
-
-    /**
-     * @deprecated use {@link #setHttpsCertificateChain(X509Certificate[])} instead.
-     */
-    @Override
-    @Deprecated
-    public OpcUaServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
-        super.setHttpsCertificate(httpsCertificate);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setHttpsCertificateChain(X509Certificate[] httpsCertificate) {
-        super.setHttpsCertificateChain(httpsCertificate);
-        return this;
-    }
-
-    @Override
     public OpcUaServerConfigBuilder setExecutor(ExecutorService executor) {
-        super.setExecutor(executor);
+        this.executor = executor;
         return this;
     }
 
-    @Override
-    public OpcUaServerConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
-        super.setEncodingLimits(encodingLimits);
+    public OpcUaServerConfigBuilder setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
+        this.scheduledExecutor = scheduledExecutor;
         return this;
     }
 
-    @Override
-    public OpcUaServerConfigBuilder setMinimumSecureChannelLifetime(UInteger minimumSecureChannelLifetime) {
-        super.setMinimumSecureChannelLifetime(minimumSecureChannelLifetime);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setMaximumSecureChannelLifetime(UInteger maximumSecureChannelLifetime) {
-        super.setMaximumSecureChannelLifetime(maximumSecureChannelLifetime);
-        return this;
-    }
-
-    @Override
     public OpcUaServerConfig build() {
-        UaStackServerConfig stackServerConfig = super.build();
-
-        ScheduledExecutorService scheduledExecutorService = this.scheduledExecutorService;
-        if (scheduledExecutorService == null) {
-            scheduledExecutorService = Stack.sharedScheduledExecutor();
+        if (executor == null) {
+            executor = Stack.sharedExecutor();
+        }
+        if (scheduledExecutor == null) {
+            scheduledExecutor = Stack.sharedScheduledExecutor();
         }
 
         return new OpcUaServerConfigImpl(
-            stackServerConfig,
-            identityValidator,
+            endpoints,
+            applicationName,
+            applicationUri,
+            productUri,
             buildInfo,
+            identityValidator,
+            encodingLimits,
             limits,
-            scheduledExecutorService
+            certificateManager,
+            trustListManager,
+            certificateValidator,
+            executor,
+            scheduledExecutor
         );
     }
 
 
     public static final class OpcUaServerConfigImpl implements OpcUaServerConfig {
 
-        private final UaStackServerConfig stackServerConfig;
-
-        private final IdentityValidator<?> identityValidator;
+        private final Set<EndpointConfig> endpoints;
+        private final LocalizedText applicationName;
+        private final String applicationUri;
+        private final String productUri;
         private final BuildInfo buildInfo;
+        private final IdentityValidator<?> identityValidator;
+        private final EncodingLimits encodingLimits;
         private final OpcUaServerConfigLimits limits;
+        private final CertificateManager certificateManager;
+        private final TrustListManager trustListManager;
+        private final ServerCertificateValidator certificateValidator;
+        private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutorService;
 
         public OpcUaServerConfigImpl(
-            UaStackServerConfig stackServerConfig,
-            IdentityValidator<?> identityValidator,
+            Set<EndpointConfig> endpoints,
+            LocalizedText applicationName,
+            String applicationUri,
+            String productUri,
             BuildInfo buildInfo,
+            IdentityValidator<?> identityValidator,
+            EncodingLimits encodingLimits,
             OpcUaServerConfigLimits limits,
+            CertificateManager certificateManager,
+            TrustListManager trustListManager,
+            ServerCertificateValidator certificateValidator,
+            ExecutorService executor,
             ScheduledExecutorService scheduledExecutorService
         ) {
 
-            this.stackServerConfig = stackServerConfig;
-            this.identityValidator = identityValidator;
+            this.endpoints = endpoints;
+            this.applicationName = applicationName;
+            this.applicationUri = applicationUri;
+            this.productUri = productUri;
             this.buildInfo = buildInfo;
+            this.identityValidator = identityValidator;
+            this.encodingLimits = encodingLimits;
             this.limits = limits;
+            this.certificateManager = certificateManager;
+            this.trustListManager = trustListManager;
+            this.certificateValidator = certificateValidator;
+            this.executor = executor;
             this.scheduledExecutorService = scheduledExecutorService;
         }
 
@@ -211,78 +209,58 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         }
 
         @Override
+        public Set<EndpointConfig> getEndpoints() {
+            return endpoints;
+        }
+
+        @Override
+        public LocalizedText getApplicationName() {
+            return applicationName;
+        }
+
+        @Override
+        public String getApplicationUri() {
+            return applicationUri;
+        }
+
+        @Override
+        public String getProductUri() {
+            return productUri;
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return encodingLimits;
+        }
+
+        @Override
         public OpcUaServerConfigLimits getLimits() {
             return limits;
         }
 
         @Override
-        public ScheduledExecutorService getScheduledExecutorService() {
-            return scheduledExecutorService;
-        }
-
-        @Override
-        public Set<EndpointConfiguration> getEndpoints() {
-            return stackServerConfig.getEndpoints();
-        }
-
-        @Override
-        public LocalizedText getApplicationName() {
-            return stackServerConfig.getApplicationName();
-        }
-
-        @Override
-        public String getApplicationUri() {
-            return stackServerConfig.getApplicationUri();
-        }
-
-        @Override
-        public String getProductUri() {
-            return stackServerConfig.getProductUri();
-        }
-
-        @Override
         public CertificateManager getCertificateManager() {
-            return stackServerConfig.getCertificateManager();
+            return certificateManager;
         }
 
         @Override
         public TrustListManager getTrustListManager() {
-            return stackServerConfig.getTrustListManager();
+            return trustListManager;
         }
 
         @Override
         public ServerCertificateValidator getCertificateValidator() {
-            return stackServerConfig.getCertificateValidator();
-        }
-
-        @Override
-        public Optional<KeyPair> getHttpsKeyPair() {
-            return stackServerConfig.getHttpsKeyPair();
-        }
-
-        @Override
-        public Optional<X509Certificate[]> getHttpsCertificateChain() {
-            return stackServerConfig.getHttpsCertificateChain();
+            return certificateValidator;
         }
 
         @Override
         public ExecutorService getExecutor() {
-            return stackServerConfig.getExecutor();
+            return executor;
         }
 
         @Override
-        public EncodingLimits getEncodingLimits() {
-            return stackServerConfig.getEncodingLimits();
-        }
-
-        @Override
-        public UInteger getMinimumSecureChannelLifetime() {
-            return stackServerConfig.getMinimumSecureChannelLifetime();
-        }
-
-        @Override
-        public UInteger getMaximumSecureChannelLifetime() {
-            return stackServerConfig.getMaximumSecureChannelLifetime();
+        public ScheduledExecutorService getScheduledExecutorService() {
+            return scheduledExecutorService;
         }
 
     }

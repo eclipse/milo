@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -23,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.digitalpetri.netty.fsm.ChannelFsm;
 import com.digitalpetri.strictmachine.Fsm;
 import com.digitalpetri.strictmachine.FsmContext;
 import com.digitalpetri.strictmachine.dsl.ActionContext;
 import com.digitalpetri.strictmachine.dsl.FsmBuilder;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -38,9 +39,8 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.SignedIdentityToken;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionFuture;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -77,6 +77,8 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +107,7 @@ public class SessionFsmFactory {
 
     public static SessionFsm newSessionFsm(OpcUaClient client) {
         FsmBuilder<State, Event> builder = new FsmBuilder<>(
-            client.getConfig().getExecutor(),
+            client.getTransport().getConfig().getExecutor(),
             SessionFsm.LOGGER_NAME
         );
 
@@ -155,7 +157,7 @@ public class SessionFsmFactory {
             .execute(ctx -> {
                 Event.GetSession event = (Event.GetSession) ctx.event();
 
-                client.getConfig().getExecutor().execute(() ->
+                client.getTransport().getConfig().getExecutor().execute(() ->
                     event.future.completeExceptionally(
                         new UaException(StatusCodes.Bad_SessionClosed))
                 );
@@ -166,7 +168,7 @@ public class SessionFsmFactory {
             .execute(ctx -> {
                 Event.CloseSession event = (Event.CloseSession) ctx.event();
 
-                client.getConfig().getExecutor().execute(() ->
+                client.getTransport().getConfig().getExecutor().execute(() ->
                     event.future.complete(Unit.VALUE)
                 );
             });
@@ -209,7 +211,7 @@ public class SessionFsmFactory {
                 }
                 KEY_WAIT_TIME.set(ctx, waitTime);
 
-                ScheduledFuture<?> waitFuture = client.getConfig().getScheduledExecutor().schedule(
+                ScheduledFuture<?> waitFuture = client.getTransport().getConfig().getScheduledExecutor().schedule(
                     () -> ctx.fireEvent(new Event.CreatingWaitExpired()),
                     waitTime,
                     TimeUnit.SECONDS
@@ -228,7 +230,7 @@ public class SessionFsmFactory {
 
                 Event.CloseSession event = (Event.CloseSession) ctx.event();
 
-                client.getConfig().getExecutor().execute(() ->
+                client.getTransport().getConfig().getExecutor().execute(() ->
                     event.future.complete(Unit.VALUE)
                 );
             });
@@ -497,7 +499,9 @@ public class SessionFsmFactory {
         fb.when(State.Active)
             .on(e ->
                 e.getClass() == Event.KeepAliveFailure.class ||
-                    e.getClass() == Event.ServiceFault.class)
+                    e.getClass() == Event.ServiceFault.class ||
+                    e.getClass() == Event.ConnectionLost.class
+            )
             .transitionTo(State.CreatingWait);
 
 
@@ -515,7 +519,7 @@ public class SessionFsmFactory {
                 long keepAliveInterval = client.getConfig().getKeepAliveInterval().longValue();
                 KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, 0L);
 
-                ScheduledFuture<?> scheduledFuture = client.getConfig().getScheduledExecutor().scheduleWithFixedDelay(
+                ScheduledFuture<?> scheduledFuture = client.getTransport().getConfig().getScheduledExecutor().scheduleWithFixedDelay(
                     () -> ctx.fireEvent(new Event.KeepAlive(event.session)),
                     keepAliveInterval,
                     keepAliveInterval,
@@ -527,7 +531,34 @@ public class SessionFsmFactory {
 
                 SessionFuture sessionFuture = KEY_SESSION_FUTURE.get(ctx);
 
-                client.getConfig().getExecutor().execute(() ->
+                OpcClientTransport transport = client.getTransport();
+
+                if (transport instanceof OpcTcpClientTransport) {
+                    ChannelFsm channelFsm = ((OpcTcpClientTransport) transport).getChannelFsm();
+
+                    channelFsm.addTransitionListener(new ChannelFsm.TransitionListener() {
+                        @Override
+                        public void onStateTransition(
+                            com.digitalpetri.netty.fsm.State from,
+                            com.digitalpetri.netty.fsm.State to,
+                            com.digitalpetri.netty.fsm.Event via
+                        ) {
+
+                            if (from == com.digitalpetri.netty.fsm.State.Connected &&
+                                to != com.digitalpetri.netty.fsm.State.Connected
+                            ) {
+
+                                channelFsm.removeTransitionListener(this);
+
+                                LOGGER.debug("ChannelFsm transition from={} to={} via={}", from, to, via);
+
+                                ctx.fireEvent(new Event.ConnectionLost());
+                            }
+                        }
+                    });
+                }
+
+                client.getTransport().getConfig().getExecutor().execute(() ->
                     sessionFuture.future.complete(event.session)
                 );
             });
@@ -677,7 +708,7 @@ public class SessionFsmFactory {
                 SessionFsm.CloseFuture closeFuture = KEY_CLOSE_FUTURE.get(ctx);
 
                 if (closeFuture != null) {
-                    client.getConfig().getExecutor().execute(() ->
+                    client.getTransport().getConfig().getExecutor().execute(() ->
                         closeFuture.future.complete(Unit.VALUE)
                     );
                 }
@@ -727,7 +758,7 @@ public class SessionFsmFactory {
         SessionFuture sessionFuture = KEY_SESSION_FUTURE.remove(ctx);
 
         if (sessionFuture != null) {
-            client.getConfig().getExecutor().execute(() ->
+            client.getTransport().getConfig().getExecutor().execute(() ->
                 sessionFuture.future.completeExceptionally(failure)
             );
         }
@@ -736,13 +767,12 @@ public class SessionFsmFactory {
     private static CompletableFuture<Unit> closeSession(
         FsmContext<State, Event> ctx,
         OpcUaClient client,
-        OpcUaSession session) {
+        OpcUaSession session
+    ) {
 
         CompletableFuture<Unit> closeFuture = new CompletableFuture<>();
 
-        UaStackClient stackClient = client.getStackClient();
-
-        RequestHeader requestHeader = stackClient.newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
             uint(5000)
         );
@@ -751,10 +781,13 @@ public class SessionFsmFactory {
 
         LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
 
-        stackClient.sendRequest(request).whenCompleteAsync(
-            (csr, ex2) ->
-                closeFuture.complete(Unit.VALUE),
-            client.getConfig().getExecutor()
+        client.getTransport().sendRequestMessage(request).whenCompleteAsync(
+            (csr, ex2) -> {
+                client.getSubscriptionManager().cancelWatchdogTimers();
+
+                closeFuture.complete(Unit.VALUE);
+            },
+            client.getTransport().getConfig().getExecutor()
         );
 
         return closeFuture;
@@ -763,11 +796,10 @@ public class SessionFsmFactory {
     @SuppressWarnings("Duplicates")
     private static CompletableFuture<CreateSessionResponse> createSession(
         FsmContext<State, Event> ctx,
-        OpcUaClient client) {
+        OpcUaClient client
+    ) {
 
-        UaStackClient stackClient = client.getStackClient();
-
-        EndpointDescription endpoint = stackClient.getConfig().getEndpoint();
+        EndpointDescription endpoint = client.getConfig().getEndpoint();
 
         String gatewayServerUri = endpoint.getServer().getGatewayServerUri();
 
@@ -780,7 +812,7 @@ public class SessionFsmFactory {
 
         ByteString clientNonce = NonceUtil.generateNonce(32);
 
-        ByteString clientCertificate = stackClient.getConfig().getCertificate()
+        ByteString clientCertificate = client.getConfig().getCertificate()
             .map(c -> {
                 try {
                     return ByteString.of(c.getEncoded());
@@ -814,7 +846,8 @@ public class SessionFsmFactory {
 
         LOGGER.debug("[{}] Sending CreateSessionRequest...", ctx.getInstanceId());
 
-        return stackClient.sendRequest(request)
+        return client.getTransport()
+            .sendRequestMessage(request)
             .thenApply(CreateSessionResponse.class::cast)
             .thenCompose(response -> {
                 try {
@@ -875,9 +908,8 @@ public class SessionFsmFactory {
     private static CompletableFuture<OpcUaSession> activateSession(
         FsmContext<State, Event> ctx,
         OpcUaClient client,
-        CreateSessionResponse csr) {
-
-        UaStackClient stackClient = client.getStackClient();
+        CreateSessionResponse csr
+    ) {
 
         try {
             EndpointDescription endpoint = client.getConfig().getEndpoint();
@@ -895,14 +927,15 @@ public class SessionFsmFactory {
                 client.newRequestHeader(csr.getAuthenticationToken()),
                 buildClientSignature(client.getConfig(), csrNonce),
                 new SignedSoftwareCertificate[0],
-                new String[0],
-                ExtensionObject.encode(client.getStaticSerializationContext(), userIdentityToken),
+                client.getConfig().getSessionLocaleIds(),
+                ExtensionObject.encode(client.getStaticEncodingContext(), userIdentityToken),
                 userTokenSignature
             );
 
             LOGGER.debug("[{}] Sending ActivateSessionRequest...", ctx.getInstanceId());
 
-            return stackClient.sendRequest(request)
+            return client.getTransport()
+                .sendRequestMessage(request)
                 .thenApply(ActivateSessionResponse.class::cast)
                 .thenCompose(asr -> {
                     ByteString asrNonce = asr.getServerNonce();
@@ -932,11 +965,11 @@ public class SessionFsmFactory {
     private static CompletableFuture<Unit> transferSubscriptions(
         FsmContext<State, Event> ctx,
         OpcUaClient client,
-        OpcUaSession session) {
+        OpcUaSession session
+    ) {
 
-        UaStackClient stackClient = client.getStackClient();
         OpcUaSubscriptionManager subscriptionManager = client.getSubscriptionManager();
-        ImmutableList<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
+        List<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
 
         if (subscriptions.isEmpty()) {
             return completedFuture(Unit.VALUE);
@@ -956,7 +989,8 @@ public class SessionFsmFactory {
 
         LOGGER.debug("[{}] Sending TransferSubscriptionsRequest...", ctx.getInstanceId());
 
-        stackClient.sendRequest(request)
+        client.getTransport()
+            .sendRequestMessage(request)
             .thenApply(TransferSubscriptionsResponse.class::cast)
             .whenComplete((tsr, ex) -> {
                 if (tsr != null) {
@@ -990,7 +1024,7 @@ public class SessionFsmFactory {
                         }
                     }
 
-                    client.getConfig().getExecutor().execute(() -> {
+                    client.getTransport().getConfig().getExecutor().execute(() -> {
                         for (int i = 0; i < results.size(); i++) {
                             TransferResult result = results.get(i);
 
@@ -1013,7 +1047,7 @@ public class SessionFsmFactory {
 
                     LOGGER.debug("[{}] TransferSubscriptions not supported: {}", ctx.getInstanceId(), statusCode);
 
-                    client.getConfig().getExecutor().execute(() -> {
+                    client.getTransport().getConfig().getExecutor().execute(() -> {
                         // transferFailed() will remove the subscription, but that is okay
                         // because the list from getSubscriptions() above is a copy.
                         for (UaSubscription subscription : subscriptions) {
@@ -1052,34 +1086,50 @@ public class SessionFsmFactory {
     private static CompletableFuture<Unit> initialize(
         FsmContext<State, Event> ctx,
         OpcUaClient client,
-        OpcUaSession session) {
+        OpcUaSession session
+    ) {
 
-        List<SessionFsm.SessionInitializer> initializers =
-            KEY_SESSION_INITIALIZERS.get(ctx).sessionInitializers;
+        LinkedList<SessionFsm.SessionInitializer> initializers =
+            new LinkedList<>(KEY_SESSION_INITIALIZERS.get(ctx).sessionInitializers);
 
         if (initializers.isEmpty()) {
             return completedFuture(Unit.VALUE);
         } else {
-            UaStackClient stackClient = client.getStackClient();
+            return runSequentially(client, session, initializers);
+        }
+    }
 
-            CompletableFuture<?>[] futures = initializers.stream()
-                .map(i -> i.initialize(stackClient, session))
-                .toArray(CompletableFuture[]::new);
+    private static CompletableFuture<Unit> runSequentially(
+        OpcUaClient client,
+        OpcUaSession session,
+        LinkedList<SessionFsm.SessionInitializer> initializers
+    ) {
 
-            return CompletableFuture.allOf(futures).thenApply(v -> Unit.VALUE);
+        if (initializers.isEmpty()) {
+            return CompletableFuture.completedFuture(Unit.VALUE);
+        } else {
+            SessionFsm.SessionInitializer initializer = initializers.removeFirst();
+
+            return initializer.initialize(client, session)
+                .exceptionally(ex -> {
+                    LOGGER.error("Uncaught initialization error: " +
+                        initializer.getClass().getSimpleName(), ex);
+                    return Unit.VALUE;
+                })
+                .thenCompose(u -> runSequentially(client, session, initializers));
         }
     }
 
     private static CompletableFuture<ReadResponse> sendKeepAlive(OpcUaClient client, OpcUaSession session) {
         ReadRequest keepAliveRequest = createKeepAliveRequest(client, session);
 
-        return client.getStackClient()
-            .sendRequest(keepAliveRequest)
+        return client.getTransport()
+            .sendRequestMessage(keepAliveRequest)
             .thenApply(ReadResponse.class::cast);
     }
 
     private static ReadRequest createKeepAliveRequest(OpcUaClient client, OpcUaSession session) {
-        RequestHeader requestHeader = client.getStackClient().newRequestHeader(
+        RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
             client.getConfig().getKeepAliveTimeout()
         );
@@ -1089,7 +1139,7 @@ public class SessionFsmFactory {
             0.0,
             TimestampsToReturn.Neither,
             new ReadValueId[]{new ReadValueId(
-                Identifiers.Server_ServerStatus_State,
+                NodeIds.Server_ServerStatus_State,
                 AttributeId.Value.uid(),
                 null,
                 QualifiedName.NULL_VALUE

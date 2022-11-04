@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,32 +13,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.10</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class ServerStatusDataType extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=862");
+public class ServerStatusDataType extends Structure implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=862");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=864");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=864");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=863");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=863");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15367");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15367");
 
     private final DateTime startTime;
 
@@ -106,6 +110,22 @@ public class ServerStatusDataType extends Structure implements UaStructure {
         return shutdownReason;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 864),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("StartTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CurrentTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("State", LocalizedText.NULL_VALUE, new NodeId(0, 852), -1, null, UInteger.valueOf(0), false),
+                new StructureField("BuildInfo", LocalizedText.NULL_VALUE, new NodeId(0, 338), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SecondsTillShutdown", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ShutdownReason", LocalizedText.NULL_VALUE, new NodeId(0, 21), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<ServerStatusDataType> {
         @Override
         public Class<ServerStatusDataType> getType() {
@@ -113,25 +133,24 @@ public class ServerStatusDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public ServerStatusDataType decode(SerializationContext context, UaDecoder decoder) {
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime currentTime = decoder.readDateTime("CurrentTime");
-            ServerState state = decoder.readEnum("State", ServerState.class);
-            BuildInfo buildInfo = (BuildInfo) decoder.readStruct("BuildInfo", BuildInfo.TYPE_ID);
-            UInteger secondsTillShutdown = decoder.readUInt32("SecondsTillShutdown");
-            LocalizedText shutdownReason = decoder.readLocalizedText("ShutdownReason");
+        public ServerStatusDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime currentTime = decoder.decodeDateTime("CurrentTime");
+            ServerState state = ServerState.from(decoder.decodeEnum("State"));
+            BuildInfo buildInfo = (BuildInfo) decoder.decodeStruct("BuildInfo", BuildInfo.TYPE_ID);
+            UInteger secondsTillShutdown = decoder.decodeUInt32("SecondsTillShutdown");
+            LocalizedText shutdownReason = decoder.decodeLocalizedText("ShutdownReason");
             return new ServerStatusDataType(startTime, currentTime, state, buildInfo, secondsTillShutdown, shutdownReason);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ServerStatusDataType value) {
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("CurrentTime", value.getCurrentTime());
-            encoder.writeEnum("State", value.getState());
-            encoder.writeStruct("BuildInfo", value.getBuildInfo(), BuildInfo.TYPE_ID);
-            encoder.writeUInt32("SecondsTillShutdown", value.getSecondsTillShutdown());
-            encoder.writeLocalizedText("ShutdownReason", value.getShutdownReason());
+        public void encodeType(EncodingContext context, UaEncoder encoder, ServerStatusDataType value) {
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("CurrentTime", value.getCurrentTime());
+            encoder.encodeEnum("State", value.getState());
+            encoder.encodeStruct("BuildInfo", value.getBuildInfo(), BuildInfo.TYPE_ID);
+            encoder.encodeUInt32("SecondsTillShutdown", value.getSecondsTillShutdown());
+            encoder.encodeLocalizedText("ShutdownReason", value.getShutdownReason());
         }
     }
 }

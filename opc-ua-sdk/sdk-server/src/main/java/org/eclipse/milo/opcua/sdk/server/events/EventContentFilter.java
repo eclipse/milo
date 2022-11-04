@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
@@ -28,16 +28,16 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operator;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operators;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -64,8 +64,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class EventContentFilter {
 
@@ -125,7 +123,7 @@ public class EventContentFilter {
 
         NodeId eventTypeId = select.getTypeDefinitionId();
 
-        if (eventTypeId != null && !eventTypeId.equals(Identifiers.BaseEventType)) {
+        if (eventTypeId != null && !eventTypeId.equals(NodeIds.BaseEventType)) {
             UaNode node = context.getServer().getAddressSpaceManager().getManagedNode(eventTypeId).orElse(null);
 
             if (node == null || node.getNodeClass() != NodeClass.ObjectType) {
@@ -146,7 +144,7 @@ public class EventContentFilter {
 
             UInteger attributeId = select.getAttributeId();
 
-            ImmutableSet<AttributeId> validAttributes =
+            Set<AttributeId> validAttributes =
                 AttributeId.getAttributes(relativeNode.getNodeClass());
 
             boolean validAttribute = AttributeId.from(attributeId)
@@ -185,7 +183,7 @@ public class EventContentFilter {
 
         Predicate<Reference> referencePredicate = r ->
             r.isForward() &&
-                r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes());
+                r.subtypeOf(NodeIds.HierarchicalReferences, context.getServer().getReferenceTypes());
 
         // find the Node relative to eventNode using browsePath.
         for (QualifiedName targetBrowsePath : browsePath) {
@@ -244,7 +242,7 @@ public class EventContentFilter {
         StatusCode[] operandStatusCodes = new StatusCode[xos.length];
 
         for (int i = 0; i < xos.length; i++) {
-            Object operand = xos[i].decodeOrNull(context.getServer().getSerializationContext());
+            Object operand = xos[i].decodeOrNull(context.getServer().getEncodingContext());
 
             if (operand instanceof FilterOperand) {
                 operands[i] = (FilterOperand) operand;
@@ -336,7 +334,7 @@ public class EventContentFilter {
         }
 
         FilterOperand[] filterOperands = decodeOperands(
-            context.getServer().getSerializationContext(),
+            context.getServer().getEncodingContext(),
             element.getFilterOperands()
         );
 
@@ -347,7 +345,7 @@ public class EventContentFilter {
 
     @NotNull
     private static FilterOperand[] decodeOperands(
-        SerializationContext context,
+        EncodingContext context,
         @Nullable ExtensionObject[] operandXos
     ) {
 
@@ -428,7 +426,7 @@ public class EventContentFilter {
 
         NodeId typeDefinitionId = operand.getTypeDefinitionId();
 
-        if (typeDefinitionId != null && !typeDefinitionId.equals(Identifiers.BaseEventType)) {
+        if (typeDefinitionId != null && !typeDefinitionId.equals(NodeIds.BaseEventType)) {
             NodeId eventTypeDefinitionId = eventNode.getTypeDefinitionNode().getNodeId();
 
             boolean sameOrSubtype = typeDefinitionId.equals(eventTypeDefinitionId) ||
@@ -449,7 +447,7 @@ public class EventContentFilter {
 
             Predicate<Reference> referencePredicate = r ->
                 r.isForward() &&
-                    r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes());
+                    r.subtypeOf(NodeIds.HierarchicalReferences, context.getServer().getReferenceTypes());
 
             // find the Node relative to eventNode using browsePath.
             for (QualifiedName targetBrowsePath : browsePath) {
@@ -508,7 +506,7 @@ public class EventContentFilter {
         return addressSpaceManager.getManagedReferences(node.getNodeId())
             .stream()
             .filter(Reference.SUBTYPE_OF)
-            .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(namespaceTable)))
+            .flatMap(r -> r.getTargetNodeId().toNodeId(namespaceTable).stream())
             .findFirst()
             .flatMap(addressSpaceManager::getManagedNode);
     }

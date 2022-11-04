@@ -14,13 +14,13 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 
 public class DiagnosticsContext<T> {
 
-    private final Map<T, DiagnosticInfo> diagnosticsMap = Maps.newConcurrentMap();
+    private final Map<T, DiagnosticInfo> diagnosticsMap = new ConcurrentHashMap<>();
 
     public EnumSet<OperationDiagnostic> getRequestedOperationDiagnostics(T t) {
         return null;

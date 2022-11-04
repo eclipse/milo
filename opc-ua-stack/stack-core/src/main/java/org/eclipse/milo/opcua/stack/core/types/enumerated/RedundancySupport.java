@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,15 +10,17 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum RedundancySupport implements UaEnumeration {
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.5">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.5</a>
+ */
+public enum RedundancySupport implements UaEnumeratedType {
     None(0),
 
     Cold(1),
@@ -42,8 +44,12 @@ public enum RedundancySupport implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static RedundancySupport from(int value) {
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
+    }
+
+    public static @Nullable RedundancySupport from(int value) {
         switch (value) {
             case 0:
                 return None;
@@ -62,24 +68,18 @@ public enum RedundancySupport implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=851");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "None"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Cold"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Warm"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Hot"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Transparent"),
+            new EnumField(5L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "HotAndMirrored")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<RedundancySupport> {
-        @Override
-        public Class<RedundancySupport> getType() {
-            return RedundancySupport.class;
-        }
-
-        @Override
-        public RedundancySupport decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, RedundancySupport.class);
-        }
-
-        @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RedundancySupport value) {
-            encoder.writeEnum(null, value);
-        }
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=851");
     }
 }

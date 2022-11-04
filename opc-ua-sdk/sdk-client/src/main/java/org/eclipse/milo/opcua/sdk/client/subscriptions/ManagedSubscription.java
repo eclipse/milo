@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem.DataValueListener;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -627,7 +627,7 @@ public class ManagedSubscription {
             MonitoringParameters parameters = new MonitoringParameters(
                 subscription.nextClientHandle(),
                 0.0,
-                ExtensionObject.encode(client.getStaticSerializationContext(), eventFilters.get(i)),
+                ExtensionObject.encode(client.getStaticEncodingContext(), eventFilters.get(i)),
                 queueSize,
                 discardOldest
             );
@@ -897,7 +897,7 @@ public class ManagedSubscription {
      */
     public synchronized void setDefaultDataFilter(@Nullable DataChangeFilter defaultDataFilter) {
         this.defaultDataFilter = defaultDataFilter != null ?
-            ExtensionObject.encode(client.getStaticSerializationContext(), defaultDataFilter) : null;
+            ExtensionObject.encode(client.getStaticEncodingContext(), defaultDataFilter) : null;
     }
 
     /**
@@ -1165,8 +1165,8 @@ public class ManagedSubscription {
         default void onNotificationDataLost(ManagedSubscription subscription) {
             subscription.getClient().call(
                 new CallMethodRequest(
-                    Identifiers.Server,
-                    Identifiers.Server_ResendData,
+                    NodeIds.Server,
+                    NodeIds.Server_ResendData,
                     new Variant[]{new Variant(subscription.getSubscription().getSubscriptionId())}
                 )
             );
@@ -1232,7 +1232,8 @@ public class ManagedSubscription {
      */
     private class ManagedSubscriptionNotificationListener implements UaSubscription.NotificationListener {
 
-        private final ExecutionQueue executionQueue = new ExecutionQueue(client.getConfig().getExecutor());
+        private final ExecutionQueue executionQueue =
+            new ExecutionQueue(client.getTransport().getConfig().getExecutor());
 
         //region UaSubscription.NotificationListener
 

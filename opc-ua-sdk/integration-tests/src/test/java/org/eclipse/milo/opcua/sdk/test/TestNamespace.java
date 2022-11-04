@@ -25,17 +25,20 @@ import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.methods.InvalidArgumentException;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.DataTypeEncodingTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -44,11 +47,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.PermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
+import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,23 +102,23 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                 .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName("TestInt32"))
                 .setDisplayName(LocalizedText.english("TestInt32"))
-                .setDataType(Identifiers.Int32)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
-                .setRolePermissions(new RolePermissionType[] {
+                .setDataType(NodeIds.Int32)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
+                .setRolePermissions(new RolePermissionType[]{
                     new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
                 })
-                .setUserRolePermissions(new RolePermissionType[] {
+                .setUserRolePermissions(new RolePermissionType[]{
                     new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
                 })
-                .setAccessRestrictions(new AccessRestrictionType(uint(0)))
+                .setAccessRestrictions(new AccessRestrictionType(ushort(0)))
                 .build();
 
             testInt32Node.setValue(new DataValue(new Variant(0)));
 
             testInt32Node.addReference(new Reference(
                 testInt32Node.getNodeId(),
-                Identifiers.HasComponent,
-                Identifiers.ObjectsFolder.expanded(),
+                NodeIds.HasComponent,
+                NodeIds.ObjectsFolder.expanded(),
                 Reference.Direction.INVERSE
             ));
 
@@ -120,7 +129,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
             try {
                 AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
                     newNodeId("TestAnalogValue"),
-                    Identifiers.AnalogItemType,
+                    NodeIds.AnalogItemType,
                     new NodeFactory.InstantiationCallback() {
                         @Override
                         public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
@@ -131,10 +140,10 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 node.setBrowseName(newQualifiedName("TestAnalogValue"));
                 node.setDisplayName(LocalizedText.english("TestAnalogValue"));
-                node.setDataType(Identifiers.Double);
+                node.setDataType(NodeIds.Double);
                 node.setValue(new DataValue(new Variant(3.14d)));
 
-                node.setEURange(new Range(0.0, 100.0));
+                node.setEuRange(new Range(0.0, 100.0));
 
                 getNodeManager().addNode(node);
             } catch (UaException e) {
@@ -150,8 +159,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -172,8 +181,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasOrderedComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -194,8 +203,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasOrderedComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -228,8 +237,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasOrderedComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -241,7 +250,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                         return new Argument[]{
                             new Argument(
                                 "i",
-                                Identifiers.Int32,
+                                NodeIds.Int32,
                                 ValueRanks.Scalar,
                                 null,
                                 LocalizedText.NULL_VALUE)
@@ -278,13 +287,64 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                 return methodNode;
             });
         });
+
+        getLifecycleManager().addStartupTask(() -> {
+            try {
+                registerMatrixTestType();
+
+                UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                    .setNodeId(newNodeId("MatrixTestTypeValue"))
+                    .setAccessLevel(AccessLevel.READ_WRITE)
+                    .setUserAccessLevel(AccessLevel.READ_WRITE)
+                    .setBrowseName(newQualifiedName("MatrixTestTypeValue"))
+                    .setDisplayName(LocalizedText.english("MatrixTestTypeValue"))
+                    .setDataType(MatrixTestType.TYPE_ID.toNodeIdOrThrow(server.getNamespaceTable()))
+                    .setTypeDefinition(NodeIds.BaseDataVariableType)
+                    .setRolePermissions(new RolePermissionType[]{
+                        new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
+                    })
+                    .setUserRolePermissions(new RolePermissionType[]{
+                        new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
+                    })
+                    .setAccessRestrictions(new AccessRestrictionType(ushort(0)))
+                    .build();
+
+                MatrixTestType value = new MatrixTestType(
+                    new Integer[][]{
+                        new Integer[]{0, 1},
+                        new Integer[]{2, 3}
+                    },
+                    new ApplicationType[][]{
+                        new ApplicationType[]{ApplicationType.Server, ApplicationType.Client},
+                        new ApplicationType[]{ApplicationType.ClientAndServer, ApplicationType.DiscoveryServer}
+                    },
+                    new XVType[][]{
+                        new XVType[]{new XVType(0.0d, 1.0f), new XVType(2.0d, 3.0f)},
+                        new XVType[]{new XVType(4.0d, 5.0f), new XVType(6.0d, 7.0f)}
+                    }
+                );
+
+                node.setValue(new DataValue(new Variant(value)));
+
+                node.addReference(new Reference(
+                    node.getNodeId(),
+                    NodeIds.HasComponent,
+                    NodeIds.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                getNodeManager().addNode(node);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void startBogusEventNotifier() {
         // Set the EventNotifier bit on Server Node for Events.
         UaNode serverNode = getServer()
             .getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server)
+            .getManagedNode(NodeIds.Server)
             .orElse(null);
 
         if (serverNode instanceof ServerTypeNode) {
@@ -302,13 +362,13 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                     try {
                         BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
                             newNodeId(UUID.randomUUID()),
-                            Identifiers.BaseEventType
+                            NodeIds.BaseEventType
                         );
 
                         eventNode.setBrowseName(new QualifiedName(1, "foo"));
                         eventNode.setDisplayName(LocalizedText.english("foo"));
                         eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                        eventNode.setEventType(Identifiers.BaseEventType);
+                        eventNode.setEventType(NodeIds.BaseEventType);
                         eventNode.setSourceNode(serverNode.getNodeId());
                         eventNode.setSourceName(serverNode.getDisplayName().getText());
                         eventNode.setTime(DateTime.now());
@@ -316,8 +376,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                         eventNode.setMessage(LocalizedText.english("event message!"));
                         eventNode.setSeverity(ushort(2));
 
-                        //noinspection UnstableApiUsage
-                        getServer().getEventBus().post(eventNode);
+                        getServer().getEventNotifier().fire(eventNode);
 
                         eventNode.delete();
                     } catch (Throwable e) {
@@ -335,6 +394,119 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
             eventThread.start();
         }
+    }
+
+    private void registerMatrixTestType() throws Exception {
+        // Get the NodeId for the DataType and encoding Nodes.
+        NodeId dataTypeId = MatrixTestType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+        NodeId binaryEncodingId = MatrixTestType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+        NodeId jsonEncodingId = MatrixTestType.JSON_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        // Add a custom DataTypeNode with a SubtypeOf reference to Structure
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
+            dataTypeId,
+            newQualifiedName("MatrixTestType"),
+            LocalizedText.english("MatrixTestType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
+        );
+
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Structure.expanded(),
+            Reference.Direction.INVERSE
+        ));
+
+        getNodeManager().addNode(dataTypeNode);
+
+        // Add encoding nodes
+        addEncodingNode(dataTypeId, binaryEncodingId, DataTypeEncoding.BINARY_ENCODING_NAME);
+        addEncodingNode(dataTypeId, jsonEncodingId, DataTypeEncoding.JSON_ENCODING_NAME);
+
+        // Define the structure
+        StructureField[] fields = new StructureField[]{
+            new StructureField(
+                "BuiltinMatrix",
+                LocalizedText.NULL_VALUE,
+                NodeIds.Int32,
+                2,
+                new UInteger[]{uint(2), uint(2)},
+                getServer().getConfig().getLimits().getMaxStringLength(),
+                false
+            ),
+            new StructureField(
+                "EnumMatrix",
+                LocalizedText.NULL_VALUE,
+                NodeIds.ApplicationType,
+                2,
+                new UInteger[]{uint(2), uint(2)},
+                getServer().getConfig().getLimits().getMaxStringLength(),
+                false
+            ),
+            new StructureField(
+                "StructMatrix",
+                LocalizedText.NULL_VALUE,
+                NodeIds.XVType,
+                2,
+                new UInteger[]{uint(2), uint(2)},
+                uint(0),
+                false
+            )
+        };
+
+        StructureDefinition definition = new StructureDefinition(
+            binaryEncodingId,
+            NodeIds.Structure,
+            StructureType.Structure,
+            fields
+        );
+
+        // Populate the OPC UA 1.04+ DataTypeDefinition attribute
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        // Register Codecs for each supported encoding with DataTypeManager
+        getNodeContext().getServer().getDataTypeManager().registerType(
+            dataTypeId,
+            new MatrixTestType.Codec(),
+            binaryEncodingId,
+            null,
+            jsonEncodingId
+        );
+    }
+
+    private void addEncodingNode(NodeId dataTypeId, NodeId encodingId, QualifiedName encodingName) {
+        DataTypeEncodingTypeNode dataTypeEncodingNode = new DataTypeEncodingTypeNode(
+            getNodeContext(),
+            encodingId,
+            encodingName,
+            LocalizedText.english(encodingName.getName()),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            null,
+            null,
+            null
+        );
+
+        dataTypeEncodingNode.addReference(new Reference(
+            dataTypeEncodingNode.getNodeId(),
+            NodeIds.HasTypeDefinition,
+            NodeIds.DataTypeEncodingType.expanded(),
+            Reference.Direction.FORWARD
+        ));
+
+        dataTypeEncodingNode.addReference(new Reference(
+            dataTypeEncodingNode.getNodeId(),
+            NodeIds.HasEncoding,
+            dataTypeId.expanded(),
+            Reference.Direction.INVERSE
+        ));
+
+        getNodeManager().addNode(dataTypeEncodingNode);
     }
 
     @Override
@@ -357,7 +529,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
     }
 
-    public void configureNode(BiConsumer<UaNodeContext, UaNodeManager> consumer) {
+    public void configure(BiConsumer<UaNodeContext, UaNodeManager> consumer) {
         consumer.accept(getNodeContext(), getNodeManager());
     }
 

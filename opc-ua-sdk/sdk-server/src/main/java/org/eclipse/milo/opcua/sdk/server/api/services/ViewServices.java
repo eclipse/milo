@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContext;
 import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -130,10 +131,13 @@ public interface ViewServices {
         public RegisterNodesContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<NodeId> diagnosticsContext
+            DiagnosticsContext<NodeId> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
@@ -147,10 +151,13 @@ public interface ViewServices {
         public UnregisterNodesContext(
             OpcUaServer server,
             @Nullable Session session,
-            DiagnosticsContext<NodeId> diagnosticsContext
+            DiagnosticsContext<NodeId> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
         ) {
 
-            super(server, session, diagnosticsContext);
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }

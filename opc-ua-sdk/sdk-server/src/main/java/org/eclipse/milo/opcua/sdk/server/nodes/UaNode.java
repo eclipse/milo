@@ -17,18 +17,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -340,7 +339,7 @@ public abstract class UaNode implements UaServerNode {
         nodeManager.removeNode(getNodeId());
 
         for (Reference reference : nodeManager.getReferences(getNodeId())) {
-            if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
+            if (reference.isForward() && reference.subtypeOf(NodeIds.HasChild)) {
                 Optional<UaNode> targetNode = nodeManager.getNode(
                     reference.getTargetNodeId(),
                     getNodeContext().getServer().getNamespaceTable()
@@ -373,8 +372,8 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public ImmutableList<Reference> getReferences() {
-        return ImmutableList.copyOf(
+    public List<Reference> getReferences() {
+        return List.copyOf(
             context.getServer()
                 .getAddressSpaceManager()
                 .getManagedReferences(getNodeId())
@@ -453,7 +452,14 @@ public abstract class UaNode implements UaServerNode {
                 LocalizedText.english(browseName),
                 LocalizedText.NULL_VALUE,
                 uint(0),
-                uint(0)
+                uint(0),
+                null,
+                null,
+                null,
+                UaVariableNode.INITIAL_VALUE,
+                NodeIds.BaseDataType,
+                ValueRanks.Scalar,
+                null
             );
 
             NodeId dataType = property.getDataType()
@@ -466,8 +472,8 @@ public abstract class UaNode implements UaServerNode {
 
             propertyNode.addReference(new Reference(
                 propertyNode.getNodeId(),
-                Identifiers.HasTypeDefinition,
-                Identifiers.PropertyType.expanded(),
+                NodeIds.HasTypeDefinition,
+                NodeIds.PropertyType.expanded(),
                 true
             ));
 
@@ -497,7 +503,7 @@ public abstract class UaNode implements UaServerNode {
         Node node = getReferences()
             .stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -511,14 +517,14 @@ public abstract class UaNode implements UaServerNode {
     void addProperty(UaVariableNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             getNodeId().expanded(),
             false
         ));
@@ -527,14 +533,14 @@ public abstract class UaNode implements UaServerNode {
     void removeProperty(UaVariableNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             node.getNodeId().expanded(),
             true
         ));
 
         node.removeReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             getNodeId().expanded(),
             false
         ));
@@ -578,7 +584,7 @@ public abstract class UaNode implements UaServerNode {
         return getReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(nodePredicate)
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst();
@@ -602,7 +608,7 @@ public abstract class UaNode implements UaServerNode {
         return getReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(nodePredicate)
             .filter(n -> {
                 String nodeBrowseName = n.getBrowseName().getName();
@@ -633,7 +639,7 @@ public abstract class UaNode implements UaServerNode {
         ObjectNode node = (ObjectNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getNodeClass() == NodeClass.Object && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -658,7 +664,7 @@ public abstract class UaNode implements UaServerNode {
         VariableNode node = (VariableNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()).stream())
             .filter(n -> n.getNodeClass() == NodeClass.Variable && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -728,10 +734,26 @@ public abstract class UaNode implements UaServerNode {
                     attributeId
                 );
 
-                if (attributeId == AttributeId.Value) {
-                    return (DataValue) attributeValue;
-                } else {
-                    return dv(attributeValue);
+                switch (attributeId) {
+                    case Value:
+                        return (DataValue) attributeValue;
+
+                    case DataTypeDefinition:
+                    case RolePermissions:
+                    case UserRolePermissions:
+                    case AccessRestrictions:
+                    case AccessLevelEx:
+                        // These attributes are either structures or primitive types, and should
+                        // not expose a null value to clients, so if they are null in the node
+                        // that means they are not implemented/support for the node, and we need
+                        // to return Bad_AttributeIdInvalid.
+                        if (attributeValue == null) {
+                            return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
+                        }
+
+                        // intentional fall-through
+                    default:
+                        return dv(attributeValue);
                 }
             } catch (Throwable t) {
                 StatusCode statusCode = UaException.extractStatusCode(t)

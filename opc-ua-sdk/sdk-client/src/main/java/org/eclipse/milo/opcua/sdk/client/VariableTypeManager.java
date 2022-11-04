@@ -11,9 +11,9 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class VariableTypeManager {
 
-    private final ConcurrentMap<NodeId, VariableTypeDefinition> typeDefinitions = Maps.newConcurrentMap();
+    private final ConcurrentMap<NodeId, VariableTypeDefinition> typeDefinitions = new ConcurrentHashMap<>();
 
     public void registerVariableType(
         NodeId typeDefinition,

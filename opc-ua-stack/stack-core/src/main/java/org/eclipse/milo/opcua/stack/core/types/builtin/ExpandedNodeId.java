@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
@@ -546,7 +546,7 @@ public final class ExpandedNodeId {
             case Opaque:
                 ByteString bs = (ByteString) getIdentifier();
                 if (bs.isNull()) sb.append("b=");
-                else sb.append("b=").append(DatatypeConverter.printBase64Binary(bs.bytes()));
+                else sb.append("b=").append(Base64.getEncoder().encodeToString(bs.bytes()));
                 break;
 
             default:
@@ -565,24 +565,56 @@ public final class ExpandedNodeId {
      */
     public static ExpandedNodeId parse(String s) {
         try {
-            String[] parts = s.split(";");
-
-            NodeId nodeId = NodeId.parse(parts[parts.length - 1]);
-
             UInteger serverIndex = UInteger.MIN;
+            if (s.startsWith("svr=")) {
+                int endIndex = s.indexOf(";");
+                serverIndex = uint(Integer.parseInt(s.substring(4, endIndex)));
+                s = s.substring(endIndex + 1);
+            }
+
             UShort namespaceIndex = UShort.MIN;
             String namespaceUri = null;
-            Object identifier = nodeId.getIdentifier();
+            if (s.startsWith("ns=")) {
+                int endIndex = s.indexOf(";");
+                namespaceIndex = ushort(Integer.parseInt(s.substring(3, endIndex)));
+                s = s.substring(endIndex + 1);
+            } else if (s.startsWith("nsu=")) {
+                int endIndex = s.indexOf(";");
+                namespaceUri = s.substring(4, endIndex);
+                s = s.substring(endIndex + 1);
+            }
 
-            for (String part : parts) {
-                String[] ss = part.split("=", 2);
-                if ("svr".equals(ss[0])) {
-                    serverIndex = uint(Integer.parseInt(ss[1]));
-                } else if ("ns".equals(ss[0])) {
-                    namespaceIndex = ushort(Integer.parseInt(ss[1]));
-                } else if ("nsu".equals(ss[0])) {
-                    namespaceUri = ss[1];
-                }
+            Object identifier;
+            String type = s.substring(0, 2);
+            String id = s.substring(2);
+
+            switch (type) {
+                case "i=":
+                    try {
+                        identifier = uint(Long.parseLong(id));
+                    } catch (NumberFormatException e) {
+                        throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                    }
+                    break;
+                case "s=":
+                    identifier = id;
+                    break;
+                case "g=":
+                    try {
+                        identifier = UUID.fromString(id);
+                    } catch (IllegalArgumentException e) {
+                        throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                    }
+                    break;
+                case "b=":
+                    try {
+                        identifier = ByteString.of(Base64.getDecoder().decode(id));
+                    } catch (IllegalArgumentException e) {
+                        throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                    }
+                    break;
+                default:
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
             }
 
             return new ExpandedNodeId(namespaceIndex, namespaceUri, identifier, serverIndex);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,14 +22,12 @@ import java.util.concurrent.TimeUnit;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.client.security.DefaultClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.security.DefaultClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class ClientExampleRunner {
 
@@ -90,8 +88,9 @@ public class ClientExampleRunner {
                 endpoints.stream()
                     .filter(clientExample.endpointFilter())
                     .findFirst(),
-            configBuilder ->
-                configBuilder
+            transportConfigBuilder -> {},
+            clientConfigBuilder ->
+                clientConfigBuilder
                     .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
                     .setApplicationUri("urn:eclipse:milo:examples:client")
                     .setKeyPair(loader.getClientKeyPair())
@@ -99,8 +98,6 @@ public class ClientExampleRunner {
                     .setCertificateChain(loader.getClientCertificateChain())
                     .setCertificateValidator(certificateValidator)
                     .setIdentityProvider(clientExample.getIdentityProvider())
-                    .setRequestTimeout(uint(5000))
-                    .build()
         );
     }
 
@@ -109,22 +106,24 @@ public class ClientExampleRunner {
             OpcUaClient client = createClient();
 
             // For the sake of the examples we will create mutual trust between the client and
-            // server so we can run them with security enabled by default.
+            // server, so we can run them with security enabled by default.
             // If the client example is pointed at another server then the rejected certificate
             // will need to be moved from the security "pki/rejected" directory to the
             // "pki/trusted/certs" directory.
 
-            // Make the example server trust the example client certificate by default.
-            client.getConfig().getCertificate().ifPresent(
-                certificate ->
-                    exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
-            );
+            if (serverRequired && exampleServer != null) {
+                // Make the example server trust the example client certificate by default.
+                client.getConfig().getCertificate().ifPresent(
+                    certificate ->
+                        exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
+                );
 
-            // Make the example client trust the example server certificate by default.
-            exampleServer.getServer().getConfig().getCertificateManager().getCertificates().forEach(
-                certificate ->
-                    trustListManager.addTrustedCertificate(certificate)
-            );
+                // Make the example client trust the example server certificate by default.
+                exampleServer.getServer().getConfig().getCertificateManager().getCertificates().forEach(
+                    certificate ->
+                        trustListManager.addTrustedCertificate(certificate)
+                );
+            }
 
             future.whenCompleteAsync((c, ex) -> {
                 if (ex != null) {

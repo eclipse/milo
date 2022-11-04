@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -9,6 +9,8 @@
  */
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
+
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -118,8 +120,7 @@ public final class QualifiedName {
 
         QualifiedName that = (QualifiedName) o;
 
-        return !(name != null ? !name.equals(that.name) : that.name != null) &&
-            namespaceIndex.equals(that.namespaceIndex);
+        return Objects.equals(name, that.name) && namespaceIndex.equals(that.namespaceIndex);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,29 +13,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.5/#5.12.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.5/#5.12.5.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class SetTriggeringRequest extends Structure implements UaRequestMessage {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=773");
+public class SetTriggeringRequest extends Structure implements UaRequestMessageType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=773");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=775");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=775");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=774");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=774");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15332");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15332");
 
     private final RequestHeader requestHeader;
 
@@ -76,7 +81,6 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessage 
         return JSON_ENCODING_ID;
     }
 
-    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }
@@ -97,6 +101,21 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessage 
         return linksToRemove;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 775),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("RequestHeader", LocalizedText.NULL_VALUE, new NodeId(0, 389), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SubscriptionId", LocalizedText.NULL_VALUE, new NodeId(0, 288), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TriggeringItemId", LocalizedText.NULL_VALUE, new NodeId(0, 288), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LinksToAdd", LocalizedText.NULL_VALUE, new NodeId(0, 288), 1, null, UInteger.valueOf(0), false),
+                new StructureField("LinksToRemove", LocalizedText.NULL_VALUE, new NodeId(0, 288), 1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<SetTriggeringRequest> {
         @Override
         public Class<SetTriggeringRequest> getType() {
@@ -104,23 +123,22 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public SetTriggeringRequest decode(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            UInteger triggeringItemId = decoder.readUInt32("TriggeringItemId");
-            UInteger[] linksToAdd = decoder.readUInt32Array("LinksToAdd");
-            UInteger[] linksToRemove = decoder.readUInt32Array("LinksToRemove");
+        public SetTriggeringRequest decodeType(EncodingContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            UInteger triggeringItemId = decoder.decodeUInt32("TriggeringItemId");
+            UInteger[] linksToAdd = decoder.decodeUInt32Array("LinksToAdd");
+            UInteger[] linksToRemove = decoder.decodeUInt32Array("LinksToRemove");
             return new SetTriggeringRequest(requestHeader, subscriptionId, triggeringItemId, linksToAdd, linksToRemove);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetTriggeringRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeUInt32("TriggeringItemId", value.getTriggeringItemId());
-            encoder.writeUInt32Array("LinksToAdd", value.getLinksToAdd());
-            encoder.writeUInt32Array("LinksToRemove", value.getLinksToRemove());
+        public void encodeType(EncodingContext context, UaEncoder encoder, SetTriggeringRequest value) {
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeUInt32("TriggeringItemId", value.getTriggeringItemId());
+            encoder.encodeUInt32Array("LinksToAdd", value.getLinksToAdd());
+            encoder.encodeUInt32Array("LinksToRemove", value.getLinksToRemove());
         }
     }
 }

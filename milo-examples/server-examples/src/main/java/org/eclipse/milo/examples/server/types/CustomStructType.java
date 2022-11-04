@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,17 +14,17 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class CustomStructType implements UaStructure {
+public class CustomStructType implements UaStructuredType {
 
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse(String.format(
         "nsu=%s;s=%s",
@@ -42,14 +42,17 @@ public class CustomStructType implements UaStructure {
     private final UInteger bar;
     private final boolean baz;
 
+    private final CustomEnumType customEnumType;
+
     public CustomStructType() {
-        this(null, uint(0), false);
+        this(null, uint(0), false, CustomEnumType.Field0);
     }
 
-    public CustomStructType(String foo, UInteger bar, boolean baz) {
+    public CustomStructType(String foo, UInteger bar, boolean baz, CustomEnumType customEnumType) {
         this.foo = foo;
         this.bar = bar;
         this.baz = baz;
+        this.customEnumType = customEnumType;
     }
 
     public String getFoo() {
@@ -62,6 +65,10 @@ public class CustomStructType implements UaStructure {
 
     public boolean isBaz() {
         return baz;
+    }
+
+    public CustomEnumType getCustomEnumType() {
+        return customEnumType;
     }
 
     @Override
@@ -87,12 +94,13 @@ public class CustomStructType implements UaStructure {
         CustomStructType that = (CustomStructType) o;
         return baz == that.baz &&
             Objects.equal(foo, that.foo) &&
-            Objects.equal(bar, that.bar);
+            Objects.equal(bar, that.bar) &&
+            customEnumType == that.customEnumType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(foo, bar, baz);
+        return Objects.hashCode(foo, bar, baz, customEnumType);
     }
 
     @Override
@@ -101,6 +109,7 @@ public class CustomStructType implements UaStructure {
             .add("foo", foo)
             .add("bar", bar)
             .add("baz", baz)
+            .add("customEnumType", customEnumType)
             .toString();
     }
 
@@ -111,25 +120,29 @@ public class CustomStructType implements UaStructure {
         }
 
         @Override
-        public CustomStructType decode(
-            SerializationContext context,
-            UaDecoder decoder) throws UaSerializationException {
+        public CustomStructType decodeType(
+            EncodingContext context,
+            UaDecoder decoder
+        ) throws UaSerializationException {
 
-            String foo = decoder.readString("Foo");
-            UInteger bar = decoder.readUInt32("Bar");
-            boolean baz = decoder.readBoolean("Baz");
+            String foo = decoder.decodeString("Foo");
+            UInteger bar = decoder.decodeUInt32("Bar");
+            boolean baz = decoder.decodeBoolean("Baz");
+            CustomEnumType customEnumType = CustomEnumType.from(decoder.decodeEnum("CustomEnumType"));
 
-            return new CustomStructType(foo, bar, baz);
+            return new CustomStructType(foo, bar, baz, customEnumType);
         }
 
         @Override
-        public void encode(
-            SerializationContext context,
-            UaEncoder encoder, CustomStructType value) throws UaSerializationException {
+        public void encodeType(
+            EncodingContext context,
+            UaEncoder encoder, CustomStructType value
+        ) throws UaSerializationException {
 
-            encoder.writeString("Foo", value.foo);
-            encoder.writeUInt32("Bar", value.bar);
-            encoder.writeBoolean("Baz", value.baz);
+            encoder.encodeString("Foo", value.foo);
+            encoder.encodeUInt32("Bar", value.bar);
+            encoder.encodeBoolean("Baz", value.baz);
+            encoder.encodeEnum("CustomEnumType", value.customEnumType);
         }
     }
 

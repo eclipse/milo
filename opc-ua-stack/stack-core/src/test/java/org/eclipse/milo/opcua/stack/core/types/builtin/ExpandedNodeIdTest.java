@@ -180,6 +180,16 @@ public class ExpandedNodeIdTest {
     }
 
     @Test
+    public void parseIdentifierContainingSemiColons() {
+        ExpandedNodeId xni = ExpandedNodeId.parse(
+            "nsu=http://foo.com/bar;s=O=::/#pc;B=::/#pc;S=pc;"
+        );
+
+        assertEquals(xni.getNamespaceUri(), "http://foo.com/bar");
+        assertEquals(xni.getIdentifier(), "O=::/#pc;B=::/#pc;S=pc;");
+    }
+
+    @Test
     public void reindex() {
         NamespaceTable namespaceTable = new NamespaceTable();
         namespaceTable.add("test1");

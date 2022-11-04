@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,13 @@ package org.eclipse.milo.opcua.sdk.test;
 
 import java.util.concurrent.ExecutionException;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
+import org.eclipse.milo.opcua.sdk.client.DataTypeCodecSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -37,7 +40,8 @@ public abstract class AbstractClientServerTest {
         server.startup().get();
 
         client = TestClient.create(server);
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(new GenericBsdParser()));
+        client.addSessionInitializer(new DataTypeCodecSessionInitializer());
+        client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
 
         client.connect().get();
     }
@@ -48,6 +52,26 @@ public abstract class AbstractClientServerTest {
 
         testNamespace.shutdown();
         server.shutdown().get();
+    }
+
+    /**
+     * Create a new {@link NodeId} in the {@link TestNamespace}.
+     *
+     * @param id the identifier to use.
+     * @return a new {@link NodeId} in the {@link TestNamespace}.
+     */
+    protected NodeId newNodeId(String id) {
+        return new NodeId(testNamespace.getNamespaceIndex(), id);
+    }
+
+    /**
+     * Create a new {@link QualifiedName} in the {@link TestNamespace}.
+     *
+     * @param name the name to use.
+     * @return a new {@link QualifiedName} in the {@link TestNamespace}.
+     */
+    protected QualifiedName newQualifiedName(String name) {
+        return new QualifiedName(testNamespace.getNamespaceIndex(), name);
     }
 
 }

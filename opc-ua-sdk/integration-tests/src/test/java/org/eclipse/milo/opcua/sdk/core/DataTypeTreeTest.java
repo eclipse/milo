@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,12 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Objects;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -47,7 +49,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
     @Test
     public void testGetTree() {
-        dataTypeTree.getTree().traverseWithDepth((dataType, depth) -> {
+        dataTypeTree.getRoot().traverseWithDepth((dataType, depth) -> {
             for (int i = 0; i < depth; i++) {
                 System.out.print("\t");
             }
@@ -58,35 +60,35 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
     @Test
     public void testGetBackingClass() {
         // all subtypes of String are backed by String.class
-        checkSubtypes(Identifiers.String, String.class);
+        checkSubtypes(NodeIds.String, String.class);
 
         // all subtypes of DateTime are backed by DateTime.class
-        checkSubtypes(Identifiers.DateTime, DateTime.class);
+        checkSubtypes(NodeIds.DateTime, DateTime.class);
 
         // all subtypes of ByteString are backed by ByteString.class
-        checkSubtypes(Identifiers.ByteString, ByteString.class);
+        checkSubtypes(NodeIds.ByteString, ByteString.class);
 
         // all subtypes of NodeId are backed by NodeId.class
-        checkSubtypes(Identifiers.NodeId, NodeId.class);
+        checkSubtypes(NodeIds.NodeId, NodeId.class);
 
         // all subtypes of Structure are backed by ExtensionObject.class
-        checkSubtypes(Identifiers.Structure, ExtensionObject.class);
+        checkSubtypes(NodeIds.Structure, ExtensionObject.class);
 
         // all subtypes of Double are backed by Double.class
-        checkSubtypes(Identifiers.Double, Double.class);
+        checkSubtypes(NodeIds.Double, Double.class);
 
         // all subtypes of UInt32 are backed by UInteger.class
-        checkSubtypes(Identifiers.UInt32, UInteger.class);
+        checkSubtypes(NodeIds.UInt32, UInteger.class);
 
         // all subtypes of UInt64 are backed by ULong.class
-        checkSubtypes(Identifiers.UInt64, ULong.class);
+        checkSubtypes(NodeIds.UInt64, ULong.class);
 
         // all subtypes of Enumeration are backed by Integer.class
-        checkSubtypes(Identifiers.Enumeration, Integer.class);
+        checkSubtypes(NodeIds.Enumeration, Integer.class);
     }
 
     private void checkSubtypes(NodeId dataTypeId, Class<?> expectedBackingClass) {
-        Tree<DataTypeTree.DataType> nodeIdNode = dataTypeTree.getTreeNode(dataTypeId);
+        Tree<DataType> nodeIdNode = dataTypeTree.getTreeNode(dataTypeId);
         assertNotNull(nodeIdNode);
         nodeIdNode.traverse(dataType -> {
             Class<?> backingClass = dataTypeTree.getBackingClass(dataType.getNodeId());
@@ -105,72 +107,102 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         }
 
         // Check that subtypes resolve to their builtin types
-        assertEquals(BuiltinDataType.String, dataTypeTree.getBuiltinType(Identifiers.NumericRange));
-        assertEquals(BuiltinDataType.DateTime, dataTypeTree.getBuiltinType(Identifiers.Date));
-        assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(Identifiers.Image));
-        assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(Identifiers.ImageBMP));
-        assertEquals(BuiltinDataType.NodeId, dataTypeTree.getBuiltinType(Identifiers.SessionAuthenticationToken));
-        assertEquals(BuiltinDataType.ExtensionObject, dataTypeTree.getBuiltinType(Identifiers.TrustListDataType));
-        assertEquals(BuiltinDataType.Double, dataTypeTree.getBuiltinType(Identifiers.Duration));
-        assertEquals(BuiltinDataType.UInt32, dataTypeTree.getBuiltinType(Identifiers.IntegerId));
-        assertEquals(BuiltinDataType.UInt64, dataTypeTree.getBuiltinType(Identifiers.BitFieldMaskDataType));
+        assertEquals(BuiltinDataType.String, dataTypeTree.getBuiltinType(NodeIds.NumericRange));
+        assertEquals(BuiltinDataType.DateTime, dataTypeTree.getBuiltinType(NodeIds.DateTime));
+        assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(NodeIds.Image));
+        assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(NodeIds.ImageBMP));
+        assertEquals(BuiltinDataType.NodeId, dataTypeTree.getBuiltinType(NodeIds.SessionAuthenticationToken));
+        assertEquals(BuiltinDataType.ExtensionObject, dataTypeTree.getBuiltinType(NodeIds.TrustListDataType));
+        assertEquals(BuiltinDataType.Double, dataTypeTree.getBuiltinType(NodeIds.Duration));
+        assertEquals(BuiltinDataType.UInt32, dataTypeTree.getBuiltinType(NodeIds.IntegerId));
+        assertEquals(BuiltinDataType.UInt64, dataTypeTree.getBuiltinType(NodeIds.BitFieldMaskDataType));
         // note: enumerations resolve to BaseDataType aka Variant
-        assertEquals(BuiltinDataType.Variant, dataTypeTree.getBuiltinType(Identifiers.NamingRuleType));
+        assertEquals(BuiltinDataType.Variant, dataTypeTree.getBuiltinType(NodeIds.NamingRuleType));
     }
 
     @Test
     public void testIsAssignable() {
-        assertTrue(dataTypeTree.isAssignable(Identifiers.NumericRange, String.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Date, DateTime.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Image, ByteString.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.ImageBMP, ByteString.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.SessionAuthenticationToken, NodeId.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.TrustListDataType, ExtensionObject.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Number.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Float.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Double.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Byte.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Short.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Integer.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Long.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, UByte.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, UShort.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, UInteger.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, ULong.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Byte.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Short.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Integer.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Long.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, UByte.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, UShort.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, UInteger.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, ULong.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Duration, Double.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.BitFieldMaskDataType, ULong.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.NamingRuleType, Integer.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.NumericRange, String.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.DateTime, DateTime.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Image, ByteString.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.ImageBMP, ByteString.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.SessionAuthenticationToken, NodeId.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.TrustListDataType, ExtensionObject.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Number.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Float.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Double.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Byte.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Short.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Integer.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, Long.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, UByte.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, UShort.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, UInteger.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Number, ULong.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Integer, Byte.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Integer, Short.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Integer, Integer.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Integer, Long.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.UInteger, UByte.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.UInteger, UShort.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.UInteger, UInteger.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.UInteger, ULong.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.Duration, Double.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.BitFieldMaskDataType, ULong.class));
+        assertTrue(dataTypeTree.isAssignable(NodeIds.NamingRuleType, Integer.class));
 
-        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Byte.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Short.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Integer.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Long.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, UByte.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, UShort.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, UInteger.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, ULong.class));
-        assertFalse(dataTypeTree.isAssignable(Identifiers.Duration, Float.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.UInteger, Byte.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.UInteger, Short.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.UInteger, Integer.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.UInteger, Long.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.Integer, UByte.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.Integer, UShort.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.Integer, UInteger.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.Integer, ULong.class));
+        assertFalse(dataTypeTree.isAssignable(NodeIds.Duration, Float.class));
     }
 
     @Test
     public void testGetEncodingIds() {
-        Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(Identifiers.Structure);
+        Tree<DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Structure);
+        assertNotNull(treeNode);
+
+        treeNode.traverse(dataType -> {
+            String name = dataType.getBrowseName().getName();
+
+            if (!Objects.equals(name, "Structure") && !Objects.equals(name, "MatrixTestType")) {
+                assertNotNull(dataType.getBinaryEncodingId());
+                assertNotNull(dataType.getXmlEncodingId());
+                assertNotNull(dataType.getJsonEncodingId());
+                assertNotNull(dataTypeTree.getBinaryEncodingId(dataType.getNodeId()));
+                assertNotNull(dataTypeTree.getXmlEncodingId(dataType.getNodeId()));
+                assertNotNull(dataTypeTree.getJsonEncodingId(dataType.getNodeId()));
+            }
+        });
+    }
+
+    @Test
+    public void enumerationsHaveDataTypeDefinitions() {
+        Tree<DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Enumeration);
+        assertNotNull(treeNode);
+
+        treeNode.traverse(dataType -> {
+            if (!Objects.equals(dataType.getBrowseName().getName(), "Enumeration")) {
+                assertNotNull(dataType.getDataTypeDefinition());
+                assertNotNull(dataTypeTree.getDataTypeDefinition(dataType.getNodeId()));
+            }
+        });
+    }
+
+    @Test
+    public void structuresHaveDataTypeDefinitions() {
+        Tree<DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Structure);
         assertNotNull(treeNode);
 
         treeNode.traverse(dataType -> {
             if (!Objects.equals(dataType.getBrowseName().getName(), "Structure")) {
-                assertNotNull(dataType.getBinaryEncodingId());
-                assertNotNull(dataType.getXmlEncodingId());
-                assertNotNull(dataTypeTree.getBinaryEncodingId(dataType.getNodeId()));
-                assertNotNull(dataTypeTree.getXmlEncodingId(dataType.getNodeId()));
+                assertNotNull(dataType.getDataTypeDefinition());
+                assertNotNull(dataTypeTree.getDataTypeDefinition(dataType.getNodeId()));
             }
         });
     }

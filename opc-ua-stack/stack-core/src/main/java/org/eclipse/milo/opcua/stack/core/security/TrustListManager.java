@@ -14,7 +14,6 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public interface TrustListManager {
@@ -24,35 +23,35 @@ public interface TrustListManager {
      *
      * @return the list of Issuer {@link X509CRL}s.
      */
-    ImmutableList<X509CRL> getIssuerCrls();
+    List<X509CRL> getIssuerCrls();
 
     /**
      * Get the list of Trusted CRLs.
      *
      * @return the list of Trusted {@link X509CRL}s.
      */
-    ImmutableList<X509CRL> getTrustedCrls();
+    List<X509CRL> getTrustedCrls();
 
     /**
      * Get the list of Issuer Certificates.
      *
      * @return the list of Issuer {@link X509Certificate}s.
      */
-    ImmutableList<X509Certificate> getIssuerCertificates();
+    List<X509Certificate> getIssuerCertificates();
 
     /**
      * Get the list of Trusted Certificates.
      *
      * @return the list of Trusted {@link X509Certificate}s.
      */
-    ImmutableList<X509Certificate> getTrustedCertificates();
+    List<X509Certificate> getTrustedCertificates();
 
     /**
      * Get the list of Rejected Certificates.
      *
      * @return the list of Rejected {@link X509Certificate}s.
      */
-    ImmutableList<X509Certificate> getRejectedCertificates();
+    List<X509Certificate> getRejectedCertificates();
 
     /**
      * Set a new list of Issuer CRLs. This replaces any existing Issuer CRLs.

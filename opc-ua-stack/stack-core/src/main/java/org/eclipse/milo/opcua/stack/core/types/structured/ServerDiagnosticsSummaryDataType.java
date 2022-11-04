@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,29 +13,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.9">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.9</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
-public class ServerDiagnosticsSummaryDataType extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=859");
+public class ServerDiagnosticsSummaryDataType extends Structure implements UaStructuredType {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=859");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=861");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=861");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=860");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=860");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15366");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15366");
 
     private final UInteger serverViewCount;
 
@@ -149,6 +154,28 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
         return rejectedRequestsCount;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 861),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("ServerViewCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CurrentSessionCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CumulatedSessionCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SecurityRejectedSessionCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RejectedSessionCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SessionTimeoutCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SessionAbortCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CurrentSubscriptionCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CumulatedSubscriptionCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("PublishingIntervalCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SecurityRejectedRequestsCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RejectedRequestsCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<ServerDiagnosticsSummaryDataType> {
         @Override
         public Class<ServerDiagnosticsSummaryDataType> getType() {
@@ -156,38 +183,37 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
         }
 
         @Override
-        public ServerDiagnosticsSummaryDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
-            UInteger serverViewCount = decoder.readUInt32("ServerViewCount");
-            UInteger currentSessionCount = decoder.readUInt32("CurrentSessionCount");
-            UInteger cumulatedSessionCount = decoder.readUInt32("CumulatedSessionCount");
-            UInteger securityRejectedSessionCount = decoder.readUInt32("SecurityRejectedSessionCount");
-            UInteger rejectedSessionCount = decoder.readUInt32("RejectedSessionCount");
-            UInteger sessionTimeoutCount = decoder.readUInt32("SessionTimeoutCount");
-            UInteger sessionAbortCount = decoder.readUInt32("SessionAbortCount");
-            UInteger currentSubscriptionCount = decoder.readUInt32("CurrentSubscriptionCount");
-            UInteger cumulatedSubscriptionCount = decoder.readUInt32("CumulatedSubscriptionCount");
-            UInteger publishingIntervalCount = decoder.readUInt32("PublishingIntervalCount");
-            UInteger securityRejectedRequestsCount = decoder.readUInt32("SecurityRejectedRequestsCount");
-            UInteger rejectedRequestsCount = decoder.readUInt32("RejectedRequestsCount");
+        public ServerDiagnosticsSummaryDataType decodeType(EncodingContext context, UaDecoder decoder) {
+            UInteger serverViewCount = decoder.decodeUInt32("ServerViewCount");
+            UInteger currentSessionCount = decoder.decodeUInt32("CurrentSessionCount");
+            UInteger cumulatedSessionCount = decoder.decodeUInt32("CumulatedSessionCount");
+            UInteger securityRejectedSessionCount = decoder.decodeUInt32("SecurityRejectedSessionCount");
+            UInteger rejectedSessionCount = decoder.decodeUInt32("RejectedSessionCount");
+            UInteger sessionTimeoutCount = decoder.decodeUInt32("SessionTimeoutCount");
+            UInteger sessionAbortCount = decoder.decodeUInt32("SessionAbortCount");
+            UInteger currentSubscriptionCount = decoder.decodeUInt32("CurrentSubscriptionCount");
+            UInteger cumulatedSubscriptionCount = decoder.decodeUInt32("CumulatedSubscriptionCount");
+            UInteger publishingIntervalCount = decoder.decodeUInt32("PublishingIntervalCount");
+            UInteger securityRejectedRequestsCount = decoder.decodeUInt32("SecurityRejectedRequestsCount");
+            UInteger rejectedRequestsCount = decoder.decodeUInt32("RejectedRequestsCount");
             return new ServerDiagnosticsSummaryDataType(serverViewCount, currentSessionCount, cumulatedSessionCount, securityRejectedSessionCount, rejectedSessionCount, sessionTimeoutCount, sessionAbortCount, currentSubscriptionCount, cumulatedSubscriptionCount, publishingIntervalCount, securityRejectedRequestsCount, rejectedRequestsCount);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ServerDiagnosticsSummaryDataType value) {
-            encoder.writeUInt32("ServerViewCount", value.getServerViewCount());
-            encoder.writeUInt32("CurrentSessionCount", value.getCurrentSessionCount());
-            encoder.writeUInt32("CumulatedSessionCount", value.getCumulatedSessionCount());
-            encoder.writeUInt32("SecurityRejectedSessionCount", value.getSecurityRejectedSessionCount());
-            encoder.writeUInt32("RejectedSessionCount", value.getRejectedSessionCount());
-            encoder.writeUInt32("SessionTimeoutCount", value.getSessionTimeoutCount());
-            encoder.writeUInt32("SessionAbortCount", value.getSessionAbortCount());
-            encoder.writeUInt32("CurrentSubscriptionCount", value.getCurrentSubscriptionCount());
-            encoder.writeUInt32("CumulatedSubscriptionCount", value.getCumulatedSubscriptionCount());
-            encoder.writeUInt32("PublishingIntervalCount", value.getPublishingIntervalCount());
-            encoder.writeUInt32("SecurityRejectedRequestsCount", value.getSecurityRejectedRequestsCount());
-            encoder.writeUInt32("RejectedRequestsCount", value.getRejectedRequestsCount());
+        public void encodeType(EncodingContext context, UaEncoder encoder,
+                               ServerDiagnosticsSummaryDataType value) {
+            encoder.encodeUInt32("ServerViewCount", value.getServerViewCount());
+            encoder.encodeUInt32("CurrentSessionCount", value.getCurrentSessionCount());
+            encoder.encodeUInt32("CumulatedSessionCount", value.getCumulatedSessionCount());
+            encoder.encodeUInt32("SecurityRejectedSessionCount", value.getSecurityRejectedSessionCount());
+            encoder.encodeUInt32("RejectedSessionCount", value.getRejectedSessionCount());
+            encoder.encodeUInt32("SessionTimeoutCount", value.getSessionTimeoutCount());
+            encoder.encodeUInt32("SessionAbortCount", value.getSessionAbortCount());
+            encoder.encodeUInt32("CurrentSubscriptionCount", value.getCurrentSubscriptionCount());
+            encoder.encodeUInt32("CumulatedSubscriptionCount", value.getCumulatedSubscriptionCount());
+            encoder.encodeUInt32("PublishingIntervalCount", value.getPublishingIntervalCount());
+            encoder.encodeUInt32("SecurityRejectedRequestsCount", value.getSecurityRejectedRequestsCount());
+            encoder.encodeUInt32("RejectedRequestsCount", value.getRejectedRequestsCount());
         }
     }
 }

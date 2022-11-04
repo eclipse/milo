@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,12 +21,12 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -85,15 +85,15 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                             if (type.equals(argument.getDataType())) {
                                 return true;
                             } else {
-                                if (Identifiers.Structure.equals(type) && value instanceof ExtensionObject) {
-                                    SerializationContext serializationContext =
-                                        getNode().getNodeContext().getServer().getSerializationContext();
+                                if (NodeIds.Structure.equals(type) && value instanceof ExtensionObject) {
+                                    EncodingContext encodingContext =
+                                        getNode().getNodeContext().getServer().getEncodingContext();
 
                                     try {
-                                        Object decoded = ((ExtensionObject) value).decode(serializationContext);
+                                        Object decoded = ((ExtensionObject) value).decode(encodingContext);
 
-                                        if (decoded instanceof UaStructure) {
-                                            return ((UaStructure) decoded).getTypeId()
+                                        if (decoded instanceof UaStructuredType) {
+                                            return ((UaStructuredType) decoded).getTypeId()
                                                 .toNodeId(node.getNodeContext().getNamespaceTable())
                                                 .map(argument.getDataType()::equals).orElse(false);
                                         }

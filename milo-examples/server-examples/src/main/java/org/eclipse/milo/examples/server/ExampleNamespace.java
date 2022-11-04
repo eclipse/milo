@@ -24,15 +24,16 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.dtd.DataTypeDictionaryManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.dtd.BinaryDataTypeDictionaryManager;
+import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -45,7 +46,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -78,52 +79,52 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
     private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
-        {"Boolean", Identifiers.Boolean, new Variant(false)},
-        {"Byte", Identifiers.Byte, new Variant(ubyte(0x00))},
-        {"SByte", Identifiers.SByte, new Variant((byte) 0x00)},
-        {"Integer", Identifiers.Integer, new Variant(32)},
-        {"Int16", Identifiers.Int16, new Variant((short) 16)},
-        {"Int32", Identifiers.Int32, new Variant(32)},
-        {"Int64", Identifiers.Int64, new Variant(64L)},
-        {"UInteger", Identifiers.UInteger, new Variant(uint(32))},
-        {"UInt16", Identifiers.UInt16, new Variant(ushort(16))},
-        {"UInt32", Identifiers.UInt32, new Variant(uint(32))},
-        {"UInt64", Identifiers.UInt64, new Variant(ulong(64L))},
-        {"Float", Identifiers.Float, new Variant(3.14f)},
-        {"Double", Identifiers.Double, new Variant(3.14d)},
-        {"String", Identifiers.String, new Variant("string value")},
-        {"DateTime", Identifiers.DateTime, new Variant(DateTime.now())},
-        {"Guid", Identifiers.Guid, new Variant(UUID.randomUUID())},
-        {"ByteString", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
-        {"XmlElement", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
-        {"LocalizedText", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
-        {"QualifiedName", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
-        {"NodeId", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))},
-        {"Variant", Identifiers.BaseDataType, new Variant(32)},
-        {"Duration", Identifiers.Duration, new Variant(1.0)},
-        {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
+        {"Boolean", NodeIds.Boolean, Variant.ofBoolean(false)},
+        {"Byte", NodeIds.Byte, Variant.ofByte(ubyte(0x00))},
+        {"SByte", NodeIds.SByte, Variant.ofSByte((byte) 0x00)},
+        {"Integer", NodeIds.Integer, Variant.ofInt32(32)},
+        {"Int16", NodeIds.Int16, Variant.ofInt16((short) 16)},
+        {"Int32", NodeIds.Int32, Variant.ofInt32(32)},
+        {"Int64", NodeIds.Int64, Variant.ofInt64(64L)},
+        {"UInteger", NodeIds.UInteger, Variant.ofUInt32(uint(32))},
+        {"UInt16", NodeIds.UInt16, Variant.ofUInt16(ushort(16))},
+        {"UInt32", NodeIds.UInt32, Variant.ofUInt32(uint(32))},
+        {"UInt64", NodeIds.UInt64, Variant.ofUInt64(ulong(64L))},
+        {"Float", NodeIds.Float, Variant.ofFloat(3.14f)},
+        {"Double", NodeIds.Double, Variant.ofDouble(3.14d)},
+        {"String", NodeIds.String, Variant.ofString("string value")},
+        {"DateTime", NodeIds.DateTime, Variant.ofDateTime(DateTime.now())},
+        {"Guid", NodeIds.Guid, Variant.ofGuid(UUID.randomUUID())},
+        {"ByteString", NodeIds.ByteString, Variant.ofByteString(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
+        {"XmlElement", NodeIds.XmlElement, Variant.ofXmlElement(new XmlElement("<a>hello</a>"))},
+        {"LocalizedText", NodeIds.LocalizedText, Variant.ofLocalizedText(LocalizedText.english("localized text"))},
+        {"QualifiedName", NodeIds.QualifiedName, Variant.ofQualifiedName(new QualifiedName(1234, "defg"))},
+        {"NodeId", NodeIds.NodeId, Variant.ofNodeId(new NodeId(1234, "abcd"))},
+        {"Variant", NodeIds.BaseDataType, Variant.ofInt32(32)},
+        {"Duration", NodeIds.Duration, Variant.ofDouble(1.0)},
+        {"UtcTime", NodeIds.UtcTime, Variant.ofDateTime(DateTime.now())},
     };
 
     private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
-        {"BooleanArray", Identifiers.Boolean, false},
-        {"ByteArray", Identifiers.Byte, ubyte(0)},
-        {"SByteArray", Identifiers.SByte, (byte) 0x00},
-        {"Int16Array", Identifiers.Int16, (short) 16},
-        {"Int32Array", Identifiers.Int32, 32},
-        {"Int64Array", Identifiers.Int64, 64L},
-        {"UInt16Array", Identifiers.UInt16, ushort(16)},
-        {"UInt32Array", Identifiers.UInt32, uint(32)},
-        {"UInt64Array", Identifiers.UInt64, ulong(64L)},
-        {"FloatArray", Identifiers.Float, 3.14f},
-        {"DoubleArray", Identifiers.Double, 3.14d},
-        {"StringArray", Identifiers.String, "string value"},
-        {"DateTimeArray", Identifiers.DateTime, DateTime.now()},
-        {"GuidArray", Identifiers.Guid, UUID.randomUUID()},
-        {"ByteStringArray", Identifiers.ByteString, new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04})},
-        {"XmlElementArray", Identifiers.XmlElement, new XmlElement("<a>hello</a>")},
-        {"LocalizedTextArray", Identifiers.LocalizedText, LocalizedText.english("localized text")},
-        {"QualifiedNameArray", Identifiers.QualifiedName, new QualifiedName(1234, "defg")},
-        {"NodeIdArray", Identifiers.NodeId, new NodeId(1234, "abcd")}
+        {"BooleanArray", NodeIds.Boolean, false},
+        {"ByteArray", NodeIds.Byte, ubyte(0)},
+        {"SByteArray", NodeIds.SByte, (byte) 0x00},
+        {"Int16Array", NodeIds.Int16, (short) 16},
+        {"Int32Array", NodeIds.Int32, 32},
+        {"Int64Array", NodeIds.Int64, 64L},
+        {"UInt16Array", NodeIds.UInt16, ushort(16)},
+        {"UInt32Array", NodeIds.UInt32, uint(32)},
+        {"UInt64Array", NodeIds.UInt64, ulong(64L)},
+        {"FloatArray", NodeIds.Float, 3.14f},
+        {"DoubleArray", NodeIds.Double, 3.14d},
+        {"StringArray", NodeIds.String, "string value"},
+        {"DateTimeArray", NodeIds.DateTime, DateTime.now()},
+        {"GuidArray", NodeIds.Guid, UUID.randomUUID()},
+        {"ByteStringArray", NodeIds.ByteString, new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04})},
+        {"XmlElementArray", NodeIds.XmlElement, new XmlElement("<a>hello</a>")},
+        {"LocalizedTextArray", NodeIds.LocalizedText, LocalizedText.english("localized text")},
+        {"QualifiedNameArray", NodeIds.QualifiedName, new QualifiedName(1234, "defg")},
+        {"NodeIdArray", NodeIds.NodeId, new NodeId(1234, "abcd")}
     };
 
 
@@ -134,7 +135,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
     private final Random random = new Random();
 
-    private final DataTypeDictionaryManager dictionaryManager;
+    private final BinaryDataTypeDictionaryManager dictionaryManager;
 
     private final SubscriptionModel subscriptionModel;
 
@@ -142,7 +143,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         super(server, NAMESPACE_URI);
 
         subscriptionModel = new SubscriptionModel(server, this);
-        dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
+        dictionaryManager = new BinaryDataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
 
         getLifecycleManager().addLifecycle(dictionaryManager);
         getLifecycleManager().addLifecycle(subscriptionModel);
@@ -184,8 +185,8 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Make sure our new folder shows up under the server's Objects folder.
         folderNode.addReference(new Reference(
             folderNode.getNodeId(),
-            Identifiers.Organizes,
-            Identifiers.ObjectsFolder.expanded(),
+            NodeIds.Organizes,
+            NodeIds.ObjectsFolder.expanded(),
             false
         ));
 
@@ -224,7 +225,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Set the EventNotifier bit on Server Node for Events.
         UaNode serverNode = getServer()
             .getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server)
+            .getManagedNode(NodeIds.Server)
             .orElse(null);
 
         if (serverNode instanceof ServerTypeNode) {
@@ -236,13 +237,13 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                     try {
                         BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
                             newNodeId(UUID.randomUUID()),
-                            Identifiers.BaseEventType
+                            NodeIds.BaseEventType
                         );
 
                         eventNode.setBrowseName(new QualifiedName(1, "foo"));
                         eventNode.setDisplayName(LocalizedText.english("foo"));
                         eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                        eventNode.setEventType(Identifiers.BaseEventType);
+                        eventNode.setEventType(NodeIds.BaseEventType);
                         eventNode.setSourceNode(serverNode.getNodeId());
                         eventNode.setSourceName(serverNode.getDisplayName().getText());
                         eventNode.setTime(DateTime.now());
@@ -250,8 +251,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                         eventNode.setMessage(LocalizedText.english("event message!"));
                         eventNode.setSeverity(ushort(2));
 
-                        //noinspection UnstableApiUsage
-                        getServer().getEventBus().post(eventNode);
+                        getServer().getEventNotifier().fire(eventNode);
 
                         eventNode.delete();
                     } catch (Throwable e) {
@@ -300,7 +300,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             for (int i = 0; i < 5; i++) {
                 Array.set(array, i, value);
             }
-            Variant variant = new Variant(array);
+            Variant variant = Variant.of(array);
 
             UaVariableNode.build(getNodeContext(), builder -> {
                 builder.setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name));
@@ -309,7 +309,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 builder.setBrowseName(newQualifiedName(name));
                 builder.setDisplayName(LocalizedText.english(name));
                 builder.setDataType(typeId);
-                builder.setTypeDefinition(Identifiers.BaseDataVariableType);
+                builder.setTypeDefinition(NodeIds.BaseDataVariableType);
                 builder.setValueRank(ValueRank.OneDimension.getValue());
                 builder.setArrayDimensions(new UInteger[]{uint(0)});
                 builder.setValue(new DataValue(variant));
@@ -318,7 +318,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
                 builder.addReference(new Reference(
                     builder.getNodeId(),
-                    Identifiers.Organizes,
+                    NodeIds.Organizes,
                     arrayTypesFolder.getNodeId().expanded(),
                     Reference.Direction.INVERSE
                 ));
@@ -351,7 +351,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build();
 
             node.setValue(new DataValue(variant));
@@ -381,8 +381,8 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             .setUserAccessLevel(AccessLevel.WRITE_ONLY)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
-            .setDataType(Identifiers.String)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .setDataType(NodeIds.String)
+            .setTypeDefinition(NodeIds.BaseDataVariableType)
             .build();
 
         node.setValue(new DataValue(new Variant("can't read this")));
@@ -408,8 +408,8 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
-            .setDataType(Identifiers.String)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .setDataType(NodeIds.String)
+            .setTypeDefinition(NodeIds.BaseDataVariableType)
             .build();
 
         node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
@@ -443,8 +443,8 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
-            .setDataType(Identifiers.String)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .setDataType(NodeIds.String)
+            .setTypeDefinition(NodeIds.BaseDataVariableType)
             .build();
 
         node.setValue(new DataValue(new Variant("admin was here")));
@@ -475,7 +475,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Dynamic Boolean
         {
             String name = "Boolean";
-            NodeId typeId = Identifiers.Boolean;
+            NodeId typeId = NodeIds.Boolean;
             Variant variant = new Variant(false);
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
@@ -484,7 +484,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build();
 
             node.setValue(new DataValue(variant));
@@ -504,7 +504,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Dynamic Int32
         {
             String name = "Int32";
-            NodeId typeId = Identifiers.Int32;
+            NodeId typeId = NodeIds.Int32;
             Variant variant = new Variant(0);
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
@@ -513,7 +513,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build();
 
             node.setValue(new DataValue(variant));
@@ -533,7 +533,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Dynamic Double
         {
             String name = "Double";
-            NodeId typeId = Identifiers.Double;
+            NodeId typeId = NodeIds.Double;
             Variant variant = new Variant(0.0);
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
@@ -542,7 +542,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build();
 
             node.setValue(new DataValue(variant));
@@ -575,7 +575,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         try {
             AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
                 newNodeId("HelloWorld/DataAccess/AnalogValue"),
-                Identifiers.AnalogItemType,
+                NodeIds.AnalogItemType,
                 new NodeFactory.InstantiationCallback() {
                     @Override
                     public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
@@ -586,10 +586,10 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
             node.setBrowseName(newQualifiedName("AnalogValue"));
             node.setDisplayName(LocalizedText.english("AnalogValue"));
-            node.setDataType(Identifiers.Double);
+            node.setDataType(NodeIds.Double);
             node.setValue(new DataValue(new Variant(3.14d)));
 
-            node.setEURange(new Range(0.0, 100.0));
+            node.setEuRange(new Range(0.0, 100.0));
 
             getNodeManager().addNode(node);
             dataAccessFolder.addOrganizes(node);
@@ -616,7 +616,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         methodNode.addReference(new Reference(
             methodNode.getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             folderNode.getNodeId().expanded(),
             false
         ));
@@ -640,7 +640,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         methodNode.addReference(new Reference(
             methodNode.getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             folderNode.getNodeId().expanded(),
             false
         ));
@@ -661,15 +661,15 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName("Foo"))
                 .setDisplayName(LocalizedText.english("Foo"))
-                .setDataType(Identifiers.Int16)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setDataType(NodeIds.Int16)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build()
         );
 
         foo.addReference(new Reference(
             foo.getNodeId(),
-            Identifiers.HasModellingRule,
-            Identifiers.ModellingRule_Mandatory.expanded(),
+            NodeIds.HasModellingRule,
+            NodeIds.ModellingRule_Mandatory.expanded(),
             true
         ));
 
@@ -681,15 +681,15 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName("Bar"))
                 .setDisplayName(LocalizedText.english("Bar"))
-                .setDataType(Identifiers.String)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setDataType(NodeIds.String)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build()
         );
 
         bar.addReference(new Reference(
             bar.getNodeId(),
-            Identifiers.HasModellingRule,
-            Identifiers.ModellingRule_Mandatory.expanded(),
+            NodeIds.HasModellingRule,
+            NodeIds.ModellingRule_Mandatory.expanded(),
             true
         ));
 
@@ -715,8 +715,8 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Add the inverse SubtypeOf relationship.
         objectTypeNode.addReference(new Reference(
             objectTypeNode.getNodeId(),
-            Identifiers.HasSubtype,
-            Identifiers.BaseObjectType.expanded(),
+            NodeIds.HasSubtype,
+            NodeIds.BaseObjectType.expanded(),
             false
         ));
 
@@ -741,7 +741,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
             myObject.addReference(new Reference(
                 myObject.getNodeId(),
-                Identifiers.Organizes,
+                NodeIds.Organizes,
                 rootFolder.getNodeId().expanded(),
                 false
             ));
@@ -753,23 +753,28 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     private void registerCustomEnumType() throws Exception {
         NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        dictionaryManager.registerEnumCodec(
-            new CustomEnumType.Codec().asBinaryCodec(),
-            "CustomEnumType",
-            dataTypeId
+        // Add a custom DataTypeNode with a SubtypeOf reference to Enumeration
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
+            dataTypeId,
+            newQualifiedName("CustomEnumType"),
+            LocalizedText.english("CustomEnumType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
         );
 
-        UaNode node = getNodeManager().get(dataTypeId);
-        if (node instanceof UaDataTypeNode) {
-            UaDataTypeNode dataTypeNode = (UaDataTypeNode) node;
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Enumeration.expanded(),
+            Reference.Direction.INVERSE
+        ));
 
-            dataTypeNode.setEnumStrings(new LocalizedText[]{
-                LocalizedText.english("Field0"),
-                LocalizedText.english("Field1"),
-                LocalizedText.english("Field2")
-            });
-        }
+        getNodeManager().addNode(dataTypeNode);
 
+        // Define the enum
         EnumField[] fields = new EnumField[]{
             new EnumField(
                 0L,
@@ -793,6 +798,23 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         EnumDefinition definition = new EnumDefinition(fields);
 
+        // This Enum is zero-based and naturally incrementing, so we set the EnumStrings property.
+        // If it were more complex the EnumValues property would be used instead.
+        dataTypeNode.setEnumStrings(new LocalizedText[]{
+            LocalizedText.english("Field0"),
+            LocalizedText.english("Field1"),
+            LocalizedText.english("Field2")
+        });
+
+        // Populate the OPC UA 1.04+ DataTypeDefinition attribute
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
+        // DataTypeDictionary from the server. We describe the type using StructureDefinition
+        // or EnumDefinition and register it with the dictionary manager.
+        // The dictionary manager will add all the necessary nodes to the AddressSpace and
+        // generate the required dictionary bsd.xml file.
+
         EnumDescription description = new EnumDescription(
             dataTypeId,
             new QualifiedName(getNamespaceIndex(), "CustomEnumType"),
@@ -800,42 +822,41 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             ubyte(BuiltinDataType.Int32.getTypeId())
         );
 
-        dictionaryManager.registerEnumDescription(description);
+        dictionaryManager.registerEnum(description);
     }
 
     private void registerCustomStructType() throws Exception {
         // Get the NodeId for the DataType and encoding Nodes.
-
         NodeId dataTypeId = CustomStructType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
-
         NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        // At a minimum, custom types must have their codec registered.
-        // If clients don't need to dynamically discover types and will
-        // register the codecs on their own then this is all that is
-        // necessary.
-        // The dictionary manager will add a corresponding DataType Node to
-        // the AddressSpace.
-
-        dictionaryManager.registerStructureCodec(
-            new CustomStructType.Codec().asBinaryCodec(),
-            "CustomStructType",
+        // Add a custom DataTypeNode with a SubtypeOf reference to Structure
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
             dataTypeId,
-            binaryEncodingId
+            newQualifiedName("CustomStructType"),
+            LocalizedText.english("CustomStructType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
         );
 
-        // If the custom type also needs to be discoverable by clients then it
-        // needs an entry in a DataTypeDictionary that can be read by those
-        // clients. We describe the type using StructureDefinition or
-        // EnumDefinition and register it with the dictionary manager.
-        // The dictionary manager will add all the necessary nodes to the
-        // AddressSpace and generate the required dictionary bsd.xml file.
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Structure.expanded(),
+            Reference.Direction.INVERSE
+        ));
 
+        getNodeManager().addNode(dataTypeNode);
+
+        // Define the structure
         StructureField[] fields = new StructureField[]{
             new StructureField(
                 "foo",
                 LocalizedText.NULL_VALUE,
-                Identifiers.String,
+                NodeIds.String,
                 ValueRanks.Scalar,
                 null,
                 getServer().getConfig().getLimits().getMaxStringLength(),
@@ -844,7 +865,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             new StructureField(
                 "bar",
                 LocalizedText.NULL_VALUE,
-                Identifiers.UInt32,
+                NodeIds.UInt32,
                 ValueRanks.Scalar,
                 null,
                 uint(0),
@@ -853,7 +874,17 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             new StructureField(
                 "baz",
                 LocalizedText.NULL_VALUE,
-                Identifiers.Boolean,
+                NodeIds.Boolean,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            ),
+            new StructureField(
+                "customEnumType",
+                LocalizedText.NULL_VALUE,
+                CustomEnumType.TYPE_ID
+                    .toNodeIdOrThrow(getServer().getNamespaceTable()),
                 ValueRanks.Scalar,
                 null,
                 uint(0),
@@ -863,18 +894,41 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         StructureDefinition definition = new StructureDefinition(
             binaryEncodingId,
-            Identifiers.Structure,
+            NodeIds.Structure,
             StructureType.Structure,
             fields
         );
 
+        // Populate the OPC UA 1.04+ DataTypeDefinition attribute
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        // Register Codecs for each supported encoding with DataTypeManager
+        getNodeContext().getServer().getDataTypeManager().registerType(
+            dataTypeId,
+            new CustomStructType.Codec(),
+            binaryEncodingId,
+            null,
+            null
+        );
+
+        // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
+        // DataTypeDictionary from the server. We describe the type using StructureDefinition
+        // or EnumDefinition and register it with the dictionary manager.
+        // The dictionary manager will add all the necessary nodes to the AddressSpace and
+        // generate the required dictionary bsd.xml file.
         StructureDescription description = new StructureDescription(
             dataTypeId,
             new QualifiedName(getNamespaceIndex(), "CustomStructType"),
             definition
         );
 
-        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+        dictionaryManager.registerStructure(
+            "CustomStructType",
+            dataTypeId,
+            binaryEncodingId,
+            BinaryDataTypeCodec.from(new CustomStructType.Codec()),
+            description
+        );
     }
 
     private void registerCustomUnionType() throws Exception {
@@ -882,18 +936,32 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        dictionaryManager.registerUnionCodec(
-            new CustomUnionType.Codec().asBinaryCodec(),
-            "CustomUnionType",
+        // Add a custom DataTypeNode with a SubtypeOf reference to Union
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
             dataTypeId,
-            binaryEncodingId
+            newQualifiedName("CustomUnionType"),
+            LocalizedText.english("CustomUnionType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
         );
+
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Union.expanded(),
+            Reference.Direction.INVERSE
+        ));
+
+        getNodeManager().addNode(dataTypeNode);
 
         StructureField[] fields = new StructureField[]{
             new StructureField(
                 "foo",
                 LocalizedText.NULL_VALUE,
-                Identifiers.UInt32,
+                NodeIds.UInt32,
                 ValueRanks.Scalar,
                 null,
                 getServer().getConfig().getLimits().getMaxStringLength(),
@@ -902,7 +970,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             new StructureField(
                 "bar",
                 LocalizedText.NULL_VALUE,
-                Identifiers.String,
+                NodeIds.String,
                 ValueRanks.Scalar,
                 null,
                 uint(0),
@@ -912,9 +980,20 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         StructureDefinition definition = new StructureDefinition(
             binaryEncodingId,
-            Identifiers.Structure,
+            NodeIds.Structure,
             StructureType.Union,
             fields
+        );
+
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        // Register Codecs for each supported encoding with DataTypeManager
+        getNodeContext().getServer().getDataTypeManager().registerType(
+            dataTypeId,
+            new CustomUnionType.Codec(),
+            binaryEncodingId,
+            null,
+            null
         );
 
         StructureDescription description = new StructureDescription(
@@ -923,7 +1002,13 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             definition
         );
 
-        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+        dictionaryManager.registerStructure(
+            "CustomUnionType",
+            dataTypeId,
+            binaryEncodingId,
+            BinaryDataTypeCodec.from(new CustomUnionType.Codec()),
+            description
+        );
     }
 
     private void addCustomEnumTypeVariable(UaFolderNode rootFolder) throws Exception {
@@ -936,7 +1021,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
                 .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
                 .setDataType(dataTypeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build()
         );
 
@@ -946,7 +1031,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         customEnumTypeVariable.addReference(new Reference(
             customEnumTypeVariable.getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             rootFolder.getNodeId().expanded(),
             false
         ));
@@ -964,18 +1049,19 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
                 .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
                 .setDataType(dataTypeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build()
         );
 
         CustomStructType value = new CustomStructType(
             "foo",
             uint(42),
-            true
+            true,
+            CustomEnumType.Field0
         );
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            getServer().getSerializationContext(),
+            getServer().getEncodingContext(),
             value,
             binaryEncodingId
         );
@@ -986,7 +1072,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         customStructTypeVariable.addReference(new Reference(
             customStructTypeVariable.getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             rootFolder.getNodeId().expanded(),
             false
         ));
@@ -1004,14 +1090,14 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
                 .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
                 .setDataType(dataTypeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .build()
         );
 
         CustomUnionType value = CustomUnionType.ofBar("hello");
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            getServer().getSerializationContext(),
+            getServer().getEncodingContext(),
             value,
             binaryEncodingId
         );
@@ -1022,7 +1108,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         customUnionTypeVariable.addReference(new Reference(
             customUnionTypeVariable.getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             rootFolder.getNodeId().expanded(),
             false
         ));

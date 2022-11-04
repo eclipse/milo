@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,11 +14,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +26,8 @@ public final class ExtensionObject {
 
     public enum BodyType {
         ByteString,
-        XmlElement
+        XmlElement,
+        JsonString
     }
 
     private final Lazy<Object> decoded = new Lazy<>();
@@ -37,24 +37,19 @@ public final class ExtensionObject {
     private final Object body;
     private final NodeId encodingId;
 
-    public ExtensionObject(
-        @NotNull ByteString body,
-        @NotNull NodeId encodingId) {
-
+    public ExtensionObject(@NotNull ByteString body, @NotNull NodeId encodingId) {
         this((Object) body, encodingId);
     }
 
-    public ExtensionObject(
-        @NotNull XmlElement body,
-        @NotNull NodeId encodingId) {
-
+    public ExtensionObject(@NotNull XmlElement body, @NotNull NodeId encodingId) {
         this((Object) body, encodingId);
     }
 
-    private ExtensionObject(
-        @NotNull Object body,
-        @NotNull NodeId encodingId) {
+    public ExtensionObject(@Nullable String body, @NotNull NodeId encodingId) {
+        this((Object) body, encodingId);
+    }
 
+    private ExtensionObject(@Nullable Object body, @NotNull NodeId encodingId) {
         this.body = body;
         this.encodingId = encodingId;
 
@@ -62,6 +57,8 @@ public final class ExtensionObject {
             bodyType = BodyType.ByteString;
         } else if (body instanceof XmlElement) {
             bodyType = BodyType.XmlElement;
+        } else if (body instanceof String) {
+            bodyType = BodyType.JsonString;
         } else {
             throw new IllegalArgumentException("body: " + body);
         }
@@ -82,31 +79,55 @@ public final class ExtensionObject {
     public boolean isNull() {
         switch (bodyType) {
             case ByteString:
-                return ((ByteString) body).isNull();
+                return body == null || ((ByteString) body).isNull();
             case XmlElement:
-                return ((XmlElement) body).isNull();
+                return body == null || ((XmlElement) body).isNull();
+            case JsonString:
+                return body == null;
             default:
                 throw new IllegalStateException("BodyType: " + bodyType);
         }
     }
 
-    public Object decode(SerializationContext context) throws UaSerializationException {
+    public Object decode(EncodingContext context) throws UaSerializationException {
         switch (bodyType) {
-            case ByteString:
+            case ByteString: {
                 return decode(context, OpcUaDefaultBinaryEncoding.getInstance());
-            case XmlElement:
-                return decode(context, OpcUaDefaultXmlEncoding.getInstance());
+            }
+            case XmlElement: {
+                DataTypeEncoding encoding = context.getEncodingManager()
+                    .getEncoding(DataTypeEncoding.XML_ENCODING_NAME);
+
+                if (encoding != null) {
+                    return decode(context, encoding);
+                } else {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "encoding not registered: " + DataTypeEncoding.XML_ENCODING_NAME);
+                }
+            }
+            case JsonString: {
+                DataTypeEncoding encoding = context.getEncodingManager()
+                    .getEncoding(DataTypeEncoding.JSON_ENCODING_NAME);
+
+                if (encoding != null) {
+                    return decode(context, encoding);
+                } else {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "encoding not registered: " + DataTypeEncoding.JSON_ENCODING_NAME);
+                }
+            }
             default:
                 throw new IllegalStateException("BodyType: " + bodyType);
         }
     }
 
-    public Object decode(SerializationContext context, DataTypeEncoding encoding) throws UaSerializationException {
+    public Object decode(EncodingContext context, DataTypeEncoding encoding) throws UaSerializationException {
         return decoded.getOrCompute(() -> encoding.decode(context, body, encodingId));
     }
 
-    @Nullable
-    public Object decodeOrNull(SerializationContext context) {
+    public @Nullable Object decodeOrNull(EncodingContext context) {
         try {
             return decode(context);
         } catch (UaSerializationException e) {
@@ -115,32 +136,34 @@ public final class ExtensionObject {
     }
 
     public ExtensionObject transcode(
-        SerializationContext context,
+        EncodingContext context,
         NodeId newEncodingId,
         DataTypeEncoding newEncoding
     ) {
 
         if (this.encodingId.equals(newEncodingId)) {
+            // Requested encoding is the current encoding, nothing to do here.
             return this;
         } else {
-            // The "fast" path: body is a encoded in Default Binary or Default XML.
-            // No need to look up the DataTypeEncoding.
+            // First try to just decode the body because it's likely encoded
+            // in one of the default encodings, not some custom encoding.
             Object struct = decodeOrNull(context);
 
             if (struct != null) {
+                // Successful decode, re-encode in the new encoding.
                 Object encoded = newEncoding.encode(context, struct, newEncodingId);
 
                 return new ExtensionObject(encoded, newEncodingId);
             } else {
-                // TODO look up current DataTypeEncoding via this.encodingId, try decoding again using that.
+                // TODO Decode failed... custom encoding? Look it up and try again...
                 return this;
             }
         }
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
-        UaStructure struct
+        EncodingContext context,
+        UaStructuredType struct
     ) throws UaSerializationException {
 
         NodeId encodingId = struct.getBinaryEncodingId()
@@ -157,8 +180,8 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject[] encodeArray(
-        SerializationContext context,
-        UaStructure[] structArray
+        EncodingContext context,
+        UaStructuredType[] structArray
     ) throws UaSerializationException {
 
         ExtensionObject[] xos = new ExtensionObject[structArray.length];
@@ -171,56 +194,34 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encodeDefaultBinary(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId
     ) throws UaSerializationException {
 
-        return encode(
-            context,
-            object,
-            encodingId,
-            OpcUaDefaultBinaryEncoding.getInstance()
-        );
-    }
-
-    public static ExtensionObject encodeDefaultXml(
-        SerializationContext context,
-        Object object,
-        NodeId encodingId
-    ) throws UaSerializationException {
-
-        return encode(
-            context,
-            object,
-            encodingId,
-            OpcUaDefaultXmlEncoding.getInstance()
-        );
+        return encode(context, object, encodingId, OpcUaDefaultBinaryEncoding.getInstance());
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         ExpandedNodeId xEncodingId,
         DataTypeEncoding encoding
     ) throws UaSerializationException {
 
-        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable())
-            .orElseThrow(
-                () ->
-                    new UaSerializationException(
-                        StatusCodes.Bad_EncodingError,
-                        "namespace not registered: " +
-                            xEncodingId.getNamespaceUri())
-            );
+        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable()).orElseThrow(
+            () ->
+                new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "namespace not registered: " +
+                        xEncodingId.getNamespaceUri())
+        );
 
-        Object body = encoding.encode(context, object, encodingId);
-
-        return new ExtensionObject(body, encodingId);
+        return encode(context, object, encodingId, encoding);
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId,
         DataTypeEncoding encoding

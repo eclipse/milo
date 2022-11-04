@@ -16,22 +16,22 @@ public class VariantTest {
 
     @Test
     public void variantCanContainDataValue() {
-        new Variant(new DataValue(Variant.NULL_VALUE));
+        Variant.of(new DataValue(Variant.NULL_VALUE));
     }
 
     @Test
     public void variantCanContainVariantArray() {
-        new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)});
+        Variant.of(new Variant[]{new Variant(0), new Variant(1), new Variant(2)});
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void variantCannotContainVariant() {
-        new Variant(new Variant(null));
+        Variant.of(new Variant(null));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void variantCannotContainDiagnosticInfo() {
-        new Variant(DiagnosticInfo.NULL_VALUE);
+        Variant.of(DiagnosticInfo.NULL_VALUE);
     }
 
 }

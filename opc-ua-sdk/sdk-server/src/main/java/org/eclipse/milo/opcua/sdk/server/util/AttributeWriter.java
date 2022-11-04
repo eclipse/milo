@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -42,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
@@ -348,9 +347,9 @@ public class AttributeWriter {
 
         if (TypeUtil.isBuiltin(dataTypeId)) {
             return TypeUtil.getBackingClass(dataTypeId);
-        } else if (subtypeOf(server, dataTypeId, Identifiers.Structure)) {
+        } else if (subtypeOf(server, dataTypeId, NodeIds.Structure)) {
             return ExtensionObject.class;
-        } else if (subtypeOf(server, dataTypeId, Identifiers.Enumeration)) {
+        } else if (subtypeOf(server, dataTypeId, NodeIds.Enumeration)) {
             return Integer.class;
         } else {
             NodeId superBuiltInType = findConcreteBuiltInSuperTypeId(server, dataTypeId);
@@ -434,7 +433,7 @@ public class AttributeWriter {
             return dataTypeNode.getReferences()
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(server.getNamespaceTable()).stream())
                 .findFirst()
                 .orElse(null);
         } else {

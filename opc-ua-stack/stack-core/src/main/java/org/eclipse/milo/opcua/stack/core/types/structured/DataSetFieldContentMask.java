@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,20 +11,23 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
 @ToString
-public class DataSetFieldContentMask extends OptionSetUInteger<DataSetFieldContentMask.Field> {
+public class DataSetFieldContentMask extends OptionSetUI32<DataSetFieldContentMask.Field> {
     public DataSetFieldContentMask(UInteger value) {
         super(value);
     }
@@ -66,16 +69,6 @@ public class DataSetFieldContentMask extends OptionSetUInteger<DataSetFieldConte
     }
 
     public static DataSetFieldContentMask of(DataSetFieldContentMask.Field... fields) {
-        long bits = 0L;
-
-        for (Field f : fields) {
-            bits |= (1L << f.bitIndex);
-        }
-
-        return new DataSetFieldContentMask(UInteger.valueOf(bits));
-    }
-
-    public static DataSetFieldContentMask of(Collection<DataSetFieldContentMask.Field> fields) {
         long bits = 0L;
 
         for (Field f : fields) {

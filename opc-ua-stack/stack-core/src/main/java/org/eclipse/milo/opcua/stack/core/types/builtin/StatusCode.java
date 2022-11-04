@@ -10,9 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Set;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -26,38 +27,32 @@ public final class StatusCode {
     /**
      * StatusCodes that are considered security-related errors for the purpose of diagnostics.
      */
-    private static final ImmutableSet<Long> SECURITY_ERRORS;
-
-    static {
-        SECURITY_ERRORS = ImmutableSet.<Long>builder()
-            .add(
-                StatusCodes.Bad_UserSignatureInvalid,
-                StatusCodes.Bad_UserAccessDenied,
-                StatusCodes.Bad_SecurityPolicyRejected,
-                StatusCodes.Bad_SecurityModeRejected,
-                StatusCodes.Bad_SecurityChecksFailed,
-                StatusCodes.Bad_SecureChannelTokenUnknown,
-                StatusCodes.Bad_SecureChannelIdInvalid,
-                StatusCodes.Bad_NoValidCertificates,
-                StatusCodes.Bad_IdentityTokenInvalid,
-                StatusCodes.Bad_IdentityTokenRejected,
-                StatusCodes.Bad_IdentityChangeNotSupported,
-                StatusCodes.Bad_CertificateUseNotAllowed,
-                StatusCodes.Bad_CertificateUriInvalid,
-                StatusCodes.Bad_CertificateUntrusted,
-                StatusCodes.Bad_CertificateTimeInvalid,
-                StatusCodes.Bad_CertificateRevoked,
-                StatusCodes.Bad_CertificateRevocationUnknown,
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                StatusCodes.Bad_CertificateIssuerTimeInvalid,
-                StatusCodes.Bad_CertificateIssuerRevoked,
-                StatusCodes.Bad_CertificateIssuerRevocationUnknown,
-                StatusCodes.Bad_CertificateInvalid,
-                StatusCodes.Bad_CertificateHostNameInvalid,
-                StatusCodes.Bad_ApplicationSignatureInvalid
-            )
-            .build();
-    }
+    private static final Set<Long> SECURITY_ERRORS = Set.of(
+        StatusCodes.Bad_UserSignatureInvalid,
+        StatusCodes.Bad_UserAccessDenied,
+        StatusCodes.Bad_SecurityPolicyRejected,
+        StatusCodes.Bad_SecurityModeRejected,
+        StatusCodes.Bad_SecurityChecksFailed,
+        StatusCodes.Bad_SecureChannelTokenUnknown,
+        StatusCodes.Bad_SecureChannelIdInvalid,
+        StatusCodes.Bad_NoValidCertificates,
+        StatusCodes.Bad_IdentityTokenInvalid,
+        StatusCodes.Bad_IdentityTokenRejected,
+        StatusCodes.Bad_IdentityChangeNotSupported,
+        StatusCodes.Bad_CertificateUseNotAllowed,
+        StatusCodes.Bad_CertificateUriInvalid,
+        StatusCodes.Bad_CertificateUntrusted,
+        StatusCodes.Bad_CertificateTimeInvalid,
+        StatusCodes.Bad_CertificateRevoked,
+        StatusCodes.Bad_CertificateRevocationUnknown,
+        StatusCodes.Bad_CertificateIssuerUseNotAllowed,
+        StatusCodes.Bad_CertificateIssuerTimeInvalid,
+        StatusCodes.Bad_CertificateIssuerRevoked,
+        StatusCodes.Bad_CertificateIssuerRevocationUnknown,
+        StatusCodes.Bad_CertificateInvalid,
+        StatusCodes.Bad_CertificateHostNameInvalid,
+        StatusCodes.Bad_ApplicationSignatureInvalid
+    );
 
     public static final StatusCode GOOD = new StatusCode(SEVERITY_GOOD);
     public static final StatusCode BAD = new StatusCode(SEVERITY_BAD);
@@ -145,7 +140,8 @@ public final class StatusCode {
         ToStringHelper helper = MoreObjects.toStringHelper(this);
 
         StatusCodes.lookup(value).ifPresent(
-            nameAndDesc -> helper.add("name", nameAndDesc[0]));
+            nameAndDesc -> helper.add("name", nameAndDesc[0])
+        );
 
         helper.add("value", String.format("0x%08X", value));
         helper.add("quality", quality(this));

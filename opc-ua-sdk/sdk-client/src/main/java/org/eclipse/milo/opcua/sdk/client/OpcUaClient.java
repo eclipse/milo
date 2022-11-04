@@ -10,12 +10,16 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -28,22 +32,26 @@ import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -125,14 +133,20 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
+import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportConfig;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaClient implements UaClient {
@@ -155,9 +169,10 @@ public class OpcUaClient implements UaClient {
      * @throws UaException if the client could not be created (e.g. transport/encoding not supported).
      */
     public static OpcUaClient create(OpcUaClientConfig config) throws UaException {
-        UaStackClient stackClient = UaStackClient.create(config);
+        OpcTcpClientTransportConfig transportConfig = OpcTcpClientTransportConfig.newBuilder().build();
+        var transport = new OpcTcpClientTransport(transportConfig);
 
-        return new OpcUaClient(config, stackClient);
+        return new OpcUaClient(config, transport);
     }
 
     /**
@@ -165,7 +180,7 @@ public class OpcUaClient implements UaClient {
      * {@link OpcUaClient} with the default configuration.
      * <p>
      * If the server is not configured with an endpoint with no security or authentication you
-     * must use {@link #create(String, Function, Function)} to select an endpoint and configure
+     * must use {@link #create(String, Function, Consumer, Consumer)} to select an endpoint and configure
      * any certificates or identity provider that the selected endpoint would require.
      *
      * @param endpointUrl the endpoint URL of the server to connect to and get endpoints from.
@@ -186,27 +201,31 @@ public class OpcUaClient implements UaClient {
             endpoints -> endpoints.stream()
                 .filter(predicate)
                 .findFirst(),
-            OpcUaClientConfigBuilder::build
+            b -> {},
+            b -> {}
         );
     }
 
     /**
-     * Create and configure an {@link OpcUaClient} by selecting an {@link EndpointDescription} from a list of endpoints
-     * retrieved via the GetEndpoints service from the server at {@code endpointUrl} and building an
-     * {@link OpcUaClientConfig} using that endpoint.
+     * Create and configure an {@link OpcUaClient} by selecting an {@link EndpointDescription} from
+     * a list of endpoints retrieved via the GetEndpoints service from the server at {@code endpointUrl}
+     * and building an {@link OpcUaClientConfig} using that endpoint.
      *
-     * @param endpointUrl    the endpoint URL of the server to connect to and retrieve endpoints from.
-     * @param selectEndpoint a function that selects the {@link EndpointDescription} to connect to from the list of
-     *                       endpoints from the server.
-     * @param buildConfig    a function that configures an {@link OpcUaClientConfigBuilder} and then builds and returns
-     *                       an {@link OpcUaClientConfig}.
+     * @param endpointUrl        the endpoint URL of the server to connect to and retrieve endpoints from.
+     * @param selectEndpoint     a function that selects the {@link EndpointDescription} to connect
+     *                           to from the list of endpoints from the server.
+     * @param configureTransport a Consumer that receives an {@link OpcTcpClientTransportConfigBuilder}
+     *                           that can be used to configure the transport.
+     * @param configureClient    a Consumer that receives an {@link OpcUaClientConfigBuilder} that
+     *                           can be used  to configure the client.
      * @return a configured {@link OpcUaClient}.
      * @throws UaException if the endpoints could not be retrieved or the client could not be created.
      */
     public static OpcUaClient create(
         String endpointUrl,
         Function<List<EndpointDescription>, Optional<EndpointDescription>> selectEndpoint,
-        Function<OpcUaClientConfigBuilder, OpcUaClientConfig> buildConfig
+        Consumer<OpcTcpClientTransportConfigBuilder> configureTransport,
+        Consumer<OpcUaClientConfigBuilder> configureClient
     ) throws UaException {
 
         try {
@@ -220,10 +239,16 @@ public class OpcUaClient implements UaClient {
                 )
             );
 
-            OpcUaClientConfigBuilder builder = OpcUaClientConfig.builder()
-                .setEndpoint(endpoint);
+            OpcTcpClientTransportConfigBuilder transportConfigBuilder = OpcTcpClientTransportConfig.newBuilder();
+            configureTransport.accept(transportConfigBuilder);
 
-            return create(buildConfig.apply(builder));
+            OpcUaClientConfigBuilder clientConfigBuilder = OpcUaClientConfig.builder().setEndpoint(endpoint);
+            configureClient.accept(clientConfigBuilder);
+            OpcUaClientConfig clientConfig = clientConfigBuilder.build();
+
+            var transport = new OpcTcpClientTransport(transportConfigBuilder.build());
+
+            return new OpcUaClient(clientConfig, transport);
         } catch (InterruptedException | ExecutionException e) {
             if (!endpointUrl.endsWith("/discovery")) {
                 StringBuilder discoveryUrl = new StringBuilder(endpointUrl);
@@ -232,7 +257,7 @@ public class OpcUaClient implements UaClient {
                 }
                 discoveryUrl.append("discovery");
 
-                return create(discoveryUrl.toString(), selectEndpoint, buildConfig);
+                return create(discoveryUrl.toString(), selectEndpoint, configureTransport, configureClient);
             } else {
                 throw UaException.extract(e)
                     .orElseGet(() -> new UaException(e));
@@ -242,24 +267,137 @@ public class OpcUaClient implements UaClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
+    private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
+
+    private final List<ServiceFaultListener> faultListeners = new CopyOnWriteArrayList<>();
     private final ExecutionQueue faultNotificationQueue;
 
     private final AddressSpace addressSpace;
 
+    private final NamespaceTable namespaceTable = new NamespaceTable();
+    private final ServerTable serverTable = new ServerTable();
+
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
+
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final EncodingManager encodingManager =
+        DefaultEncodingManager.createAndInitialize();
+
+    private final DataTypeManager staticDataTypeManager =
+        DefaultDataTypeManager.createAndInitialize(namespaceTable);
+
+    private final DataTypeManager dynamicDataTypeManager =
+        DefaultDataTypeManager.createAndInitialize(namespaceTable);
+
+    private final EncodingContext staticEncodingContext;
+    private final EncodingContext dynamicEncodingContext;
 
     private final OpcUaSubscriptionManager subscriptionManager;
 
     private final SessionFsm sessionFsm;
 
-    private final OpcUaClientConfig config;
-    private final UaStackClient stackClient;
+    private final ClientApplicationContext applicationContext;
 
-    public OpcUaClient(OpcUaClientConfig config, UaStackClient stackClient) {
+    private final OpcUaClientConfig config;
+
+    private final OpcClientTransport transport;
+
+
+    public OpcUaClient(OpcUaClientConfig config, OpcClientTransport transport) {
         this.config = config;
-        this.stackClient = stackClient;
+        this.transport = transport;
+
+        staticEncodingContext = new EncodingContext() {
+            @Override
+            public DataTypeManager getDataTypeManager() {
+                return staticDataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
+            }
+
+            @Override
+            public EncodingLimits getEncodingLimits() {
+                return config.getEncodingLimits();
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return namespaceTable;
+            }
+
+            @Override
+            public ServerTable getServerTable() {
+                return serverTable;
+            }
+        };
+
+        dynamicEncodingContext = new EncodingContext() {
+            @Override
+            public DataTypeManager getDataTypeManager() {
+                return dynamicDataTypeManager;
+            }
+
+            @Override
+            public EncodingManager getEncodingManager() {
+                return encodingManager;
+            }
+
+            @Override
+            public EncodingLimits getEncodingLimits() {
+                return config.getEncodingLimits();
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return namespaceTable;
+            }
+
+            @Override
+            public ServerTable getServerTable() {
+                return serverTable;
+            }
+        };
+
+        applicationContext = new ClientApplicationContext() {
+            @Override
+            public EndpointDescription getEndpoint() {
+                return config.getEndpoint();
+            }
+
+            @Override
+            public Optional<KeyPair> getKeyPair() {
+                return config.getKeyPair();
+            }
+
+            @Override
+            public Optional<X509Certificate> getCertificate() {
+                return config.getCertificate();
+            }
+
+            @Override
+            public Optional<X509Certificate[]> getCertificateChain() {
+                return config.getCertificateChain();
+            }
+
+            @Override
+            public CertificateValidator getCertificateValidator() {
+                return config.getCertificateValidator();
+            }
+
+            @Override
+            public EncodingContext getEncodingContext() {
+                return staticEncodingContext;
+            }
+
+            @Override
+            public UInteger getRequestTimeout() {
+                return config.getRequestTimeout();
+            }
+        };
 
         sessionFsm = SessionFsmFactory.newSessionFsm(this);
 
@@ -273,12 +411,12 @@ public class OpcUaClient implements UaClient {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_NamespaceArray,
+                        NodeIds.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE),
                     new ReadValueId(
-                        Identifiers.Server_ServerArray,
+                        NodeIds.Server_ServerArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)
@@ -291,8 +429,12 @@ public class OpcUaClient implements UaClient {
                 .thenApply(results -> {
                     String[] namespaceArray = (String[]) results[0].getValue().getValue();
                     String[] serverArray = (String[]) results[1].getValue().getValue();
-                    updateNamespaceTable(namespaceArray);
-                    updateServerTable(serverArray);
+                    if (namespaceArray != null) {
+                        updateNamespaceTable(namespaceArray);
+                    }
+                    if (serverArray != null) {
+                        updateServerTable(serverArray);
+                    }
                     return Unit.VALUE;
                 })
                 .exceptionally(ex -> {
@@ -302,20 +444,13 @@ public class OpcUaClient implements UaClient {
         });
 
 
-        faultNotificationQueue = new ExecutionQueue(config.getExecutor());
+        faultNotificationQueue = new ExecutionQueue(transport.getConfig().getExecutor());
 
         addressSpace = new AddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
-        ObjectTypeInitializer.initialize(
-            stackClient.getNamespaceTable(),
-            objectTypeManager
-        );
-
-        VariableTypeInitializer.initialize(
-            stackClient.getNamespaceTable(),
-            variableTypeManager
-        );
+        ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);
+        VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
     }
 
     @Override
@@ -323,8 +458,8 @@ public class OpcUaClient implements UaClient {
         return config;
     }
 
-    public UaStackClient getStackClient() {
-        return stackClient;
+    public OpcClientTransport getTransport() {
+        return transport;
     }
 
     @Override
@@ -341,31 +476,52 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * @see UaStackClient#getStaticDataTypeManager()
+     * Get the client's "static" {@link DataTypeManager}.
+     * <p>
+     * This {@link DataTypeManager} is for static codecs that serialize classes that exist at
+     * compile time, e.g. structures from namespace 0 and or code-generated structures.
+     *
+     * @return the client's static {@link DataTypeManager}.
      */
     public DataTypeManager getStaticDataTypeManager() {
-        return stackClient.getStaticDataTypeManager();
+        return staticDataTypeManager;
     }
 
     /**
-     * @see UaStackClient#getDynamicDataTypeManager()
+     * Get the client's "dynamic" {@link DataTypeManager}.
+     * <p>
+     * This {@link DataTypeManager} is for dynamic codecs that were created by reading the server's
+     * DataType Dictionary at runtime and serializes generic representations of structures used by
+     * instances of a BsdParser implementation.
+     *
+     * @return the client's dynamic {@link DataTypeManager}.
      */
     public DataTypeManager getDynamicDataTypeManager() {
-        return stackClient.getDynamicDataTypeManager();
+        return dynamicDataTypeManager;
     }
 
     /**
-     * @see UaStackClient#getStaticSerializationContext()
+     * Get a "static" {@link EncodingContext} instance.
+     * <p>
+     * This {@link EncodingContext} instance returns the client's static {@link DataTypeManager}.
+     *
+     * @return a "static" {@link EncodingContext} instance.
+     * @see #getStaticDataTypeManager()
      */
-    public SerializationContext getStaticSerializationContext() {
-        return stackClient.getStaticSerializationContext();
+    public EncodingContext getStaticEncodingContext() {
+        return staticEncodingContext;
     }
 
     /**
-     * @see UaStackClient#getDynamicSerializationContext()
+     * Get a "dynamic" {@link EncodingContext}.
+     * <p>
+     * This {@link EncodingContext} instance returns the client's dynamic {@link DataTypeManager}.
+     *
+     * @return a "dynamic" {@link EncodingContext}.
+     * @see #getDynamicDataTypeManager()
      */
-    public SerializationContext getDynamicSerializationContext() {
-        return stackClient.getDynamicSerializationContext();
+    public EncodingContext getDynamicEncodingContext() {
+        return dynamicEncodingContext;
     }
 
     /**
@@ -374,7 +530,7 @@ public class OpcUaClient implements UaClient {
      * @return the local copy of the server's NamespaceTable (NamespaceArray).
      */
     public NamespaceTable getNamespaceTable() {
-        return stackClient.getNamespaceTable();
+        return namespaceTable;
     }
 
     /**
@@ -411,7 +567,7 @@ public class OpcUaClient implements UaClient {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_NamespaceArray,
+                        NodeIds.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)
@@ -435,7 +591,7 @@ public class OpcUaClient implements UaClient {
      * @return the local copy of the server's ServerTable (ServerArray).
      */
     public ServerTable getServerTable() {
-        return stackClient.getServerTable();
+        return serverTable;
     }
 
     /**
@@ -472,19 +628,19 @@ public class OpcUaClient implements UaClient {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_ServerArray,
+                        NodeIds.Server_ServerArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)
                 }
             );
 
-            CompletableFuture<String[]> namespaceArray = sendRequest(readRequest)
+            CompletableFuture<String[]> serverArray = sendRequest(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
                 .thenApply(results -> (String[]) results[0].getValue().getValue());
 
-            return namespaceArray
+            return serverArray
                 .thenAccept(this::updateServerTable)
                 .thenApply(v -> getServerTable());
         });
@@ -522,49 +678,52 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * Build a new {@link RequestHeader} using a null authentication token.
+     * Create a new {@link RequestHeader} with a null authentication token.
+     * <p>
+     * A unique request handle will be automatically assigned to the header.
      *
      * @return a new {@link RequestHeader} with a null authentication token.
      */
     public RequestHeader newRequestHeader() {
-        return newRequestHeader(NodeId.NULL_VALUE, config.getRequestTimeout());
+        return newRequestHeader(NodeId.NULL_VALUE);
     }
 
     /**
-     * Build a new {@link RequestHeader} using {@code authToken}.
+     * Create a new {@link RequestHeader} with {@code authToken}.
+     * <p>
+     * A unique request handle will be automatically assigned to the header.
      *
-     * @param authToken the authentication token (from the session) to use.
-     * @return a new {@link RequestHeader}.
+     * @param authToken the authentication token to create the header with.
+     * @return a new {@link RequestHeader} created with {@code authToken}.
      */
     public RequestHeader newRequestHeader(NodeId authToken) {
         return newRequestHeader(authToken, config.getRequestTimeout());
     }
 
     /**
-     * Build a new {@link RequestHeader} using a null authentication token and a custom {@code requestTimeout}.
+     * Create a new {@link RequestHeader} with {@code authToken} and {@code requestTimeout}.
+     * <p>
+     * A unique request handle will be automatically assigned to the header.
      *
-     * @param requestTimeout the custom request timeout to use.
-     * @return a new {@link RequestHeader} with a null authentication token and a custom request timeout.
-     */
-    public RequestHeader newRequestHeader(UInteger requestTimeout) {
-        return newRequestHeader(NodeId.NULL_VALUE, requestTimeout);
-    }
-
-    /**
-     * Build a new {@link RequestHeader} using {@code authToken} and a custom {@code requestTimeout}.
-     *
-     * @param authToken      the authentication token (from the session) to use.
-     * @param requestTimeout the custom request timeout to use.
-     * @return a new {@link RequestHeader}.
+     * @param authToken      the authentication token to create the header with.
+     * @param requestTimeout the timeout hint to create the header with.f
+     * @return a new {@link RequestHeader} created with {@code authToken} and {@code requestTimeout}.
      */
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
-        return getStackClient().newRequestHeader(authToken, requestTimeout);
+        return new RequestHeader(
+            authToken,
+            DateTime.now(),
+            uint(requestHandles.getAndIncrement()),
+            uint(0),
+            null,
+            requestTimeout,
+            null
+        );
     }
 
     @Override
     public CompletableFuture<UaClient> connect() {
-        return getStackClient()
-            .connect()
+        return transport.connect(applicationContext)
             .thenCompose(c -> sessionFsm.openSession())
             .thenApply(s -> OpcUaClient.this);
     }
@@ -575,7 +734,7 @@ public class OpcUaClient implements UaClient {
             .closeSession()
             .exceptionally(ex -> Unit.VALUE)
             .thenCompose(u ->
-                getStackClient()
+                transport
                     .disconnect()
                     .thenApply(c -> OpcUaClient.this))
             .exceptionally(ex -> OpcUaClient.this);
@@ -585,6 +744,7 @@ public class OpcUaClient implements UaClient {
     public OpcUaSubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
     }
+
 
     @Override
     public CompletableFuture<ReadResponse> read(double maxAge,
@@ -624,7 +784,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             HistoryReadRequest request = new HistoryReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                ExtensionObject.encode(getStaticSerializationContext(), historyReadDetails),
+                ExtensionObject.encode(getStaticEncodingContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
                 a(nodesToRead, HistoryReadValueId.class)
@@ -638,7 +798,7 @@ public class OpcUaClient implements UaClient {
     public CompletableFuture<HistoryUpdateResponse> historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails) {
         return getSession().thenCompose(session -> {
             ExtensionObject[] details = historyUpdateDetails.stream()
-                .map(hud -> ExtensionObject.encode(getStaticSerializationContext(), hud))
+                .map(hud -> ExtensionObject.encode(getStaticEncodingContext(), hud))
                 .toArray(ExtensionObject[]::new);
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(
@@ -986,8 +1146,8 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
-        CompletableFuture<UaResponseMessage> f = getStackClient().sendRequest(request);
+    public <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request) {
+        CompletableFuture<UaResponseMessageType> f = transport.sendRequestMessage(request);
 
         if (faultListeners.size() > 0) {
             f.whenComplete(this::maybeHandleServiceFault);
@@ -997,7 +1157,7 @@ public class OpcUaClient implements UaClient {
     }
 
 
-    private void maybeHandleServiceFault(UaResponseMessage response, Throwable ex) {
+    private void maybeHandleServiceFault(UaResponseMessageType response, Throwable ex) {
         if (faultListeners.isEmpty()) return;
 
         if (ex != null) {

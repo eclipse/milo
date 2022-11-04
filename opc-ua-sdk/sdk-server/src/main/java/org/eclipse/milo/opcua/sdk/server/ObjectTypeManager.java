@@ -11,9 +11,9 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class ObjectTypeManager {
 
-    private final ConcurrentMap<NodeId, ObjectTypeDefinition> typeDefinitions = Maps.newConcurrentMap();
+    private final ConcurrentMap<NodeId, ObjectTypeDefinition> typeDefinitions = new ConcurrentHashMap<>();
 
     public void registerObjectType(
         NodeId typeDefinition,

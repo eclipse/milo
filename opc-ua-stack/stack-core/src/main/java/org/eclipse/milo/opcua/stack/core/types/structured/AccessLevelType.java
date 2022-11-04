@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,20 +11,23 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI8;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/8.57">https://reference.opcfoundation.org/v105/Core/docs/Part3/8.57</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
 @ToString
-public class AccessLevelType extends OptionSetUInteger<AccessLevelType.Field> {
+public class AccessLevelType extends OptionSetUI8<AccessLevelType.Field> {
     public AccessLevelType(UByte value) {
         super(value);
     }
@@ -70,16 +73,6 @@ public class AccessLevelType extends OptionSetUInteger<AccessLevelType.Field> {
     }
 
     public static AccessLevelType of(AccessLevelType.Field... fields) {
-        long bits = 0L;
-
-        for (Field f : fields) {
-            bits |= (1L << f.bitIndex);
-        }
-
-        return new AccessLevelType(UByte.valueOf(bits));
-    }
-
-    public static AccessLevelType of(Collection<AccessLevelType.Field> fields) {
         long bits = 0L;
 
         for (Field f : fields) {

@@ -26,15 +26,15 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
+import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -64,9 +64,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.jetbrains.annotations.Nullable;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -602,7 +600,7 @@ public abstract class UaNode implements Node {
             throw new UaException(statusCode, "read AccessRestriction failed");
         } else {
             AccessRestrictionType accessRestrictions = new AccessRestrictionType(
-                (UInteger) value.getValue().getValue()
+                (UShort) value.getValue().getValue()
             );
             setAccessRestrictions(accessRestrictions);
             return accessRestrictions;
@@ -844,7 +842,7 @@ public abstract class UaNode implements Node {
         CompletableFuture<ReadResponse> future = client.read(
             0.0,
             TimestampsToReturn.Both,
-            newArrayList(readValueId)
+            List.of(readValueId)
         );
 
         return future.thenApply(response -> response.getResults()[0]);
@@ -864,7 +862,7 @@ public abstract class UaNode implements Node {
             value
         );
 
-        CompletableFuture<WriteResponse> future = client.write(newArrayList(writeValue));
+        CompletableFuture<WriteResponse> future = client.write(List.of(writeValue));
 
         return future.thenApply(response -> response.getResults()[0]);
     }
@@ -1034,7 +1032,7 @@ public abstract class UaNode implements Node {
                 }
             }
 
-            return newArrayList(values);
+            return List.of(values);
         });
     }
 
@@ -1075,7 +1073,7 @@ public abstract class UaNode implements Node {
         return client.write(writeValues).thenApply(response -> {
             StatusCode[] results = response.getResults();
 
-            return newArrayList(results);
+            return List.of(results);
         });
     }
 
@@ -1175,7 +1173,7 @@ public abstract class UaNode implements Node {
                 break;
             }
             case AccessRestrictions: {
-                setAccessRestrictions(new AccessRestrictionType((UInteger) value.getValue().getValue()));
+                setAccessRestrictions(new AccessRestrictionType((UShort) value.getValue().getValue()));
                 break;
             }
             default:
@@ -1267,7 +1265,7 @@ public abstract class UaNode implements Node {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 false,
                 nodeClassMask,
                 resultMask
@@ -1284,7 +1282,7 @@ public abstract class UaNode implements Node {
                         .toNodeId(client.getNamespaceTable())
                         .map(id -> client.getAddressSpace().getNodeAsync(id));
 
-                    return opt2stream(opt);
+                    return opt.stream();
                 })
                 .findFirst();
 
@@ -1306,7 +1304,7 @@ public abstract class UaNode implements Node {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasProperty,
+                NodeIds.HasProperty,
                 false,
                 nodeClassMask,
                 resultMask
@@ -1327,7 +1325,7 @@ public abstract class UaNode implements Node {
                                 .thenApply(n -> (PropertyTypeNode) n)
                         );
 
-                    return opt2stream(opt);
+                    return opt.stream();
                 })
                 .findFirst();
 
@@ -1357,13 +1355,13 @@ public abstract class UaNode implements Node {
     }
 
     /**
-     * An implementation of cast with special handling for {@link UaEnumeration} and
-     * {@link UaStructure} destination types.
+     * An implementation of cast with special handling for {@link UaEnumeratedType} and
+     * {@link UaStructuredType} destination types.
      * <p>
-     * If the destination type is a {@link UaEnumeration} and the from object is an Integer, an
+     * If the destination type is a {@link UaEnumeratedType} and the from object is an Integer, an
      * attempt is made to convert the Integer into the corresponding UaEnumeration type.
      * <p>
-     * If the destination type is a {@link UaStructure} and the from object is an
+     * If the destination type is a {@link UaStructuredType} and the from object is an
      * {@link ExtensionObject}, an attempt is made to decode the {@link ExtensionObject} into an
      * object cast to the type of {@code clazz}.
      *
@@ -1372,7 +1370,7 @@ public abstract class UaNode implements Node {
      * @return the object after casting, or null if {@code o} is null.
      */
     protected <T> T cast(Object o, Class<T> clazz) {
-        if (UaEnumeration.class.isAssignableFrom(clazz) && o instanceof Integer) {
+        if (UaEnumeratedType.class.isAssignableFrom(clazz) && o instanceof Integer) {
             try {
                 Object enumeration = clazz
                     .getMethod("from", new Class[]{Integer.class})
@@ -1384,7 +1382,7 @@ public abstract class UaNode implements Node {
             }
         } else if (o instanceof ExtensionObject) {
             ExtensionObject xo = (ExtensionObject) o;
-            Object decoded = xo.decode(client.getStaticSerializationContext());
+            Object decoded = xo.decode(client.getStaticEncodingContext());
             return clazz.cast(decoded);
         } else if (o instanceof ExtensionObject[]) {
             ExtensionObject[] xos = (ExtensionObject[]) o;
@@ -1395,7 +1393,7 @@ public abstract class UaNode implements Node {
             for (int i = 0; i < xos.length; i++) {
                 ExtensionObject xo = xos[i];
 
-                Object decoded = xo.decode(client.getStaticSerializationContext());
+                Object decoded = xo.decode(client.getStaticEncodingContext());
 
                 Array.set(array, i, componentType.cast(decoded));
             }

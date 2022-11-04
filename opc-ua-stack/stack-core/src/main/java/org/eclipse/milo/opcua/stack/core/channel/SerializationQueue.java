@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,15 +12,15 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.util.concurrent.ExecutorService;
 
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {
 
-    private final OpcUaBinaryStreamEncoder binaryEncoder;
-    private final OpcUaBinaryStreamDecoder binaryDecoder;
+    private final OpcUaBinaryEncoder binaryEncoder;
+    private final OpcUaBinaryDecoder binaryDecoder;
 
     private final ChunkEncoder chunkEncoder;
     private final ChunkDecoder chunkDecoder;
@@ -33,7 +33,7 @@ public class SerializationQueue {
     public SerializationQueue(
         ExecutorService executor,
         ChannelParameters parameters,
-        SerializationContext context
+        EncodingContext context
     ) {
 
         this.parameters = parameters;
@@ -41,8 +41,8 @@ public class SerializationQueue {
         chunkEncoder = new ChunkEncoder(parameters);
         chunkDecoder = new ChunkDecoder(parameters, context.getEncodingLimits());
 
-        binaryEncoder = new OpcUaBinaryStreamEncoder(context);
-        binaryDecoder = new OpcUaBinaryStreamDecoder(context);
+        binaryEncoder = new OpcUaBinaryEncoder(context);
+        binaryDecoder = new OpcUaBinaryDecoder(context);
 
         encodingQueue = new ExecutionQueue(executor);
         decodingQueue = new ExecutionQueue(executor);
@@ -67,12 +67,12 @@ public class SerializationQueue {
 
     @FunctionalInterface
     public interface Decoder {
-        void decode(OpcUaBinaryStreamDecoder binaryDecoder, ChunkDecoder chunkDecoder);
+        void decode(OpcUaBinaryDecoder binaryDecoder, ChunkDecoder chunkDecoder);
     }
 
     @FunctionalInterface
     public interface Encoder {
-        void encode(OpcUaBinaryStreamEncoder binaryEncoder, ChunkEncoder chunkEncoder);
+        void encode(OpcUaBinaryEncoder binaryEncoder, ChunkEncoder chunkEncoder);
     }
 
 }

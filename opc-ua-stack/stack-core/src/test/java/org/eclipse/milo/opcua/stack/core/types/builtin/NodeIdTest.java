@@ -10,9 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -111,7 +111,7 @@ public class NodeIdTest {
         for (int i = 0; i < 100; i++) {
             byte[] bs = new byte[r.nextInt(64) + 1];
             r.nextBytes(bs);
-            String bss = DatatypeConverter.printBase64Binary(bs);
+            String bss = Base64.getEncoder().encodeToString(bs);
 
             {
                 NodeId nodeId = NodeId.parseOrNull("b=" + bss);
@@ -181,6 +181,14 @@ public class NodeIdTest {
         ExpandedNodeId xni = nodeId.expanded(namespaceTable);
 
         assertEquals(xni.getNamespaceUri(), "urn:test");
+    }
+
+    @Test
+    public void parseIdentifierContainingSemiColons() {
+        NodeId nodeId = NodeId.parse("ns=14;s=O=::/#pc;B=::/#pc;S=pc;");
+
+        assertEquals(nodeId.getNamespaceIndex(), ushort(14));
+        assertEquals(nodeId.getIdentifier(), "O=::/#pc;B=::/#pc;S=pc;");
     }
 
 }
