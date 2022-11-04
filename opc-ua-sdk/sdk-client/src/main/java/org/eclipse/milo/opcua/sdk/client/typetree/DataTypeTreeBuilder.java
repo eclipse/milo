@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -86,12 +85,12 @@ public final class DataTypeTreeBuilder {
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
      * {@link NodeIds#BaseDataType}.
      *
-     * @param client  a connected {@link UaStackClient}.
+     * @param client  a connected {@link OpcUaClient}.
      * @param session an active {@link OpcUaSession}.
      * @return a {@link DataTypeTree}.
      * @throws UaException if an unrecoverable error occurs while building the tree.
      */
-    public static DataTypeTree build(UaStackClient client, OpcUaSession session) throws UaException {
+    public static DataTypeTree build(OpcUaClient client, OpcUaSession session) throws UaException {
         try {
             return buildAsync(client, session).get();
         } catch (InterruptedException e) {
@@ -112,7 +111,7 @@ public final class DataTypeTreeBuilder {
     public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client) {
         return client.getSession().thenCompose(
             session ->
-                buildAsync(client.getStackClient(), session)
+                buildAsync(client, session)
         );
     }
 
@@ -120,11 +119,11 @@ public final class DataTypeTreeBuilder {
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
      * {@link NodeIds#BaseDataType}.
      *
-     * @param client  a connected {@link UaStackClient}.
+     * @param client  a connected {@link OpcUaClient}.
      * @param session an active {@link OpcUaSession}.
      * @return a {@link DataTypeTree}.
      */
-    public static CompletableFuture<DataTypeTree> buildAsync(UaStackClient client, OpcUaSession session) {
+    public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client, OpcUaSession session) {
         Tree<DataType> root = new Tree<>(
             null,
             new ClientDataType(
@@ -142,13 +141,13 @@ public final class DataTypeTreeBuilder {
             .thenApply(u -> new DataTypeTree(root));
     }
 
-    private static CompletableFuture<NamespaceTable> readNamespaceTable(UaStackClient client, OpcUaSession session) {
+    private static CompletableFuture<NamespaceTable> readNamespaceTable(OpcUaClient client, OpcUaSession session) {
         RequestHeader requestHeader = client.newRequestHeader(
             session.getAuthenticationToken(),
             client.getConfig().getRequestTimeout()
         );
 
-        CompletableFuture<UaResponseMessageType> readFuture = client.sendRequest(
+        CompletableFuture<UaResponseMessageType> readFuture = client.getTransport().sendRequestMessage(
             new ReadRequest(
                 requestHeader,
                 0.0,
@@ -177,7 +176,7 @@ public final class DataTypeTreeBuilder {
 
     private static CompletableFuture<Unit> addChildren(
         Tree<DataType> tree,
-        UaStackClient client,
+        OpcUaClient client,
         OpcUaSession session,
         NamespaceTable namespaceTable
     ) {
@@ -265,13 +264,13 @@ public final class DataTypeTreeBuilder {
      * Browse a {@link BrowseDescription} "safely", completing successfully
      * with an empty List if any exceptions occur.
      *
-     * @param client            a {@link UaStackClient}.
+     * @param client            an {@link OpcUaClient}.
      * @param session           an {@link OpcUaSession}.
      * @param browseDescription the {@link BrowseDescription}.
      * @return a List of {@link ReferenceDescription}s obtained by browsing {@code browseDescription}.
      */
     private static CompletableFuture<List<ReferenceDescription>> browseSafe(
-        UaStackClient client,
+        OpcUaClient client,
         OpcUaSession session,
         BrowseDescription browseDescription
     ) {
@@ -283,14 +282,14 @@ public final class DataTypeTreeBuilder {
     /**
      * Read the DataTypeDefinition attribute for the DataType Node identified by {@code nodeId}.
      *
-     * @param client     a {@link UaStackClient}.
+     * @param client     an {@link OpcUaClient}.
      * @param session    an {@link OpcUaSession}.
      * @param dataTypeId the {@link NodeId} of the DataType node.
      * @return the value of the {@link DataTypeDefinition} attribute for the Node identified by
      * {@code dataTypeId}. May be {@code null}.
      */
     private static CompletableFuture<@Nullable DataTypeDefinition> readDataTypeDefinition(
-        UaStackClient client,
+        OpcUaClient client,
         OpcUaSession session,
         NodeId dataTypeId
     ) {
@@ -312,7 +311,7 @@ public final class DataTypeTreeBuilder {
             }
         );
 
-        return client.sendRequest(request)
+        return client.getTransport().sendRequestMessage(request)
             .thenApply(ReadResponse.class::cast)
             .thenApply(response -> {
                 DataValue value = response.getResults()[0];

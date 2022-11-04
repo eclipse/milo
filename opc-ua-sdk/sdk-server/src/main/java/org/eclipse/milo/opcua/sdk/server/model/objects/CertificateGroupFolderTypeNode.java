@@ -12,10 +12,8 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -42,19 +40,19 @@ public class CertificateGroupFolderTypeNode extends FolderTypeNode implements Ce
 
     @Override
     public CertificateGroupTypeNode getDefaultApplicationGroupNode() {
-        Optional<UaNode> node = findNode("http://opcfoundation.org/UA/", "DefaultApplicationGroup", n -> n instanceof UaObjectNode, Reference.ORGANIZES_PREDICATE);
-        return (CertificateGroupTypeNode) node.orElse(null);
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultApplicationGroup");
+        return (CertificateGroupTypeNode) component.orElse(null);
     }
 
     @Override
     public CertificateGroupTypeNode getDefaultHttpsGroupNode() {
-        Optional<UaNode> node = findNode("http://opcfoundation.org/UA/", "DefaultHttpsGroup", n -> n instanceof UaObjectNode, Reference.ORGANIZES_PREDICATE);
-        return (CertificateGroupTypeNode) node.orElse(null);
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultHttpsGroup");
+        return (CertificateGroupTypeNode) component.orElse(null);
     }
 
     @Override
     public CertificateGroupTypeNode getDefaultUserTokenGroupNode() {
-        Optional<UaNode> node = findNode("http://opcfoundation.org/UA/", "DefaultUserTokenGroup", n -> n instanceof UaObjectNode, Reference.ORGANIZES_PREDICATE);
-        return (CertificateGroupTypeNode) node.orElse(null);
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultUserTokenGroup");
+        return (CertificateGroupTypeNode) component.orElse(null);
     }
 }

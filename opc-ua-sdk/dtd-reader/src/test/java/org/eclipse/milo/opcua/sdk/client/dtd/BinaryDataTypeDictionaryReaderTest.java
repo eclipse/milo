@@ -17,10 +17,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
+import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -31,6 +31,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
+import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,21 +40,29 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BinaryDataTypeDictionaryReaderTest {
 
-    private final UaStackClient stackClient = Mockito.mock(UaStackClient.class);
-    private final UaStackClientConfig config = Mockito.mock(UaStackClientConfig.class);
+    private final OpcTcpClientTransport transport = Mockito.mock(OpcTcpClientTransport.class);
+    private final OpcTcpClientTransportConfig transportConfig = Mockito.mock(OpcTcpClientTransportConfig.class);
+
+    private final OpcUaClient client = Mockito.mock(OpcUaClient.class);
+    private final OpcUaClientConfig clientConfig = Mockito.mock(OpcUaClientConfig.class);
+
     private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
 
     private final BinaryDataTypeDictionaryReader dictionaryReader =
-        new BinaryDataTypeDictionaryReader(stackClient, session);
+        new BinaryDataTypeDictionaryReader(client, session);
 
     @BeforeEach
     void setUp() {
-        Mockito.when(stackClient.getConfig()).thenReturn(config);
-        Mockito.when(config.getExecutor()).thenReturn(Stack.sharedExecutor());
+        Mockito.when(client.getConfig()).thenReturn(clientConfig);
+        Mockito.when(client.getConfig().getRequestTimeout()).thenReturn(uint(5000));
+        Mockito.when(client.getTransport()).thenReturn(transport);
+        Mockito.when(client.getTransport().getConfig()).thenReturn(transportConfig);
+        Mockito.when(client.getTransport().getConfig().getExecutor()).thenReturn(Stack.sharedExecutor());
     }
 
     @Test
@@ -88,7 +98,7 @@ class BinaryDataTypeDictionaryReaderTest {
 
     private void testReadDataTypeDictionaryBytes(ByteString dictionary, int fragmentSize) throws Exception {
         Mockito
-            .when(stackClient.sendRequest(ArgumentMatchers.any(ReadRequest.class)))
+            .when(transport.sendRequestMessage(ArgumentMatchers.any(ReadRequest.class)))
             .then(invocationOnMock -> {
                 ReadRequest readRequest = invocationOnMock.getArgument(0);
 

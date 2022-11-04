@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.19">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.19</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.20">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.20</a>
  */
 public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
     /**

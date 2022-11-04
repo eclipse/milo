@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.21/#5.8.21.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.21/#5.8.21.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.22/#5.8.22.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.22/#5.8.22.2</a>
  */
 public interface NonExclusiveDeviationAlarmType extends NonExclusiveLimitAlarmType {
     QualifiedProperty<NodeId> SETPOINT_NODE = new QualifiedProperty<>(

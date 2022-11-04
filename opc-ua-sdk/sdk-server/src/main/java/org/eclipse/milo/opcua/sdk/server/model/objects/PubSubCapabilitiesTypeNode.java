@@ -134,4 +134,84 @@ public class PubSubCapabilitiesTypeNode extends BaseObjectTypeNode implements Pu
     public void setMaxFieldsPerDataSet(UInteger value) {
         setProperty(PubSubCapabilitiesType.MAX_FIELDS_PER_DATA_SET, value);
     }
+
+    @Override
+    public PropertyTypeNode getMaxDataSetWritersPerGroupNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PubSubCapabilitiesType.MAX_DATA_SET_WRITERS_PER_GROUP);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getMaxDataSetWritersPerGroup() {
+        return getProperty(PubSubCapabilitiesType.MAX_DATA_SET_WRITERS_PER_GROUP).orElse(null);
+    }
+
+    @Override
+    public void setMaxDataSetWritersPerGroup(UInteger value) {
+        setProperty(PubSubCapabilitiesType.MAX_DATA_SET_WRITERS_PER_GROUP, value);
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNetworkMessageSizeDatagramNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PubSubCapabilitiesType.MAX_NETWORK_MESSAGE_SIZE_DATAGRAM);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getMaxNetworkMessageSizeDatagram() {
+        return getProperty(PubSubCapabilitiesType.MAX_NETWORK_MESSAGE_SIZE_DATAGRAM).orElse(null);
+    }
+
+    @Override
+    public void setMaxNetworkMessageSizeDatagram(UInteger value) {
+        setProperty(PubSubCapabilitiesType.MAX_NETWORK_MESSAGE_SIZE_DATAGRAM, value);
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNetworkMessageSizeBrokerNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PubSubCapabilitiesType.MAX_NETWORK_MESSAGE_SIZE_BROKER);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getMaxNetworkMessageSizeBroker() {
+        return getProperty(PubSubCapabilitiesType.MAX_NETWORK_MESSAGE_SIZE_BROKER).orElse(null);
+    }
+
+    @Override
+    public void setMaxNetworkMessageSizeBroker(UInteger value) {
+        setProperty(PubSubCapabilitiesType.MAX_NETWORK_MESSAGE_SIZE_BROKER, value);
+    }
+
+    @Override
+    public PropertyTypeNode getSupportSecurityKeyPullNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PubSubCapabilitiesType.SUPPORT_SECURITY_KEY_PULL);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Boolean getSupportSecurityKeyPull() {
+        return getProperty(PubSubCapabilitiesType.SUPPORT_SECURITY_KEY_PULL).orElse(null);
+    }
+
+    @Override
+    public void setSupportSecurityKeyPull(Boolean value) {
+        setProperty(PubSubCapabilitiesType.SUPPORT_SECURITY_KEY_PULL, value);
+    }
+
+    @Override
+    public PropertyTypeNode getSupportSecurityKeyPushNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(PubSubCapabilitiesType.SUPPORT_SECURITY_KEY_PUSH);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Boolean getSupportSecurityKeyPush() {
+        return getProperty(PubSubCapabilitiesType.SUPPORT_SECURITY_KEY_PUSH).orElse(null);
+    }
+
+    @Override
+    public void setSupportSecurityKeyPush(Boolean value) {
+        setProperty(PubSubCapabilitiesType.SUPPORT_SECURITY_KEY_PUSH, value);
+    }
 }

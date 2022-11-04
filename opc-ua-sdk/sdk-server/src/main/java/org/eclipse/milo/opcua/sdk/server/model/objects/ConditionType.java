@@ -50,22 +50,6 @@ public interface ConditionType extends BaseEventType {
         LocalizedText.class
     );
 
-    QualifiedProperty<NodeId[]> CONDITION_SUB_CLASS_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ConditionSubClassId",
-        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
-        1,
-        NodeId[].class
-    );
-
-    QualifiedProperty<LocalizedText[]> CONDITION_SUB_CLASS_NAME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ConditionSubClassName",
-        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
-        1,
-        LocalizedText[].class
-    );
-
     QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConditionName",
@@ -85,6 +69,14 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Retain",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        -1,
+        Boolean.class
+    );
+
+    QualifiedProperty<Boolean> SUPPORTS_FILTERED_RETAIN = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SupportsFilteredRetain",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         -1,
         Boolean.class
@@ -110,18 +102,6 @@ public interface ConditionType extends BaseEventType {
 
     PropertyType getConditionClassNameNode();
 
-    NodeId[] getConditionSubClassId();
-
-    void setConditionSubClassId(NodeId[] value);
-
-    PropertyType getConditionSubClassIdNode();
-
-    LocalizedText[] getConditionSubClassName();
-
-    void setConditionSubClassName(LocalizedText[] value);
-
-    PropertyType getConditionSubClassNameNode();
-
     String getConditionName();
 
     void setConditionName(String value);
@@ -139,6 +119,12 @@ public interface ConditionType extends BaseEventType {
     void setRetain(Boolean value);
 
     PropertyType getRetainNode();
+
+    Boolean getSupportsFilteredRetain();
+
+    void setSupportsFilteredRetain(Boolean value);
+
+    PropertyType getSupportsFilteredRetainNode();
 
     String getClientUserId();
 

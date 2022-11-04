@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/8.3">https://reference.opcfoundation.org/v105/Core/docs/Part9/8.3</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/9.3">https://reference.opcfoundation.org/v105/Core/docs/Part9/9.3</a>
  */
 public interface AlarmRateVariableType extends BaseDataVariableType {
     QualifiedProperty<UShort> RATE = new QualifiedProperty<>(

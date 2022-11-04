@@ -425,4 +425,329 @@ public class PubSubCapabilitiesTypeNode extends BaseObjectTypeNode implements Pu
         );
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
+
+    @Override
+    public UInteger getMaxDataSetWritersPerGroup() throws UaException {
+        PropertyTypeNode node = getMaxDataSetWritersPerGroupNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxDataSetWritersPerGroup(UInteger value) throws UaException {
+        PropertyTypeNode node = getMaxDataSetWritersPerGroupNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public UInteger readMaxDataSetWritersPerGroup() throws UaException {
+        try {
+            return readMaxDataSetWritersPerGroupAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxDataSetWritersPerGroup(UInteger value) throws UaException {
+        try {
+            writeMaxDataSetWritersPerGroupAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxDataSetWritersPerGroupAsync() {
+        return getMaxDataSetWritersPerGroupNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeMaxDataSetWritersPerGroupAsync(
+        UInteger maxDataSetWritersPerGroup) {
+        DataValue value = DataValue.valueOnly(new Variant(maxDataSetWritersPerGroup));
+        return getMaxDataSetWritersPerGroupNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getMaxDataSetWritersPerGroupNode() throws UaException {
+        try {
+            return getMaxDataSetWritersPerGroupNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxDataSetWritersPerGroupNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "MaxDataSetWritersPerGroup",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNetworkMessageSizeDatagram() throws UaException {
+        PropertyTypeNode node = getMaxNetworkMessageSizeDatagramNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNetworkMessageSizeDatagram(UInteger value) throws UaException {
+        PropertyTypeNode node = getMaxNetworkMessageSizeDatagramNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public UInteger readMaxNetworkMessageSizeDatagram() throws UaException {
+        try {
+            return readMaxNetworkMessageSizeDatagramAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNetworkMessageSizeDatagram(UInteger value) throws UaException {
+        try {
+            writeMaxNetworkMessageSizeDatagramAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNetworkMessageSizeDatagramAsync() {
+        return getMaxNetworkMessageSizeDatagramNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeMaxNetworkMessageSizeDatagramAsync(
+        UInteger maxNetworkMessageSizeDatagram) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNetworkMessageSizeDatagram));
+        return getMaxNetworkMessageSizeDatagramNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNetworkMessageSizeDatagramNode() throws UaException {
+        try {
+            return getMaxNetworkMessageSizeDatagramNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNetworkMessageSizeDatagramNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "MaxNetworkMessageSizeDatagram",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNetworkMessageSizeBroker() throws UaException {
+        PropertyTypeNode node = getMaxNetworkMessageSizeBrokerNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNetworkMessageSizeBroker(UInteger value) throws UaException {
+        PropertyTypeNode node = getMaxNetworkMessageSizeBrokerNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public UInteger readMaxNetworkMessageSizeBroker() throws UaException {
+        try {
+            return readMaxNetworkMessageSizeBrokerAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNetworkMessageSizeBroker(UInteger value) throws UaException {
+        try {
+            writeMaxNetworkMessageSizeBrokerAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNetworkMessageSizeBrokerAsync() {
+        return getMaxNetworkMessageSizeBrokerNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeMaxNetworkMessageSizeBrokerAsync(
+        UInteger maxNetworkMessageSizeBroker) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNetworkMessageSizeBroker));
+        return getMaxNetworkMessageSizeBrokerNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNetworkMessageSizeBrokerNode() throws UaException {
+        try {
+            return getMaxNetworkMessageSizeBrokerNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNetworkMessageSizeBrokerNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "MaxNetworkMessageSizeBroker",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Boolean getSupportSecurityKeyPull() throws UaException {
+        PropertyTypeNode node = getSupportSecurityKeyPullNode();
+        return (Boolean) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setSupportSecurityKeyPull(Boolean value) throws UaException {
+        PropertyTypeNode node = getSupportSecurityKeyPullNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public Boolean readSupportSecurityKeyPull() throws UaException {
+        try {
+            return readSupportSecurityKeyPullAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeSupportSecurityKeyPull(Boolean value) throws UaException {
+        try {
+            writeSupportSecurityKeyPullAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Boolean> readSupportSecurityKeyPullAsync() {
+        return getSupportSecurityKeyPullNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (Boolean) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeSupportSecurityKeyPullAsync(
+        Boolean supportSecurityKeyPull) {
+        DataValue value = DataValue.valueOnly(new Variant(supportSecurityKeyPull));
+        return getSupportSecurityKeyPullNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getSupportSecurityKeyPullNode() throws UaException {
+        try {
+            return getSupportSecurityKeyPullNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getSupportSecurityKeyPullNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "SupportSecurityKeyPull",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Boolean getSupportSecurityKeyPush() throws UaException {
+        PropertyTypeNode node = getSupportSecurityKeyPushNode();
+        return (Boolean) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setSupportSecurityKeyPush(Boolean value) throws UaException {
+        PropertyTypeNode node = getSupportSecurityKeyPushNode();
+        node.setValue(new Variant(value));
+    }
+
+    @Override
+    public Boolean readSupportSecurityKeyPush() throws UaException {
+        try {
+            return readSupportSecurityKeyPushAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeSupportSecurityKeyPush(Boolean value) throws UaException {
+        try {
+            writeSupportSecurityKeyPushAsync(value).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Boolean> readSupportSecurityKeyPushAsync() {
+        return getSupportSecurityKeyPushNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> (Boolean) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeSupportSecurityKeyPushAsync(
+        Boolean supportSecurityKeyPush) {
+        DataValue value = DataValue.valueOnly(new Variant(supportSecurityKeyPush));
+        return getSupportSecurityKeyPushNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getSupportSecurityKeyPushNode() throws UaException {
+        try {
+            return getSupportSecurityKeyPushNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getSupportSecurityKeyPushNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync(
+            "http://opcfoundation.org/UA/",
+            "SupportSecurityKeyPush",
+            ExpandedNodeId.parse("ns=0;i=46"),
+            false
+        );
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
 }

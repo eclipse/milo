@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,12 +24,14 @@ import java.util.Set;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.config.EndpointConfig;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -40,8 +42,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
-import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransport;
+import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransportConfig;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
@@ -134,7 +136,7 @@ public final class TestServer {
                 StatusCodes.Bad_ConfigurationError,
                 "certificate is missing the application URI"));
 
-        Set<EndpointConfiguration> endpointConfigurations = createEndpointConfigurations(certificate, port);
+        Set<EndpointConfig> endpointConfigurations = createEndpointConfigs(certificate, port);
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri(applicationUri)
@@ -150,17 +152,25 @@ public final class TestServer {
             .setCertificateManager(certificateManager)
             .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
-            .setHttpsKeyPair(httpsKeyPair)
-            .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
             .setIdentityValidator(identityValidator)
             .setProductUri("urn:eclipse:milo:example-server")
             .build();
 
-        return new OpcUaServer(serverConfig);
+
+        return new OpcUaServer(serverConfig, transportProfile -> {
+            if (transportProfile == TransportProfile.TCP_UASC_UABINARY) {
+                OpcTcpServerTransportConfig transportConfig =
+                    OpcTcpServerTransportConfig.newBuilder().build();
+
+                return new OpcTcpServerTransport(transportConfig);
+            } else {
+                throw new RuntimeException("unexpected TransportProfile: " + transportProfile);
+            }
+        });
     }
 
-    private static Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate, int port) {
-        Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
+    private static Set<EndpointConfig> createEndpointConfigs(X509Certificate certificate, int port) {
+        Set<EndpointConfig> endpointConfigurations = new LinkedHashSet<>();
 
         var bindAddresses = new ArrayList<String>();
         bindAddresses.add("localhost");
@@ -169,7 +179,7 @@ public final class TestServer {
 
         for (String bindAddress : bindAddresses) {
             for (String hostname : hostnames) {
-                EndpointConfiguration.Builder builder = EndpointConfiguration.newBuilder()
+                EndpointConfig.Builder builder = EndpointConfig.newBuilder()
                     .setBindAddress(bindAddress)
                     .setHostname(hostname)
                     .setPath("/test")
@@ -180,7 +190,7 @@ public final class TestServer {
                         USER_TOKEN_POLICY_X509);
 
 
-                EndpointConfiguration.Builder noSecurityBuilder = builder.copy()
+                EndpointConfig.Builder noSecurityBuilder = builder.copy()
                     .setSecurityPolicy(SecurityPolicy.None)
                     .setSecurityMode(MessageSecurityMode.None);
 
@@ -207,7 +217,7 @@ public final class TestServer {
                  * its base address.
                  */
 
-                EndpointConfiguration.Builder discoveryBuilder = builder.copy()
+                EndpointConfig.Builder discoveryBuilder = builder.copy()
                     .setPath("/test/discovery")
                     .setSecurityPolicy(SecurityPolicy.None)
                     .setSecurityMode(MessageSecurityMode.None);
@@ -219,7 +229,7 @@ public final class TestServer {
         return endpointConfigurations;
     }
 
-    private static EndpointConfiguration buildTcpEndpoint(int port, EndpointConfiguration.Builder base) {
+    private static EndpointConfig buildTcpEndpoint(int port, EndpointConfig.Builder base) {
         return base.copy()
             .setTransportProfile(TransportProfile.TCP_UASC_UABINARY)
             .setBindPort(port)

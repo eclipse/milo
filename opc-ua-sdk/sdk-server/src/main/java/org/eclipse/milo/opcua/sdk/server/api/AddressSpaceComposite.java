@@ -256,10 +256,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     asx.getFilter().filterRegisterNode(server, nodeId)
             ),
             (AddressSpace asx) -> group -> {
-                RegisterNodesContext ctx = new RegisterNodesContext(
+                var ctx = new RegisterNodesContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.registerNodes(ctx, group);
@@ -280,10 +283,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     asx.getFilter().filterUnregisterNode(server, nodeId)
             ),
             (AddressSpace asx) -> group -> {
-                UnregisterNodesContext ctx = new UnregisterNodesContext(
+                var ctx = new UnregisterNodesContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.unregisterNodes(ctx, group);
@@ -321,10 +327,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     asx.getFilter().filterRead(server, readValueId)
             ),
             (AddressSpace asx) -> group -> {
-                ReadContext ctx = new ReadContext(
+                var ctx = new ReadContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.read(ctx, maxAge, timestamps, group);
@@ -350,10 +359,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                WriteContext ctx = new WriteContext(
+                var ctx = new WriteContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.write(ctx, group);
@@ -385,10 +397,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                HistoryReadContext ctx = new HistoryReadContext(
+                var ctx = new HistoryReadContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.historyRead(
@@ -419,10 +434,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                HistoryUpdateContext ctx = new HistoryUpdateContext(
+                var ctx = new HistoryUpdateContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.historyUpdate(ctx, group);
@@ -452,10 +470,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                CallContext ctx = new CallContext(
+                var ctx = new CallContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.call(ctx, group);
@@ -649,10 +670,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                AddNodesContext ctx = new AddNodesContext(
+                var ctx = new AddNodesContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.addNodes(ctx, group);
@@ -674,10 +698,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                DeleteNodesContext ctx = new DeleteNodesContext(
+                var ctx = new DeleteNodesContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.deleteNodes(ctx, group);
@@ -699,10 +726,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                AddReferencesContext ctx = new AddReferencesContext(
+                var ctx = new AddReferencesContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.addReferences(ctx, group);
@@ -724,10 +754,13 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ),
             (AddressSpace asx) -> group -> {
 
-                DeleteReferencesContext ctx = new DeleteReferencesContext(
+                var ctx = new DeleteReferencesContext(
                     server,
                     context.getSession().orElse(null),
-                    context.getDiagnosticsContext()
+                    context.getDiagnosticsContext(),
+                    context.getAuditEntryId(),
+                    context.getTimeoutHint(),
+                    context.getAdditionalHeader()
                 );
 
                 asx.deleteReferences(ctx, group);

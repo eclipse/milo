@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7">https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.4">https://reference.opcfoundation.org/v105/Core/docs/Part12/8.6.4</a>
  */
 public interface KeyCredentialConfigurationType extends BaseObjectType {
     QualifiedProperty<String> RESOURCE_URI = new QualifiedProperty<>(

@@ -24,10 +24,38 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.10.3">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.10.3</a>
+ */
 public interface ServerConfigurationType extends BaseObjectType {
+    QualifiedProperty<String> APPLICATION_URI = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ApplicationUri",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23751"),
+        -1,
+        String.class
+    );
+
+    QualifiedProperty<String> PRODUCT_URI = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ProductUri",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23751"),
+        -1,
+        String.class
+    );
+
+    QualifiedProperty<ApplicationType> APPLICATION_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ApplicationType",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=307"),
+        -1,
+        ApplicationType.class
+    );
+
     QualifiedProperty<String[]> SERVER_CAPABILITIES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerCapabilities",
@@ -60,6 +88,32 @@ public interface ServerConfigurationType extends BaseObjectType {
         Boolean.class
     );
 
+    QualifiedProperty<Boolean> HAS_SECURE_ELEMENT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "HasSecureElement",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        -1,
+        Boolean.class
+    );
+
+    String getApplicationUri();
+
+    void setApplicationUri(String value);
+
+    PropertyType getApplicationUriNode();
+
+    String getProductUri();
+
+    void setProductUri(String value);
+
+    PropertyType getProductUriNode();
+
+    ApplicationType getApplicationType();
+
+    void setApplicationType(ApplicationType value);
+
+    PropertyType getApplicationTypeNode();
+
     String[] getServerCapabilities();
 
     void setServerCapabilities(String[] value);
@@ -84,15 +138,29 @@ public interface ServerConfigurationType extends BaseObjectType {
 
     PropertyType getMulticastDnsEnabledNode();
 
+    Boolean getHasSecureElement();
+
+    void setHasSecureElement(Boolean value);
+
+    PropertyType getHasSecureElementNode();
+
     CertificateGroupFolderType getCertificateGroupsNode();
 
     MethodNode getUpdateCertificateMethodNode();
 
+    MethodNode getGetCertificatesMethodNode();
+
     MethodNode getApplyChangesMethodNode();
+
+    MethodNode getCancelChangesMethodNode();
 
     MethodNode getCreateSigningRequestMethodNode();
 
     MethodNode getGetRejectedListMethodNode();
+
+    MethodNode getResetToServerDefaultsMethodNode();
+
+    TransactionDiagnosticsType getTransactionDiagnosticsNode();
 
     abstract class UpdateCertificateMethod extends AbstractMethodInvocationHandler {
         private final Lazy<Argument[]> inputArguments = new Lazy<>();
@@ -150,8 +218,81 @@ public interface ServerConfigurationType extends BaseObjectType {
                                        Out<Boolean> applyChangesRequired) throws UaException;
     }
 
+    abstract class GetCertificatesMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        private final Lazy<Argument[]> outputArguments = new Lazy<>();
+
+        public GetCertificatesMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("CertificateGroupId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return outputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("CertificateTypeIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", "")),
+                    new Argument("Certificates", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            NodeId certificateGroupId = (NodeId) inputValues[0].getValue();
+            Out<NodeId[]> certificateTypeIds = new Out<>();
+            Out<ByteString[]> certificates = new Out<>();
+            invoke(context, certificateGroupId, certificateTypeIds, certificates);
+            return new Variant[]{new Variant(certificateTypeIds.get()), new Variant(certificates.get())};
+        }
+
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
+                                       NodeId certificateGroupId, Out<NodeId[]> certificateTypeIds, Out<ByteString[]> certificates)
+            throws UaException;
+    }
+
     abstract class ApplyChangesMethod extends AbstractMethodInvocationHandler {
         public ApplyChangesMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class CancelChangesMethod extends AbstractMethodInvocationHandler {
+        public CancelChangesMethod(UaMethodNode node) {
             super(node);
         }
 
@@ -263,5 +404,31 @@ public interface ServerConfigurationType extends BaseObjectType {
 
         protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        Out<ByteString[]> certificates) throws UaException;
+    }
+
+    abstract class ResetToServerDefaultsMethod extends AbstractMethodInvocationHandler {
+        public ResetToServerDefaultsMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
+            UaException;
     }
 }

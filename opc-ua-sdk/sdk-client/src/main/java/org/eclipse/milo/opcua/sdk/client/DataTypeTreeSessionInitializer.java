@@ -15,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 /**
@@ -33,8 +32,8 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
     public static final String SESSION_ATTRIBUTE_KEY = "dataTypeTree";
 
     @Override
-    public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {
-        return DataTypeTreeBuilder.buildAsync(stackClient, session)
+    public CompletableFuture<Unit> initialize(OpcUaClient client, OpcUaSession session) {
+        return DataTypeTreeBuilder.buildAsync(client, session)
             .thenAccept(tree -> session.setAttribute(SESSION_ATTRIBUTE_KEY, tree))
             .thenApply(v -> Unit.VALUE);
     }

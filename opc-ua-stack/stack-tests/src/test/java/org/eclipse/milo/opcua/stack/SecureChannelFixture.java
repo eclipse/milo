@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.stack;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
@@ -22,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
+import org.eclipse.milo.opcua.stack.transport.client.uasc.ClientSecureChannel;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;

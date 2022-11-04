@@ -186,4 +186,68 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     public void setSeverity(UShort value) {
         setProperty(BaseEventType.SEVERITY, value);
     }
+
+    @Override
+    public PropertyTypeNode getConditionClassIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.CONDITION_CLASS_ID);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public NodeId getConditionClassId() {
+        return getProperty(BaseEventType.CONDITION_CLASS_ID).orElse(null);
+    }
+
+    @Override
+    public void setConditionClassId(NodeId value) {
+        setProperty(BaseEventType.CONDITION_CLASS_ID, value);
+    }
+
+    @Override
+    public PropertyTypeNode getConditionClassNameNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.CONDITION_CLASS_NAME);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public LocalizedText getConditionClassName() {
+        return getProperty(BaseEventType.CONDITION_CLASS_NAME).orElse(null);
+    }
+
+    @Override
+    public void setConditionClassName(LocalizedText value) {
+        setProperty(BaseEventType.CONDITION_CLASS_NAME, value);
+    }
+
+    @Override
+    public PropertyTypeNode getConditionSubClassIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.CONDITION_SUB_CLASS_ID);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public NodeId[] getConditionSubClassId() {
+        return getProperty(BaseEventType.CONDITION_SUB_CLASS_ID).orElse(null);
+    }
+
+    @Override
+    public void setConditionSubClassId(NodeId[] value) {
+        setProperty(BaseEventType.CONDITION_SUB_CLASS_ID, value);
+    }
+
+    @Override
+    public PropertyTypeNode getConditionSubClassNameNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.CONDITION_SUB_CLASS_NAME);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public LocalizedText[] getConditionSubClassName() {
+        return getProperty(BaseEventType.CONDITION_SUB_CLASS_NAME).orElse(null);
+    }
+
+    @Override
+    public void setConditionSubClassName(LocalizedText[] value) {
+        setProperty(BaseEventType.CONDITION_SUB_CLASS_NAME, value);
+    }
 }

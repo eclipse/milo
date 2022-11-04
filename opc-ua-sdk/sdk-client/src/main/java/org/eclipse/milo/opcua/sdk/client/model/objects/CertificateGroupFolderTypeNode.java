@@ -51,7 +51,7 @@ public class CertificateGroupFolderTypeNode extends FolderTypeNode implements Ce
         CompletableFuture<UaNode> future = getMemberNodeAsync(
             "http://opcfoundation.org/UA/",
             "DefaultApplicationGroup",
-            ExpandedNodeId.parse("ns=0;i=35"),
+            ExpandedNodeId.parse("ns=0;i=47"),
             false
         );
         return future.thenApply(node -> (CertificateGroupTypeNode) node);
@@ -71,7 +71,7 @@ public class CertificateGroupFolderTypeNode extends FolderTypeNode implements Ce
         CompletableFuture<UaNode> future = getMemberNodeAsync(
             "http://opcfoundation.org/UA/",
             "DefaultHttpsGroup",
-            ExpandedNodeId.parse("ns=0;i=35"),
+            ExpandedNodeId.parse("ns=0;i=47"),
             false
         );
         return future.thenApply(node -> (CertificateGroupTypeNode) node);
@@ -91,7 +91,7 @@ public class CertificateGroupFolderTypeNode extends FolderTypeNode implements Ce
         CompletableFuture<UaNode> future = getMemberNodeAsync(
             "http://opcfoundation.org/UA/",
             "DefaultUserTokenGroup",
-            ExpandedNodeId.parse("ns=0;i=35"),
+            ExpandedNodeId.parse("ns=0;i=47"),
             false
         );
         return future.thenApply(node -> (CertificateGroupTypeNode) node);

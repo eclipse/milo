@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredEventItem;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.PublishQueue.PendingPublish;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription.State;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -79,6 +80,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.NotificationMessage;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
@@ -90,16 +92,18 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
-import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
+import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class SubscriptionManager {
 
@@ -113,12 +117,13 @@ public class SubscriptionManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final PublishQueue publishQueue = new PublishQueue();
 
     private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
     private final List<Subscription> transferred = new CopyOnWriteArrayList<>();
 
     private final AtomicLong monitoredItemCount = new AtomicLong(0L);
+
+    private final PublishQueue publishQueue;
 
     private final Session session;
     private final OpcUaServer server;
@@ -126,6 +131,8 @@ public class SubscriptionManager {
     public SubscriptionManager(Session session, OpcUaServer server) {
         this.session = session;
         this.server = server;
+
+        publishQueue = new PublishQueue(server.getConfig().getExecutor());
     }
 
     public Session getSession() {
@@ -149,22 +156,18 @@ public class SubscriptionManager {
         return new ArrayList<>(subscriptions.values());
     }
 
-    public void createSubscription(ServiceRequest service) {
-        CreateSubscriptionRequest request = (CreateSubscriptionRequest) service.getRequest();
-
+    public CompletableFuture<CreateSubscriptionResponse> createSubscription(CreateSubscriptionRequest request) {
         if (subscriptions.size() >= server.getConfig().getLimits().getMaxSubscriptionsPerSession().intValue()) {
-            service.setServiceFault(StatusCodes.Bad_TooManySubscriptions);
-            return;
+            return failedUaFuture(StatusCodes.Bad_TooManySubscriptions);
         }
 
         if (server.getSubscriptions().size() >= server.getConfig().getLimits().getMaxSubscriptions().intValue()) {
-            service.setServiceFault(StatusCodes.Bad_TooManySubscriptions);
-            return;
+            return failedUaFuture(StatusCodes.Bad_TooManySubscriptions);
         }
 
         UInteger subscriptionId = nextSubscriptionId();
 
-        Subscription subscription = new Subscription(
+        var subscription = new Subscription(
             this,
             subscriptionId,
             request.getRequestedPublishingInterval(),
@@ -207,9 +210,9 @@ public class SubscriptionManager {
 
         subscription.startPublishingTimer();
 
-        ResponseHeader header = service.createResponseHeader();
+        ResponseHeader header = createResponseHeader(request);
 
-        CreateSubscriptionResponse response = new CreateSubscriptionResponse(
+        var response = new CreateSubscriptionResponse(
             header,
             subscriptionId,
             subscription.getPublishingInterval(),
@@ -217,40 +220,36 @@ public class SubscriptionManager {
             uint(subscription.getMaxKeepAliveCount())
         );
 
-        service.setResponse(response);
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void modifySubscription(ServiceRequest service) throws UaException {
-        ModifySubscriptionRequest request = (ModifySubscriptionRequest) service.getRequest();
-
+    public CompletableFuture<ModifySubscriptionResponse> modifySubscription(ModifySubscriptionRequest request) {
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
 
         if (subscription == null) {
-            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
 
         subscription.modifySubscription(request);
 
-        ResponseHeader header = service.createResponseHeader();
+        ResponseHeader header = createResponseHeader(request);
 
-        ModifySubscriptionResponse response = new ModifySubscriptionResponse(
+        var response = new ModifySubscriptionResponse(
             header,
             subscription.getPublishingInterval(),
             uint(subscription.getLifetimeCount()),
             uint(subscription.getMaxKeepAliveCount())
         );
 
-        service.setResponse(response);
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void deleteSubscription(ServiceRequest service) throws UaException {
-        DeleteSubscriptionsRequest request = (DeleteSubscriptionsRequest) service.getRequest();
-
+    public CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptions(DeleteSubscriptionsRequest request) {
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
-            throw new UaException(StatusCodes.Bad_NothingToDo);
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
         }
 
         StatusCode[] results = new StatusCode[subscriptionIds.size()];
@@ -284,26 +283,27 @@ public class SubscriptionManager {
             }
         }
 
-        ResponseHeader header = service.createResponseHeader();
+        ResponseHeader header = createResponseHeader(request);
 
-        DeleteSubscriptionsResponse response = new DeleteSubscriptionsResponse(
+        var response = new DeleteSubscriptionsResponse(
             header,
             results,
             new DiagnosticInfo[0]
         );
 
-        service.setResponse(response);
-
         while (subscriptions.isEmpty() && publishQueue.isNotEmpty()) {
-            ServiceRequest publishService = publishQueue.poll();
-            if (publishService != null) {
-                publishService.setServiceFault(StatusCodes.Bad_NoSubscription);
+            PendingPublish pending = publishQueue.poll();
+            if (pending != null) {
+                pending.responseFuture.completeExceptionally(
+                    new UaException(StatusCodes.Bad_NoSubscription)
+                );
             }
         }
+
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void setPublishingMode(ServiceRequest service) {
-        SetPublishingModeRequest request = (SetPublishingModeRequest) service.getRequest();
+    public CompletableFuture<SetPublishingModeResponse> setPublishingMode(SetPublishingModeRequest request) {
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         StatusCode[] results = new StatusCode[subscriptionIds.size()];
@@ -318,33 +318,35 @@ public class SubscriptionManager {
             }
         }
 
-        ResponseHeader header = service.createResponseHeader();
+        ResponseHeader header = createResponseHeader(request);
 
-        SetPublishingModeResponse response = new SetPublishingModeResponse(
+        var response = new SetPublishingModeResponse(
             header,
             results,
             new DiagnosticInfo[0]
         );
 
-        service.setResponse(response);
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void createMonitoredItems(ServiceRequest service) throws UaException {
-        CreateMonitoredItemsRequest request = (CreateMonitoredItemsRequest) service.getRequest();
+    public CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(
+        ServiceRequestContext context,
+        CreateMonitoredItemsRequest request
+    ) {
 
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
         TimestampsToReturn timestamps = request.getTimestampsToReturn();
-        List<MonitoredItemCreateRequest> itemsToCreate = l(request.getItemsToCreate());
+        List<MonitoredItemCreateRequest> itemsToCreate = List.of(request.getItemsToCreate());
 
         if (subscription == null) {
-            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
         if (timestamps == null) {
-            throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
+            return failedUaFuture(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
         if (itemsToCreate.isEmpty()) {
-            throw new UaException(StatusCodes.Bad_NothingToDo);
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
         }
 
         List<NodeId> distinctNodeIds = itemsToCreate.stream()
@@ -354,7 +356,7 @@ public class SubscriptionManager {
 
         CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
 
-        attributesFuture.thenAccept(attributeGroups -> {
+        return attributesFuture.thenApply(attributeGroups -> {
             MonitoredItemCreateResult[] createResults = new MonitoredItemCreateResult[itemsToCreate.size()];
 
             List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
@@ -416,15 +418,9 @@ public class SubscriptionManager {
                 eventItems -> server.getAddressSpaceManager().onEventItemsCreated(eventItems)
             );
 
-            ResponseHeader header = service.createResponseHeader();
+            ResponseHeader header = createResponseHeader(request);
 
-            CreateMonitoredItemsResponse response = new CreateMonitoredItemsResponse(
-                header,
-                createResults,
-                new DiagnosticInfo[0]
-            );
-
-            service.setResponse(response);
+            return new CreateMonitoredItemsResponse(header, createResults, new DiagnosticInfo[0]);
         });
     }
 
@@ -667,22 +663,24 @@ public class SubscriptionManager {
         }
     }
 
-    public void modifyMonitoredItems(ServiceRequest service) throws UaException {
-        ModifyMonitoredItemsRequest request = (ModifyMonitoredItemsRequest) service.getRequest();
+    public CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(
+        ServiceRequestContext context,
+        ModifyMonitoredItemsRequest request
+    ) {
 
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
         TimestampsToReturn timestamps = request.getTimestampsToReturn();
-        List<MonitoredItemModifyRequest> itemsToModify = l(request.getItemsToModify());
+        List<MonitoredItemModifyRequest> itemsToModify = List.of(request.getItemsToModify());
 
         if (subscription == null) {
-            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
         if (timestamps == null) {
-            throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
+            return failedUaFuture(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
         if (itemsToModify.isEmpty()) {
-            throw new UaException(StatusCodes.Bad_NothingToDo);
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
         }
 
         List<NodeId> distinctNodeIds = itemsToModify.stream()
@@ -697,7 +695,7 @@ public class SubscriptionManager {
 
         CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
 
-        attributesFuture.thenAccept(attributeGroups -> {
+        return attributesFuture.thenApply(attributeGroups -> {
             MonitoredItemModifyResult[] modifyResults = new MonitoredItemModifyResult[itemsToModify.size()];
 
             List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
@@ -747,15 +745,13 @@ public class SubscriptionManager {
              * AddressSpaces have been notified; send response.
              */
 
-            ResponseHeader header = service.createResponseHeader();
+            ResponseHeader header = createResponseHeader(request);
 
-            ModifyMonitoredItemsResponse response = new ModifyMonitoredItemsResponse(
+            return new ModifyMonitoredItemsResponse(
                 header,
                 modifyResults,
                 new DiagnosticInfo[0]
             );
-
-            service.setResponse(response);
         });
     }
 
@@ -966,22 +962,23 @@ public class SubscriptionManager {
         });
     }
 
-
-    public void deleteMonitoredItems(ServiceRequest service) throws UaException {
-        DeleteMonitoredItemsRequest request = (DeleteMonitoredItemsRequest) service.getRequest();
+    public CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItems(
+        ServiceRequestContext context,
+        DeleteMonitoredItemsRequest request
+    ) {
 
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
-        List<UInteger> itemsToDelete = l(request.getMonitoredItemIds());
+        List<UInteger> itemsToDelete = List.of(request.getMonitoredItemIds());
 
         if (subscription == null) {
-            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
         if (itemsToDelete.isEmpty()) {
-            throw new UaException(StatusCodes.Bad_NothingToDo);
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
         }
 
-        StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
+        var deleteResults = new StatusCode[itemsToDelete.size()];
         var deletedItems = new ArrayList<BaseMonitoredItem<?>>(itemsToDelete.size());
 
         synchronized (subscription) {
@@ -1017,85 +1014,81 @@ public class SubscriptionManager {
         /*
          * Build and return results.
          */
-        ResponseHeader header = service.createResponseHeader();
 
-        DeleteMonitoredItemsResponse response = new DeleteMonitoredItemsResponse(
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new DeleteMonitoredItemsResponse(
             header,
             deleteResults,
             new DiagnosticInfo[0]
         );
 
-        service.setResponse(response);
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void setMonitoringMode(ServiceRequest service) {
-        SetMonitoringModeRequest request = (SetMonitoringModeRequest) service.getRequest();
+    public CompletableFuture<SetMonitoringModeResponse> setMonitoringMode(ServiceRequestContext context, SetMonitoringModeRequest request) {
         UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        List<UInteger> itemsToModify = List.of(request.getMonitoredItemIds());
 
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-            List<UInteger> itemsToModify = l(request.getMonitoredItemIds());
-
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-            if (itemsToModify.isEmpty()) {
-                throw new UaException(StatusCodes.Bad_NothingToDo);
-            }
-
-            /*
-             * Set MonitoringMode on each monitored item, if it exists.
-             */
-
-            MonitoringMode monitoringMode = request.getMonitoringMode();
-            StatusCode[] results = new StatusCode[itemsToModify.size()];
-            var modified = new ArrayList<MonitoredItem>(itemsToModify.size());
-
-            for (int i = 0; i < itemsToModify.size(); i++) {
-                UInteger itemId = itemsToModify.get(i);
-                BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
-
-                if (item != null) {
-                    item.setMonitoringMode(monitoringMode);
-
-                    modified.add(item);
-
-                    results[i] = StatusCode.GOOD;
-                } else {
-                    results[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
-                }
-            }
-
-            /*
-             * Notify AddressSpace of the items whose MonitoringMode has been modified.
-             */
-
-            server.getAddressSpaceManager().onMonitoringModeChanged(modified);
-
-            /*
-             * Build and return results.
-             */
-
-            ResponseHeader header = service.createResponseHeader();
-            SetMonitoringModeResponse response = new SetMonitoringModeResponse(
-                header,
-                results,
-                new DiagnosticInfo[0]
-            );
-
-            service.setResponse(response);
-        } catch (UaException e) {
-            service.setServiceFault(e);
+        if (subscription == null) {
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
+        if (itemsToModify.isEmpty()) {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
+
+        /*
+         * Set MonitoringMode on each monitored item, if it exists.
+         */
+
+        MonitoringMode monitoringMode = request.getMonitoringMode();
+        var results = new StatusCode[itemsToModify.size()];
+        var modified = new ArrayList<MonitoredItem>(itemsToModify.size());
+
+        for (int i = 0; i < itemsToModify.size(); i++) {
+            UInteger itemId = itemsToModify.get(i);
+            BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
+
+            if (item != null) {
+                item.setMonitoringMode(monitoringMode);
+
+                modified.add(item);
+
+                results[i] = StatusCode.GOOD;
+            } else {
+                results[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+            }
+        }
+
+        /*
+         * Notify AddressSpace of the items whose MonitoringMode has been modified.
+         */
+
+        server.getAddressSpaceManager().onMonitoringModeChanged(modified);
+
+        /*
+         * Build and return results.
+         */
+
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new SetMonitoringModeResponse(
+            header,
+            results,
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void publish(ServiceRequest service) {
-        PublishRequest request = (PublishRequest) service.getRequest();
-
+    public CompletableFuture<PublishResponse> publish(ServiceRequestContext context, PublishRequest request) {
         SubscriptionAcknowledgement[] acknowledgements = request.getSubscriptionAcknowledgements();
 
+        StatusCode[] results;
+
         if (acknowledgements != null) {
-            StatusCode[] results = new StatusCode[acknowledgements.length];
+            results = new StatusCode[acknowledgements.length];
 
             for (int i = 0; i < acknowledgements.length; i++) {
                 SubscriptionAcknowledgement acknowledgement = acknowledgements[i];
@@ -1120,78 +1113,75 @@ public class SubscriptionManager {
                     results[i] = subscription.acknowledge(sequenceNumber);
                 }
             }
-
-            service.attr(KEY_ACK_RESULTS).set(results);
+        } else {
+            results = new StatusCode[0];
         }
+
+        PendingPublish pending = new PendingPublish(context, request, results);
 
         if (!transferred.isEmpty()) {
             Subscription subscription = transferred.remove(0);
-            subscription.returnStatusChangeNotification(
-                service,
+
+            subscription.publishStatusChangeNotification(
+                pending,
                 new StatusCode(StatusCodes.Good_SubscriptionTransferred)
             );
-            return;
+        } else if (subscriptions.isEmpty() && publishQueue.isWaitListEmpty()) {
+            // waitList must also be empty because the last remaining subscription could have
+            // expired, which removes it from bookkeeping, but leaves it in the PublishQueue
+            // waitList if there were no available requests to send Bad_Timeout.
+
+            pending.responseFuture.completeExceptionally(new UaException(StatusCodes.Bad_NoSubscription));
+        } else {
+            publishQueue.addRequest(pending);
         }
 
-        // waitList must also be empty because the last remaining subscription could have
-        // expired, which removes it from bookkeeping, but leaves it in the PublishQueue
-        // waitList if there were no available requests to send Bad_Timeout.
-        if (subscriptions.isEmpty() && publishQueue.isWaitListEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NoSubscription);
-            return;
-        }
-
-        publishQueue.addRequest(service);
+        return pending.responseFuture;
     }
 
-    public void republish(ServiceRequest service) {
-        RepublishRequest request = (RepublishRequest) service.getRequest();
-
+    public CompletableFuture<RepublishResponse> republish(RepublishRequest request) {
         if (subscriptions.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_SubscriptionIdInvalid);
-            return;
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
 
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
 
         if (subscription == null) {
-            service.setServiceFault(StatusCodes.Bad_SubscriptionIdInvalid);
-            return;
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
 
         UInteger sequenceNumber = request.getRetransmitSequenceNumber();
         NotificationMessage notificationMessage = subscription.republish(sequenceNumber);
 
         if (notificationMessage == null) {
-            service.setServiceFault(StatusCodes.Bad_MessageNotAvailable);
-            return;
+            return failedUaFuture(StatusCodes.Bad_MessageNotAvailable);
         }
 
-        ResponseHeader header = service.createResponseHeader();
-        RepublishResponse response = new RepublishResponse(header, notificationMessage);
+        ResponseHeader header = createResponseHeader(request);
+        var response = new RepublishResponse(header, notificationMessage);
 
-        service.setResponse(response);
+        return CompletableFuture.completedFuture(response);
     }
 
-    public void setTriggering(ServiceRequest service) {
-        SetTriggeringRequest request = (SetTriggeringRequest) service.getRequest();
+    public CompletableFuture<SetTriggeringResponse> setTriggering(
+        ServiceRequestContext context,
+        SetTriggeringRequest request
+    ) {
 
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
 
         if (subscription == null) {
-            service.setServiceFault(StatusCodes.Bad_SubscriptionIdInvalid);
-            return;
+            return failedUaFuture(StatusCodes.Bad_SubscriptionIdInvalid);
         }
 
         UInteger triggerId = request.getTriggeringItemId();
-        List<UInteger> linksToAdd = l(request.getLinksToAdd());
-        List<UInteger> linksToRemove = l(request.getLinksToRemove());
+        List<UInteger> linksToAdd = List.of(request.getLinksToAdd());
+        List<UInteger> linksToRemove = List.of(request.getLinksToRemove());
 
         if (linksToAdd.isEmpty() && linksToRemove.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NothingToDo);
-            return;
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
         }
 
         StatusCode[] addResults;
@@ -1202,8 +1192,7 @@ public class SubscriptionManager {
 
             BaseMonitoredItem<?> triggerItem = itemsById.get(triggerId);
             if (triggerItem == null) {
-                service.setServiceFault(StatusCodes.Bad_MonitoredItemIdInvalid);
-                return;
+                return failedUaFuture(StatusCodes.Bad_MonitoredItemIdInvalid);
             }
 
             removeResults = linksToRemove.stream()
@@ -1234,15 +1223,15 @@ public class SubscriptionManager {
                 .toArray(StatusCode[]::new);
         }
 
-        SetTriggeringResponse response = new SetTriggeringResponse(
-            service.createResponseHeader(),
+        var response = new SetTriggeringResponse(
+            createResponseHeader(request),
             addResults,
             new DiagnosticInfo[0],
             removeResults,
             new DiagnosticInfo[0]
         );
 
-        service.setResponse(response);
+        return CompletableFuture.completedFuture(response);
     }
 
     public void sessionClosed(boolean deleteSubscriptions) {
@@ -1277,9 +1266,9 @@ public class SubscriptionManager {
 
         if (deleteSubscriptions) {
             while (publishQueue.isNotEmpty()) {
-                ServiceRequest publishService = publishQueue.poll();
-                if (publishService != null) {
-                    publishService.setServiceFault(StatusCodes.Bad_SessionClosed);
+                PendingPublish pending = publishQueue.poll();
+                if (pending != null) {
+                    pending.responseFuture.completeExceptionally(new UaException(StatusCodes.Bad_SessionClosed));
                 }
             }
         }
@@ -1340,10 +1329,10 @@ public class SubscriptionManager {
     }
 
     public void sendStatusChangeNotification(Subscription subscription, StatusCode status) {
-        ServiceRequest service = publishQueue.poll();
+        PendingPublish pending = publishQueue.poll();
 
-        if (service != null) {
-            subscription.returnStatusChangeNotification(service, status);
+        if (pending != null) {
+            subscription.publishStatusChangeNotification(pending, status);
         } else {
             transferred.add(subscription);
         }

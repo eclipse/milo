@@ -162,6 +162,14 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         UInteger.class
     );
 
+    QualifiedProperty<UInteger> MAX_MONITORED_ITEMS_QUEUE_SIZE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxMonitoredItemsQueueSize",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
     QualifiedProperty<QualifiedName[]> CONFORMANCE_UNITS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConformanceUnits",
@@ -1410,6 +1418,79 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * getting the Node.
      */
     CompletableFuture<? extends PropertyType> getMaxWhereClauseParametersNodeAsync();
+
+    /**
+     * Get the local value of the MaxMonitoredItemsQueueSize Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the MaxMonitoredItemsQueueSize Node.
+     * @throws UaException if an error occurs creating or getting the MaxMonitoredItemsQueueSize Node.
+     */
+    UInteger getMaxMonitoredItemsQueueSize() throws UaException;
+
+    /**
+     * Set the local value of the MaxMonitoredItemsQueueSize Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param value the local value to set for the MaxMonitoredItemsQueueSize Node.
+     * @throws UaException if an error occurs creating or getting the MaxMonitoredItemsQueueSize Node.
+     */
+    void setMaxMonitoredItemsQueueSize(UInteger value) throws UaException;
+
+    /**
+     * Read the value of the MaxMonitoredItemsQueueSize Node from the server and update the local value if
+     * the operation succeeds.
+     *
+     * @return the {@link UInteger} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    UInteger readMaxMonitoredItemsQueueSize() throws UaException;
+
+    /**
+     * Write a new value for the MaxMonitoredItemsQueueSize Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param value the {@link UInteger} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeMaxMonitoredItemsQueueSize(UInteger value) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readMaxMonitoredItemsQueueSize}.
+     *
+     * @return a CompletableFuture that completes successfully with the value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends UInteger> readMaxMonitoredItemsQueueSizeAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeMaxMonitoredItemsQueueSize}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeMaxMonitoredItemsQueueSizeAsync(UInteger value);
+
+    /**
+     * Get the MaxMonitoredItemsQueueSize {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the MaxMonitoredItemsQueueSize {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getMaxMonitoredItemsQueueSizeNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getMaxMonitoredItemsQueueSizeNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * PropertyType Node or completes exceptionally if an error occurs creating or
+     * getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getMaxMonitoredItemsQueueSizeNodeAsync();
 
     /**
      * Get the local value of the ConformanceUnits Node.

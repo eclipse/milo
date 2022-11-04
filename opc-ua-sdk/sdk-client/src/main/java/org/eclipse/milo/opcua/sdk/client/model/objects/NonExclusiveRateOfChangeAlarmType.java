@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.22/#5.8.22.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.22/#5.8.22.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.23/#5.8.23.2</a>
  */
 public interface NonExclusiveRateOfChangeAlarmType extends NonExclusiveLimitAlarmType {
     QualifiedProperty<EUInformation> ENGINEERING_UNITS = new QualifiedProperty<>(

@@ -25,8 +25,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.TrustListValidationOptions;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.1">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.1</a>
+ */
 public interface TrustListType extends FileType {
     QualifiedProperty<DateTime> LAST_UPDATE_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
@@ -44,6 +48,22 @@ public interface TrustListType extends FileType {
         Double.class
     );
 
+    QualifiedProperty<Double> ACTIVITY_TIMEOUT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ActivityTimeout",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
+        -1,
+        Double.class
+    );
+
+    QualifiedProperty<TrustListValidationOptions> DEFAULT_VALIDATION_OPTIONS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DefaultValidationOptions",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23564"),
+        -1,
+        TrustListValidationOptions.class
+    );
+
     DateTime getLastUpdateTime();
 
     void setLastUpdateTime(DateTime value);
@@ -55,6 +75,18 @@ public interface TrustListType extends FileType {
     void setUpdateFrequency(Double value);
 
     PropertyType getUpdateFrequencyNode();
+
+    Double getActivityTimeout();
+
+    void setActivityTimeout(Double value);
+
+    PropertyType getActivityTimeoutNode();
+
+    TrustListValidationOptions getDefaultValidationOptions();
+
+    void setDefaultValidationOptions(TrustListValidationOptions value);
+
+    PropertyType getDefaultValidationOptionsNode();
 
     MethodNode getOpenWithMasksMethodNode();
 

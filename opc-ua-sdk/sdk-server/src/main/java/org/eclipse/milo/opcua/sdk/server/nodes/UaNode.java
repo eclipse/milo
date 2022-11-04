@@ -735,10 +735,26 @@ public abstract class UaNode implements UaServerNode {
                     attributeId
                 );
 
-                if (attributeId == AttributeId.Value) {
-                    return (DataValue) attributeValue;
-                } else {
-                    return dv(attributeValue);
+                switch (attributeId) {
+                    case Value:
+                        return (DataValue) attributeValue;
+
+                    case DataTypeDefinition:
+                    case RolePermissions:
+                    case UserRolePermissions:
+                    case AccessRestrictions:
+                    case AccessLevelEx:
+                        // These attributes are either structures or primitive types, and should
+                        // not expose a null value to clients, so if they are null in the node
+                        // that means they are not implemented/support for the node, and we need
+                        // to return Bad_AttributeIdInvalid.
+                        if (attributeValue == null) {
+                            return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
+                        }
+
+                        // intentional fall-through
+                    default:
+                        return dv(attributeValue);
                 }
             } catch (Throwable t) {
                 StatusCode statusCode = UaException.extractStatusCode(t)

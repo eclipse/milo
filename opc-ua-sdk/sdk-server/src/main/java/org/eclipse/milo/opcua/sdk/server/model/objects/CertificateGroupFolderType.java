@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.objects;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.3/#7.8.3.3">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.3/#7.8.3.3</a>
+ */
 public interface CertificateGroupFolderType extends FolderType {
     CertificateGroupType getDefaultApplicationGroupNode();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.testng.annotations.BeforeSuite;
 
 public abstract class SecurityFixture {

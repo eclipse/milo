@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.24</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.25">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.25</a>
  */
 public interface DiscrepancyAlarmType extends AlarmConditionType {
     QualifiedProperty<NodeId> TARGET_VALUE_NODE = new QualifiedProperty<>(

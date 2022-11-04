@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.client.model.objects;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.8">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.8</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part13/4.2.2/#4.2.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part13/4.2.2/#4.2.2.2</a>
  */
 public interface AggregateFunctionType extends BaseObjectType {
 }

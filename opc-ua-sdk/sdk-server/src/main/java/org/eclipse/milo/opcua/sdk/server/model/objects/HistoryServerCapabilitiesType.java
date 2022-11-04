@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.4.2">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.4.2</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part11/5.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part11/5.4.2</a>
  */
 public interface HistoryServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<Boolean> ACCESS_HISTORY_DATA_CAPABILITY = new QualifiedProperty<>(

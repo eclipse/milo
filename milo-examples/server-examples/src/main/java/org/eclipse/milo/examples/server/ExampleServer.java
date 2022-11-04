@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.config.EndpointConfig;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
@@ -34,6 +35,7 @@ import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -43,8 +45,8 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
-import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransport;
+import org.eclipse.milo.opcua.stack.transport.server.tcp.OpcTcpServerTransportConfig;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
@@ -142,7 +144,7 @@ public class ExampleServer {
                 )
             );
 
-        Set<EndpointConfiguration> endpointConfigurations = createEndpointConfigurations(certificate);
+        Set<EndpointConfig> endpointConfigurations = createEndpointConfigs(certificate);
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri(applicationUri)
@@ -162,14 +164,21 @@ public class ExampleServer {
             .setProductUri("urn:eclipse:milo:example-server")
             .build();
 
-        server = new OpcUaServer(serverConfig);
+        server = new OpcUaServer(serverConfig, transportProfile -> {
+            assert transportProfile == TransportProfile.TCP_UASC_UABINARY;
+
+            OpcTcpServerTransportConfig transportConfig =
+                OpcTcpServerTransportConfig.newBuilder().build();
+
+            return new OpcTcpServerTransport(transportConfig);
+        });
 
         exampleNamespace = new ExampleNamespace(server);
         exampleNamespace.startup();
     }
 
-    private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
-        var endpointConfigurations = new LinkedHashSet<EndpointConfiguration>();
+    private Set<EndpointConfig> createEndpointConfigs(X509Certificate certificate) {
+        var endpointConfigs = new LinkedHashSet<EndpointConfig>();
 
         List<String> bindAddresses = List.of("0.0.0.0");
 
@@ -179,7 +188,7 @@ public class ExampleServer {
 
         for (String bindAddress : bindAddresses) {
             for (String hostname : hostnames) {
-                EndpointConfiguration.Builder builder = EndpointConfiguration.newBuilder()
+                EndpointConfig.Builder builder = EndpointConfig.newBuilder()
                     .setBindAddress(bindAddress)
                     .setHostname(hostname)
                     .setPath("/milo")
@@ -191,14 +200,14 @@ public class ExampleServer {
                     );
 
 
-                EndpointConfiguration.Builder noSecurityBuilder = builder.copy()
+                EndpointConfig.Builder noSecurityBuilder = builder.copy()
                     .setSecurityPolicy(SecurityPolicy.None)
                     .setSecurityMode(MessageSecurityMode.None);
 
-                endpointConfigurations.add(buildTcpEndpoint(noSecurityBuilder));
+                endpointConfigs.add(buildTcpEndpoint(noSecurityBuilder));
 
                 // TCP Basic256Sha256 / SignAndEncrypt
-                endpointConfigurations.add(buildTcpEndpoint(
+                endpointConfigs.add(buildTcpEndpoint(
                     builder.copy()
                         .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
                         .setSecurityMode(MessageSecurityMode.SignAndEncrypt))
@@ -215,19 +224,19 @@ public class ExampleServer {
                  * its base address.
                  */
 
-                EndpointConfiguration.Builder discoveryBuilder = builder.copy()
+                EndpointConfig.Builder discoveryBuilder = builder.copy()
                     .setPath("/milo/discovery")
                     .setSecurityPolicy(SecurityPolicy.None)
                     .setSecurityMode(MessageSecurityMode.None);
 
-                endpointConfigurations.add(buildTcpEndpoint(discoveryBuilder));
+                endpointConfigs.add(buildTcpEndpoint(discoveryBuilder));
             }
         }
 
-        return endpointConfigurations;
+        return endpointConfigs;
     }
 
-    private static EndpointConfiguration buildTcpEndpoint(EndpointConfiguration.Builder base) {
+    private static EndpointConfig buildTcpEndpoint(EndpointConfig.Builder base) {
         return base.copy()
             .setTransportProfile(TransportProfile.TCP_UASC_UABINARY)
             .setBindPort(TCP_BIND_PORT)

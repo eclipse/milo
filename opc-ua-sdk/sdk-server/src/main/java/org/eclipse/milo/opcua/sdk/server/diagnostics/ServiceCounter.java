@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.LongAdder;
 
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
-import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -22,8 +22,8 @@ public class ServiceCounter {
     private final LongAdder totalCount = new LongAdder();
     private final LongAdder errorCount = new LongAdder();
 
-    public void record(ServiceRequest service) {
-        service.getFuture().whenComplete((r, ex) -> {
+    public void record(CompletionStage<?> completionStage) {
+        completionStage.whenComplete((r, ex) -> {
             totalCount.increment();
 
             if (ex != null) {

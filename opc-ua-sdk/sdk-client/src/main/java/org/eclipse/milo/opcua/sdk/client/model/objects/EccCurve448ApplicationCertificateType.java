@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.client.model.objects;
 
 /**
- * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7">https://reference.opcfoundation.org/v104/Core/docs/Amendment4/8.5.7</a>
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.4/#7.8.4.12">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.4/#7.8.4.12</a>
  */
 public interface EccCurve448ApplicationCertificateType extends EccApplicationCertificateType {
 }
