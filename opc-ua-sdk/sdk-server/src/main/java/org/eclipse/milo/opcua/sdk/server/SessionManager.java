@@ -182,7 +182,7 @@ public class SessionManager {
         CreateSessionRequest request
     ) throws UaException {
 
-        long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
+        long maxSessionCount = server.getConfig().getLimits().getMaxSessions().longValue();
         if (createdSessions.size() + activeSessions.size() >= maxSessionCount) {
             throw new UaException(StatusCodes.Bad_TooManySessions);
         }

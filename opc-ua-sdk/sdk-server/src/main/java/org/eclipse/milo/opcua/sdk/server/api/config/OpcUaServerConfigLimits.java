@@ -26,7 +26,7 @@ public interface OpcUaServerConfigLimits {
      *
      * @return the maximum number of sessions that can be open at any given time.
      */
-    default UInteger getMaxSessionCount() {
+    default UInteger getMaxSessions() {
         return uint(100);
     }
 

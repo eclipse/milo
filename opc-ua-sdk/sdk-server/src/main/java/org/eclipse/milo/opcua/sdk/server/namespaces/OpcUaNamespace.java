@@ -240,6 +240,22 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
         serverCapabilities.setMaxHistoryContinuationPoints(limits.getMaxHistoryContinuationPoints());
         serverCapabilities.setMaxQueryContinuationPoints(limits.getMaxQueryContinuationPoints());
         serverCapabilities.setMinSupportedSampleRate(limits.getMinSupportedSampleRate());
+        serverCapabilities.setMaxSessions(limits.getMaxSessions());
+        serverCapabilities.setMaxSubscriptions(limits.getMaxSubscriptions());
+        serverCapabilities.setMaxSubscriptionsPerSession(limits.getMaxSubscriptionsPerSession());
+        serverCapabilities.setMaxMonitoredItems(limits.getMaxMonitoredItems());
+
+        // note: we don't have a per-subscription limit, we have a per-session limit.
+        serverCapabilities.getMaxMonitoredItemsPerSubscriptionNode().delete();
+
+        /* optional limits that are not implemented */
+
+        // TODO optional, but will be needed for role support
+        serverCapabilities.getRoleSetNode().delete();
+
+        serverCapabilities.getMaxSelectClauseParametersNode().delete();
+        serverCapabilities.getMaxWhereClauseParametersNode().delete();
+        serverCapabilities.getConformanceUnitsNode().delete();
 
         OperationLimitsTypeNode limitsNode = serverCapabilities.getOperationLimitsNode();
         limitsNode.setMaxMonitoredItemsPerCall(limits.getMaxMonitoredItemsPerCall());
