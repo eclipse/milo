@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -87,15 +87,15 @@ public abstract class ManagedAddressSpace implements AddressSpace {
         return server;
     }
 
-    protected UaNodeContext getNodeContext() {
+    public UaNodeContext getNodeContext() {
         return nodeContext;
     }
 
-    protected NodeFactory getNodeFactory() {
+    public NodeFactory getNodeFactory() {
         return nodeFactory;
     }
 
-    protected UaNodeManager getNodeManager() {
+    public UaNodeManager getNodeManager() {
         return nodeManager;
     }
 
