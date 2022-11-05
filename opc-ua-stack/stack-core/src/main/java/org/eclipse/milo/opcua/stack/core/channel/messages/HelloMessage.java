@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,6 @@ import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
 import org.jetbrains.annotations.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -25,19 +24,14 @@ public class HelloMessage {
 
     static final int MAX_ENDPOINT_URL_LENGTH = 4096;
 
-    @UInt32Primitive
     private final long protocolVersion;
 
-    @UInt32Primitive
     private final long receiveBufferSize;
 
-    @UInt32Primitive
     private final long sendBufferSize;
 
-    @UInt32Primitive
     private final long maxMessageSize;
 
-    @UInt32Primitive
     private final long maxChunkCount;
 
     private final String endpointUrl;
@@ -55,12 +49,14 @@ public class HelloMessage {
      * @param endpointUrl       the URL of the Endpoint which the Client wished to connect to. The encoded value shall
      *                          be less than 4096 bytes.
      */
-    public HelloMessage(@UInt32Primitive long protocolVersion,
-                        @UInt32Primitive long receiveBufferSize,
-                        @UInt32Primitive long sendBufferSize,
-                        @UInt32Primitive long maxMessageSize,
-                        @UInt32Primitive long maxChunkCount,
-                        @Nullable String endpointUrl) {
+    public HelloMessage(
+        long protocolVersion,
+        long receiveBufferSize,
+        long sendBufferSize,
+        long maxMessageSize,
+        long maxChunkCount,
+        @Nullable String endpointUrl
+    ) {
 
         checkArgument(receiveBufferSize >= 8192, "receiverBufferSize must be at least 8192 bytes");
         checkArgument(sendBufferSize >= 8192, "sendBufferSize must be at least 8192 bytes");
@@ -76,27 +72,22 @@ public class HelloMessage {
         this.endpointUrl = endpointUrl;
     }
 
-    @UInt32Primitive
     public long getProtocolVersion() {
         return protocolVersion;
     }
 
-    @UInt32Primitive
     public long getReceiveBufferSize() {
         return receiveBufferSize;
     }
 
-    @UInt32Primitive
     public long getSendBufferSize() {
         return sendBufferSize;
     }
 
-    @UInt32Primitive
     public long getMaxMessageSize() {
         return maxMessageSize;
     }
 
-    @UInt32Primitive
     public long getMaxChunkCount() {
         return maxChunkCount;
     }
