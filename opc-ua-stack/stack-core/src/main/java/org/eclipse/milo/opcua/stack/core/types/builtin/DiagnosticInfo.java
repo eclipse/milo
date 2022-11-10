@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -88,13 +88,15 @@ public final class DiagnosticInfo {
      */
     private final DiagnosticInfo innerDiagnosticInfo;
 
-    public DiagnosticInfo(int namespaceUri,
-                          int symbolicId,
-                          int locale,
-                          int localizedText,
-                          @Nullable String additionalInfo,
-                          @Nullable StatusCode innerStatusCode,
-                          @Nullable DiagnosticInfo innerDiagnosticInfo) {
+    public DiagnosticInfo(
+        int namespaceUri,
+        int symbolicId,
+        int locale,
+        int localizedText,
+        @Nullable String additionalInfo,
+        @Nullable StatusCode innerStatusCode,
+        @Nullable DiagnosticInfo innerDiagnosticInfo
+    ) {
 
         this.namespaceUri = namespaceUri;
         this.symbolicId = symbolicId;
@@ -121,15 +123,15 @@ public final class DiagnosticInfo {
         return localizedText;
     }
 
-    public String getAdditionalInfo() {
+    public @Nullable String getAdditionalInfo() {
         return additionalInfo;
     }
 
-    public StatusCode getInnerStatusCode() {
+    public @Nullable StatusCode getInnerStatusCode() {
         return innerStatusCode;
     }
 
-    public DiagnosticInfo getInnerDiagnosticInfo() {
+    public @Nullable DiagnosticInfo getInnerDiagnosticInfo() {
         return innerDiagnosticInfo;
     }
 

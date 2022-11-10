@@ -77,9 +77,19 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         server.getAddressSpaceManager().call(callContext, methodsToCall);
 
         return callContext.getFuture().thenApply(values -> {
-            ResponseHeader header = createResponseHeader(request);
+            DiagnosticsContext.AggregateDiagnosticInfos adi =
+                diagnosticsContext.getDiagnosticInfos(methodsToCall);
 
-            return new CallResponse(header, values.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
+            ResponseHeader header = createResponseHeader(
+                request,
+                adi.getStringTable()
+            );
+
+            return new CallResponse(
+                header,
+                values.toArray(CallMethodResult[]::new),
+                adi.getDiagnosticInfos().toArray(DiagnosticInfo[]::new)
+            );
         });
     }
 

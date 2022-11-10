@@ -110,12 +110,19 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         );
 
         return readContext.getFuture().thenApply(values -> {
-            DiagnosticInfo[] diagnosticInfos =
+            DiagnosticsContext.AggregateDiagnosticInfos adi =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            ResponseHeader header = createResponseHeader(request);
+            ResponseHeader header = createResponseHeader(
+                request,
+                adi.getStringTable()
+            );
 
-            return new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
+            return new ReadResponse(
+                header,
+                values.toArray(DataValue[]::new),
+                adi.getDiagnosticInfos().toArray(DiagnosticInfo[]::new)
+            );
         });
     }
 
@@ -173,12 +180,19 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         );
 
         return historyReadContext.getFuture().thenApply(values -> {
-            ResponseHeader header = createResponseHeader(request);
-
-            DiagnosticInfo[] diagnosticInfos =
+            DiagnosticsContext.AggregateDiagnosticInfos adi =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            return new HistoryReadResponse(header, values.toArray(HistoryReadResult[]::new), diagnosticInfos);
+            ResponseHeader header = createResponseHeader(
+                request,
+                adi.getStringTable()
+            );
+
+            return new HistoryReadResponse(
+                header,
+                values.toArray(HistoryReadResult[]::new),
+                adi.getDiagnosticInfos().toArray(DiagnosticInfo[]::new)
+            );
         });
     }
 
@@ -220,12 +234,19 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         server.getAddressSpaceManager().write(writeContext, nodesToWrite);
 
         return writeContext.getFuture().thenApply(values -> {
-            ResponseHeader header = createResponseHeader(request);
-
-            DiagnosticInfo[] diagnosticInfos =
+            DiagnosticsContext.AggregateDiagnosticInfos adi =
                 diagnosticsContext.getDiagnosticInfos(nodesToWrite);
 
-            return new WriteResponse(header, values.toArray(StatusCode[]::new), diagnosticInfos);
+            ResponseHeader header = createResponseHeader(
+                request,
+                adi.getStringTable()
+            );
+
+            return new WriteResponse(
+                header,
+                values.toArray(StatusCode[]::new),
+                adi.getDiagnosticInfos().toArray(DiagnosticInfo[]::new)
+            );
         });
     }
 
@@ -270,12 +291,19 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         server.getAddressSpaceManager().historyUpdate(historyUpdateContext, historyUpdateDetailsList);
 
         return historyUpdateContext.getFuture().thenApply(values -> {
-            ResponseHeader header = createResponseHeader(request);
-
-            DiagnosticInfo[] diagnosticInfos =
+            DiagnosticsContext.AggregateDiagnosticInfos adi =
                 diagnosticsContext.getDiagnosticInfos(historyUpdateDetailsList);
 
-            return new HistoryUpdateResponse(header, values.toArray(HistoryUpdateResult[]::new), diagnosticInfos);
+            ResponseHeader header = createResponseHeader(
+                request,
+                adi.getStringTable()
+            );
+
+            return new HistoryUpdateResponse(
+                header,
+                values.toArray(HistoryUpdateResult[]::new),
+                adi.getDiagnosticInfos().toArray(DiagnosticInfo[]::new)
+            );
         });
     }
 
