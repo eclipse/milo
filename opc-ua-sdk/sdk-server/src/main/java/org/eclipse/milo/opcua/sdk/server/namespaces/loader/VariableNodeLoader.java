@@ -15,7 +15,7 @@ import java.util.Base64;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AlarmRateVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogUnitTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AudioVariableTypeNode;

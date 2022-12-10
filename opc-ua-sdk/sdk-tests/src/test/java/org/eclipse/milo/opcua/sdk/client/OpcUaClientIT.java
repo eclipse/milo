@@ -35,8 +35,8 @@
 //
 //import com.google.common.collect.ImmutableList;
 //import org.bouncycastle.jce.provider.BouncyCastleProvider;
-//import org.eclipse.milo.opcua.sdk.client.api.UaSession;
-//import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
+//import org.eclipse.milo.opcua.sdk.client.UaSession;
+//import org.eclipse.milo.opcua.sdk.client.OpcUaClientConfig;
 //import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
 //import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
 //import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
@@ -44,7 +44,7 @@
 //import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 //import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 //import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-//import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+//import org.eclipse.milo.opcua.sdk.server.OpcUaServerConfig;
 //import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 //import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 //import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;

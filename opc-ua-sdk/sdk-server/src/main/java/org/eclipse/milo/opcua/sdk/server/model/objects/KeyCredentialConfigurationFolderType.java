@@ -11,8 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
+import org.eclipse.milo.opcua.sdk.server.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaException;

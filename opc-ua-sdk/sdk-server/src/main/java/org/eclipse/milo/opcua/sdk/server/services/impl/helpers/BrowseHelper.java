@@ -20,11 +20,11 @@ import java.util.concurrent.ExecutorService;
 
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.services.AttributeServices.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
