@@ -11,6 +11,5 @@
 package org.eclipse.milo.opcua.sdk.server.items;
 
 import org.eclipse.milo.opcua.sdk.server.EventListener;
-import org.eclipse.milo.opcua.sdk.server.MonitoredItem;
 
 public interface EventItem extends MonitoredItem, EventListener {}

@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
-import org.eclipse.milo.opcua.sdk.server.services.impl.helpers.BrowseHelper.BrowseContinuationPoint;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;

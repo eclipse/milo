@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.items;
 
-import org.eclipse.milo.opcua.sdk.server.MonitoredItem;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
