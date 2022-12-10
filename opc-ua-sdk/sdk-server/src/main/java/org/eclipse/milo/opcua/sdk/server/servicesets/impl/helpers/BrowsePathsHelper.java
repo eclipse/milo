@@ -18,9 +18,9 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -203,7 +203,7 @@ public class BrowsePathsHelper {
             return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
         }
 
-        BrowseContext browseContext = new BrowseContext(
+        var browseContext = new BrowseContext(
             server,
             context.getSession().orElse(null)
         );
@@ -309,7 +309,7 @@ public class BrowsePathsHelper {
                         QualifiedName.NULL_VALUE
                     );
 
-                    ReadContext context = new ReadContext(server, null);
+                    var context = new ReadContext(server, null);
 
                     server.getAddressSpaceManager().read(
                         context,

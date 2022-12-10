@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
-import org.eclipse.milo.opcua.sdk.server.asx.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;

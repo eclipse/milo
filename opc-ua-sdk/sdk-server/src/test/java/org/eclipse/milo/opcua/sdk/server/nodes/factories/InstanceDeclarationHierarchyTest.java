@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.asx.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.TestEncodingContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;

@@ -30,9 +30,9 @@ import io.netty.util.AttributeKey;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
@@ -934,7 +934,7 @@ public class SubscriptionManager {
             })
             .collect(toList());
 
-        ReadContext context = new ReadContext(server, session);
+        var context = new ReadContext(server, session);
 
         server.getAddressSpaceManager().read(
             context,

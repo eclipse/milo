@@ -8,10 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.asx;
-
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+package org.eclipse.milo.opcua.sdk.server;
 
 public abstract class ManagedAddressSpaceFragment extends ManagedAddressSpace implements AddressSpaceFragment {
 

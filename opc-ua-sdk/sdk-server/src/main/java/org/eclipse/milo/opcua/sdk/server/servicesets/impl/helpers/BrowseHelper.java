@@ -21,10 +21,10 @@ import java.util.concurrent.ExecutorService;
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -162,7 +162,7 @@ public class BrowseHelper {
                     return;
                 }
 
-                BrowseContext browseContext = new BrowseContext(
+                var browseContext = new BrowseContext(
                     server,
                     context.getSession().orElse(null)
                 );
@@ -349,7 +349,7 @@ public class BrowseHelper {
             readValueIds.add(new ReadValueId(nodeId, AttributeId.DisplayName.uid(), null, QualifiedName.NULL_VALUE));
             readValueIds.add(new ReadValueId(nodeId, AttributeId.NodeClass.uid(), null, QualifiedName.NULL_VALUE));
 
-            ReadContext context = new ReadContext(server, null);
+            var context = new ReadContext(server, null);
 
             server.getAddressSpaceManager().read(
                 context,

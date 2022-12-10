@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.asx;
+package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,8 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.asx.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
@@ -584,7 +582,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onDataItemsCreated);
+        byAddressSpace.forEach(AddressSpace::onDataItemsCreated);
     }
 
     @Override
@@ -596,7 +594,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onDataItemsModified);
+        byAddressSpace.forEach(AddressSpace::onDataItemsModified);
     }
 
     @Override
@@ -608,7 +606,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onDataItemsDeleted);
+        byAddressSpace.forEach(AddressSpace::onDataItemsDeleted);
     }
 
     @Override
@@ -620,7 +618,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onEventItemsCreated);
+        byAddressSpace.forEach(AddressSpace::onEventItemsCreated);
     }
 
     @Override
@@ -632,7 +630,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onEventItemsModified);
+        byAddressSpace.forEach(AddressSpace::onEventItemsModified);
     }
 
     @Override
@@ -644,7 +642,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onEventItemsDeleted);
+        byAddressSpace.forEach(AddressSpace::onEventItemsDeleted);
     }
 
     @Override
@@ -656,7 +654,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onMonitoringModeChanged);
+        byAddressSpace.forEach(AddressSpace::onMonitoringModeChanged);
     }
 
     //endregion
@@ -950,16 +948,20 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
         }
 
         @Override
-        public void onDataItemsCreated(List<DataItem> dataItems) {}
+        public void onDataItemsCreated(List<DataItem> dataItems) {
+        }
 
         @Override
-        public void onDataItemsModified(List<DataItem> dataItems) {}
+        public void onDataItemsModified(List<DataItem> dataItems) {
+        }
 
         @Override
-        public void onDataItemsDeleted(List<DataItem> dataItems) {}
+        public void onDataItemsDeleted(List<DataItem> dataItems) {
+        }
 
         @Override
-        public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {}
+        public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
+        }
 
     }
 

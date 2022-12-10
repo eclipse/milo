@@ -15,13 +15,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryUpdateContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.HistoryReadContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.HistoryUpdateContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;

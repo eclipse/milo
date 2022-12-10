@@ -13,10 +13,10 @@ package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.CallContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.asx.services.MethodServices.CallContext;
 import org.eclipse.milo.opcua.sdk.server.servicesets.MethodServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;

@@ -8,17 +8,13 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.asx;
+package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.asx.services.MethodServices;
 import org.eclipse.milo.opcua.sdk.server.methods.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -212,7 +208,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     }
 
     /**
-     * Invoke one or more methods belonging to this {@link MethodServices}.
+     * Invoke one or more methods belonging to this {@link AddressSpace}.
      *
      * @param context  the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.

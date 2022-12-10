@@ -8,12 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.asx;
-
-import org.eclipse.milo.opcua.sdk.server.Lifecycle;
-import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+package org.eclipse.milo.opcua.sdk.server;
 
 /**
  * A {@link ManagedAddressSpace} fragment that has a {@link Lifecycle} associated with it.

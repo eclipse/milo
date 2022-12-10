@@ -8,30 +8,39 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.asx;
+package org.eclipse.milo.opcua.sdk.server;
 
-import org.eclipse.milo.opcua.sdk.server.Lifecycle;
-import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
-
-public abstract class ManagedNamespaceWithLifecycle extends ManagedNamespace implements Lifecycle {
+public abstract class ManagedAddressSpaceWithLifecycle extends ManagedAddressSpace implements Lifecycle {
 
     private final LifecycleManager lifecycleManager = new LifecycleManager();
 
-    public ManagedNamespaceWithLifecycle(OpcUaServer server, String namespaceUri) {
-        super(server, namespaceUri);
+    public ManagedAddressSpaceWithLifecycle(OpcUaServer server) {
+        super(server);
 
         getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                registerAddressSpace(ManagedNamespaceWithLifecycle.this);
                 registerNodeManager(getNodeManager());
             }
 
             @Override
             public void shutdown() {
-                unregisterAddressSpace(ManagedNamespaceWithLifecycle.this);
+                unregisterNodeManager(getNodeManager());
+            }
+        });
+    }
+
+    public ManagedAddressSpaceWithLifecycle(OpcUaServer server, UaNodeManager nodeManager) {
+        super(server, nodeManager);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                registerNodeManager(getNodeManager());
+            }
+
+            @Override
+            public void shutdown() {
                 unregisterNodeManager(getNodeManager());
             }
         });
@@ -54,34 +63,6 @@ public abstract class ManagedNamespaceWithLifecycle extends ManagedNamespace imp
      */
     protected LifecycleManager getLifecycleManager() {
         return lifecycleManager;
-    }
-
-    /**
-     * Register this {@link ManagedAddressSpace} with its managing entity.
-     * <p>
-     * The default implementation registers it with the Server's {@link AddressSpaceManager}.
-     * <p>
-     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
-     * should override this to register with that composite.
-     *
-     * @param addressSpace the {@link AddressSpace} to register.
-     */
-    protected void registerAddressSpace(AddressSpaceFragment addressSpace) {
-        getServer().getAddressSpaceManager().register(addressSpace);
-    }
-
-    /**
-     * Unregister this {@link ManagedAddressSpace} with its managing entity.
-     * <p>
-     * The default implementation unregisters it with the Server's {@link AddressSpaceManager}.
-     * <p>
-     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
-     * should override this to unregister with that composite.
-     *
-     * @param addressSpace the {@link AddressSpace} to unregister.
-     */
-    protected void unregisterAddressSpace(AddressSpaceFragment addressSpace) {
-        getServer().getAddressSpaceManager().unregister(addressSpace);
     }
 
     /**

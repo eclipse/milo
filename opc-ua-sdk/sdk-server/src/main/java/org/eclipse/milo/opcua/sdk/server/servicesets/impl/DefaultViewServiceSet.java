@@ -15,10 +15,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.RegisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.UnregisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.RegisterNodesContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.UnregisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.servicesets.ViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowsePathsHelper;

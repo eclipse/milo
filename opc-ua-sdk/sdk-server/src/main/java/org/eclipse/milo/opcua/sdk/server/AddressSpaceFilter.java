@@ -8,21 +8,24 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.asx;
+package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.HistoryReadContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.HistoryUpdateContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.MethodServices;
-import org.eclipse.milo.opcua.sdk.server.asx.services.MonitoredItemServices;
-import org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices;
-import org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.AddNodesContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddReferencesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.CallContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.DeleteNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.DeleteReferencesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryUpdateContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.RegisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.UnregisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.WriteContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -38,16 +41,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
-import static org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.ReadContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.WriteContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.MethodServices.CallContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.AddReferencesContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.DeleteNodesContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.DeleteReferencesContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.BrowseContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.RegisterNodesContext;
-import static org.eclipse.milo.opcua.sdk.server.asx.services.ViewServices.UnregisterNodesContext;
-
 public interface AddressSpaceFilter {
 
     //region ViewServices
@@ -60,7 +53,7 @@ public interface AddressSpaceFilter {
      * @param nodeId the {@link NodeId} from the browse operation.
      * @return {@code true} if the browse operation for {@code nodeId} should be handled the the {@link AddressSpace}
      * this filter belongs to.
-     * @see ViewServices#browse(BrowseContext, ViewDescription, NodeId)
+     * @see AddressSpace#browse(BrowseContext, ViewDescription, NodeId)
      */
     boolean filterBrowse(OpcUaServer server, NodeId nodeId);
 
@@ -72,7 +65,7 @@ public interface AddressSpaceFilter {
      * @param nodeId the {@link NodeId} to register.
      * @return {@code true} if the register node operation for {@code nodeId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see ViewServices#registerNodes(RegisterNodesContext, List)
+     * @see AddressSpace#registerNodes(RegisterNodesContext, List)
      */
     boolean filterRegisterNode(OpcUaServer server, NodeId nodeId);
 
@@ -84,7 +77,7 @@ public interface AddressSpaceFilter {
      * @param nodeId the {@link NodeId} to unregister.
      * @return {@code true} if the unregister node operation for {@code nodeId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see ViewServices#unregisterNodes(UnregisterNodesContext, List)
+     * @see AddressSpace#unregisterNodes(UnregisterNodesContext, List)
      */
     boolean filterUnregisterNode(OpcUaServer server, NodeId nodeId);
 
@@ -100,7 +93,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the read operation.
      * @return {@code true} if the read operation for {@code readValueId} should be handled by the {@link AddressSpace}
      * this filter belongs to.
-     * @see AttributeServices#read(ReadContext, Double, TimestampsToReturn, List)
+     * @see AddressSpace#read(ReadContext, Double, TimestampsToReturn, List)
      */
     boolean filterRead(OpcUaServer server, ReadValueId readValueId);
 
@@ -112,7 +105,7 @@ public interface AddressSpaceFilter {
      * @param writeValue the {@link WriteValue} from the write operation.
      * @return {@code true} if the write operation for {@code writeValue} should be handled by the {@link AddressSpace}
      * this filter belongs to.
-     * @see AttributeServices#write(WriteContext, List)
+     * @see AddressSpace#write(WriteContext, List)
      */
     boolean filterWrite(OpcUaServer server, WriteValue writeValue);
 
@@ -124,7 +117,7 @@ public interface AddressSpaceFilter {
      * @param historyReadValueId the {@link HistoryReadValueId} from the history read operation.
      * @return {@code true} if the history read operation for {@code historyReadValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see AttributeServices#historyRead(HistoryReadContext, HistoryReadDetails, TimestampsToReturn, List)
+     * @see AddressSpace#historyRead(HistoryReadContext, HistoryReadDetails, TimestampsToReturn, List)
      */
     boolean filterHistoryRead(OpcUaServer server, HistoryReadValueId historyReadValueId);
 
@@ -136,7 +129,7 @@ public interface AddressSpaceFilter {
      * @param historyUpdateDetails the {@link HistoryUpdateDetails} from the history update operation.
      * @return {@code true} if the history update operation for {@code historyUpdateDetails} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see AttributeServices#historyUpdate(HistoryUpdateContext, List)
+     * @see AddressSpace#historyUpdate(HistoryUpdateContext, List)
      */
     boolean filterHistoryUpdate(OpcUaServer server, HistoryUpdateDetails historyUpdateDetails);
 
@@ -152,7 +145,7 @@ public interface AddressSpaceFilter {
      * @param callMethodRequest the {@link CallMethodRequest} from the call method operation.
      * @return {@code true} if the call method operation for {@code callMethodRequest} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MethodServices#call(CallContext, List)
+     * @see AddressSpace#call(CallContext, List)
      */
     boolean filterCall(OpcUaServer server, CallMethodRequest callMethodRequest);
 
@@ -168,7 +161,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onCreateDataItem(ReadValueId, Double, UInteger, BiConsumer)
+     * @see AddressSpace#onCreateDataItem(ReadValueId, Double, UInteger, BiConsumer)
      */
     boolean filterOnCreateDataItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -180,7 +173,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onModifyDataItem(ReadValueId, Double, UInteger, BiConsumer)
+     * @see AddressSpace#onModifyDataItem(ReadValueId, Double, UInteger, BiConsumer)
      */
     boolean filterOnModifyDataItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -192,7 +185,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onCreateEventItem(ReadValueId, UInteger, Consumer)
+     * @see AddressSpace#onCreateEventItem(ReadValueId, UInteger, Consumer)
      */
     boolean filterOnCreateEventItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -204,7 +197,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onModifyEventItem(ReadValueId, UInteger, Consumer)
+     * @see AddressSpace#onModifyEventItem(ReadValueId, UInteger, Consumer)
      */
     boolean filterOnModifyEventItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -216,7 +209,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onDataItemsCreated(List)
+     * @see AddressSpace#onDataItemsCreated(List)
      */
     boolean filterOnDataItemsCreated(OpcUaServer server, ReadValueId readValueId);
 
@@ -228,7 +221,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onDataItemsModified(List)
+     * @see AddressSpace#onDataItemsModified(List)
      */
     boolean filterOnDataItemsModified(OpcUaServer server, ReadValueId readValueId);
 
@@ -240,7 +233,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onDataItemsDeleted(List)
+     * @see AddressSpace#onDataItemsDeleted(List)
      */
     boolean filterOnDataItemsDeleted(OpcUaServer server, ReadValueId readValueId);
 
@@ -252,7 +245,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onEventItemsCreated(List)
+     * @see AddressSpace#onEventItemsCreated(List)
      */
     boolean filterOnEventItemsCreated(OpcUaServer server, ReadValueId readValueId);
 
@@ -264,7 +257,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onEventItemsModified(List)
+     * @see AddressSpace#onEventItemsModified(List)
      */
     boolean filterOnEventItemsModified(OpcUaServer server, ReadValueId readValueId);
 
@@ -276,7 +269,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onEventItemsDeleted(List)
+     * @see AddressSpace#onEventItemsDeleted(List)
      */
     boolean filterOnEventItemsDeleted(OpcUaServer server, ReadValueId readValueId);
 
@@ -288,7 +281,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onMonitoringModeChanged(List)
+     * @see AddressSpace#onMonitoringModeChanged(List)
      */
     boolean filterOnMonitoringModeChanged(OpcUaServer server, ReadValueId readValueId);
 
@@ -304,7 +297,7 @@ public interface AddressSpaceFilter {
      * @param addNodesItem the {@link AddNodesItem} from the add nodes operation.
      * @return {@code true} if the add nodes operation for {@code addNodesItem} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see NodeManagementServices#addNodes(AddNodesContext, List)
+     * @see AddressSpace#addNodes(AddNodesContext, List)
      */
     boolean filterAddNodes(OpcUaServer server, AddNodesItem addNodesItem);
 
@@ -316,7 +309,7 @@ public interface AddressSpaceFilter {
      * @param deleteNodesItem the {@link DeleteNodesItem} from the delete nodes operation.
      * @return Return {@code true} if the delete nodes operation for {@code deleteNodesItem} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see NodeManagementServices#deleteNodes(DeleteNodesContext, List)
+     * @see AddressSpace#deleteNodes(DeleteNodesContext, List)
      */
     boolean filterDeleteNodes(OpcUaServer server, DeleteNodesItem deleteNodesItem);
 
@@ -328,7 +321,7 @@ public interface AddressSpaceFilter {
      * @param addReferencesItem the {@link AddReferencesItem} from the add references operation.
      * @return {@code true} if the add references operation for {@code addReferencesItem} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see NodeManagementServices#addReferences(AddReferencesContext, List)
+     * @see AddressSpace#addReferences(AddReferencesContext, List)
      */
     boolean filterAddReferences(OpcUaServer server, AddReferencesItem addReferencesItem);
 
@@ -340,7 +333,7 @@ public interface AddressSpaceFilter {
      * @param deleteReferencesItem the {@link DeleteReferencesItem} from the delete references operation.
      * @return {@code true} if the delete references operation for {@code deleteReferencesITem} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see NodeManagementServices#deleteReferences(DeleteReferencesContext, List)
+     * @see AddressSpace#deleteReferences(DeleteReferencesContext, List)
      */
     boolean filterDeleteReferences(OpcUaServer server, DeleteReferencesItem deleteReferencesItem);
 

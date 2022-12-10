@@ -13,13 +13,13 @@ package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddReferencesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.DeleteNodesContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.DeleteReferencesContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.AddNodesContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.AddReferencesContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.DeleteNodesContext;
-import org.eclipse.milo.opcua.sdk.server.asx.services.NodeManagementServices.DeleteReferencesContext;
 import org.eclipse.milo.opcua.sdk.server.servicesets.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;

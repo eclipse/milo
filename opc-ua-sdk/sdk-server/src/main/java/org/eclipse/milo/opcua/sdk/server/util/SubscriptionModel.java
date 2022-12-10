@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 import com.google.common.math.DoubleMath;
 import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices;
-import org.eclipse.milo.opcua.sdk.server.asx.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -49,12 +49,12 @@ public class SubscriptionModel extends AbstractLifecycle {
     private final ExecutionQueue executionQueue;
 
     private final OpcUaServer server;
-    private final AttributeServices attributeServices;
+    private final AddressSpace addressSpace;
 
-    public SubscriptionModel(OpcUaServer server, AttributeServices attributeServices) {
+    public SubscriptionModel(OpcUaServer server, AddressSpace addressSpace) {
         this.server = server;
 
-        this.attributeServices = attributeServices;
+        this.addressSpace = addressSpace;
 
         executor = server.getExecutorService();
         scheduler = server.getScheduledExecutorService();
@@ -164,9 +164,9 @@ public class SubscriptionModel extends AbstractLifecycle {
                         .map(PendingRead::getInput)
                         .collect(Collectors.toList());
 
-                    ReadContext context = new ReadContext(server, session);
+                    var context = new ReadContext(server, session);
 
-                    attributeServices.read(context, 0d, TimestampsToReturn.Both, ids);
+                    addressSpace.read(context, 0d, TimestampsToReturn.Both, ids);
 
                     return context.getFuture();
                 }
