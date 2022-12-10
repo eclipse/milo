@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
 
 public class BrowseExample implements ClientExample {
 
@@ -63,7 +62,7 @@ public class BrowseExample implements ClientExample {
         try {
             BrowseResult browseResult = client.browse(browse).get();
 
-            List<ReferenceDescription> references = toList(browseResult.getReferences());
+            List<ReferenceDescription> references = List.of(browseResult.getReferences());
 
             for (ReferenceDescription rd : references) {
                 logger.info("{} Node={}", indent, rd.getBrowseName().getName());

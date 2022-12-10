@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements EventItem {
 
@@ -229,11 +228,11 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
             filterResult = EventContentFilter.validate(filterContext, this.filter);
 
-            boolean selectClauseGood = l(filterResult.getSelectClauseResults())
+            boolean selectClauseGood = List.of(filterResult.getSelectClauseResults())
                 .stream()
                 .allMatch(StatusCode::isGood);
 
-            boolean whereClauseGood = l(filterResult.getWhereClauseResult().getElementResults())
+            boolean whereClauseGood = List.of(filterResult.getWhereClauseResult().getElementResults())
                 .stream()
                 .map(ContentFilterElementResult::getStatusCode)
                 .allMatch(StatusCode::isGood);

@@ -48,7 +48,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultAttributeServiceSet extends AbstractServiceSet implements AttributeServiceSet {
@@ -134,7 +133,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             return CompletableFuture.failedFuture(e);
         }
 
-        List<HistoryReadValueId> nodesToRead = l(request.getNodesToRead());
+        List<HistoryReadValueId> nodesToRead = List.of(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);

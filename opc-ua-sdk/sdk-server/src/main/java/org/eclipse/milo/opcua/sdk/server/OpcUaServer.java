@@ -89,7 +89,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaServer extends AbstractServiceHandler {
 
@@ -521,7 +520,7 @@ public class OpcUaServer extends AbstractServiceHandler {
                 certificateByteString(endpoint.getCertificate()),
                 endpoint.getSecurityMode(),
                 endpoint.getSecurityPolicy().getUri(),
-                a(endpoint.getTokenPolicies(), UserTokenPolicy.class),
+                endpoint.getTokenPolicies().toArray(new UserTokenPolicy[0]),
                 endpoint.getTransportProfile().getUri(),
                 ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))
             );
@@ -565,7 +564,7 @@ public class OpcUaServer extends AbstractServiceHandler {
                     ApplicationType.Server,
                     null,
                     null,
-                    a(discoveryUrls, String.class)
+                    discoveryUrls.toArray(new String[0])
                 );
             });
         }

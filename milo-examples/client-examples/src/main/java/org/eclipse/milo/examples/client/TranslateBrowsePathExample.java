@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,8 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class TranslateBrowsePathExample implements ClientExample {
 
@@ -66,11 +64,11 @@ public class TranslateBrowsePathExample implements ClientExample {
             })
         ))).get();
 
-        BrowsePathResult result = l(response.getResults()).get(0);
+        BrowsePathResult result = List.of(response.getResults()).get(0);
         StatusCode statusCode = result.getStatusCode();
         logger.info("Status={}", statusCode);
 
-        l(result.getTargets()).forEach(target -> logger.info("TargetId={}", target.getTargetId()));
+        List.of(result.getTargets()).forEach(target -> logger.info("TargetId={}", target.getTargetId()));
 
         future.complete(client);
     }

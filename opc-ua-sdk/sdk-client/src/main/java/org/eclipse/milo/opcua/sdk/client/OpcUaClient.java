@@ -143,7 +143,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaClient implements UaClient {
 
@@ -197,8 +196,10 @@ public class OpcUaClient implements UaClient {
             endpoints -> endpoints.stream()
                 .filter(predicate)
                 .findFirst(),
-            b -> {},
-            b -> {}
+            b -> {
+            },
+            b -> {
+            }
         );
     }
 
@@ -654,7 +655,9 @@ public class OpcUaClient implements UaClient {
             uriTable.clear();
 
             namespaceTable.add(Namespaces.OPC_UA);
-            for (String uri : namespaceArray) {namespaceTable.add(uri);}
+            for (String uri : namespaceArray) {
+                namespaceTable.add(uri);
+            }
         });
     }
 
@@ -669,7 +672,9 @@ public class OpcUaClient implements UaClient {
         serverTable.update(map -> {
             map.clear();
 
-            for (String uri : serverArray) {serverTable.add(uri);}
+            for (String uri : serverArray) {
+                serverTable.add(uri);
+            }
         });
     }
 
@@ -752,7 +757,7 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 maxAge,
                 timestampsToReturn,
-                a(readValueIds, ReadValueId.class)
+                readValueIds.toArray(new ReadValueId[0])
             );
 
             return sendRequest(request);
@@ -764,7 +769,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             WriteRequest request = new WriteRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(writeValues, WriteValue.class)
+                writeValues.toArray(new WriteValue[0])
             );
 
             return sendRequest(request);
@@ -783,7 +788,7 @@ public class OpcUaClient implements UaClient {
                 ExtensionObject.encode(getStaticEncodingContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
-                a(nodesToRead, HistoryReadValueId.class)
+                nodesToRead.toArray(new HistoryReadValueId[0])
             );
 
             return sendRequest(request);
@@ -816,7 +821,7 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 viewDescription,
                 maxReferencesPerNode,
-                a(nodesToBrowse, BrowseDescription.class)
+                nodesToBrowse.toArray(new BrowseDescription[0])
             );
 
             return sendRequest(request);
@@ -831,7 +836,7 @@ public class OpcUaClient implements UaClient {
             BrowseNextRequest request = new BrowseNextRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 releaseContinuationPoints,
-                a(continuationPoints, ByteString.class)
+                continuationPoints.toArray(new ByteString[0])
             );
 
             return sendRequest(request);
@@ -843,7 +848,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             TranslateBrowsePathsToNodeIdsRequest request = new TranslateBrowsePathsToNodeIdsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(browsePaths, BrowsePath.class)
+                browsePaths.toArray(new BrowsePath[0])
             );
 
             return sendRequest(request);
@@ -855,7 +860,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             RegisterNodesRequest request = new RegisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToRegister, NodeId.class)
+                nodesToRegister.toArray(new NodeId[0])
             );
 
             return sendRequest(request);
@@ -867,7 +872,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             UnregisterNodesRequest request = new UnregisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToUnregister, NodeId.class)
+                nodesToUnregister.toArray(new NodeId[0])
             );
 
             return sendRequest(request);
@@ -879,7 +884,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             CallRequest request = new CallRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(methodsToCall, CallMethodRequest.class)
+                methodsToCall.toArray(new CallMethodRequest[0])
             );
 
             return sendRequest(request);
@@ -939,7 +944,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionIds, UInteger.class)
+                subscriptionIds.toArray(new UInteger[0])
             );
 
             return sendRequest(request);
@@ -953,7 +958,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionIds, UInteger.class),
+                subscriptionIds.toArray(new UInteger[0]),
                 sendInitialValues
             );
 
@@ -969,7 +974,7 @@ public class OpcUaClient implements UaClient {
             SetPublishingModeRequest request = new SetPublishingModeRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 publishingEnabled,
-                a(subscriptionIds, UInteger.class)
+                subscriptionIds.toArray(new UInteger[0])
             );
 
             return sendRequest(request);
@@ -981,7 +986,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             PublishRequest request = new PublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionAcknowledgements, SubscriptionAcknowledgement.class)
+                subscriptionAcknowledgements.toArray(new SubscriptionAcknowledgement[0])
             );
 
             return sendRequest(request);
@@ -1012,7 +1017,7 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 timestampsToReturn,
-                a(itemsToCreate, MonitoredItemCreateRequest.class)
+                itemsToCreate.toArray(new MonitoredItemCreateRequest[0])
             );
 
             return sendRequest(request);
@@ -1030,7 +1035,7 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 timestampsToReturn,
-                a(itemsToModify, MonitoredItemModifyRequest.class)
+                itemsToModify.toArray(new MonitoredItemModifyRequest[0])
             );
 
             return sendRequest(request);
@@ -1045,7 +1050,7 @@ public class OpcUaClient implements UaClient {
             DeleteMonitoredItemsRequest request = new DeleteMonitoredItemsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
-                a(monitoredItemIds, UInteger.class)
+                monitoredItemIds.toArray(new UInteger[0])
             );
 
             return sendRequest(request);
@@ -1062,7 +1067,7 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 monitoringMode,
-                a(monitoredItemIds, UInteger.class)
+                monitoredItemIds.toArray(new UInteger[0])
             );
 
             return sendRequest(request);
@@ -1080,8 +1085,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 triggeringItemId,
-                a(linksToAdd, UInteger.class),
-                a(linksToRemove, UInteger.class)
+                linksToAdd.toArray(new UInteger[0]),
+                linksToRemove.toArray(new UInteger[0])
             );
 
             return sendRequest(request);
@@ -1093,7 +1098,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             AddNodesRequest request = new AddNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToAdd, AddNodesItem.class)
+                nodesToAdd.toArray(new AddNodesItem[0])
             );
 
             return sendRequest(request);
@@ -1105,7 +1110,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             AddReferencesRequest request = new AddReferencesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(referencesToAdd, AddReferencesItem.class)
+                referencesToAdd.toArray(new AddReferencesItem[0])
             );
 
             return sendRequest(request);
@@ -1117,7 +1122,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             DeleteNodesRequest request = new DeleteNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToDelete, DeleteNodesItem.class)
+                nodesToDelete.toArray(new DeleteNodesItem[0])
             );
 
             return sendRequest(request);
@@ -1129,7 +1134,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             DeleteReferencesRequest request = new DeleteReferencesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(referencesToDelete, DeleteReferencesItem.class)
+                referencesToDelete.toArray(new DeleteReferencesItem[0])
             );
 
             return sendRequest(request);

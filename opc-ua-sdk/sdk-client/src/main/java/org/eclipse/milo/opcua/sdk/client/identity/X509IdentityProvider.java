@@ -32,8 +32,6 @@ import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
-
 public class X509IdentityProvider implements IdentityProvider {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -60,7 +58,7 @@ public class X509IdentityProvider implements IdentityProvider {
     public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
                                                 ByteString serverNonce) throws Exception {
 
-        List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
+        List<UserTokenPolicy> userIdentityTokens = List.of(endpoint.getUserIdentityTokens());
 
         UserTokenPolicy tokenPolicy = userIdentityTokens.stream()
             .filter(t -> t.getTokenType() == UserTokenType.Certificate)

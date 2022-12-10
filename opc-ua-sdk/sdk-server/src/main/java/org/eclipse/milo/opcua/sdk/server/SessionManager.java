@@ -70,7 +70,6 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
 
 public class SessionManager {
@@ -429,7 +428,7 @@ public class SessionManager {
     public ActivateSessionResponse activateSession(ServiceRequestContext context, ActivateSessionRequest request) throws UaException {
         long secureChannelId = context.getSecureChannel().getChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
-        List<SignedSoftwareCertificate> clientSoftwareCertificates = l(request.getClientSoftwareCertificates());
+        List<SignedSoftwareCertificate> clientSoftwareCertificates = List.of(request.getClientSoftwareCertificates());
 
         Session session = createdSessions.get(authToken);
 
@@ -738,7 +737,7 @@ public class SessionManager {
             String policyId = token.getPolicyId();
 
             List<UserTokenPolicy> userIdentityTokens =
-                l(session.getEndpoint().getUserIdentityTokens());
+                List.of(session.getEndpoint().getUserIdentityTokens());
 
             Optional<UserTokenPolicy> policy = userIdentityTokens
                 .stream()

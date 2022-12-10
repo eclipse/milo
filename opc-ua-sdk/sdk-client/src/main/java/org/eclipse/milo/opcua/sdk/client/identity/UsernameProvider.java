@@ -38,8 +38,6 @@ import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
-
 /**
  * An {@link IdentityProvider} that chooses a {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
  */
@@ -102,7 +100,7 @@ public class UsernameProvider implements IdentityProvider {
     public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
                                                 ByteString serverNonce) throws Exception {
 
-        List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
+        List<UserTokenPolicy> userIdentityTokens = List.of(endpoint.getUserIdentityTokens());
 
         List<UserTokenPolicy> tokenPolicies = userIdentityTokens.stream()
             .filter(t -> t.getTokenType() == UserTokenType.UserName)

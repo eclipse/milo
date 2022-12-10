@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class OpcUaSubscription implements UaSubscription {
 
@@ -106,7 +105,7 @@ public class OpcUaSubscription implements UaSubscription {
         );
 
         return future.thenApply(response -> {
-            List<MonitoredItemCreateResult> results = l(response.getResults());
+            List<MonitoredItemCreateResult> results = List.of(response.getResults());
 
             List<UaMonitoredItem> createdItems = new ArrayList<>(itemsToCreate.size());
 
@@ -180,7 +179,7 @@ public class OpcUaSubscription implements UaSubscription {
         return future.thenApply(response -> {
             var statusCodes = new ArrayList<StatusCode>();
 
-            List<MonitoredItemModifyResult> results = l(response.getResults());
+            List<MonitoredItemModifyResult> results = List.of(response.getResults());
 
             for (int i = 0; i < results.size(); i++) {
                 MonitoredItemModifyRequest request = itemsToModify.get(i);
@@ -220,7 +219,7 @@ public class OpcUaSubscription implements UaSubscription {
             .collect(Collectors.toList());
 
         return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
-            List<StatusCode> results = l(response.getResults());
+            List<StatusCode> results = List.of(response.getResults());
 
             for (int i = 0; i < itemsToDelete.size(); i++) {
                 OpcUaMonitoredItem item = (OpcUaMonitoredItem) itemsToDelete.get(i);
@@ -246,7 +245,7 @@ public class OpcUaSubscription implements UaSubscription {
             client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
 
         return future.thenApply(response -> {
-            List<StatusCode> results = l(response.getResults());
+            List<StatusCode> results = List.of(response.getResults());
 
             for (int i = 0; i < monitoredItemIds.size(); i++) {
                 UInteger id = monitoredItemIds.get(i);
@@ -266,7 +265,7 @@ public class OpcUaSubscription implements UaSubscription {
     public CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled) {
         return client.setPublishingMode(publishingEnabled, List.of(subscriptionId))
             .thenApply(response -> {
-                StatusCode statusCode = l(response.getResults()).get(0);
+                StatusCode statusCode = List.of(response.getResults()).get(0);
 
                 if (statusCode.isGood()) {
                     setPublishingEnabled(publishingEnabled);

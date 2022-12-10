@@ -69,7 +69,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
@@ -217,7 +216,7 @@ public class AddressSpace {
             CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.OBJECT_ATTRIBUTES);
 
             return future.thenCompose(response -> {
-                List<DataValue> attributeValues = l(response.getResults());
+                List<DataValue> attributeValues = List.of(response.getResults());
 
                 try {
                     UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
@@ -323,7 +322,7 @@ public class AddressSpace {
             CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.VARIABLE_ATTRIBUTES);
 
             return future.thenCompose(response -> {
-                List<DataValue> attributeValues = l(response.getResults());
+                List<DataValue> attributeValues = List.of(response.getResults());
 
                 try {
                     UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
@@ -801,7 +800,7 @@ public class AddressSpace {
 
         return browseFuture.thenCompose(result -> {
             if (result.getStatusCode().isGood()) {
-                Optional<ExpandedNodeId> typeDefinitionId = l(result.getReferences())
+                Optional<ExpandedNodeId> typeDefinitionId = List.of(result.getReferences())
                     .stream()
                     .filter(r -> Objects.equals(NodeIds.HasTypeDefinition, r.getReferenceTypeId()))
                     .map(ReferenceDescription::getNodeId)
@@ -826,7 +825,7 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.BASE_ATTRIBUTES);
 
         return future.thenCompose(response -> {
-            List<DataValue> results = l(response.getResults());
+            List<DataValue> results = List.of(response.getResults());
 
             return createNodeFromBaseAttributes(nodeId, results);
         });

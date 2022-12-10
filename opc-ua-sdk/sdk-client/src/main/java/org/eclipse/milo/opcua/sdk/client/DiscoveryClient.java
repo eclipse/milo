@@ -55,7 +55,6 @@ import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportCo
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 public class DiscoveryClient {
@@ -261,7 +260,7 @@ public class DiscoveryClient {
         return discoveryClient.connect()
             .thenCompose(c -> c.findServers(endpointUrl, new String[0], new String[0]))
             .whenComplete((e, ex) -> discoveryClient.disconnect())
-            .thenApply(response -> l(response.getServers()));
+            .thenApply(response -> List.of(response.getServers()));
     }
 
     /**
@@ -347,7 +346,7 @@ public class DiscoveryClient {
         return discoveryClient.connect()
             .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
             .whenComplete((e, ex) -> discoveryClient.disconnect())
-            .thenApply(response -> l(response.getEndpoints()));
+            .thenApply(response -> List.of(response.getEndpoints()));
     }
 
     private static class DefaultEncodingContext implements EncodingContext {

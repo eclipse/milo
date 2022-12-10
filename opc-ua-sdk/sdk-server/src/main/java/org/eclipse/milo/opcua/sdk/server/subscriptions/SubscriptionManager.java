@@ -101,7 +101,6 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class SubscriptionManager {
@@ -245,7 +244,7 @@ public class SubscriptionManager {
     }
 
     public CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptions(DeleteSubscriptionsRequest request) {
-        List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
+        List<UInteger> subscriptionIds = List.of(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -303,7 +302,7 @@ public class SubscriptionManager {
     }
 
     public CompletableFuture<SetPublishingModeResponse> setPublishingMode(SetPublishingModeRequest request) {
-        List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
+        List<UInteger> subscriptionIds = List.of(request.getSubscriptionIds());
 
         StatusCode[] results = new StatusCode[subscriptionIds.size()];
 

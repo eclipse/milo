@@ -72,7 +72,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 public class BinaryDataTypeDictionaryReader {
@@ -592,7 +591,7 @@ public class BinaryDataTypeDictionaryReader {
             .sendRequestMessage(request)
             .thenApply(BrowseNextResponse.class::cast)
             .thenCompose(response -> {
-                BrowseResult result = l(response.getResults()).get(0);
+                BrowseResult result = List.of(response.getResults()).get(0);
 
                 return maybeBrowseNext(result, references);
             });
@@ -618,7 +617,7 @@ public class BinaryDataTypeDictionaryReader {
         return client.getTransport()
             .sendRequestMessage(readRequest)
             .thenApply(ReadResponse.class::cast)
-            .thenApply(r -> l(r.getResults()));
+            .thenApply(r -> List.of(r.getResults()));
     }
 
     public static class TypeDictionaryInfo {

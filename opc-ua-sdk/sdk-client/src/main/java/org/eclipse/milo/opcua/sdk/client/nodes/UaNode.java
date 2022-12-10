@@ -66,7 +66,6 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
@@ -1273,7 +1272,7 @@ public abstract class UaNode implements Node {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = l(result.getReferences());
+            List<ReferenceDescription> references = List.of(result.getReferences());
 
             Optional<CompletableFuture<? extends UaNode>> node = references.stream()
                 .filter(r -> browseName.equals(r.getBrowseName()))
@@ -1312,7 +1311,7 @@ public abstract class UaNode implements Node {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = l(result.getReferences());
+            List<ReferenceDescription> references = List.of(result.getReferences());
 
             Optional<CompletableFuture<PropertyTypeNode>> node = references.stream()
                 .filter(r -> browseName.equals(r.getBrowseName()))

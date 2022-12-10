@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
@@ -106,7 +105,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
 
         var response = new FindServersResponse(
             createResponseHeader(request),
-            a(applicationDescriptions, ApplicationDescription.class)
+            applicationDescriptions.toArray(new ApplicationDescription[0])
         );
 
         return CompletableFuture.completedFuture(response);

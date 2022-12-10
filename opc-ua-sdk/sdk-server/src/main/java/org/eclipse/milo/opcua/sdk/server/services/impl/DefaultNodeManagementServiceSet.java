@@ -42,8 +42,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
@@ -164,7 +162,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     }
 
     private CompletableFuture<DeleteNodesResponse> deleteNodes(DeleteNodesRequest request, Session session) {
-        List<DeleteNodesItem> nodesToDelete = l(request.getNodesToDelete());
+        List<DeleteNodesItem> nodesToDelete = List.of(request.getNodesToDelete());
 
         if (nodesToDelete.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -223,7 +221,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
             return new AddReferencesResponse(
                 header,
-                a(results, StatusCode.class),
+                results.toArray(new StatusCode[0]),
                 new DiagnosticInfo[0]
             );
         });

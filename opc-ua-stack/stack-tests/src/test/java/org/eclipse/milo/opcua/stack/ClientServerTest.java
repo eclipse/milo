@@ -160,7 +160,7 @@
 //                null
 //            );
 //
-//            List<ReadValueId> nodesToRead = l(request.getNodesToRead());
+//            List<ReadValueId> nodesToRead = List.of(request.getNodesToRead());
 //            List<DataValue> results = Collections.nCopies(nodesToRead.size(), new DataValue(variant));
 //
 //            ReadResponse response = new ReadResponse(header, a(results, DataValue.class), null);
@@ -509,7 +509,7 @@
 //        CompletableFuture.allOf(responses.toArray(new CompletableFuture[0])).get();
 //
 //        FutureUtils.sequence(responses).get().forEach(response -> {
-//            Variant value = l(response.getResults()).get(0).getValue();
+//            Variant value = List.of(response.getResults()).get(0).getValue();
 //
 //            assertEquals(value, input);
 //        });

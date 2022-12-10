@@ -93,7 +93,6 @@ import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_I
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_WAIT_FUTURE;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_WAIT_TIME;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
@@ -994,7 +993,7 @@ public class SessionFsmFactory {
             .thenApply(TransferSubscriptionsResponse.class::cast)
             .whenComplete((tsr, ex) -> {
                 if (tsr != null) {
-                    List<TransferResult> results = l(tsr.getResults());
+                    List<TransferResult> results = List.of(tsr.getResults());
 
                     LOGGER.debug(
                         "[{}] TransferSubscriptions supported: {}",

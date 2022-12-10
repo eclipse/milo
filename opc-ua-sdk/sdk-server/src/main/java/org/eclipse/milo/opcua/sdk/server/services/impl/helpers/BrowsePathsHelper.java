@@ -46,8 +46,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.services.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
@@ -110,7 +108,7 @@ public class BrowsePathsHelper {
             return future;
         }
 
-        List<RelativePathElement> relativePathElements = l(relativePath.getElements());
+        List<RelativePathElement> relativePathElements = List.of(relativePath.getElements());
 
         if (relativePathElements.isEmpty()) {
             future.complete(new BrowsePathResult(
@@ -128,7 +126,7 @@ public class BrowsePathsHelper {
                 if (!targets.isEmpty()) {
                     result = new BrowsePathResult(
                         StatusCode.GOOD,
-                        a(targets, BrowsePathTarget.class)
+                        targets.toArray(new BrowsePathTarget[0])
                     );
                 } else {
                     result = new BrowsePathResult(

@@ -30,7 +30,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRawModifiedDetails;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class HistoryReadExampleProsys implements ClientExample {
 
@@ -81,7 +80,7 @@ public class HistoryReadExampleProsys implements ClientExample {
                     client.getStaticEncodingContext()
                 );
 
-                List<DataValue> dataValues = l(historyData.getDataValues());
+                List<DataValue> dataValues = List.of(historyData.getDataValues());
 
                 dataValues.forEach(v -> System.out.println("value=" + v));
             } else {

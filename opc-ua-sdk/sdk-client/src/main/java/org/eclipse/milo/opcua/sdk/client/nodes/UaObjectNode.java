@@ -49,7 +49,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
@@ -311,7 +310,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             StatusCode statusCode = result.getStatusCode();
 
             if (statusCode != null && statusCode.isGood()) {
-                Optional<ExpandedNodeId> methodNodeId = l(result.getReferences())
+                Optional<ExpandedNodeId> methodNodeId = List.of(result.getReferences())
                     .stream()
                     .filter(rd -> Objects.equals(methodName, rd.getBrowseName()))
                     .findFirst()
@@ -519,7 +518,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = l(result.getReferences());
+            List<ReferenceDescription> references = List.of(result.getReferences());
 
             Optional<CompletableFuture<UaObjectTypeNode>> node = references.stream()
                 .flatMap(r -> {

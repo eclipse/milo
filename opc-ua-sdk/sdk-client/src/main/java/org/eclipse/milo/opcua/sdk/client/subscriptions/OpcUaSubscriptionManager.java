@@ -61,7 +61,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class OpcUaSubscriptionManager implements UaSubscriptionManager {
@@ -698,7 +697,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
-                List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
+                List<ExtensionObject> notificationData = List.of(notificationMessage.getNotificationData());
 
                 if (notificationData.isEmpty()) {
                     subscriptionListeners.forEach(
@@ -716,7 +715,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                     if (o instanceof DataChangeNotification) {
                         DataChangeNotification dcn = (DataChangeNotification) o;
-                        List<MonitoredItemNotification> monitoredItemNotifications = l(dcn.getMonitoredItems());
+                        List<MonitoredItemNotification> monitoredItemNotifications = List.of(dcn.getMonitoredItems());
                         int notificationCount = monitoredItemNotifications.size();
 
                         logger.debug("Received {} MonitoredItemNotifications", notificationCount);
@@ -766,7 +765,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                         }
                     } else if (o instanceof EventNotificationList) {
                         EventNotificationList enl = (EventNotificationList) o;
-                        List<EventFieldList> eventFieldLists = l(enl.getEvents());
+                        List<EventFieldList> eventFieldLists = List.of(enl.getEvents());
 
                         for (EventFieldList efl : eventFieldLists) {
                             logger.trace("EventFieldList: clientHandle={}, values={}",
