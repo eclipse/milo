@@ -17,9 +17,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.RegisterNodesContext;
-import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.UnregisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.services.ViewServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.ViewServices.RegisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.services.ViewServices.UnregisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.services.impl.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.services.impl.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;

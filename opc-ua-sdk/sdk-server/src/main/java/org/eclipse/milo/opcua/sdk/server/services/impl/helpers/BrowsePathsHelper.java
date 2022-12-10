@@ -17,10 +17,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.services.AttributeServices.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;

@@ -12,8 +12,8 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
+import org.eclipse.milo.opcua.sdk.server.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AudioVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.variables.BaseDataVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;

@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.primitives.Ints;
+import org.eclipse.milo.opcua.sdk.server.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.util.RingBuffer;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;

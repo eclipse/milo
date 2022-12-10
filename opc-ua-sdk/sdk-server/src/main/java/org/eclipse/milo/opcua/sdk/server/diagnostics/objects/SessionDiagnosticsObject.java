@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.sdk.server.diagnostics.objects;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
+import org.eclipse.milo.opcua.sdk.server.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SessionDiagnosticsVariable;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SessionSecurityDiagnosticsVariable;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SubscriptionDiagnosticsVariableArray;

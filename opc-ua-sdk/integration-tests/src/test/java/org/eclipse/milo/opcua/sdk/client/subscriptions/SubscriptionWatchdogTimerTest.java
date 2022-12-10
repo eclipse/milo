@@ -13,8 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager.SubscriptionListener;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.UaSubscriptionManager.SubscriptionListener;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
