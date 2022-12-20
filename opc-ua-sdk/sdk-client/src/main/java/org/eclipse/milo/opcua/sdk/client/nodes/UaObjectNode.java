@@ -295,7 +295,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UInteger nodeClassMask = uint(NodeClass.Method.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
 
-        CompletableFuture<BrowseResult> future = client.browse(
+        CompletableFuture<BrowseResult> future = client.browseAsync(
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
@@ -506,7 +506,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UInteger nodeClassMask = uint(NodeClass.ObjectType.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
 
-        CompletableFuture<BrowseResult> future = client.browse(
+        CompletableFuture<BrowseResult> future = client.browseAsync(
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,

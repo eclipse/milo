@@ -12,10 +12,6 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.services.AttributeServices;
-import org.eclipse.milo.opcua.sdk.client.services.MethodServices;
-import org.eclipse.milo.opcua.sdk.client.services.MonitoredItemServices;
-import org.eclipse.milo.opcua.sdk.client.services.NodeManagementServices;
 import org.eclipse.milo.opcua.sdk.client.services.SubscriptionServices;
 import org.eclipse.milo.opcua.sdk.client.services.ViewServices;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
@@ -23,8 +19,8 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
-public interface UaClient extends AttributeServices,
-    MethodServices, MonitoredItemServices, NodeManagementServices, SubscriptionServices, ViewServices {
+public interface UaClient extends
+    SubscriptionServices, ViewServices {
 
     /**
      * @return the {@link OpcUaClientConfig} for this client.

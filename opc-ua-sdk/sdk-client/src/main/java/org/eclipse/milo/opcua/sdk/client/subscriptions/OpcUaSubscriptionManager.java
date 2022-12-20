@@ -148,7 +148,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         UInteger requestedLifetimeCount = getLifetimeCount.apply(
             requestedPublishingInterval, requestedMaxKeepAliveCount);
 
-        CompletableFuture<CreateSubscriptionResponse> future = client.createSubscription(
+        CompletableFuture<CreateSubscriptionResponse> future = client.createSubscriptionAsync(
             requestedPublishingInterval,
             requestedLifetimeCount,
             requestedMaxKeepAliveCount,
@@ -180,7 +180,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                 UInteger newLifetimeCount = getLifetimeCount.apply(revisedPublishingInterval, newMaxKeepAliveCount);
 
-                CompletableFuture<ModifySubscriptionResponse> modifyFuture = client.modifySubscription(
+                CompletableFuture<ModifySubscriptionResponse> modifyFuture = client.modifySubscriptionAsync(
                     response.getSubscriptionId(),
                     revisedPublishingInterval,
                     newLifetimeCount,
@@ -301,7 +301,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         UInteger requestedLifetimeCount = getLifetimeCount.apply(
             requestedPublishingInterval, requestedMaxKeepAliveCount);
 
-        CompletableFuture<ModifySubscriptionResponse> future = client.modifySubscription(
+        CompletableFuture<ModifySubscriptionResponse> future = client.modifySubscriptionAsync(
             subscriptionId,
             requestedPublishingInterval,
             requestedLifetimeCount,
@@ -329,7 +329,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                 UInteger newLifetimeCount = getLifetimeCount.apply(revisedPublishingInterval, newMaxKeepAliveCount);
 
-                CompletableFuture<ModifySubscriptionResponse> modifyFuture = client.modifySubscription(
+                CompletableFuture<ModifySubscriptionResponse> modifyFuture = client.modifySubscriptionAsync(
                     subscriptionId,
                     revisedPublishingInterval,
                     newLifetimeCount,
@@ -368,7 +368,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     public CompletableFuture<UaSubscription> deleteSubscription(UInteger subscriptionId) {
         List<UInteger> subscriptionIds = List.of(subscriptionId);
 
-        return client.deleteSubscriptions(subscriptionIds).thenApply(r -> {
+        return client.deleteSubscriptionsAsync(subscriptionIds).thenApply(r -> {
             OpcUaSubscription subscription = subscriptions.remove(subscriptionId);
 
             WatchdogTimer watchdogTimer = watchdogTimers.remove(subscriptionId);
@@ -641,7 +641,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         if (fromSequence == toSequence) {
             future.complete(dataLost);
         } else {
-            client.republish(subscriptionId, uint(fromSequence)).whenComplete((response, ex) -> {
+            client.republishAsync(subscriptionId, uint(fromSequence)).whenComplete((response, ex) -> {
                 if (response != null) {
                     try {
                         onRepublishComplete(subscriptionId, response, uint(fromSequence));

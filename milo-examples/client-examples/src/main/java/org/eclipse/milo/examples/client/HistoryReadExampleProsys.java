@@ -61,7 +61,7 @@ public class HistoryReadExampleProsys implements ClientExample {
         List<HistoryReadValueId> nodesToRead = new ArrayList<>();
         nodesToRead.add(historyReadValueId);
 
-        HistoryReadResponse historyReadResponse = client.historyRead(
+        HistoryReadResponse historyReadResponse = client.historyReadAsync(
             historyReadDetails,
             TimestampsToReturn.Both,
             false,

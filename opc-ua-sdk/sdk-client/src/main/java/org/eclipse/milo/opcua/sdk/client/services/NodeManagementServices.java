@@ -24,12 +24,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRespon
 
 public interface NodeManagementServices {
 
-    CompletableFuture<AddNodesResponse> addNodes(List<AddNodesItem> nodesToAdd);
+    CompletableFuture<AddNodesResponse> addNodesAsync(List<AddNodesItem> nodesToAdd);
 
-    CompletableFuture<AddReferencesResponse> addReferences(List<AddReferencesItem> referencesToAdd);
+    CompletableFuture<AddReferencesResponse> addReferencesAsync(List<AddReferencesItem> referencesToAdd);
 
-    CompletableFuture<DeleteNodesResponse> deleteNodes(List<DeleteNodesItem> nodesToDelete);
+    CompletableFuture<DeleteNodesResponse> deleteNodesAsync(List<DeleteNodesItem> nodesToDelete);
 
-    CompletableFuture<DeleteReferencesResponse> deleteReferences(List<DeleteReferencesItem> referencesToDelete);
+    CompletableFuture<DeleteReferencesResponse> deleteReferencesAsync(List<DeleteReferencesItem> referencesToDelete);
 
 }

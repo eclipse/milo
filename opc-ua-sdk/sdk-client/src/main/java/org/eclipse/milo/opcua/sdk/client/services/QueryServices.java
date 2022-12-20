@@ -41,11 +41,11 @@ public interface QueryServices {
      *                              value of 0 indicates that the client is imposing no limitation.
      * @return a {@link CompletableFuture} containing the {@link QueryFirstResponse}.
      */
-    CompletableFuture<QueryFirstResponse> queryFirst(ViewDescription view,
-                                                     List<NodeTypeDescription> nodeTypes,
-                                                     ContentFilter filter,
-                                                     UInteger maxDataSetsToReturn,
-                                                     UInteger maxReferencesToReturn);
+    CompletableFuture<QueryFirstResponse> queryFirstAsync(ViewDescription view,
+                                                          List<NodeTypeDescription> nodeTypes,
+                                                          ContentFilter filter,
+                                                          UInteger maxDataSetsToReturn,
+                                                          UInteger maxReferencesToReturn);
 
     /**
      * This Service is used to request the next set of QueryFirst or QueryNext response information that is too large to
@@ -57,7 +57,7 @@ public interface QueryServices {
      * @param continuationPoint        a server-defined opaque value that represents the continuation point.
      * @return a {@link CompletableFuture} containing the {@link QueryNextResponse}.
      */
-    CompletableFuture<QueryNextResponse> queryNext(boolean releaseContinuationPoint,
-                                                   ByteString continuationPoint);
+    CompletableFuture<QueryNextResponse> queryNextAsync(boolean releaseContinuationPoint,
+                                                        ByteString continuationPoint);
 
 }

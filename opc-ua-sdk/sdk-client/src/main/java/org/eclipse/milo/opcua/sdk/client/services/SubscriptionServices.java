@@ -45,12 +45,12 @@ public interface SubscriptionServices {
      * @param priority                    indicates the relative priority of the subscription.
      * @return a {@link CompletableFuture} containing the {@link CreateSubscriptionResponse}.
      */
-    CompletableFuture<CreateSubscriptionResponse> createSubscription(double requestedPublishingInterval,
-                                                                     UInteger requestedLifetimeCount,
-                                                                     UInteger requestedMaxKeepAliveCount,
-                                                                     UInteger maxNotificationsPerPublish,
-                                                                     boolean publishingEnabled,
-                                                                     UByte priority);
+    CompletableFuture<CreateSubscriptionResponse> createSubscriptionAsync(double requestedPublishingInterval,
+                                                                          UInteger requestedLifetimeCount,
+                                                                          UInteger requestedMaxKeepAliveCount,
+                                                                          UInteger maxNotificationsPerPublish,
+                                                                          boolean publishingEnabled,
+                                                                          UByte priority);
 
     /**
      * This service is used to modify a subscription.
@@ -69,12 +69,12 @@ public interface SubscriptionServices {
      * @param priority                    indicates the relative priority of the subscription.
      * @return a {@link CompletableFuture} containing the {@link ModifySubscriptionResponse}.
      */
-    CompletableFuture<ModifySubscriptionResponse> modifySubscription(UInteger subscriptionId,
-                                                                     double requestedPublishingInterval,
-                                                                     UInteger requestedLifetimeCount,
-                                                                     UInteger requestedMaxKeepAliveCount,
-                                                                     UInteger maxNotificationsPerPublish,
-                                                                     UByte priority);
+    CompletableFuture<ModifySubscriptionResponse> modifySubscriptionAsync(UInteger subscriptionId,
+                                                                          double requestedPublishingInterval,
+                                                                          UInteger requestedLifetimeCount,
+                                                                          UInteger requestedMaxKeepAliveCount,
+                                                                          UInteger maxNotificationsPerPublish,
+                                                                          UByte priority);
 
     /**
      * This service is invoked to delete one or more subscriptions that belong to the client's session.
@@ -82,7 +82,7 @@ public interface SubscriptionServices {
      * @param subscriptionIds the server-assigned identifiers for the subscriptions.
      * @return a {@link CompletableFuture} containing the {@link DeleteSubscriptionsResponse}.
      */
-    CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptions(List<UInteger> subscriptionIds);
+    CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptionsAsync(List<UInteger> subscriptionIds);
 
     /**
      * This service is used to transfer a subscription and its monitored items from one session to another.
@@ -93,8 +93,8 @@ public interface SubscriptionServices {
      *                          subscription where the {@link MonitoringMode} is {@link MonitoringMode#Reporting}.
      * @return a {@link CompletableFuture} containing the {@link TransferSubscriptionsResponse}.
      */
-    CompletableFuture<TransferSubscriptionsResponse> transferSubscriptions(List<UInteger> subscriptionIds,
-                                                                           boolean sendInitialValues);
+    CompletableFuture<TransferSubscriptionsResponse> transferSubscriptionsAsync(List<UInteger> subscriptionIds,
+                                                                                boolean sendInitialValues);
 
     /**
      * This service is used to enable sending of notifications on one or more subscriptions.
@@ -103,8 +103,8 @@ public interface SubscriptionServices {
      * @param subscriptionIds   a list of server-assigned subscription identifiers to enable or disable publishing on.
      * @return a {@link CompletableFuture} containing the {@link SetPublishingModeResponse}.
      */
-    CompletableFuture<SetPublishingModeResponse> setPublishingMode(boolean publishingEnabled,
-                                                                   List<UInteger> subscriptionIds);
+    CompletableFuture<SetPublishingModeResponse> setPublishingModeAsync(boolean publishingEnabled,
+                                                                        List<UInteger> subscriptionIds);
 
     /**
      * This service is used for two purposes. First, it is used to acknowledge the receipt of notification messages for
@@ -116,7 +116,7 @@ public interface SubscriptionServices {
      *                                     with the same subscriptionId).
      * @return a {@link CompletableFuture} containing the {@link PublishResponse}.
      */
-    CompletableFuture<PublishResponse> publish(List<SubscriptionAcknowledgement> subscriptionAcknowledgements);
+    CompletableFuture<PublishResponse> publishAsync(List<SubscriptionAcknowledgement> subscriptionAcknowledgements);
 
     /**
      * This service requests the subscription to republish a notification message from its retransmission queue. If the
@@ -126,6 +126,6 @@ public interface SubscriptionServices {
      * @param retransmitSequenceNumber the sequence number of a specific notification message to be republished.
      * @return a {@link CompletableFuture} containing the {@link RepublishResponse}.
      */
-    CompletableFuture<RepublishResponse> republish(UInteger subscriptionId, UInteger retransmitSequenceNumber);
+    CompletableFuture<RepublishResponse> republishAsync(UInteger subscriptionId, UInteger retransmitSequenceNumber);
 
 }

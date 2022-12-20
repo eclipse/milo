@@ -80,9 +80,9 @@ public class TriggeringExample implements ClientExample {
         subscription.addTriggeringLinks(reportingItem, List.of(samplingItem)).get();
 
         // trigger reporting of both by writing to the static item and changing its value
-        client.writeValue(
-            new NodeId(2, "HelloWorld/ScalarTypes/Float"),
-            new DataValue(Variant.ofFloat(1.0f))
+        client.writeValuesAsync(
+            List.of(new NodeId(2, "HelloWorld/ScalarTypes/Float")),
+            List.of(new DataValue(Variant.ofFloat(1.0f)))
         ).get();
 
         // let the example run for 5 seconds then terminate

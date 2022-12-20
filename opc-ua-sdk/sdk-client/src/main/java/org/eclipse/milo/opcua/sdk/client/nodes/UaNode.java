@@ -838,7 +838,7 @@ public abstract class UaNode implements Node {
             QualifiedName.NULL_VALUE
         );
 
-        CompletableFuture<ReadResponse> future = client.read(
+        CompletableFuture<ReadResponse> future = client.readAsync(
             0.0,
             TimestampsToReturn.Both,
             List.of(readValueId)
@@ -861,7 +861,7 @@ public abstract class UaNode implements Node {
             value
         );
 
-        CompletableFuture<WriteResponse> future = client.write(List.of(writeValue));
+        CompletableFuture<WriteResponse> future = client.writeAsync(List.of(writeValue));
 
         return future.thenApply(response -> response.getResults()[0]);
     }
@@ -1005,7 +1005,7 @@ public abstract class UaNode implements Node {
             )
             .collect(Collectors.toList());
 
-        CompletableFuture<ReadResponse> future = client.read(
+        CompletableFuture<ReadResponse> future = client.readAsync(
             0.0,
             TimestampsToReturn.Neither,
             readValueIds
@@ -1069,7 +1069,7 @@ public abstract class UaNode implements Node {
                 .collect(Collectors.toList());
         }
 
-        return client.write(writeValues).thenApply(response -> {
+        return client.writeAsync(writeValues).thenApply(response -> {
             StatusCode[] results = response.getResults();
 
             return List.of(results);
@@ -1228,7 +1228,7 @@ public abstract class UaNode implements Node {
             return failedFuture(e);
         }
 
-        return client.translateBrowsePaths(browsePaths).thenCompose(r -> {
+        return client.translateBrowsePathsAsync(browsePaths).thenCompose(r -> {
             BrowsePathResult result = r.getResults()[0];
 
             if (result.getStatusCode().isGood()) {
@@ -1260,7 +1260,7 @@ public abstract class UaNode implements Node {
         UInteger nodeClassMask = uint(nodeClass.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
 
-        CompletableFuture<BrowseResult> future = client.browse(
+        CompletableFuture<BrowseResult> future = client.browseAsync(
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
@@ -1299,7 +1299,7 @@ public abstract class UaNode implements Node {
         UInteger nodeClassMask = uint(NodeClass.Variable.getValue());
         UInteger resultMask = uint(BrowseResultMask.BrowseName.getValue());
 
-        CompletableFuture<BrowseResult> future = client.browse(
+        CompletableFuture<BrowseResult> future = client.browseAsync(
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,

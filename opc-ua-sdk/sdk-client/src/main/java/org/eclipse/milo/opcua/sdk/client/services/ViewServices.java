@@ -45,9 +45,9 @@ public interface ViewServices {
      * @param nodesToBrowse        a list of nodes to browse.
      * @return a {@link CompletableFuture} containing the {@link BrowseResponse}.
      */
-    CompletableFuture<BrowseResponse> browse(ViewDescription viewDescription,
-                                             UInteger maxReferencesPerNode,
-                                             List<BrowseDescription> nodesToBrowse);
+    CompletableFuture<BrowseResponse> browseAsync(ViewDescription viewDescription,
+                                                  UInteger maxReferencesPerNode,
+                                                  List<BrowseDescription> nodesToBrowse);
 
     /**
      * Browse a single node, with no view and no max references specified.
@@ -55,8 +55,8 @@ public interface ViewServices {
      * @param nodeToBrowse the node to browse.
      * @return a {@link CompletableFuture} containing the {@link BrowseResult}.
      */
-    default CompletableFuture<BrowseResult> browse(BrowseDescription nodeToBrowse) {
-        return browse(List.of(nodeToBrowse)).thenApply(rs -> rs.get(0));
+    default CompletableFuture<BrowseResult> browseAsync(BrowseDescription nodeToBrowse) {
+        return browseAsync(List.of(nodeToBrowse)).thenApply(rs -> rs.get(0));
     }
 
     /**
@@ -65,8 +65,8 @@ public interface ViewServices {
      * @param nodesToBrowse the nodes to browse.
      * @return a {@link CompletableFuture} containing the {@link BrowseResult}s.
      */
-    default CompletableFuture<List<BrowseResult>> browse(List<BrowseDescription> nodesToBrowse) {
-        return browse(new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0)), uint(0), nodesToBrowse)
+    default CompletableFuture<List<BrowseResult>> browseAsync(List<BrowseDescription> nodesToBrowse) {
+        return browseAsync(new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0)), uint(0), nodesToBrowse)
             .thenApply(r -> List.of(r.getResults()));
     }
 
@@ -84,8 +84,8 @@ public interface ViewServices {
      * @param continuationPoints        a list of server-defined opaque values that represent continuation points.
      * @return a {@link CompletableFuture} containing the {@link BrowseNextResponse}.
      */
-    CompletableFuture<BrowseNextResponse> browseNext(boolean releaseContinuationPoints,
-                                                     List<ByteString> continuationPoints);
+    CompletableFuture<BrowseNextResponse> browseNextAsync(boolean releaseContinuationPoints,
+                                                          List<ByteString> continuationPoints);
 
     /**
      * This service is used to request the next set of Browse or BrowseNext response information that is too large to
@@ -101,11 +101,11 @@ public interface ViewServices {
      * @param continuationPoint        a server-defined opaque value that represents the next continuation point.
      * @return a {@link CompletableFuture} containing the {@link BrowseResult}.
      */
-    default CompletableFuture<BrowseResult> browseNext(
+    default CompletableFuture<BrowseResult> browseNextAsync(
         boolean releaseContinuationPoint,
         ByteString continuationPoint) {
 
-        return browseNext(releaseContinuationPoint, List.of(continuationPoint))
+        return browseNextAsync(releaseContinuationPoint, List.of(continuationPoint))
             .thenApply(response -> response.getResults()[0]);
     }
 
@@ -118,7 +118,7 @@ public interface ViewServices {
      * @param browsePaths a list of browse paths for which {@link NodeId}s are being requested.
      * @return a {@link CompletableFuture} containing the {@link TranslateBrowsePathsToNodeIdsResponse}.
      */
-    CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePaths(List<BrowsePath> browsePaths);
+    CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePathsAsync(List<BrowsePath> browsePaths);
 
     /**
      * The RegisterNodes service can be used by clients to register the nodes that they know they will access repeatedly
@@ -128,7 +128,7 @@ public interface ViewServices {
      * @param nodesToRegister a list of {@link NodeId}s to register.
      * @return a {@link CompletableFuture} containing the {@link RegisterNodesResponse}.
      */
-    CompletableFuture<RegisterNodesResponse> registerNodes(List<NodeId> nodesToRegister);
+    CompletableFuture<RegisterNodesResponse> registerNodesAsync(List<NodeId> nodesToRegister);
 
     /**
      * This service is used to unregister {@link NodeId}s that have been register via the RegisterNodes service.
@@ -136,6 +136,6 @@ public interface ViewServices {
      * @param nodesToUnregister a list of {@link NodeId}s to unregister.
      * @return a {@link CompletableFuture} containing the {@link UnregisterNodesResponse}.
      */
-    CompletableFuture<UnregisterNodesResponse> unregisterNodes(List<NodeId> nodesToUnregister);
+    CompletableFuture<UnregisterNodesResponse> unregisterNodesAsync(List<NodeId> nodesToUnregister);
 
 }

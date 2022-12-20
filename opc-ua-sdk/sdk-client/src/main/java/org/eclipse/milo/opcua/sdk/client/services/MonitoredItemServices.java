@@ -35,7 +35,7 @@ public interface MonitoredItemServices {
      * @param itemsToCreate      a list of monitored items to be created and assigned to the specified subscription.
      * @return a {@link CompletableFuture} containing the {@link CreateMonitoredItemsResponse}.
      */
-    CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(
+    CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItemsAsync(
         UInteger subscriptionId,
         TimestampsToReturn timestampsToReturn,
         List<MonitoredItemCreateRequest> itemsToCreate);
@@ -48,7 +48,7 @@ public interface MonitoredItemServices {
      * @param itemsToModify      a list of monitored items to modify.
      * @return a {@link CompletableFuture} containing the {@link ModifyMonitoredItemsResponse}.
      */
-    CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(
+    CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItemsAsync(
         UInteger subscriptionId,
         TimestampsToReturn timestampsToReturn,
         List<MonitoredItemModifyRequest> itemsToModify);
@@ -60,8 +60,8 @@ public interface MonitoredItemServices {
      * @param monitoredItemIds a list of server-assigned identifiers for the items to delete.
      * @return a {@link CompletableFuture} containing the {@link DeleteMonitoredItemsResponse}.
      */
-    CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItems(UInteger subscriptionId,
-                                                                         List<UInteger> monitoredItemIds);
+    CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItemsAsync(UInteger subscriptionId,
+                                                                              List<UInteger> monitoredItemIds);
 
     /**
      * This service is used to set the {@link MonitoringMode} for one or more monitored items of a subscription.
@@ -74,9 +74,9 @@ public interface MonitoredItemServices {
      *                         be set.
      * @return a {@link CompletableFuture} containing the {@link SetMonitoringModeResponse}.
      */
-    CompletableFuture<SetMonitoringModeResponse> setMonitoringMode(UInteger subscriptionId,
-                                                                   MonitoringMode monitoringMode,
-                                                                   List<UInteger> monitoredItemIds);
+    CompletableFuture<SetMonitoringModeResponse> setMonitoringModeAsync(UInteger subscriptionId,
+                                                                        MonitoringMode monitoringMode,
+                                                                        List<UInteger> monitoredItemIds);
 
     /**
      * This service is used to create and delete triggering links for a triggering item. The triggering item and the
@@ -91,9 +91,9 @@ public interface MonitoredItemServices {
      *                         to be removed. The list of links to remove is processed before the links to add.
      * @return a {@link CompletableFuture} containing the {@link SetTriggeringResponse}.
      */
-    CompletableFuture<SetTriggeringResponse> setTriggering(UInteger subscriptionId,
-                                                           UInteger triggeringItemId,
-                                                           List<UInteger> linksToAdd,
-                                                           List<UInteger> linksToRemove);
+    CompletableFuture<SetTriggeringResponse> setTriggeringAsync(UInteger subscriptionId,
+                                                                UInteger triggeringItemId,
+                                                                List<UInteger> linksToAdd,
+                                                                List<UInteger> linksToRemove);
 
 }

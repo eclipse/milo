@@ -98,7 +98,7 @@ public class OpcUaSubscription implements UaSubscription {
         TimestampsToReturn timestampsToReturn,
         List<MonitoredItemCreateRequest> itemsToCreate) {
 
-        CompletableFuture<CreateMonitoredItemsResponse> future = client.createMonitoredItems(
+        CompletableFuture<CreateMonitoredItemsResponse> future = client.createMonitoredItemsAsync(
             subscriptionId,
             timestampsToReturn,
             itemsToCreate
@@ -174,7 +174,7 @@ public class OpcUaSubscription implements UaSubscription {
                                                                     List<MonitoredItemModifyRequest> itemsToModify) {
 
         CompletableFuture<ModifyMonitoredItemsResponse> future =
-            client.modifyMonitoredItems(subscriptionId, timestampsToReturn, itemsToModify);
+            client.modifyMonitoredItemsAsync(subscriptionId, timestampsToReturn, itemsToModify);
 
         return future.thenApply(response -> {
             var statusCodes = new ArrayList<StatusCode>();
@@ -218,7 +218,7 @@ public class OpcUaSubscription implements UaSubscription {
             .map(UaMonitoredItem::getMonitoredItemId)
             .collect(Collectors.toList());
 
-        return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
+        return client.deleteMonitoredItemsAsync(subscriptionId, monitoredItemIds).thenApply(response -> {
             List<StatusCode> results = List.of(response.getResults());
 
             for (int i = 0; i < itemsToDelete.size(); i++) {
@@ -242,7 +242,7 @@ public class OpcUaSubscription implements UaSubscription {
             .collect(Collectors.toList());
 
         CompletableFuture<SetMonitoringModeResponse> future =
-            client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
+            client.setMonitoringModeAsync(subscriptionId, monitoringMode, monitoredItemIds);
 
         return future.thenApply(response -> {
             List<StatusCode> results = List.of(response.getResults());
@@ -263,7 +263,7 @@ public class OpcUaSubscription implements UaSubscription {
 
     @Override
     public CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled) {
-        return client.setPublishingMode(publishingEnabled, List.of(subscriptionId))
+        return client.setPublishingModeAsync(publishingEnabled, List.of(subscriptionId))
             .thenApply(response -> {
                 StatusCode statusCode = List.of(response.getResults()).get(0);
 
@@ -281,7 +281,7 @@ public class OpcUaSubscription implements UaSubscription {
         List<UInteger> linksToAdd
     ) {
 
-        CompletableFuture<SetTriggeringResponse> future = client.setTriggering(
+        CompletableFuture<SetTriggeringResponse> future = client.setTriggeringAsync(
             subscriptionId,
             triggeringItemId,
             linksToAdd,
@@ -297,7 +297,7 @@ public class OpcUaSubscription implements UaSubscription {
         List<UInteger> linksToRemove
     ) {
 
-        CompletableFuture<SetTriggeringResponse> future = client.setTriggering(
+        CompletableFuture<SetTriggeringResponse> future = client.setTriggeringAsync(
             subscriptionId,
             triggeringItemId,
             Collections.emptyList(),

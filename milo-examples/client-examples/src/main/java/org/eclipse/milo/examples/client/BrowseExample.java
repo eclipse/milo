@@ -60,7 +60,7 @@ public class BrowseExample implements ClientExample {
         );
 
         try {
-            BrowseResult browseResult = client.browse(browse).get();
+            BrowseResult browseResult = client.browseAsync(browse).get();
 
             List<ReferenceDescription> references = List.of(browseResult.getReferences());
 

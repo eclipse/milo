@@ -62,7 +62,7 @@ public class ReadExample implements ClientExample {
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        return client.readValues(0.0, TimestampsToReturn.Both, nodeIds);
+        return client.readValuesAsync(0.0, TimestampsToReturn.Both, nodeIds);
     }
 
 }

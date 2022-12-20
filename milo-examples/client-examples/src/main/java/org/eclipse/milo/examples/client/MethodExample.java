@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -18,6 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +53,17 @@ public class MethodExample implements ClientExample {
         NodeId objectId = NodeId.parse("ns=2;s=HelloWorld");
         NodeId methodId = NodeId.parse("ns=2;s=HelloWorld/sqrt(x)");
 
-        CallMethodRequest request = new CallMethodRequest(
+        var request = new CallMethodRequest(
             objectId,
             methodId,
             new Variant[]{Variant.ofDouble(input)}
         );
 
-        return client.call(request).thenCompose(result -> {
+        CompletableFuture<CallMethodResult> future =
+            client.callAsync(List.of(request))
+                .thenApply(r -> r.getResults()[0]);
+
+        return future.thenCompose(result -> {
             StatusCode statusCode = result.getStatusCode();
 
             if (statusCode.isGood()) {

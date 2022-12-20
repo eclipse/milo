@@ -40,7 +40,7 @@ public class TranslateBrowsePathExample implements ClientExample {
         // synchronous connect
         client.connect().get();
 
-        TranslateBrowsePathsToNodeIdsResponse response = client.translateBrowsePaths(List.of(new BrowsePath(
+        TranslateBrowsePathsToNodeIdsResponse response = client.translateBrowsePathsAsync(List.of(new BrowsePath(
             NodeIds.ObjectsFolder,
             new RelativePath(new RelativePathElement[]{
                 new RelativePathElement(

@@ -48,9 +48,9 @@ public interface AttributeServices {
      * @param readValueIds       the {@link ReadValueId}s identifying the nodes and attributes to read.
      * @return {@link CompletableFuture} containing the {@link ReadResponse}.
      */
-    CompletableFuture<ReadResponse> read(double maxAge,
-                                         TimestampsToReturn timestampsToReturn,
-                                         List<ReadValueId> readValueIds);
+    CompletableFuture<ReadResponse> readAsync(double maxAge,
+                                              TimestampsToReturn timestampsToReturn,
+                                              List<ReadValueId> readValueIds);
 
     /**
      * This service is used to read one or more attributes of one or more nodes.
@@ -65,10 +65,10 @@ public interface AttributeServices {
      * @return a {@link CompletableFuture} containing a list of {@link DataValue}s, the size and order matching the
      * provided {@link NodeId}s.
      */
-    default CompletableFuture<List<DataValue>> read(double maxAge,
-                                                    TimestampsToReturn timestampsToReturn,
-                                                    List<NodeId> nodeIds,
-                                                    List<UInteger> attributeIds) {
+    default CompletableFuture<List<DataValue>> readAsync(double maxAge,
+                                                         TimestampsToReturn timestampsToReturn,
+                                                         List<NodeId> nodeIds,
+                                                         List<UInteger> attributeIds) {
 
         if (nodeIds.size() != attributeIds.size()) {
             CompletableFuture<List<DataValue>> failed = new CompletableFuture<>();
@@ -83,7 +83,7 @@ public interface AttributeServices {
                 readValueIds.add(new ReadValueId(nodeId, attributeId, null, QualifiedName.NULL_VALUE));
             }
 
-            return read(maxAge, timestampsToReturn, readValueIds)
+            return readAsync(maxAge, timestampsToReturn, readValueIds)
                 .thenApply(r -> List.of(r.getResults()));
         }
     }
@@ -99,11 +99,11 @@ public interface AttributeServices {
      * @param nodeId             the {@link NodeId} identifying the node to read.
      * @return a {@link CompletableFuture} containing the {@link DataValue}.
      */
-    default CompletableFuture<DataValue> readValue(double maxAge,
-                                                   TimestampsToReturn timestampsToReturn,
-                                                   NodeId nodeId) {
+    default CompletableFuture<DataValue> readValueAsync(double maxAge,
+                                                        TimestampsToReturn timestampsToReturn,
+                                                        NodeId nodeId) {
 
-        return readValues(maxAge, timestampsToReturn, Collections.singletonList(nodeId))
+        return readValuesAsync(maxAge, timestampsToReturn, Collections.singletonList(nodeId))
             .thenApply(r -> r.get(0));
     }
 
@@ -119,15 +119,15 @@ public interface AttributeServices {
      * @return a {@link CompletableFuture} containing a list of {@link DataValue}s, the size and order matching the
      * provided {@link NodeId}s.
      */
-    default CompletableFuture<List<DataValue>> readValues(double maxAge,
-                                                          TimestampsToReturn timestampsToReturn,
-                                                          List<NodeId> nodeIds) {
+    default CompletableFuture<List<DataValue>> readValuesAsync(double maxAge,
+                                                               TimestampsToReturn timestampsToReturn,
+                                                               List<NodeId> nodeIds) {
 
         List<ReadValueId> readValueIds = nodeIds.stream()
             .map(nodeId -> new ReadValueId(nodeId, AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE))
             .collect(Collectors.toList());
 
-        return read(maxAge, timestampsToReturn, readValueIds)
+        return readAsync(maxAge, timestampsToReturn, readValueIds)
             .thenApply(r -> List.of(r.getResults()));
     }
 
@@ -137,7 +137,7 @@ public interface AttributeServices {
      * @param writeValues the list of nodes and their attributes to write.
      * @return a {@link CompletableFuture} containing the {@link WriteResponse}.
      */
-    CompletableFuture<WriteResponse> write(List<WriteValue> writeValues);
+    CompletableFuture<WriteResponse> writeAsync(List<WriteValue> writeValues);
 
     /**
      * This service is used to write to the value attribute of one or more nodes.
@@ -146,7 +146,7 @@ public interface AttributeServices {
      * @param values  the {@link DataValue}s to write.
      * @return a {@link CompletableFuture} containing a list of results for the writes.
      */
-    default CompletableFuture<List<StatusCode>> writeValues(List<NodeId> nodeIds, List<DataValue> values) {
+    default CompletableFuture<List<StatusCode>> writeValuesAsync(List<NodeId> nodeIds, List<DataValue> values) {
         if (nodeIds.size() != values.size()) {
             CompletableFuture<List<StatusCode>> failed = new CompletableFuture<>();
             failed.completeExceptionally(new IllegalArgumentException("nodeIds.size() != values.size()"));
@@ -160,7 +160,7 @@ public interface AttributeServices {
                 writeValues.add(new WriteValue(nodeId, AttributeId.Value.uid(), null, value));
             }
 
-            return write(writeValues)
+            return writeAsync(writeValues)
                 .thenApply(response -> List.of(response.getResults()));
         }
     }
@@ -172,8 +172,8 @@ public interface AttributeServices {
      * @param value  the {@link DataValue} to write.
      * @return a {@link CompletableFuture} containing the result for the write.
      */
-    default CompletableFuture<StatusCode> writeValue(NodeId nodeId, DataValue value) {
-        return write(Collections.singletonList(new WriteValue(nodeId, uint(13), null, value)))
+    default CompletableFuture<StatusCode> writeValueAsync(NodeId nodeId, DataValue value) {
+        return writeAsync(Collections.singletonList(new WriteValue(nodeId, uint(13), null, value)))
             .thenApply(response -> List.of(response.getResults()).get(0));
     }
 
@@ -188,10 +188,10 @@ public interface AttributeServices {
      * @param nodesToRead               the list of items upon which the historical retrieval is to be performed.
      * @return a {@link CompletableFuture} containing the {@link HistoryReadResponse}.
      */
-    CompletableFuture<HistoryReadResponse> historyRead(HistoryReadDetails historyReadDetails,
-                                                       TimestampsToReturn timestampsToReturn,
-                                                       boolean releaseContinuationPoints,
-                                                       List<HistoryReadValueId> nodesToRead);
+    CompletableFuture<HistoryReadResponse> historyReadAsync(HistoryReadDetails historyReadDetails,
+                                                            TimestampsToReturn timestampsToReturn,
+                                                            boolean releaseContinuationPoints,
+                                                            List<HistoryReadValueId> nodesToRead);
 
 
     /**
@@ -200,6 +200,6 @@ public interface AttributeServices {
      * @param historyUpdateDetails the details defined for this update.
      * @return a {@link CompletableFuture} containing the {@link HistoryUpdateResponse}.
      */
-    CompletableFuture<HistoryUpdateResponse> historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails);
+    CompletableFuture<HistoryUpdateResponse> historyUpdateAsync(List<HistoryUpdateDetails> historyUpdateDetails);
 
 }

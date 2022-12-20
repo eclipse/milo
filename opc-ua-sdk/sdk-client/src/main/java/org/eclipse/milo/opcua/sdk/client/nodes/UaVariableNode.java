@@ -841,7 +841,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         UInteger nodeClassMask = uint(NodeClass.VariableType.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
 
-        CompletableFuture<BrowseResult> future = client.browse(
+        CompletableFuture<BrowseResult> future = client.browseAsync(
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,

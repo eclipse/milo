@@ -46,7 +46,7 @@ public class WriteExample implements ClientExample {
 
             // write asynchronously....
             CompletableFuture<List<StatusCode>> f =
-                client.writeValues(nodeIds, List.of(dv));
+                client.writeValuesAsync(nodeIds, List.of(dv));
 
             // ...but block for the results so we write in order
             List<StatusCode> statusCodes = f.get();

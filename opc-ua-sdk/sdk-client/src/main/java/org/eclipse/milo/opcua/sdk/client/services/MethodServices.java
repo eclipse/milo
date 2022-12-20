@@ -27,17 +27,17 @@ public interface MethodServices {
      * @param methodsToCall a list of methods to call.
      * @return a {@link CompletableFuture} containing the {@link CallResponse}.
      */
-    CompletableFuture<CallResponse> call(List<CallMethodRequest> methodsToCall);
+    CompletableFuture<CallResponse> callAsync(List<CallMethodRequest> methodsToCall);
 
     /**
      * Call (invoke) a method.
      *
      * @param request the {@link CallMethodRequest} describing the method to invoke.
      * @return a {@link CompletableFuture} containing the {@link CallMethodResult}.
-     * @see #call(List)
+     * @see #callAsync(List)
      */
-    default CompletableFuture<CallMethodResult> call(CallMethodRequest request) {
-        return call(List.of(request))
+    default CompletableFuture<CallMethodResult> callAsync(CallMethodRequest request) {
+        return callAsync(List.of(request))
             .thenApply(response -> List.of(response.getResults()).get(0));
     }
 
