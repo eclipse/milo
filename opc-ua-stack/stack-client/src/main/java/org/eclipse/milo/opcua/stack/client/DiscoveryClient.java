@@ -263,7 +263,30 @@ public class DiscoveryClient {
                 .connect()
                 .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
                 .whenComplete((e, ex) -> discoveryClient.disconnect())
-                .thenApply(response -> l(response.getEndpoints()));
+                //.thenApply(response -> l(response.getEndpoints()));
+                //Fix Route jump
+                .thenApply(response -> {
+                    if (response.getEndpoints() != null && response.getEndpoints().length > 0) {
+                        EndpointDescription responseEndpoint = response.getEndpoints()[0];
+                        ApplicationDescription server = responseEndpoint.getServer();
+                        //
+                        EndpointDescription resultPoint = new EndpointDescription(
+                                endpointUrl,
+                                new ApplicationDescription(server.getApplicationUri(), server.getProductUri(),
+                                        server.getApplicationName(), server.getApplicationType(), server.getGatewayServerUri(),
+                                        server.getDiscoveryProfileUri(), new String[]{endpointUrl}),
+                                responseEndpoint.getServerCertificate(),
+                                responseEndpoint.getSecurityMode(),
+                                responseEndpoint.getSecurityPolicyUri(),
+                                responseEndpoint.getUserIdentityTokens(),
+                                responseEndpoint.getTransportProfileUri(),
+                                responseEndpoint.getSecurityLevel()
+                        );
+                        return l(new EndpointDescription[]{resultPoint});
+                    } else {
+                        return null;
+                    }
+                });
         } catch (UaException e) {
             return failedFuture(e);
         }
