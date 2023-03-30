@@ -128,7 +128,8 @@ public class SelfSignedCertificateGenerator {
             subjectPublicKeyInfo
         );
 
-        BasicConstraints basicConstraints = new BasicConstraints(true);
+        // Explicitly set path length constraint to 0. This constructor also sets cA=true.
+        BasicConstraints basicConstraints = new BasicConstraints(0);
 
         // Authority Key Identifier
         addAuthorityKeyIdentifier(certificateBuilder, keyPair);
