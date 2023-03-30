@@ -73,6 +73,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
@@ -1213,78 +1214,30 @@ public class OpcUaClient implements UaClient {
 
     //region Subscription Services
 
-    //endregion
+    public CreateSubscriptionResponse createSubscription(
+        double requestedPublishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority
+    ) throws UaException {
 
-    //region View Services
-
-    //endregion
-
-    @Override
-    public CompletableFuture<BrowseResponse> browseAsync(ViewDescription viewDescription,
-                                                         UInteger maxReferencesPerNode,
-                                                         List<BrowseDescription> nodesToBrowse) {
-
-        return getSession().thenCompose(session -> {
-            BrowseRequest request = new BrowseRequest(
-                newRequestHeader(session.getAuthenticationToken()),
-                viewDescription,
-                maxReferencesPerNode,
-                nodesToBrowse.toArray(new BrowseDescription[0])
+        try {
+            CompletableFuture<CreateSubscriptionResponse> future = createSubscriptionAsync(
+                requestedPublishingInterval,
+                requestedLifetimeCount,
+                requestedMaxKeepAliveCount,
+                maxNotificationsPerPublish,
+                publishingEnabled,
+                priority
             );
 
-            return sendRequest(request);
-        });
-    }
-
-    @Override
-    public CompletableFuture<BrowseNextResponse> browseNextAsync(boolean releaseContinuationPoints,
-                                                                 List<ByteString> continuationPoints) {
-
-        return getSession().thenCompose(session -> {
-            BrowseNextRequest request = new BrowseNextRequest(
-                newRequestHeader(session.getAuthenticationToken()),
-                releaseContinuationPoints,
-                continuationPoints.toArray(new ByteString[0])
-            );
-
-            return sendRequest(request);
-        });
-    }
-
-    @Override
-    public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePathsAsync(List<BrowsePath> browsePaths) {
-        return getSession().thenCompose(session -> {
-            TranslateBrowsePathsToNodeIdsRequest request = new TranslateBrowsePathsToNodeIdsRequest(
-                newRequestHeader(session.getAuthenticationToken()),
-                browsePaths.toArray(new BrowsePath[0])
-            );
-
-            return sendRequest(request);
-        });
-    }
-
-    @Override
-    public CompletableFuture<RegisterNodesResponse> registerNodesAsync(List<NodeId> nodesToRegister) {
-        return getSession().thenCompose(session -> {
-            RegisterNodesRequest request = new RegisterNodesRequest(
-                newRequestHeader(session.getAuthenticationToken()),
-                nodesToRegister.toArray(new NodeId[0])
-            );
-
-            return sendRequest(request);
-        });
-    }
-
-    @Override
-    public CompletableFuture<UnregisterNodesResponse> unregisterNodesAsync(List<NodeId> nodesToUnregister) {
-        return getSession().thenCompose(session -> {
-            UnregisterNodesRequest request = new UnregisterNodesRequest(
-                newRequestHeader(session.getAuthenticationToken()),
-                nodesToUnregister.toArray(new NodeId[0])
-            );
-
-            return sendRequest(request);
-        });
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
@@ -1294,7 +1247,8 @@ public class OpcUaClient implements UaClient {
         UInteger requestedMaxKeepAliveCount,
         UInteger maxNotificationsPerPublish,
         boolean publishingEnabled,
-        UByte priority) {
+        UByte priority
+    ) {
 
         return getSession().thenCompose(session -> {
             CreateSubscriptionRequest request = new CreateSubscriptionRequest(
@@ -1311,6 +1265,32 @@ public class OpcUaClient implements UaClient {
         });
     }
 
+    public ModifySubscriptionResponse modifySubscription(
+        UInteger subscriptionId,
+        double requestedPublishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        UByte priority
+    ) throws UaException {
+
+        try {
+            CompletableFuture<ModifySubscriptionResponse> future = modifySubscriptionAsync(
+                subscriptionId,
+                requestedPublishingInterval,
+                requestedLifetimeCount,
+                requestedMaxKeepAliveCount,
+                maxNotificationsPerPublish,
+                priority
+            );
+
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
     @Override
     public CompletableFuture<ModifySubscriptionResponse> modifySubscriptionAsync(
         UInteger subscriptionId,
@@ -1318,7 +1298,8 @@ public class OpcUaClient implements UaClient {
         UInteger requestedLifetimeCount,
         UInteger requestedMaxKeepAliveCount,
         UInteger maxNotificationsPerPublish,
-        UByte priority) {
+        UByte priority
+    ) {
 
         return getSession().thenCompose(session -> {
             ModifySubscriptionRequest request = new ModifySubscriptionRequest(
@@ -1335,6 +1316,17 @@ public class OpcUaClient implements UaClient {
         });
     }
 
+    public DeleteSubscriptionsResponse deleteSubscriptions(List<UInteger> subscriptionIds) throws UaException {
+        try {
+            CompletableFuture<DeleteSubscriptionsResponse> future = deleteSubscriptionsAsync(subscriptionIds);
+
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
     @Override
     public CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptionsAsync(List<UInteger> subscriptionIds) {
         return getSession().thenCompose(session -> {
@@ -1348,8 +1340,10 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<TransferSubscriptionsResponse> transferSubscriptionsAsync(List<UInteger> subscriptionIds,
-                                                                                       boolean sendInitialValues) {
+    public CompletableFuture<TransferSubscriptionsResponse> transferSubscriptionsAsync(
+        List<UInteger> subscriptionIds,
+        boolean sendInitialValues
+    ) {
 
         return getSession().thenCompose(session -> {
             TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
@@ -1363,8 +1357,10 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<SetPublishingModeResponse> setPublishingModeAsync(boolean publishingEnabled,
-                                                                               List<UInteger> subscriptionIds) {
+    public CompletableFuture<SetPublishingModeResponse> setPublishingModeAsync(
+        boolean publishingEnabled,
+        List<UInteger> subscriptionIds
+    ) {
 
         return getSession().thenCompose(session -> {
             SetPublishingModeRequest request = new SetPublishingModeRequest(
@@ -1378,7 +1374,10 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<PublishResponse> publishAsync(List<SubscriptionAcknowledgement> subscriptionAcknowledgements) {
+    public CompletableFuture<PublishResponse> publishAsync(
+        List<SubscriptionAcknowledgement> subscriptionAcknowledgements
+    ) {
+
         return getSession().thenCompose(session -> {
             PublishRequest request = new PublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
@@ -1390,7 +1389,11 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<RepublishResponse> republishAsync(UInteger subscriptionId, UInteger retransmitSequenceNumber) {
+    public CompletableFuture<RepublishResponse> republishAsync(
+        UInteger subscriptionId,
+        UInteger retransmitSequenceNumber
+    ) {
+
         return getSession().thenCompose(session -> {
             RepublishRequest request = new RepublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
@@ -1401,6 +1404,177 @@ public class OpcUaClient implements UaClient {
             return sendRequest(request);
         });
     }
+
+    //endregion
+
+    //region View Services
+
+    public BrowseResponse browse(
+        ViewDescription viewDescription,
+        UInteger maxReferencesPerNode,
+        List<BrowseDescription> nodesToBrowse
+    ) throws UaException {
+
+        try {
+            return browseAsync(viewDescription, maxReferencesPerNode, nodesToBrowse).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<BrowseResponse> browseAsync(
+        ViewDescription viewDescription,
+        UInteger maxReferencesPerNode,
+        List<BrowseDescription> nodesToBrowse
+    ) {
+
+        return getSession().thenCompose(session -> {
+            BrowseRequest request = new BrowseRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                viewDescription,
+                maxReferencesPerNode,
+                nodesToBrowse.toArray(new BrowseDescription[0])
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    public BrowseResult browse(BrowseDescription nodeToBrowse) throws UaException {
+        try {
+            return browseAsync(nodeToBrowse).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Browse a single node, with no view and no max references specified.
+     *
+     * @param nodeToBrowse the node to browse.
+     * @return a {@link CompletableFuture} containing the {@link BrowseResult}.
+     */
+    public CompletableFuture<BrowseResult> browseAsync(BrowseDescription nodeToBrowse) {
+        return browseAsync(List.of(nodeToBrowse)).thenApply(rs -> rs.get(0));
+    }
+
+    public List<BrowseResult> browse(List<BrowseDescription> nodesToBrowse) throws UaException {
+        try {
+            return browseAsync(nodesToBrowse).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Browse a list of nodes, with no view and no max references specified.
+     *
+     * @param nodesToBrowse the nodes to browse.
+     * @return a {@link CompletableFuture} containing the {@link BrowseResult}s.
+     */
+    public CompletableFuture<List<BrowseResult>> browseAsync(List<BrowseDescription> nodesToBrowse) {
+        var viewDescription = new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0));
+
+        return browseAsync(viewDescription, uint(0), nodesToBrowse)
+            .thenApply(r -> List.of(r.getResults()));
+    }
+
+    public BrowseNextResponse browseNext(
+        boolean releaseContinuationPoints,
+        List<ByteString> continuationPoints
+    ) throws UaException {
+
+        try {
+            return browseNextAsync(releaseContinuationPoints, continuationPoints).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<BrowseNextResponse> browseNextAsync(
+        boolean releaseContinuationPoints,
+        List<ByteString> continuationPoints
+    ) {
+
+        return getSession().thenCompose(session -> {
+            BrowseNextRequest request = new BrowseNextRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                releaseContinuationPoints,
+                continuationPoints.toArray(new ByteString[0])
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    public TranslateBrowsePathsToNodeIdsResponse translateBrowsePaths(List<BrowsePath> browsePaths) throws UaException {
+        try {
+            return translateBrowsePathsAsync(browsePaths).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePathsAsync(
+        List<BrowsePath> browsePaths
+    ) {
+
+        return getSession().thenCompose(session -> {
+            TranslateBrowsePathsToNodeIdsRequest request = new TranslateBrowsePathsToNodeIdsRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                browsePaths.toArray(new BrowsePath[0])
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    public RegisterNodesResponse registerNodes(List<NodeId> nodesToRegister) throws UaException {
+        try {
+            return registerNodesAsync(nodesToRegister).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<RegisterNodesResponse> registerNodesAsync(List<NodeId> nodesToRegister) {
+        return getSession().thenCompose(session -> {
+            RegisterNodesRequest request = new RegisterNodesRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                nodesToRegister.toArray(new NodeId[0])
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    public UnregisterNodesResponse unregisterNodes(List<NodeId> nodesToUnregister) throws UaException {
+        try {
+            return unregisterNodesAsync(nodesToUnregister).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<UnregisterNodesResponse> unregisterNodesAsync(List<NodeId> nodesToUnregister) {
+        return getSession().thenCompose(session -> {
+            UnregisterNodesRequest request = new UnregisterNodesRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                nodesToUnregister.toArray(new NodeId[0])
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    //endregion
 
     @Override
     public CompletableFuture<OpcUaSession> getSession() {
