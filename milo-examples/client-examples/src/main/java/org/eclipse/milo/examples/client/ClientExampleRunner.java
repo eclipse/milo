@@ -108,23 +108,25 @@ public class ClientExampleRunner {
         try {
             OpcUaClient client = createClient();
 
-            // For the sake of the examples we will create mutual trust between the client and
-            // server so we can run them with security enabled by default.
-            // If the client example is pointed at another server then the rejected certificate
-            // will need to be moved from the security "pki/rejected" directory to the
-            // "pki/trusted/certs" directory.
+            if (serverRequired) {
+                // For the sake of the examples we will create mutual trust between the client and
+                // server, so we can run them with security enabled by default.
+                // If the client example is pointed at another server then the rejected certificate
+                // will need to be moved from the security "pki/rejected" directory to the
+                // "pki/trusted/certs" directory.
 
-            // Make the example server trust the example client certificate by default.
-            client.getConfig().getCertificate().ifPresent(
-                certificate ->
-                    exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
-            );
+                // Make the example server trust the example client certificate by default.
+                client.getConfig().getCertificate().ifPresent(
+                    certificate ->
+                        exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
+                );
 
-            // Make the example client trust the example server certificate by default.
-            exampleServer.getServer().getConfig().getCertificateManager().getCertificates().forEach(
-                certificate ->
-                    trustListManager.addTrustedCertificate(certificate)
-            );
+                // Make the example client trust the example server certificate by default.
+                exampleServer.getServer().getConfig().getCertificateManager().getCertificates().forEach(
+                    certificate ->
+                        trustListManager.addTrustedCertificate(certificate)
+                );
+            }
 
             future.whenCompleteAsync((c, ex) -> {
                 if (ex != null) {
