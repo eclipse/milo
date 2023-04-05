@@ -14,7 +14,7 @@
 
     <groupId>org.eclipse.milo</groupId>
     <artifactId>milo</artifactId>
-    <version>0.6.9-SNAPSHOT</version>
+    <version>0.6.10-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Eclipse Milo - OPC UA (IEC 62541)</name>
