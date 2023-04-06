@@ -26,7 +26,7 @@ Releases are published to Maven Central and snapshots to Sonatype.
 ```xml
 <dependency>
     <groupId>org.eclipse.milo</groupId>
-    <artifactId>sdk-client</artifactId>
+    <artifactId>milo-sdk-client</artifactId>
     <version>0.6.8</version>
 </dependency>
 ```
@@ -36,7 +36,7 @@ Releases are published to Maven Central and snapshots to Sonatype.
 ```xml
 <dependency>
     <groupId>org.eclipse.milo</groupId>
-    <artifactId>sdk-server</artifactId>
+    <artifactId>milo-sdk-server</artifactId>
     <version>0.6.8</version>
 </dependency>
 ```

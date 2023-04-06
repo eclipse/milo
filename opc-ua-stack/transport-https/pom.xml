@@ -15,11 +15,11 @@
 
     <parent>
         <groupId>org.eclipse.milo</groupId>
-        <artifactId>opc-ua-stack</artifactId>
+        <artifactId>milo-opc-ua-stack</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>transport-https</artifactId>
+    <artifactId>milo-transport-https</artifactId>
 
     <properties>
         <javaModuleName>org.eclipse.milo.opcua.stack.transport.https</javaModuleName>
@@ -28,12 +28,12 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>stack-core</artifactId>
+            <artifactId>milo-stack-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>transport</artifactId>
+            <artifactId>milo-transport</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -15,11 +15,11 @@
 
     <parent>
         <groupId>org.eclipse.milo</groupId>
-        <artifactId>opc-ua-stack</artifactId>
+        <artifactId>milo-opc-ua-stack</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stack-core</artifactId>
+    <artifactId>milo-stack-core</artifactId>
 
     <properties>
         <javaModuleName>org.eclipse.milo.opcua.stack.core</javaModuleName>
@@ -39,7 +39,7 @@
 
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>guava-dependencies</artifactId>
+            <artifactId>milo-guava-dependencies</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
@@ -135,7 +135,7 @@
                         <configuration combine.self="override">
                             <artifactSet>
                                 <includes>
-                                    <include>org.eclipse.milo:guava-dependencies</include>
+                                    <include>org.eclipse.milo:milo-guava-dependencies</include>
                                 </includes>
                             </artifactSet>
                             <relocations>

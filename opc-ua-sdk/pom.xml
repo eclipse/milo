@@ -19,7 +19,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>opc-ua-sdk</artifactId>
+    <artifactId>milo-opc-ua-sdk</artifactId>
     <packaging>pom</packaging>
 
     <modules>
@@ -96,7 +96,7 @@
                                         <include>org.eclipse.milo:${project.artifactId}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>org.eclipse.milo:guava-dependencies</exclude>
+                                        <exclude>org.eclipse.milo:milo-guava-dependencies</exclude>
                                     </excludes>
                                 </artifactSet>
                                 <relocations>
