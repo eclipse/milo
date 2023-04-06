@@ -15,11 +15,11 @@
 
     <parent>
         <groupId>org.eclipse.milo</groupId>
-        <artifactId>opc-ua-sdk</artifactId>
+        <artifactId>milo-opc-ua-sdk</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>integration-tests</artifactId>
+    <artifactId>milo-integration-tests</artifactId>
 
     <properties>
         <javaModuleName>org.eclipse.milo.opcua.sdk.tests.integration</javaModuleName>
@@ -28,31 +28,31 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>sdk-client</artifactId>
+            <artifactId>milo-sdk-client</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>dtd-reader</artifactId>
+            <artifactId>milo-dtd-reader</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>sdk-server</artifactId>
+            <artifactId>milo-sdk-server</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>encoding-xml</artifactId>
+            <artifactId>milo-encoding-xml</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>encoding-json</artifactId>
+            <artifactId>milo-encoding-json</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
