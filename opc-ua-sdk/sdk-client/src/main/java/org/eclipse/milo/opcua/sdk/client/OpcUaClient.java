@@ -1339,6 +1339,24 @@ public class OpcUaClient implements UaClient {
         });
     }
 
+    public TransferSubscriptionsResponse transferSubscriptions(
+        List<UInteger> subscriptionIds,
+        boolean sendInitialValues
+    ) throws UaException {
+
+        try {
+            CompletableFuture<TransferSubscriptionsResponse> future = transferSubscriptionsAsync(
+                subscriptionIds,
+                sendInitialValues
+            );
+
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
     @Override
     public CompletableFuture<TransferSubscriptionsResponse> transferSubscriptionsAsync(
         List<UInteger> subscriptionIds,
