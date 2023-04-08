@@ -217,7 +217,7 @@
                     </dependency>
                     <dependency>
                         <groupId>org.eclipse.milo</groupId>
-                        <artifactId>build-tools</artifactId>
+                        <artifactId>milo-build-tools</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                     <dependency>

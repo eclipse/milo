@@ -15,11 +15,11 @@
 
     <parent>
         <groupId>org.eclipse.milo</groupId>
-        <artifactId>opc-ua-sdk</artifactId>
+        <artifactId>milo-opc-ua-sdk</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>dtd-reader</artifactId>
+    <artifactId>milo-dtd-reader</artifactId>
 
     <properties>
         <javaModuleName>org.eclipse.milo.opcua.sdk.dtd.reader</javaModuleName>
@@ -28,12 +28,12 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>dtd-core</artifactId>
+            <artifactId>milo-dtd-core</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>sdk-client</artifactId>
+            <artifactId>milo-sdk-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

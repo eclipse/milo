@@ -5,7 +5,7 @@ public class GuavaClasses {
 
     /*
      * Referencing Guava classes here includes them in the minimized Guava jar
-     * that is shaded into Milo's stack-core artifact.
+     * that is shaded into the milo-stack-core artifact.
      */
     static {
         com.google.common.base.Charsets.class.getName();

@@ -19,7 +19,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>server-examples</artifactId>
+    <artifactId>milo-server-examples</artifactId>
 
     <properties>
         <javaModuleName>org.eclipse.milo.examples.server</javaModuleName>
@@ -28,17 +28,17 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>sdk-server</artifactId>
+            <artifactId>milo-sdk-server</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>dtd-core</artifactId>
+            <artifactId>milo-dtd-core</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>dtd-manager</artifactId>
+            <artifactId>milo-dtd-manager</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
