@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode.InfoType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StatusCodesTest {
 
@@ -47,6 +51,30 @@ class StatusCodesTest {
         ss = StatusCodes.lookup(StatusCodes.Bad_ServiceUnsupported).orElseThrow();
         assertEquals("Bad_ServiceUnsupported", ss[0]);
         assertEquals("The server does not support the requested service.", ss[1]);
+    }
+
+    @Test
+    void infoBitsNotUsed() {
+        assertSame(StatusCode.GOOD.getInfoType(), InfoType.NotUsed);
+    }
+
+    @Test
+    void infoBitsDataValue() {
+        StatusCode statusCode = StatusCode.GOOD.withDataValueInfoType();
+        assertSame(statusCode.getInfoType(), InfoType.DataValue);
+        assertEquals(statusCode.getDataValueInfoBits()
+            .map(StatusCode.DataValueInfoBits::getBits).orElseThrow(), 0);
+
+        assertSame(statusCode.withoutDataValueInfoType().getInfoType(), InfoType.NotUsed);
+    }
+
+    @Test
+    void infoBitsDataValueWithOverflow() {
+        StatusCode withOverflow = StatusCode.GOOD.withOverflow();
+        assertSame(withOverflow.getInfoType(), InfoType.DataValue);
+        assertTrue(withOverflow.getDataValueInfoBits()
+            .map(StatusCode.DataValueInfoBits::isOverflow).orElse(false));
+        assertTrue(withOverflow.isOverflowSet());
     }
 
 }
