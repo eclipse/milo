@@ -12,13 +12,12 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.services.SubscriptionServices;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 
-public interface UaClient extends SubscriptionServices {
+public interface UaClient {
 
     /**
      * @return the {@link OpcUaClientConfig} for this client.

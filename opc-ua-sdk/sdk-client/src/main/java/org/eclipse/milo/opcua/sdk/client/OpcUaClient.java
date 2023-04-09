@@ -77,6 +77,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
@@ -105,8 +106,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.NodeTypeDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryDataSet;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -149,7 +156,7 @@ import org.slf4j.LoggerFactory;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcUaClient implements UaClient {
+public class OpcUaClient {
 
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
@@ -453,7 +460,6 @@ public class OpcUaClient implements UaClient {
         VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
     }
 
-    @Override
     public OpcUaClientConfig getConfig() {
         return config;
     }
@@ -462,7 +468,6 @@ public class OpcUaClient implements UaClient {
         return transport;
     }
 
-    @Override
     public AddressSpace getAddressSpace() {
         return addressSpace;
     }
@@ -725,14 +730,12 @@ public class OpcUaClient implements UaClient {
         );
     }
 
-    @Override
-    public CompletableFuture<UaClient> connect() {
+    public CompletableFuture<OpcUaClient> connect() {
         return transport.connect(applicationContext)
             .thenCompose(c -> sessionFsm.openSession())
             .thenApply(s -> OpcUaClient.this);
     }
 
-    @Override
     public CompletableFuture<OpcUaClient> disconnect() {
         return sessionFsm
             .closeSession()
@@ -744,7 +747,6 @@ public class OpcUaClient implements UaClient {
             .exceptionally(ex -> OpcUaClient.this);
     }
 
-    @Override
     public OpcUaSubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
     }
@@ -1210,10 +1212,125 @@ public class OpcUaClient implements UaClient {
 
     //region Query Services
 
+    public QueryFirstResponse queryFirst(
+        ViewDescription view,
+        List<NodeTypeDescription> nodeTypes,
+        ContentFilter filter,
+        UInteger maxDataSetsToReturn,
+        UInteger maxReferencesToReturn
+    ) throws UaException {
+
+        try {
+            return queryFirstAsync(view, nodeTypes, filter, maxDataSetsToReturn, maxReferencesToReturn).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * This service is used to issue a query to the server.
+     *
+     * @param view                  specifies a View and temporal context to a server.
+     * @param nodeTypes             the {@link NodeTypeDescription}.
+     * @param filter                the {@link ContentFilter}. Resulting Nodes shall be limited to
+     *                              the Nodes matching the criteria defined by the filter.
+     * @param maxDataSetsToReturn   the number of {@link QueryDataSet}s that the client wants the
+     *                              server to return in the response and on each subsequent
+     *                              continuation call response. The server is allowed to further
+     *                              limit the response, but shall not exceed this limit. A value
+     *                              of 0 indicates that the client is imposing no limitation.
+     * @param maxReferencesToReturn the number of References that the client wants the server to
+     *                              return in the response for each {@link QueryDataSet} and on
+     *                              each subsequent continuation call response. The server is
+     *                              allowed to further limit the response, but shall not exceed
+     *                              this limit. A value of 0 indicates that the client is imposing
+     *                              no limitation.
+     * @return a {@link CompletableFuture} containing the {@link QueryFirstResponse}.
+     */
+    public CompletableFuture<QueryFirstResponse> queryFirstAsync(
+        ViewDescription view,
+        List<NodeTypeDescription> nodeTypes,
+        ContentFilter filter,
+        UInteger maxDataSetsToReturn,
+        UInteger maxReferencesToReturn
+    ) {
+
+        return getSession().thenCompose(session -> {
+            QueryFirstRequest request = new QueryFirstRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                view,
+                nodeTypes.toArray(new NodeTypeDescription[0]),
+                filter,
+                maxDataSetsToReturn,
+                maxReferencesToReturn
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    public QueryNextResponse queryNext(
+        boolean releaseContinuationPoint,
+        ByteString continuationPoint
+    ) throws UaException {
+
+        try {
+            return queryNextAsync(releaseContinuationPoint, continuationPoint).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * This Service is used to request the next set of QueryFirst or QueryNext response
+     * information that is too large to be sent in a single response.
+     *
+     * @param releaseContinuationPoint if {@code true}, passed continuationPoints shall be reset to
+     *                                 free resources in the server. If {@code false}, passed
+     *                                 continuationPoints shall be used to get the next set of browse
+     *                                 information.
+     * @param continuationPoint        a server-defined opaque value that represents the continuation
+     *                                 point.
+     * @return a {@link CompletableFuture} containing the {@link QueryNextResponse}.
+     */
+    public CompletableFuture<QueryNextResponse> queryNextAsync(
+        boolean releaseContinuationPoint,
+        ByteString continuationPoint
+    ) {
+
+        return getSession().thenCompose(session -> {
+            QueryNextRequest request = new QueryNextRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                releaseContinuationPoint,
+                continuationPoint
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+
     //endregion
 
     //region Subscription Services
 
+    /**
+     * Create a new Subscription.
+     * <p>
+     * This method is a convenience method for {@link #createSubscriptionAsync(double, UInteger, UInteger,
+     * UInteger, boolean, UByte)} that blocks until the response is received.
+     *
+     * @param requestedPublishingInterval the requested publishing interval.
+     * @param requestedLifetimeCount      the requested lifetime count.
+     * @param requestedMaxKeepAliveCount  the requested max keep alive count.
+     * @param maxNotificationsPerPublish  the max notifications per publish.
+     * @param publishingEnabled           {@code true} if publishing is enabled.
+     * @param priority                    the priority.
+     * @return the {@link CreateSubscriptionResponse}.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
     public CreateSubscriptionResponse createSubscription(
         double requestedPublishingInterval,
         UInteger requestedLifetimeCount,
@@ -1240,7 +1357,6 @@ public class OpcUaClient implements UaClient {
         }
     }
 
-    @Override
     public CompletableFuture<CreateSubscriptionResponse> createSubscriptionAsync(
         double requestedPublishingInterval,
         UInteger requestedLifetimeCount,
@@ -1291,7 +1407,6 @@ public class OpcUaClient implements UaClient {
         }
     }
 
-    @Override
     public CompletableFuture<ModifySubscriptionResponse> modifySubscriptionAsync(
         UInteger subscriptionId,
         double requestedPublishingInterval,
@@ -1327,7 +1442,6 @@ public class OpcUaClient implements UaClient {
         }
     }
 
-    @Override
     public CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptionsAsync(List<UInteger> subscriptionIds) {
         return getSession().thenCompose(session -> {
             DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest(
@@ -1357,7 +1471,6 @@ public class OpcUaClient implements UaClient {
         }
     }
 
-    @Override
     public CompletableFuture<TransferSubscriptionsResponse> transferSubscriptionsAsync(
         List<UInteger> subscriptionIds,
         boolean sendInitialValues
@@ -1374,7 +1487,24 @@ public class OpcUaClient implements UaClient {
         });
     }
 
-    @Override
+    public SetPublishingModeResponse setPublishingMode(
+        boolean publishingEnabled,
+        List<UInteger> subscriptionIds
+    ) throws UaException {
+
+        try {
+            CompletableFuture<SetPublishingModeResponse> future = setPublishingModeAsync(
+                publishingEnabled,
+                subscriptionIds
+            );
+
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
     public CompletableFuture<SetPublishingModeResponse> setPublishingModeAsync(
         boolean publishingEnabled,
         List<UInteger> subscriptionIds
@@ -1391,7 +1521,20 @@ public class OpcUaClient implements UaClient {
         });
     }
 
-    @Override
+    public PublishResponse publish(
+        List<SubscriptionAcknowledgement> subscriptionAcknowledgements
+    ) throws UaException {
+
+        try {
+            CompletableFuture<PublishResponse> future = publishAsync(subscriptionAcknowledgements);
+
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
     public CompletableFuture<PublishResponse> publishAsync(
         List<SubscriptionAcknowledgement> subscriptionAcknowledgements
     ) {
@@ -1406,7 +1549,24 @@ public class OpcUaClient implements UaClient {
         });
     }
 
-    @Override
+    public RepublishResponse republish(
+        UInteger subscriptionId,
+        UInteger retransmitSequenceNumber
+    ) throws UaException {
+
+        try {
+            CompletableFuture<RepublishResponse> future = republishAsync(
+                subscriptionId,
+                retransmitSequenceNumber
+            );
+
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
     public CompletableFuture<RepublishResponse> republishAsync(
         UInteger subscriptionId,
         UInteger retransmitSequenceNumber
@@ -1594,12 +1754,10 @@ public class OpcUaClient implements UaClient {
 
     //endregion
 
-    @Override
     public CompletableFuture<OpcUaSession> getSession() {
         return sessionFsm.getSession();
     }
 
-    @Override
     public <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request) {
         CompletableFuture<UaResponseMessageType> f = transport.sendRequestMessage(request);
 
