@@ -45,7 +45,7 @@ public class BrowseHelper {
         UInteger maxReferencesPerNode
     ) {
 
-        return client.getSession().thenCompose(
+        return client.getSessionAsync().thenCompose(
             session ->
                 browse(client, session, browseDescription, maxReferencesPerNode)
         );

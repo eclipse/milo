@@ -36,7 +36,7 @@ public class MethodExample implements ClientExample {
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
-        client.connect().get();
+        client.connectAsync().get();
 
         // call the sqrt(x) function
         sqrt(client, 16.0).exceptionally(ex -> {

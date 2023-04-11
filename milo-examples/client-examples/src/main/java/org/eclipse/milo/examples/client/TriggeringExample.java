@@ -50,7 +50,7 @@ public class TriggeringExample implements ClientExample {
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
-        client.connect().get();
+        client.connectAsync().get();
 
         // create a subscription @ 1000ms
         UaSubscription subscription = client.getSubscriptionManager()

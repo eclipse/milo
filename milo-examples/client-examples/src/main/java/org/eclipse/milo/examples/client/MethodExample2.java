@@ -39,7 +39,7 @@ public class MethodExample2 implements ClientExample {
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
-        client.connect().get();
+        client.connectAsync().get();
 
         UaObjectNode objectNode = client.getAddressSpace()
             .getObjectNode(NodeId.parse("ns=2;s=HelloWorld"));

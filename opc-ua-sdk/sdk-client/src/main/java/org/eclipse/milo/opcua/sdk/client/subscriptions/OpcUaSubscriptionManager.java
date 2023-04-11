@@ -444,7 +444,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         if (maxPendingPublishes == 0) return;
 
-        client.getSession().thenAccept(session -> {
+        client.getSessionAsync().thenAccept(session -> {
             AtomicLong pendingCount = pendingCountMap.computeIfAbsent(
                 session.getSessionId(), id -> new AtomicLong(0L));
 

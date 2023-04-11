@@ -131,7 +131,7 @@ public class ClientExampleRunner {
                 }
 
                 try {
-                    client.disconnect().get();
+                    client.disconnectAsync().get();
                     if (serverRequired && exampleServer != null) {
                         exampleServer.shutdown().get();
                     }

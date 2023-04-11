@@ -460,6 +460,54 @@ public class OpcUaClient {
         VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
     }
 
+    public OpcUaClient connect() throws UaException {
+        try {
+            return connectAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<OpcUaClient> connectAsync() {
+        return transport.connect(applicationContext)
+            .thenCompose(c -> sessionFsm.openSession())
+            .thenApply(s -> OpcUaClient.this);
+    }
+
+    public OpcUaClient disconnect() throws UaException {
+        try {
+            return disconnectAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<OpcUaClient> disconnectAsync() {
+        return sessionFsm
+            .closeSession()
+            .exceptionally(ex -> Unit.VALUE)
+            .thenCompose(u ->
+                transport
+                    .disconnect()
+                    .thenApply(c -> OpcUaClient.this))
+            .exceptionally(ex -> OpcUaClient.this);
+    }
+
+    public OpcUaSession getSession() throws UaException {
+        try {
+            return getSessionAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<OpcUaSession> getSessionAsync() {
+        return sessionFsm.getSession();
+    }
+
     public OpcUaClientConfig getConfig() {
         return config;
     }
@@ -478,6 +526,10 @@ public class OpcUaClient {
 
     public VariableTypeManager getVariableTypeManager() {
         return variableTypeManager;
+    }
+
+    public OpcUaSubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
     }
 
     /**
@@ -563,7 +615,7 @@ public class OpcUaClient {
      * occurs.
      */
     public CompletableFuture<NamespaceTable> readNamespaceTableAsync() {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
             ReadRequest readRequest = new ReadRequest(
@@ -624,7 +676,7 @@ public class OpcUaClient {
      * occurs.
      */
     public CompletableFuture<ServerTable> readServerTableAsync() {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
             ReadRequest readRequest = new ReadRequest(
@@ -730,28 +782,6 @@ public class OpcUaClient {
         );
     }
 
-    public CompletableFuture<OpcUaClient> connect() {
-        return transport.connect(applicationContext)
-            .thenCompose(c -> sessionFsm.openSession())
-            .thenApply(s -> OpcUaClient.this);
-    }
-
-    public CompletableFuture<OpcUaClient> disconnect() {
-        return sessionFsm
-            .closeSession()
-            .exceptionally(ex -> Unit.VALUE)
-            .thenCompose(u ->
-                transport
-                    .disconnect()
-                    .thenApply(c -> OpcUaClient.this))
-            .exceptionally(ex -> OpcUaClient.this);
-    }
-
-    public OpcUaSubscriptionManager getSubscriptionManager() {
-        return subscriptionManager;
-    }
-
-
     //region Attribute Services
 
     public ReadResponse read(
@@ -788,7 +818,7 @@ public class OpcUaClient {
         List<ReadValueId> readValueIds
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             var request = new ReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 maxAge,
@@ -832,7 +862,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<WriteResponse> writeAsync(List<WriteValue> writeValues) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             WriteRequest request = new WriteRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 writeValues.toArray(new WriteValue[0])
@@ -890,7 +920,7 @@ public class OpcUaClient {
         List<HistoryReadValueId> nodesToRead
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             HistoryReadRequest request = new HistoryReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 ExtensionObject.encode(getStaticEncodingContext(), historyReadDetails),
@@ -916,7 +946,7 @@ public class OpcUaClient {
         List<HistoryUpdateDetails> historyUpdateDetails
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             ExtensionObject[] details = historyUpdateDetails.stream()
                 .map(hud -> ExtensionObject.encode(getStaticEncodingContext(), hud))
                 .toArray(ExtensionObject[]::new);
@@ -944,7 +974,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<CallResponse> callAsync(List<CallMethodRequest> methodsToCall) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             CallRequest request = new CallRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 methodsToCall.toArray(new CallMethodRequest[0])
@@ -978,7 +1008,7 @@ public class OpcUaClient {
         List<MonitoredItemCreateRequest> itemsToCreate
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             CreateMonitoredItemsRequest request = new CreateMonitoredItemsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1010,7 +1040,7 @@ public class OpcUaClient {
         List<MonitoredItemModifyRequest> itemsToModify
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             ModifyMonitoredItemsRequest request = new ModifyMonitoredItemsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1040,7 +1070,7 @@ public class OpcUaClient {
         List<UInteger> monitoredItemIds
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             DeleteMonitoredItemsRequest request = new DeleteMonitoredItemsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1071,7 +1101,7 @@ public class OpcUaClient {
         List<UInteger> monitoredItemIds
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             SetMonitoringModeRequest request = new SetMonitoringModeRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1105,7 +1135,7 @@ public class OpcUaClient {
         List<UInteger> linksToRemove
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             SetTriggeringRequest request = new SetTriggeringRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1132,7 +1162,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<AddNodesResponse> addNodesAsync(List<AddNodesItem> nodesToAdd) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             AddNodesRequest request = new AddNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 nodesToAdd.toArray(new AddNodesItem[0])
@@ -1152,7 +1182,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<AddReferencesResponse> addReferencesAsync(List<AddReferencesItem> referencesToAdd) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             AddReferencesRequest request = new AddReferencesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 referencesToAdd.toArray(new AddReferencesItem[0])
@@ -1172,7 +1202,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<DeleteNodesResponse> deleteNodesAsync(List<DeleteNodesItem> nodesToDelete) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             DeleteNodesRequest request = new DeleteNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 nodesToDelete.toArray(new DeleteNodesItem[0])
@@ -1198,7 +1228,7 @@ public class OpcUaClient {
         List<DeleteReferencesItem> referencesToDelete
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             DeleteReferencesRequest request = new DeleteReferencesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 referencesToDelete.toArray(new DeleteReferencesItem[0])
@@ -1256,7 +1286,7 @@ public class OpcUaClient {
         UInteger maxReferencesToReturn
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             QueryFirstRequest request = new QueryFirstRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 view,
@@ -1300,7 +1330,7 @@ public class OpcUaClient {
         ByteString continuationPoint
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             QueryNextRequest request = new QueryNextRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 releaseContinuationPoint,
@@ -1366,7 +1396,7 @@ public class OpcUaClient {
         UByte priority
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             CreateSubscriptionRequest request = new CreateSubscriptionRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 requestedPublishingInterval,
@@ -1416,7 +1446,7 @@ public class OpcUaClient {
         UByte priority
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             ModifySubscriptionRequest request = new ModifySubscriptionRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1443,7 +1473,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptionsAsync(List<UInteger> subscriptionIds) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionIds.toArray(new UInteger[0])
@@ -1476,7 +1506,7 @@ public class OpcUaClient {
         boolean sendInitialValues
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionIds.toArray(new UInteger[0]),
@@ -1510,7 +1540,7 @@ public class OpcUaClient {
         List<UInteger> subscriptionIds
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             SetPublishingModeRequest request = new SetPublishingModeRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 publishingEnabled,
@@ -1539,7 +1569,7 @@ public class OpcUaClient {
         List<SubscriptionAcknowledgement> subscriptionAcknowledgements
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             PublishRequest request = new PublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionAcknowledgements.toArray(new SubscriptionAcknowledgement[0])
@@ -1572,7 +1602,7 @@ public class OpcUaClient {
         UInteger retransmitSequenceNumber
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             RepublishRequest request = new RepublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
@@ -1607,7 +1637,7 @@ public class OpcUaClient {
         List<BrowseDescription> nodesToBrowse
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             BrowseRequest request = new BrowseRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 viewDescription,
@@ -1678,7 +1708,7 @@ public class OpcUaClient {
         List<ByteString> continuationPoints
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             BrowseNextRequest request = new BrowseNextRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 releaseContinuationPoints,
@@ -1702,7 +1732,7 @@ public class OpcUaClient {
         List<BrowsePath> browsePaths
     ) {
 
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             TranslateBrowsePathsToNodeIdsRequest request = new TranslateBrowsePathsToNodeIdsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 browsePaths.toArray(new BrowsePath[0])
@@ -1722,7 +1752,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<RegisterNodesResponse> registerNodesAsync(List<NodeId> nodesToRegister) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             RegisterNodesRequest request = new RegisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 nodesToRegister.toArray(new NodeId[0])
@@ -1742,7 +1772,7 @@ public class OpcUaClient {
     }
 
     public CompletableFuture<UnregisterNodesResponse> unregisterNodesAsync(List<NodeId> nodesToUnregister) {
-        return getSession().thenCompose(session -> {
+        return getSessionAsync().thenCompose(session -> {
             UnregisterNodesRequest request = new UnregisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 nodesToUnregister.toArray(new NodeId[0])
@@ -1754,42 +1784,36 @@ public class OpcUaClient {
 
     //endregion
 
-    public CompletableFuture<OpcUaSession> getSession() {
-        return sessionFsm.getSession();
-    }
-
     public <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request) {
         CompletableFuture<UaResponseMessageType> f = transport.sendRequestMessage(request);
 
-        if (faultListeners.size() > 0) {
-            f.whenComplete(this::maybeHandleServiceFault);
-        }
+        f.whenComplete(this::notifyFaultListeners);
 
         return f.thenApply(r -> (T) r);
     }
 
+    private void notifyFaultListeners(UaResponseMessageType response, Throwable ex) {
+        if (ex == null || faultListeners.isEmpty()) {
+            return;
+        }
 
-    private void maybeHandleServiceFault(UaResponseMessageType response, Throwable ex) {
-        if (faultListeners.isEmpty()) return;
+        UaServiceFaultException faultException = null;
 
-        if (ex != null) {
-            if (ex instanceof UaServiceFaultException) {
-                UaServiceFaultException faultException = (UaServiceFaultException) ex;
-                ServiceFault serviceFault = faultException.getServiceFault();
+        if (ex instanceof UaServiceFaultException) {
+            faultException = (UaServiceFaultException) ex;
+        } else if (ex.getCause() instanceof UaServiceFaultException) {
+            faultException = (UaServiceFaultException) ex.getCause();
+        }
 
-                logger.debug("Notifying {} ServiceFaultListeners", faultListeners.size());
+        if (faultException != null) {
+            ServiceFault serviceFault = faultException.getServiceFault();
 
-                faultNotificationQueue.submit(() ->
-                    faultListeners.forEach(h -> h.onServiceFault(serviceFault)));
-            } else if (ex.getCause() instanceof UaServiceFaultException) {
-                UaServiceFaultException faultException = (UaServiceFaultException) ex.getCause();
-                ServiceFault serviceFault = faultException.getServiceFault();
+            logger.debug("Notifying {} ServiceFaultListeners", faultListeners.size());
 
-                logger.debug("Notifying {} ServiceFaultListeners", faultListeners.size());
-
-                faultNotificationQueue.submit(() ->
-                    faultListeners.forEach(h -> h.onServiceFault(serviceFault)));
-            }
+            faultNotificationQueue.submit(
+                () ->
+                    faultListeners.forEach(h -> h.onServiceFault(serviceFault))
+            );
         }
     }
 

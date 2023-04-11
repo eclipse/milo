@@ -39,7 +39,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
-        client.connect().get();
+        client.connectAsync().get();
 
         registerCustomCodec(client);
 

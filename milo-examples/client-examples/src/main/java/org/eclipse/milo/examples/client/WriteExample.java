@@ -34,7 +34,7 @@ public class WriteExample implements ClientExample {
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
-        client.connect().get();
+        client.connectAsync().get();
 
         List<NodeId> nodeIds = List.of(new NodeId(2, "HelloWorld/ScalarTypes/Int32"));
 
