@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -103,11 +104,29 @@ public class DiscoveryClient {
         };
     }
 
-    public CompletableFuture<DiscoveryClient> connect() {
+    public DiscoveryClient connect() throws UaException {
+        try {
+            return connectAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<DiscoveryClient> connectAsync() {
         return transport.connect(applicationContext).thenApply(c -> DiscoveryClient.this);
     }
 
-    public CompletableFuture<DiscoveryClient> disconnect() {
+    public DiscoveryClient disconnect() throws UaException {
+        try {
+            return disconnectAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<DiscoveryClient> disconnectAsync() {
         return transport.disconnect().thenApply(c -> DiscoveryClient.this);
     }
 
@@ -257,9 +276,9 @@ public class DiscoveryClient {
 
         DiscoveryClient discoveryClient = new DiscoveryClient(endpoint, transport);
 
-        return discoveryClient.connect()
+        return discoveryClient.connectAsync()
             .thenCompose(c -> c.findServers(endpointUrl, new String[0], new String[0]))
-            .whenComplete((e, ex) -> discoveryClient.disconnect())
+            .whenComplete((e, ex) -> discoveryClient.disconnectAsync())
             .thenApply(response -> List.of(response.getServers()));
     }
 
@@ -343,9 +362,9 @@ public class DiscoveryClient {
 
         DiscoveryClient discoveryClient = new DiscoveryClient(endpoint, transport);
 
-        return discoveryClient.connect()
+        return discoveryClient.connectAsync()
             .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
-            .whenComplete((e, ex) -> discoveryClient.disconnect())
+            .whenComplete((e, ex) -> discoveryClient.disconnectAsync())
             .thenApply(response -> List.of(response.getEndpoints()));
     }
 
