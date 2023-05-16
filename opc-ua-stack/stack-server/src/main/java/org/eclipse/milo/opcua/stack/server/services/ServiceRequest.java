@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -72,7 +73,10 @@ public class ServiceRequest extends DefaultAttributeMap {
     }
 
     /**
-     * Get the client certificate bytes, or {@code null} if not available.
+     * Get the client certificate bytes, or {@code null} if not available. If the client provided
+     * a certificate chain when creating the secure channel these bytes contain all certificates
+     * in the chain. It is the same bytes as
+     * {@link ServerSecureChannel#getRemoteCertificateChainBytes()}.
      * <p>
      * Only available on SecureConversation-based transports with security enabled.
      *
