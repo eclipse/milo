@@ -50,7 +50,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         // and dynamically generate codecs for custom structures.
         client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
 
-        client.connectAsync().get();
+        client.connect();
 
         readPerson(client);
         readWorkOrder(client);

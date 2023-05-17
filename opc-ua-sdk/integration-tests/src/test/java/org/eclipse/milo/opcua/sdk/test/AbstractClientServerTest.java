@@ -43,7 +43,7 @@ public abstract class AbstractClientServerTest {
         client.addSessionInitializer(new DataTypeCodecSessionInitializer());
         client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
 
-        client.connectAsync().get();
+        client.connect();
     }
 
     @AfterAll

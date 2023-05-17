@@ -36,8 +36,7 @@ public class BrowseAsyncExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connectAsync().get();
+        client.connect();
 
         // start browsing at root folder
         UaNode rootNode = client.getAddressSpace().getNode(NodeIds.RootFolder);
@@ -72,9 +71,7 @@ public class BrowseAsyncExample implements ClientExample {
     }
 
     private static String indent(int depth) {
-        StringBuilder s = new StringBuilder();
-        s.append("  ".repeat(Math.max(0, depth)));
-        return s.toString();
+        return "  ".repeat(Math.max(0, depth));
     }
 
     private static <T> void traverse(Tree<T> tree, int depth, BiConsumer<Integer, T> consumer) {

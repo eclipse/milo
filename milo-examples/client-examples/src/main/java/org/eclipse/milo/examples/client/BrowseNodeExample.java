@@ -33,8 +33,7 @@ public class BrowseNodeExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connectAsync().get();
+        client.connect();
 
         // start browsing at root folder
         browseNode("", client, NodeIds.RootFolder);

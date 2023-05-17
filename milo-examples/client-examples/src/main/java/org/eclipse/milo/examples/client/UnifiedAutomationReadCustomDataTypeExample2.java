@@ -55,7 +55,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         client.addSessionInitializer(new DataTypeTreeSessionInitializer());
         client.addSessionInitializer(new DataTypeCodecSessionInitializer());
 
-        client.connectAsync().get();
+        client.connect();
 
         readWriteReadPerson(client);
         readWriteReadWorkOrder(client);

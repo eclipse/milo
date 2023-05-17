@@ -430,7 +430,7 @@ public class OpcUaClient {
                 }
             );
 
-            return client.sendRequest(readRequest)
+            return client.sendRequestAsync(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
                 .thenApply(results -> {
@@ -631,7 +631,7 @@ public class OpcUaClient {
                 }
             );
 
-            CompletableFuture<String[]> namespaceArray = sendRequest(readRequest)
+            CompletableFuture<String[]> namespaceArray = sendRequestAsync(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
                 .thenApply(results -> (String[]) results[0].getValue().getValue());
@@ -692,7 +692,7 @@ public class OpcUaClient {
                 }
             );
 
-            CompletableFuture<String[]> serverArray = sendRequest(readRequest)
+            CompletableFuture<String[]> serverArray = sendRequestAsync(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
                 .thenApply(results -> (String[]) results[0].getValue().getValue());
@@ -826,7 +826,8 @@ public class OpcUaClient {
                 readValueIds.toArray(new ReadValueId[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(ReadResponse.class::cast);
         });
     }
 
@@ -868,7 +869,8 @@ public class OpcUaClient {
                 writeValues.toArray(new WriteValue[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(WriteResponse.class::cast);
         });
     }
 
@@ -929,7 +931,8 @@ public class OpcUaClient {
                 nodesToRead.toArray(new HistoryReadValueId[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(HistoryReadResponse.class::cast);
         });
     }
 
@@ -956,7 +959,8 @@ public class OpcUaClient {
                 details
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(HistoryUpdateResponse.class::cast);
         });
     }
 
@@ -980,7 +984,8 @@ public class OpcUaClient {
                 methodsToCall.toArray(new CallMethodRequest[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(CallResponse.class::cast);
         });
     }
 
@@ -1016,7 +1021,8 @@ public class OpcUaClient {
                 itemsToCreate.toArray(new MonitoredItemCreateRequest[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(CreateMonitoredItemsResponse.class::cast);
         });
     }
 
@@ -1048,7 +1054,8 @@ public class OpcUaClient {
                 itemsToModify.toArray(new MonitoredItemModifyRequest[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(ModifyMonitoredItemsResponse.class::cast);
         });
     }
 
@@ -1077,7 +1084,8 @@ public class OpcUaClient {
                 monitoredItemIds.toArray(new UInteger[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(DeleteMonitoredItemsResponse.class::cast);
         });
     }
 
@@ -1109,7 +1117,8 @@ public class OpcUaClient {
                 monitoredItemIds.toArray(new UInteger[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(SetMonitoringModeResponse.class::cast);
         });
     }
 
@@ -1144,7 +1153,8 @@ public class OpcUaClient {
                 linksToRemove.toArray(new UInteger[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(SetTriggeringResponse.class::cast);
         });
     }
 
@@ -1168,7 +1178,8 @@ public class OpcUaClient {
                 nodesToAdd.toArray(new AddNodesItem[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(AddNodesResponse.class::cast);
         });
     }
 
@@ -1188,7 +1199,8 @@ public class OpcUaClient {
                 referencesToAdd.toArray(new AddReferencesItem[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(AddReferencesResponse.class::cast);
         });
     }
 
@@ -1208,7 +1220,8 @@ public class OpcUaClient {
                 nodesToDelete.toArray(new DeleteNodesItem[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(DeleteNodesResponse.class::cast);
         });
     }
 
@@ -1234,7 +1247,8 @@ public class OpcUaClient {
                 referencesToDelete.toArray(new DeleteReferencesItem[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(DeleteReferencesResponse.class::cast);
         });
     }
 
@@ -1296,7 +1310,8 @@ public class OpcUaClient {
                 maxReferencesToReturn
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(QueryFirstResponse.class::cast);
         });
     }
 
@@ -1337,7 +1352,8 @@ public class OpcUaClient {
                 continuationPoint
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(QueryNextResponse.class::cast);
         });
     }
 
@@ -1407,7 +1423,8 @@ public class OpcUaClient {
                 priority
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(CreateSubscriptionResponse.class::cast);
         });
     }
 
@@ -1457,7 +1474,8 @@ public class OpcUaClient {
                 priority
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(ModifySubscriptionResponse.class::cast);
         });
     }
 
@@ -1479,7 +1497,8 @@ public class OpcUaClient {
                 subscriptionIds.toArray(new UInteger[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(DeleteSubscriptionsResponse.class::cast);
         });
     }
 
@@ -1513,7 +1532,8 @@ public class OpcUaClient {
                 sendInitialValues
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(TransferSubscriptionsResponse.class::cast);
         });
     }
 
@@ -1547,7 +1567,8 @@ public class OpcUaClient {
                 subscriptionIds.toArray(new UInteger[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(SetPublishingModeResponse.class::cast);
         });
     }
 
@@ -1575,7 +1596,8 @@ public class OpcUaClient {
                 subscriptionAcknowledgements.toArray(new SubscriptionAcknowledgement[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(PublishResponse.class::cast);
         });
     }
 
@@ -1609,7 +1631,8 @@ public class OpcUaClient {
                 retransmitSequenceNumber
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(RepublishResponse.class::cast);
         });
     }
 
@@ -1645,7 +1668,8 @@ public class OpcUaClient {
                 nodesToBrowse.toArray(new BrowseDescription[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(BrowseResponse.class::cast);
         });
     }
 
@@ -1715,7 +1739,8 @@ public class OpcUaClient {
                 continuationPoints.toArray(new ByteString[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(BrowseNextResponse.class::cast);
         });
     }
 
@@ -1738,7 +1763,8 @@ public class OpcUaClient {
                 browsePaths.toArray(new BrowsePath[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(TranslateBrowsePathsToNodeIdsResponse.class::cast);
         });
     }
 
@@ -1758,7 +1784,8 @@ public class OpcUaClient {
                 nodesToRegister.toArray(new NodeId[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(RegisterNodesResponse.class::cast);
         });
     }
 
@@ -1778,18 +1805,25 @@ public class OpcUaClient {
                 nodesToUnregister.toArray(new NodeId[0])
             );
 
-            return sendRequest(request);
+            return sendRequestAsync(request)
+                .thenApply(UnregisterNodesResponse.class::cast);
         });
     }
 
     //endregion
 
-    public <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request) {
-        CompletableFuture<UaResponseMessageType> f = transport.sendRequestMessage(request);
+    public UaResponseMessageType sendRequest(UaRequestMessageType request) throws UaException {
+        try {
+            return sendRequestAsync(request).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
 
-        f.whenComplete(this::notifyFaultListeners);
-
-        return f.thenApply(r -> (T) r);
+    public CompletableFuture<UaResponseMessageType> sendRequestAsync(UaRequestMessageType request) {
+        return transport.sendRequestMessage(request)
+            .whenComplete(this::notifyFaultListeners);
     }
 
     private void notifyFaultListeners(UaResponseMessageType response, Throwable ex) {

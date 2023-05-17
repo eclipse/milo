@@ -37,7 +37,7 @@ public class ManagedSubscriptionEventExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        client.connectAsync().get();
+        client.connect();
 
         final CountDownLatch eventLatch = new CountDownLatch(3);
 
