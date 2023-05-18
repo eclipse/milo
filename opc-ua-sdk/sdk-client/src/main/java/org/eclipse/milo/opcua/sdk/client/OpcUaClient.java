@@ -1682,6 +1682,22 @@ public class OpcUaClient {
 
     //region Query Services
 
+    /**
+     * Issue a query request to the server.
+     *
+     * @param view specifies a View and temporal context to a server.
+     * @param nodeTypes a List of {@link NodeTypeDescription} that describe that type of
+     *     Nodes to search for.
+     * @param filter a {@link ContentFilter} that limits the resulting Nodes to those matching the
+     *     filter criteria.
+     * @param maxDataSetsToReturn the maximum number of {@link QueryDataSet}s to return.
+     * @param maxReferencesToReturn the maximum number of References to return for each
+     *     {@link QueryDataSet}.
+     * @return the {@link QueryFirstResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.3</a>
+     */
     public QueryFirstResponse queryFirst(
         ViewDescription view,
         List<NodeTypeDescription> nodeTypes,
@@ -1699,24 +1715,21 @@ public class OpcUaClient {
     }
 
     /**
-     * This service is used to issue a query to the server.
+     * Issue a query request to the server.
      *
      * @param view specifies a View and temporal context to a server.
-     * @param nodeTypes the {@link NodeTypeDescription}.
-     * @param filter the {@link ContentFilter}. Resulting Nodes shall be limited to
-     *     the Nodes matching the criteria defined by the filter.
-     * @param maxDataSetsToReturn the number of {@link QueryDataSet}s that the client wants the
-     *     server to return in the response and on each subsequent
-     *     continuation call response. The server is allowed to further
-     *     limit the response, but shall not exceed this limit. A value
-     *     of 0 indicates that the client is imposing no limitation.
-     * @param maxReferencesToReturn the number of References that the client wants the server to
-     *     return in the response for each {@link QueryDataSet} and on
-     *     each subsequent continuation call response. The server is
-     *     allowed to further limit the response, but shall not exceed
-     *     this limit. A value of 0 indicates that the client is imposing
-     *     no limitation.
-     * @return a {@link CompletableFuture} containing the {@link QueryFirstResponse}.
+     * @param nodeTypes a List of {@link NodeTypeDescription} that describe that type of
+     *     Nodes to search for.
+     * @param filter a {@link ContentFilter} that limits the resulting Nodes to those matching the
+     *     filter criteria.
+     * @param maxDataSetsToReturn the maximum number of {@link QueryDataSet}s to return.
+     * @param maxReferencesToReturn the maximum number of References to return for each
+     *     {@link QueryDataSet}.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link QueryFirstResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.3</a>
      */
     public CompletableFuture<QueryFirstResponse> queryFirstAsync(
         ViewDescription view,
@@ -1741,6 +1754,21 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Request the next set of QueryFirst or QueryNext response information that was too large to
+     * be sent in a single response.
+     *
+     * @param releaseContinuationPoint if {@code true}, passed continuation points shall be reset
+     *     to free resources in the server. If {@code false}, passed continuation Points shall be
+     *     used to get the next set of browse information.
+     * @param continuationPoint a server-defined opaque value that represents the continuation
+     *     point.
+     * @return the {@link QueryNextResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see #queryFirst(ViewDescription, List, ContentFilter, UInteger, UInteger)
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.4</a>
+     */
     public QueryNextResponse queryNext(
         boolean releaseContinuationPoint,
         ByteString continuationPoint
@@ -1755,16 +1783,20 @@ public class OpcUaClient {
     }
 
     /**
-     * This Service is used to request the next set of QueryFirst or QueryNext response
-     * information that is too large to be sent in a single response.
+     * Request the next set of QueryFirst or QueryNext response information that was too large to
+     * be sent in a single response.
      *
-     * @param releaseContinuationPoint if {@code true}, passed continuationPoints shall be reset to
-     *     free resources in the server. If {@code false}, passed
-     *     continuationPoints shall be used to get the next set of browse
-     *     information.
+     * @param releaseContinuationPoint if {@code true}, passed continuation points shall be reset
+     *     to free resources in the server. If {@code false}, passed continuation Points shall be
+     *     used to get the next set of browse information.
      * @param continuationPoint a server-defined opaque value that represents the continuation
      *     point.
-     * @return a {@link CompletableFuture} containing the {@link QueryNextResponse}.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link QueryNextResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see #queryFirstAsync(ViewDescription, List, ContentFilter, UInteger, UInteger)
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.9.4</a>
      */
     public CompletableFuture<QueryNextResponse> queryNextAsync(
         boolean releaseContinuationPoint,
@@ -1782,7 +1814,6 @@ public class OpcUaClient {
                 .thenApply(QueryNextResponse.class::cast);
         });
     }
-
 
     //endregion
 
@@ -2199,6 +2230,7 @@ public class OpcUaClient {
      * @param continuationPoints server-defined opaque values that represent continuation points.
      * @return the {@link BrowseNextResponse}.
      * @throws UaException if there is an error invoking the service.
+     * @see #browse(ViewDescription, UInteger, List)
      * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3">
      *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3</a>
      */
@@ -2226,6 +2258,7 @@ public class OpcUaClient {
      * @return a {@link CompletableFuture} that completes successfully with the
      *     {@link BrowseNextResponse}, or completes exceptionally if there is an error invoking
      *     the service.
+     * @see #browseAsync(ViewDescription, UInteger, List)
      * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3">
      *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3</a>
      */
