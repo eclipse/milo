@@ -192,9 +192,9 @@ public class OpcUaClient {
      *
      * @param endpointUrl the endpoint URL of the server to connect to and get endpoints from.
      * @return an {@link OpcUaClient} configured to connect to the server identified by
-     * {@code endpointUrl}.
+     *     {@code endpointUrl}.
      * @throws UaException if the endpoints could not be retrieved or the client could not be
-     *                     created.
+     *     created.
      */
     public static OpcUaClient create(String endpointUrl) throws UaException {
         // select the first EndpointDescription with no security and anonymous authentication
@@ -205,9 +205,10 @@ public class OpcUaClient {
 
         return create(
             endpointUrl,
-            endpoints -> endpoints.stream()
-                .filter(predicate)
-                .findFirst(),
+            endpoints ->
+                endpoints.stream()
+                    .filter(predicate)
+                    .findFirst(),
             b -> {},
             b -> {}
         );
@@ -218,13 +219,13 @@ public class OpcUaClient {
      * a list of endpoints retrieved via the GetEndpoints service from the server at {@code endpointUrl}
      * and building an {@link OpcUaClientConfig} using that endpoint.
      *
-     * @param endpointUrl        the endpoint URL of the server to connect to and retrieve endpoints from.
-     * @param selectEndpoint     a function that selects the {@link EndpointDescription} to connect
-     *                           to from the list of endpoints from the server.
+     * @param endpointUrl the endpoint URL of the server to connect to and retrieve endpoints from.
+     * @param selectEndpoint a function that selects the {@link EndpointDescription} to connect
+     *     to from the list of endpoints from the server.
      * @param configureTransport a Consumer that receives an {@link OpcTcpClientTransportConfigBuilder}
-     *                           that can be used to configure the transport.
-     * @param configureClient    a Consumer that receives an {@link OpcUaClientConfigBuilder} that
-     *                           can be used  to configure the client.
+     *     that can be used to configure the transport.
+     * @param configureClient a Consumer that receives an {@link OpcUaClientConfigBuilder} that
+     *     can be used  to configure the client.
      * @return a configured {@link OpcUaClient}.
      * @throws UaException if the endpoints could not be retrieved or the client could not be created.
      */
@@ -487,7 +488,7 @@ public class OpcUaClient {
      * reconnecting as necessary, and creating or transferring sessions as necessary.
      *
      * @return a {@link CompletableFuture} that completes successfully with this
-     * {@link OpcUaClient}, or completes exceptionally if an error occurs.
+     *     {@link OpcUaClient}, or completes exceptionally if an error occurs.
      */
     public CompletableFuture<OpcUaClient> connectAsync() {
         return transport.connect(applicationContext)
@@ -500,7 +501,7 @@ public class OpcUaClient {
      *
      * @return this {@link OpcUaClient}.
      * @throws UaException if an unexpected error occurs. Errors closing the session or the
-     *                     disconnecting the transport are swallowed.
+     *     disconnecting the transport are swallowed.
      */
     public OpcUaClient disconnect() throws UaException {
         try {
@@ -515,8 +516,8 @@ public class OpcUaClient {
      * Close the session, if it's open, and disconnect the underlying transport.
      *
      * @return a {@link CompletableFuture} that completes successfully with this
-     * {@link OpcUaClient}, or completes exceptionally if an unexpected error occurs. Errors
-     * closing the session or the disconnecting the transport are swallowed.
+     *     {@link OpcUaClient}, or completes exceptionally if an unexpected error occurs. Errors
+     *     closing the session or the disconnecting the transport are swallowed.
      */
     public CompletableFuture<OpcUaClient> disconnectAsync() {
         return sessionFsm
@@ -548,7 +549,7 @@ public class OpcUaClient {
      * Get the {@link OpcUaSession}, if it's available.
      *
      * @return a {@link CompletableFuture} that completes successfully with
-     * the {@link OpcUaSession}, or completes exceptionally if an error occurs getting the session.
+     *     the {@link OpcUaSession}, or completes exceptionally if an error occurs getting the session.
      */
     public CompletableFuture<OpcUaSession> getSessionAsync() {
         return sessionFsm.getSession();
@@ -657,8 +658,8 @@ public class OpcUaClient {
      * This call completes asynchronously.
      *
      * @return a {@link CompletableFuture} that completes successfully with the updated
-     * {@link NamespaceTable} or completes exceptionally if a service- or operation-level error
-     * occurs.
+     *     {@link NamespaceTable} or completes exceptionally if a service- or operation-level error
+     *     occurs.
      */
     public CompletableFuture<NamespaceTable> readNamespaceTableAsync() {
         return getSessionAsync().thenCompose(session -> {
@@ -718,8 +719,8 @@ public class OpcUaClient {
      * This call completes asynchronously.
      *
      * @return a {@link CompletableFuture} that completes successfully with the updated
-     * {@link ServerTable} or completes exceptionally if a service- or operation-level error
-     * occurs.
+     *     {@link ServerTable} or completes exceptionally if a service- or operation-level error
+     *     occurs.
      */
     public CompletableFuture<ServerTable> readServerTableAsync() {
         return getSessionAsync().thenCompose(session -> {
@@ -812,7 +813,7 @@ public class OpcUaClient {
      * <p>
      * A unique request handle will be automatically assigned to the header.
      *
-     * @param authToken      the authentication token to create the header with.
+     * @param authToken the authentication token to create the header with.
      * @param requestTimeout the timeout hint to create the header with.f
      * @return a new {@link RequestHeader} created with {@code authToken} and {@code requestTimeout}.
      */
@@ -830,6 +831,20 @@ public class OpcUaClient {
 
     //region Attribute Services
 
+    /**
+     * Read one or more attributes of one or more Nodes.
+     *
+     * @param maxAge the requested max age of the value, in milliseconds. If maxAge is set to 0,
+     *     the Server shall attempt to read a new value from the data source. If maxAge is set to
+     *     the max Int32 value or greater, the Server shall attempt to get a cached value. Negative
+     *     values are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param readValueIds the {@link ReadValueId}s identifying the nodes and attributes to read.
+     * @return the {@link ReadResponse}.
+     * @throws UaException if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2</a>
+     */
     public ReadResponse read(
         double maxAge,
         TimestampsToReturn timestampsToReturn,
@@ -844,6 +859,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Read the Value attribute of one or more Nodes.
+     *
+     * @param maxAge the requested max age of the value, in milliseconds. If maxAge is set to 0,
+     *     the Server shall attempt to read a new value from the data source. If maxAge is set to
+     *     the max Int32 value or greater, the Server shall attempt to get a cached value. Negative
+     *     values are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param nodeIds the {@link NodeId}s identifying the Nodes to read.
+     * @return a List of {@link DataValue}s.
+     * @throws UaException if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2</a>
+     */
     public List<DataValue> readValues(
         double maxAge,
         TimestampsToReturn timestampsToReturn,
@@ -858,6 +887,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Read one or more attributes of one or more Nodes.
+     *
+     * @param maxAge the requested max age of the value, in milliseconds. If maxAge is set to 0,
+     *     the Server shall attempt to read a new value from the data source. If maxAge is set to
+     *     the max Int32 value or greater, the Server shall attempt to get a cached value. Negative
+     *     values are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param readValueIds the {@link ReadValueId}s identifying the nodes and attributes to read.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link ReadResponse}, or completes exceptionally if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2</a>
+     */
     public CompletableFuture<ReadResponse> readAsync(
         double maxAge,
         TimestampsToReturn timestampsToReturn,
@@ -877,6 +920,20 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Read the Value attribute of one or more Nodes.
+     *
+     * @param maxAge the requested max age of the value, in milliseconds. If maxAge is set to 0,
+     *     the Server shall attempt to read a new value from the data source. If maxAge is set to
+     *     the max Int32 value or greater, the Server shall attempt to get a cached value. Negative
+     *     values are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param nodeIds the {@link NodeId}s identifying the Nodes to read.
+     * @return a {@link CompletableFuture} that completes successfully with a list of
+     *     {@link DataValue}s, or completes exceptionally if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2</a>
+     */
     public CompletableFuture<List<DataValue>> readValuesAsync(
         double maxAge,
         TimestampsToReturn timestampsToReturn,
@@ -890,6 +947,16 @@ public class OpcUaClient {
         return readAsync(maxAge, timestampsToReturn, readValueIds).thenApply(r -> List.of(r.getResults()));
     }
 
+    /**
+     * Write attribute values to one or more Nodes.
+     *
+     * @param writeValues a List of {@link WriteValue}s describing the Nodes and attribute values
+     *     to write.
+     * @return the {@link WriteResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4</a>
+     */
     public WriteResponse write(List<WriteValue> writeValues) throws UaException {
         try {
             return writeAsync(writeValues).get();
@@ -899,6 +966,16 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Write the Value attribute of one or more Nodes.
+     *
+     * @param nodeIds the {@link NodeId}s identifying the Nodes to write.
+     * @param values the {@link DataValue}s to write.
+     * @return a List of {@link StatusCode}s describing the result of each write operation.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4</a>
+     */
     public List<StatusCode> writeValues(List<NodeId> nodeIds, List<DataValue> values) throws UaException {
         try {
             return writeValuesAsync(nodeIds, values).get();
@@ -908,6 +985,17 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Write attribute values to one or more Nodes.
+     *
+     * @param writeValues a List of {@link WriteValue}s describing the Nodes and attribute values
+     *     to write
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link WriteResponse}, or completes exceptionally if there is an error invoking the
+     *     service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4</a>
+     */
     public CompletableFuture<WriteResponse> writeAsync(List<WriteValue> writeValues) {
         return getSessionAsync().thenCompose(session -> {
             WriteRequest request = new WriteRequest(
@@ -920,25 +1008,45 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Write the Value attribute of one or more Nodes.
+     *
+     * @param nodeIds the {@link NodeId}s identifying the Nodes to write.
+     * @param values the {@link DataValue}s to write.
+     * @return a {@link CompletableFuture} that completes successfully with a List of
+     *     {@link StatusCode}s describing the result of each write operation, or completes
+     *     exceptionally if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.4</a>
+     */
     public CompletableFuture<List<StatusCode>> writeValuesAsync(List<NodeId> nodeIds, List<DataValue> values) {
-        if (nodeIds.size() != values.size()) {
-            CompletableFuture<List<StatusCode>> failed = new CompletableFuture<>();
-            failed.completeExceptionally(new IllegalArgumentException("nodeIds.size() != values.size()"));
-            return failed;
-        } else {
-            var writeValues = new ArrayList<WriteValue>(nodeIds.size());
+        var writeValues = new ArrayList<WriteValue>(nodeIds.size());
 
-            for (int i = 0; i < nodeIds.size(); i++) {
-                NodeId nodeId = nodeIds.get(i);
-                DataValue value = values.get(i);
-                writeValues.add(new WriteValue(nodeId, AttributeId.Value.uid(), null, value));
-            }
-
-            return writeAsync(writeValues)
-                .thenApply(response -> List.of(response.getResults()));
+        for (int i = 0; i < nodeIds.size(); i++) {
+            NodeId nodeId = nodeIds.get(i);
+            DataValue value = values.get(i);
+            writeValues.add(new WriteValue(nodeId, AttributeId.Value.uid(), null, value));
         }
+
+        return writeAsync(writeValues)
+            .thenApply(response -> List.of(response.getResults()));
     }
 
+    /**
+     * Read historical values or Events of one or more Nodes.
+     *
+     * @param historyReadDetails defines the types of history read to be performed.
+     * @param timestampsToReturn specifies the timestamps to be returned for each requested value
+     *     attribute.
+     * @param releaseContinuationPoints if {@code true}, passed continuationPoints shall be reset
+     *     to free resources in the Server. if {@code false}, passed continuationPoints shall be
+     *     used to get the next set of historical information.
+     * @param nodesToRead the list of items upon which the historical retrieval is to be performed.
+     * @return the {@link HistoryReadResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.3<a/>
+     */
     public HistoryReadResponse historyRead(
         HistoryReadDetails historyReadDetails,
         TimestampsToReturn timestampsToReturn,
@@ -961,6 +1069,22 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Read historical values or Events of one or more Nodes.
+     *
+     * @param historyReadDetails defines the types of history read to be performed.
+     * @param timestampsToReturn specifies the timestamps to be returned for each requested value
+     *     attribute.
+     * @param releaseContinuationPoints if {@code true}, passed continuationPoints shall be reset
+     *     to free resources in the Server. if {@code false}, passed continuationPoints shall be
+     *     used to get the next set of historical information.
+     * @param nodesToRead the list of items upon which the historical retrieval is to be performed.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link HistoryReadResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.3<a/>
+     */
     public CompletableFuture<HistoryReadResponse> historyReadAsync(
         HistoryReadDetails historyReadDetails,
         TimestampsToReturn timestampsToReturn,
@@ -1014,6 +1138,16 @@ public class OpcUaClient {
 
     //region Method Services
 
+    /**
+     * Call (invoke) one or more methods.
+     *
+     * @param requests the {@link CallMethodRequest}s identifying the object/method to call
+     *     and the input arguments.
+     * @return the {@link CallResponse}.
+     * @throws UaException if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.11.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.11.2</a>
+     */
     public CallResponse call(List<CallMethodRequest> requests) throws UaException {
         try {
             return callAsync(requests).get();
@@ -1023,11 +1157,21 @@ public class OpcUaClient {
         }
     }
 
-    public CompletableFuture<CallResponse> callAsync(List<CallMethodRequest> methodsToCall) {
+    /**
+     * Call (invoke) one or more methods.
+     *
+     * @param requests the {@link CallMethodRequest}s identifying the object/method to call
+     *     and the input arguments.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link CallResponse}, or completes exceptionally if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.11.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.11.2</a>
+     */
+    public CompletableFuture<CallResponse> callAsync(List<CallMethodRequest> requests) {
         return getSessionAsync().thenCompose(session -> {
             CallRequest request = new CallRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                methodsToCall.toArray(new CallMethodRequest[0])
+                requests.toArray(new CallMethodRequest[0])
             );
 
             return sendRequestAsync(request)
@@ -1321,21 +1465,21 @@ public class OpcUaClient {
     /**
      * This service is used to issue a query to the server.
      *
-     * @param view                  specifies a View and temporal context to a server.
-     * @param nodeTypes             the {@link NodeTypeDescription}.
-     * @param filter                the {@link ContentFilter}. Resulting Nodes shall be limited to
-     *                              the Nodes matching the criteria defined by the filter.
-     * @param maxDataSetsToReturn   the number of {@link QueryDataSet}s that the client wants the
-     *                              server to return in the response and on each subsequent
-     *                              continuation call response. The server is allowed to further
-     *                              limit the response, but shall not exceed this limit. A value
-     *                              of 0 indicates that the client is imposing no limitation.
+     * @param view specifies a View and temporal context to a server.
+     * @param nodeTypes the {@link NodeTypeDescription}.
+     * @param filter the {@link ContentFilter}. Resulting Nodes shall be limited to
+     *     the Nodes matching the criteria defined by the filter.
+     * @param maxDataSetsToReturn the number of {@link QueryDataSet}s that the client wants the
+     *     server to return in the response and on each subsequent
+     *     continuation call response. The server is allowed to further
+     *     limit the response, but shall not exceed this limit. A value
+     *     of 0 indicates that the client is imposing no limitation.
      * @param maxReferencesToReturn the number of References that the client wants the server to
-     *                              return in the response for each {@link QueryDataSet} and on
-     *                              each subsequent continuation call response. The server is
-     *                              allowed to further limit the response, but shall not exceed
-     *                              this limit. A value of 0 indicates that the client is imposing
-     *                              no limitation.
+     *     return in the response for each {@link QueryDataSet} and on
+     *     each subsequent continuation call response. The server is
+     *     allowed to further limit the response, but shall not exceed
+     *     this limit. A value of 0 indicates that the client is imposing
+     *     no limitation.
      * @return a {@link CompletableFuture} containing the {@link QueryFirstResponse}.
      */
     public CompletableFuture<QueryFirstResponse> queryFirstAsync(
@@ -1379,11 +1523,11 @@ public class OpcUaClient {
      * information that is too large to be sent in a single response.
      *
      * @param releaseContinuationPoint if {@code true}, passed continuationPoints shall be reset to
-     *                                 free resources in the server. If {@code false}, passed
-     *                                 continuationPoints shall be used to get the next set of browse
-     *                                 information.
-     * @param continuationPoint        a server-defined opaque value that represents the continuation
-     *                                 point.
+     *     free resources in the server. If {@code false}, passed
+     *     continuationPoints shall be used to get the next set of browse
+     *     information.
+     * @param continuationPoint a server-defined opaque value that represents the continuation
+     *     point.
      * @return a {@link CompletableFuture} containing the {@link QueryNextResponse}.
      */
     public CompletableFuture<QueryNextResponse> queryNextAsync(
@@ -1415,11 +1559,11 @@ public class OpcUaClient {
      * UInteger, boolean, UByte)} that blocks until the response is received.
      *
      * @param requestedPublishingInterval the requested publishing interval.
-     * @param requestedLifetimeCount      the requested lifetime count.
-     * @param requestedMaxKeepAliveCount  the requested max keep alive count.
-     * @param maxNotificationsPerPublish  the max notifications per publish.
-     * @param publishingEnabled           {@code true} if publishing is enabled.
-     * @param priority                    the priority.
+     * @param requestedLifetimeCount the requested lifetime count.
+     * @param requestedMaxKeepAliveCount the requested max keep alive count.
+     * @param maxNotificationsPerPublish the max notifications per publish.
+     * @param publishingEnabled {@code true} if publishing is enabled.
+     * @param priority the priority.
      * @return the {@link CreateSubscriptionResponse}.
      * @throws UaException if a service- or operation-level error occurs.
      */
@@ -1859,11 +2003,11 @@ public class OpcUaClient {
     //endregion
 
     /**
-     * Send a request and wait for the response.
+     * Send a service request and wait for the service response.
      *
-     * @param request the request to send.
-     * @return the response.
-     * @throws UaException if an error occurred.
+     * @param request the service request to send.
+     * @return the service response.
+     * @throws UaException if there is an error invoking the service.
      */
     public UaResponseMessageType sendRequest(UaRequestMessageType request) throws UaException {
         try {
@@ -1875,11 +2019,11 @@ public class OpcUaClient {
     }
 
     /**
-     * Send a request asynchronously.
+     * Send a service request asynchronously.
      *
-     * @param request the request to send.
-     * @return a {@link CompletableFuture} that completes successfully with the response, or
-     * completes exceptionally if an error occurred.
+     * @param request the service request to send.
+     * @return a {@link CompletableFuture} that completes successfully with the service response,
+     *     or completes exceptionally if there is an error invoking the service.
      */
     public CompletableFuture<UaResponseMessageType> sendRequestAsync(UaRequestMessageType request) {
         return transport.sendRequestMessage(request)
