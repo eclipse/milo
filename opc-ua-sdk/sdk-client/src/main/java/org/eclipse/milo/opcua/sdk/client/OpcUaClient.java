@@ -1549,6 +1549,16 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Add one or more References to one or more Nodes.
+     *
+     * @param referencesToAdd a List of {@link AddReferencesItem}s describing the References to
+     *     add.
+     * @return the {@link AddReferencesResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.3</a>
+     */
     public AddReferencesResponse addReferences(List<AddReferencesItem> referencesToAdd) throws UaException {
         try {
             return addReferencesAsync(referencesToAdd).get();
@@ -1558,6 +1568,16 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Add one or more References to one or more Nodes.
+     *
+     * @param referencesToAdd a List of {@link AddReferencesItem}s describing the References to
+     *     add.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link AddReferencesResponse}, or completes exceptionally if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.3</a>
+     */
     public CompletableFuture<AddReferencesResponse> addReferencesAsync(List<AddReferencesItem> referencesToAdd) {
         return getSessionAsync().thenCompose(session -> {
             AddReferencesRequest request = new AddReferencesRequest(
