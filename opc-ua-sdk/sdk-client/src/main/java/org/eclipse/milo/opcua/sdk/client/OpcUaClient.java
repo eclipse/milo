@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -814,8 +814,9 @@ public class OpcUaClient {
      * A unique request handle will be automatically assigned to the header.
      *
      * @param authToken the authentication token to create the header with.
-     * @param requestTimeout the timeout hint to create the header with.f
-     * @return a new {@link RequestHeader} created with {@code authToken} and {@code requestTimeout}.
+     * @param requestTimeout the timeout hint to create the header with.
+     * @return a new {@link RequestHeader} created with {@code authToken} and
+     *     {@code requestTimeout}.
      */
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
         return new RequestHeader(
@@ -1200,6 +1201,19 @@ public class OpcUaClient {
 
     //region MonitoredItem Services
 
+    /**
+     * Create and add one or more Monitored Items to a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that will report
+     *     notifications for the Monitored Items.
+     * @param timestampsToReturn the {@link TimestampsToReturn}.
+     * @param itemsToCreate a List of {@link MonitoredItemCreateRequest} that describe the
+     *     Monitored Items to be created and assigned to the specified subscription.
+     * @return the {@link CreateMonitoredItemsResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.2</a>
+     */
     public CreateMonitoredItemsResponse createMonitoredItems(
         UInteger subscriptionId,
         TimestampsToReturn timestampsToReturn,
@@ -1214,6 +1228,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Create and add one or more Monitored Items to a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that will report
+     *     notifications for the Monitored Items.
+     * @param timestampsToReturn the {@link TimestampsToReturn}.
+     * @param itemsToCreate a List of {@link MonitoredItemCreateRequest} that describe the
+     *     Monitored Items to be created and assigned to the specified subscription.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link CreateMonitoredItemsResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.2</a>
+     */
     public CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItemsAsync(
         UInteger subscriptionId,
         TimestampsToReturn timestampsToReturn,
@@ -1233,6 +1261,19 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Modify Monitored Items of a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     items to modify.
+     * @param timestampsToReturn the {@link TimestampsToReturn}.
+     * @param itemsToModify a List of {@link MonitoredItemModifyRequest} that describe Monitored
+     *     Items to modify.
+     * @return the {@link ModifyMonitoredItemsResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.3<a/>
+     */
     public ModifyMonitoredItemsResponse modifyMonitoredItems(
         UInteger subscriptionId,
         TimestampsToReturn timestampsToReturn,
@@ -1247,6 +1288,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Modify Monitored Items of a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     items to modify.
+     * @param timestampsToReturn the {@link TimestampsToReturn}.
+     * @param itemsToModify a List of {@link MonitoredItemModifyRequest} that describe Monitored
+     *     Items to modify.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link ModifyMonitoredItemsResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.3</a>
+     */
     public CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItemsAsync(
         UInteger subscriptionId,
         TimestampsToReturn timestampsToReturn,
@@ -1266,6 +1321,18 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Delete one or more Monitored Items of a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     Monitored Items to delete.
+     * @param monitoredItemIds a List of server-assigned identifiers for the Monitored Items to
+     *     delete.
+     * @return the {@link DeleteMonitoredItemsResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.6">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.6</a>
+     */
     public DeleteMonitoredItemsResponse deleteMonitoredItems(
         UInteger subscriptionId,
         List<UInteger> monitoredItemIds
@@ -1279,6 +1346,19 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Delete one or more Monitored Items of a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     Monitored Items to delete.
+     * @param monitoredItemIds a List of server-assigned identifiers for the Monitored Items to
+     *     delete.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link DeleteMonitoredItemsResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.6">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.6<a/>
+     */
     public CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItemsAsync(
         UInteger subscriptionId,
         List<UInteger> monitoredItemIds
@@ -1296,6 +1376,19 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Set the Monitoring Mode for one or more Monitored Items of a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     Monitored Items.
+     * @param monitoringMode the {@link MonitoringMode} to be set for the Monitored Items.
+     * @param monitoredItemIds a List of server-assigned identifiers for the Monitored Items that
+     *     will have their {@link MonitoringMode} set.
+     * @return the {@link SetMonitoringModeResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.4</a>
+     */
     public SetMonitoringModeResponse setMonitoringMode(
         UInteger subscriptionId,
         MonitoringMode monitoringMode,
@@ -1310,6 +1403,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Set the Monitoring Mode for one or more Monitored Items of a Subscription.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     Monitored Items.
+     * @param monitoringMode the {@link MonitoringMode} to be set for the Monitored Items.
+     * @param monitoredItemIds a List of server-assigned identifiers for the Monitored Items that
+     *     will have their {@link MonitoringMode} set.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link SetMonitoringModeResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.4</a>
+     */
     public CompletableFuture<SetMonitoringModeResponse> setMonitoringModeAsync(
         UInteger subscriptionId,
         MonitoringMode monitoringMode,
@@ -1329,6 +1436,22 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Create and delete triggering links for a triggering item.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     triggering item and items to report.
+     * @param triggeringItemId the server-assigned identifier for the Monitored Item to use as the
+     *     triggering item.
+     * @param linksToAdd a List of server-assigned identifiers for the Monitored Items that are to
+     *     be added as triggering links.
+     * @param linksToRemove a List of server-assigned identifiers for the Monitored Items that are
+     *     to be removed as triggering links.
+     * @return the {@link SetTriggeringResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.5</a>
+     */
     public SetTriggeringResponse setTriggering(
         UInteger subscriptionId,
         UInteger triggeringItemId,
@@ -1344,6 +1467,23 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Create and delete triggering links for a triggering item.
+     *
+     * @param subscriptionId the server-assigned identifier for the subscription that owns the
+     *     triggering item and items to report.
+     * @param triggeringItemId the server-assigned identifier for the Monitored Item to use as the
+     *     triggering item.
+     * @param linksToAdd a List of server-assigned identifiers for the Monitored Items that are to
+     *     be added as triggering links.
+     * @param linksToRemove a List of server-assigned identifiers for the Monitored Items that are
+     *     to be removed as triggering links.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link SetTriggeringResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.12.5</a>
+     */
     public CompletableFuture<SetTriggeringResponse> setTriggeringAsync(
         UInteger subscriptionId,
         UInteger triggeringItemId,
@@ -1369,6 +1509,15 @@ public class OpcUaClient {
 
     //region NodeManagement Services
 
+    /**
+     * Add one or more Nodes to the AddressSpace hierarchy.
+     *
+     * @param nodesToAdd a List of {@link AddNodesItem} describing the Nodes to be added.
+     * @return the {@link AddNodesResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.2</a>
+     */
     public AddNodesResponse addNodes(List<AddNodesItem> nodesToAdd) throws UaException {
         try {
             return addNodesAsync(nodesToAdd).get();
@@ -1378,6 +1527,16 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Add one or more Nodes to the AddressSpace hierarchy.
+     *
+     * @param nodesToAdd a List of {@link AddNodesItem} describing the Nodes to be added.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link AddNodesResponse}, or completes exceptionally if there is an error invoking the
+     *     service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.2</a>
+     */
     public CompletableFuture<AddNodesResponse> addNodesAsync(List<AddNodesItem> nodesToAdd) {
         return getSessionAsync().thenCompose(session -> {
             AddNodesRequest request = new AddNodesRequest(
