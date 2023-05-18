@@ -1590,6 +1590,15 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Delete one or more Nodes from the AddressSpace hierarchy.
+     *
+     * @param nodesToDelete a List of {@link DeleteNodesItem}s describing the Nodes to delete.
+     * @return the {@link DeleteNodesResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.4</a>
+     */
     public DeleteNodesResponse deleteNodes(List<DeleteNodesItem> nodesToDelete) throws UaException {
         try {
             return deleteNodesAsync(nodesToDelete).get();
@@ -1599,6 +1608,16 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Delete one or more Nodes from the AddressSpace hierarchy.
+     *
+     * @param nodesToDelete a List of {@link DeleteNodesItem}s describing the Nodes to delete.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link DeleteNodesResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.4</a>
+     */
     public CompletableFuture<DeleteNodesResponse> deleteNodesAsync(List<DeleteNodesItem> nodesToDelete) {
         return getSessionAsync().thenCompose(session -> {
             DeleteNodesRequest request = new DeleteNodesRequest(
@@ -1611,6 +1630,16 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Delete one or more References from one or more Nodes.
+     *
+     * @param referencesToDelete a List of {@link DeleteReferencesItem} describing the References
+     *     to delete.
+     * @return the {@link DeleteReferencesResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.5</a>
+     */
     public DeleteReferencesResponse deleteReferences(
         List<DeleteReferencesItem> referencesToDelete
     ) throws UaException {
@@ -1623,6 +1652,17 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Delete one or more References from one or more Nodes.
+     *
+     * @param referencesToDelete a List of {@link DeleteReferencesItem} describing the References
+     *     to delete.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link DeleteReferencesResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.7.5</a>
+     */
     public CompletableFuture<DeleteReferencesResponse> deleteReferencesAsync(
         List<DeleteReferencesItem> referencesToDelete
     ) {
