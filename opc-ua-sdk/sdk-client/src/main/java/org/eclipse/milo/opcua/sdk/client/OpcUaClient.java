@@ -460,6 +460,16 @@ public class OpcUaClient {
         VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
     }
 
+    /**
+     * Connect the underlying transport and open a session.
+     * <p>
+     * Regardless of the success or failure of the initial connect operation, the client is now in
+     * a state where it will strive to remain connected and keep a session open, automatically
+     * reconnecting as necessary, and creating or transferring sessions as necessary.
+     *
+     * @return this {@link OpcUaClient}
+     * @throws UaException if an error occurs.
+     */
     public OpcUaClient connect() throws UaException {
         try {
             return connectAsync().get();
@@ -469,12 +479,29 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Connect the underlying transport and open a session.
+     * <p>
+     * Regardless of the success or failure of the initial connect operation, the client is now in
+     * a state where it will strive to remain connected and keep a session open, automatically
+     * reconnecting as necessary, and creating or transferring sessions as necessary.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with this
+     * {@link OpcUaClient}, or completes exceptionally if an error occurs.
+     */
     public CompletableFuture<OpcUaClient> connectAsync() {
         return transport.connect(applicationContext)
-            .thenCompose(c -> sessionFsm.openSession())
+            .handle((u, ex) -> sessionFsm.openSession())
             .thenApply(s -> OpcUaClient.this);
     }
 
+    /**
+     * Close the session, if it's open, and disconnect the underlying transport.
+     *
+     * @return this {@link OpcUaClient}.
+     * @throws UaException if an unexpected error occurs. Errors closing the session or the
+     *                     disconnecting the transport are swallowed.
+     */
     public OpcUaClient disconnect() throws UaException {
         try {
             return disconnectAsync().get();
@@ -484,6 +511,13 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Close the session, if it's open, and disconnect the underlying transport.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with this
+     * {@link OpcUaClient}, or completes exceptionally if an unexpected error occurs. Errors
+     * closing the session or the disconnecting the transport are swallowed.
+     */
     public CompletableFuture<OpcUaClient> disconnectAsync() {
         return sessionFsm
             .closeSession()
@@ -495,6 +529,12 @@ public class OpcUaClient {
             .exceptionally(ex -> OpcUaClient.this);
     }
 
+    /**
+     * Get the {@link OpcUaSession}, if it's available.
+     *
+     * @return the {@link OpcUaSession}.
+     * @throws UaException if an error occurs getting the session.
+     */
     public OpcUaSession getSession() throws UaException {
         try {
             return getSessionAsync().get();
@@ -504,6 +544,12 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Get the {@link OpcUaSession}, if it's available.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with
+     * the {@link OpcUaSession}, or completes exceptionally if an error occurs getting the session.
+     */
     public CompletableFuture<OpcUaSession> getSessionAsync() {
         return sessionFsm.getSession();
     }
@@ -1812,6 +1858,13 @@ public class OpcUaClient {
 
     //endregion
 
+    /**
+     * Send a request and wait for the response.
+     *
+     * @param request the request to send.
+     * @return the response.
+     * @throws UaException if an error occurred.
+     */
     public UaResponseMessageType sendRequest(UaRequestMessageType request) throws UaException {
         try {
             return sendRequestAsync(request).get();
@@ -1821,6 +1874,13 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Send a request asynchronously.
+     *
+     * @param request the request to send.
+     * @return a {@link CompletableFuture} that completes successfully with the response, or
+     * completes exceptionally if an error occurred.
+     */
     public CompletableFuture<UaResponseMessageType> sendRequestAsync(UaRequestMessageType request) {
         return transport.sendRequestMessage(request)
             .whenComplete(this::notifyFaultListeners);
