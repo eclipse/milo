@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -1106,6 +1106,15 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Update historical values or Events of one or more Nodes.
+     *
+     * @param historyUpdateDetails the {@link HistoryUpdateDetails} for this update.
+     * @return the {@link HistoryUpdateResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.5</a>
+     */
     public HistoryUpdateResponse historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails) throws UaException {
         try {
             return historyUpdateAsync(historyUpdateDetails).get();
@@ -1115,6 +1124,14 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Update historical values or Events of one or more Nodes.
+     *
+     * @param historyUpdateDetails the {@link HistoryUpdateDetails} for this update.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link HistoryUpdateResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     */
     public CompletableFuture<HistoryUpdateResponse> historyUpdateAsync(
         List<HistoryUpdateDetails> historyUpdateDetails
     ) {
@@ -1830,6 +1847,55 @@ public class OpcUaClient {
 
     //region View Services
 
+    /**
+     * Browse references of a single Node.
+     *
+     * @param nodeToBrowse the Node to browse.
+     * @return the {@link BrowseResult}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2</a>
+     */
+    public BrowseResult browse(BrowseDescription nodeToBrowse) throws UaException {
+        try {
+            return browseAsync(nodeToBrowse).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Browse references of one or more Nodes.
+     *
+     * @param nodesToBrowse the Nodes to browse.
+     * @return the {@link BrowseResult}s.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2</a>
+     */
+    public List<BrowseResult> browse(List<BrowseDescription> nodesToBrowse) throws UaException {
+        try {
+            return browseAsync(nodesToBrowse).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Browse references of one or more Nodes.
+     *
+     * @param viewDescription a description of the view to browse. An empty {@link ViewDescription}
+     *     indicates a view of the entire address space.
+     * @param maxReferencesPerNode the maximum number of references to return for each starting
+     *     Node specified in the request.
+     * @param nodesToBrowse a List of Nodes to browse.
+     * @return the {@link BrowseResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2</a>
+     */
     public BrowseResponse browse(
         ViewDescription viewDescription,
         UInteger maxReferencesPerNode,
@@ -1844,6 +1910,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Browse references of one or more Nodes.
+     *
+     * @param viewDescription a description of the view to browse. An empty {@link ViewDescription}
+     *     indicates a view of the entire address space.
+     * @param maxReferencesPerNode the maximum number of references to return for each starting
+     *     Node specified in the request.
+     * @param nodesToBrowse a List of Nodes to browse.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link BrowseResponse}, or completes exceptionally if there is an error invoking the
+     *     service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2</a>
+     */
     public CompletableFuture<BrowseResponse> browseAsync(
         ViewDescription viewDescription,
         UInteger maxReferencesPerNode,
@@ -1863,32 +1943,16 @@ public class OpcUaClient {
         });
     }
 
-    public BrowseResult browse(BrowseDescription nodeToBrowse) throws UaException {
-        try {
-            return browseAsync(nodeToBrowse).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
     /**
      * Browse a single node, with no view and no max references specified.
      *
      * @param nodeToBrowse the node to browse.
      * @return a {@link CompletableFuture} containing the {@link BrowseResult}.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2</a>
      */
     public CompletableFuture<BrowseResult> browseAsync(BrowseDescription nodeToBrowse) {
         return browseAsync(List.of(nodeToBrowse)).thenApply(rs -> rs.get(0));
-    }
-
-    public List<BrowseResult> browse(List<BrowseDescription> nodesToBrowse) throws UaException {
-        try {
-            return browseAsync(nodesToBrowse).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
     }
 
     /**
@@ -1896,6 +1960,8 @@ public class OpcUaClient {
      *
      * @param nodesToBrowse the nodes to browse.
      * @return a {@link CompletableFuture} containing the {@link BrowseResult}s.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.2</a>
      */
     public CompletableFuture<List<BrowseResult>> browseAsync(List<BrowseDescription> nodesToBrowse) {
         var viewDescription = new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0));
@@ -1904,6 +1970,19 @@ public class OpcUaClient {
             .thenApply(r -> List.of(r.getResults()));
     }
 
+    /**
+     * Request the next set of Browse or BrowseNext information that was too large to be sent in a
+     * single response.
+     *
+     * @param releaseContinuationPoints if {@code true}, the continuation points are released to
+     *     free resources in the server. If {@code false}, they are used to get the next set of
+     *     browse information.
+     * @param continuationPoints server-defined opaque values that represent continuation points.
+     * @return the {@link BrowseNextResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3</a>
+     */
     public BrowseNextResponse browseNext(
         boolean releaseContinuationPoints,
         List<ByteString> continuationPoints
@@ -1917,6 +1996,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Request the next set of Browse or BrowseNext information that was too large to be sent in a
+     * single response.
+     *
+     * @param releaseContinuationPoints if {@code true}, the continuation points are released to
+     *     free resources in the server. If {@code false}, they are used to get the next set of
+     *     browse information.
+     * @param continuationPoints server-defined opaque values that represent continuation points.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link BrowseNextResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.3</a>
+     */
     public CompletableFuture<BrowseNextResponse> browseNextAsync(
         boolean releaseContinuationPoints,
         List<ByteString> continuationPoints
@@ -1934,6 +2027,15 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Translate one or more {@link BrowsePath}s into {@link NodeId}s.
+     *
+     * @param browsePaths a List of {@link BrowsePath}s to translate.
+     * @return the {@link TranslateBrowsePathsToNodeIdsResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.4</a>
+     */
     public TranslateBrowsePathsToNodeIdsResponse translateBrowsePaths(List<BrowsePath> browsePaths) throws UaException {
         try {
             return translateBrowsePathsAsync(browsePaths).get();
@@ -1943,6 +2045,16 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Translate one or more {@link BrowsePath}s into {@link NodeId}s.
+     *
+     * @param browsePaths a List of {@link BrowsePath}s to translate.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link TranslateBrowsePathsToNodeIdsResponse}, or completes exceptionally if there is an
+     *     error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.4</a>
+     */
     public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePathsAsync(
         List<BrowsePath> browsePaths
     ) {
@@ -1958,6 +2070,17 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Register {@link NodeId}s that the client intends to access repeatedly (e.g. read, write,
+     * call), allowing servers to set up anything needed so that the access operations are more
+     * efficient.
+     *
+     * @param nodesToRegister the {@link NodeId}s of the Nodes to register.
+     * @return the {@link RegisterNodesResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.5</a>
+     */
     public RegisterNodesResponse registerNodes(List<NodeId> nodesToRegister) throws UaException {
         try {
             return registerNodesAsync(nodesToRegister).get();
@@ -1967,6 +2090,18 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Register Nodes that the client intends to access repeatedly (e.g. read, write, call),
+     * allowing servers to set up anything needed so that the access operations are more
+     * efficient.
+     *
+     * @param nodesToRegister the {@link NodeId}s of the Nodes to register.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link RegisterNodesResponse}, or completes exceptionally if there is  an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.5</a>
+     */
     public CompletableFuture<RegisterNodesResponse> registerNodesAsync(List<NodeId> nodesToRegister) {
         return getSessionAsync().thenCompose(session -> {
             RegisterNodesRequest request = new RegisterNodesRequest(
@@ -1979,6 +2114,16 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Unregister Nodes that were previously registered with a Register Nodes service call.
+     *
+     * @param nodesToUnregister the {@link NodeId}s returned by the previous Register Nodes
+     *     service call.
+     * @return the {@link UnregisterNodesResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.6">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.6</a>
+     */
     public UnregisterNodesResponse unregisterNodes(List<NodeId> nodesToUnregister) throws UaException {
         try {
             return unregisterNodesAsync(nodesToUnregister).get();
@@ -1988,6 +2133,17 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Unregister Nodes that were previously registered with a Register Nodes service call.
+     *
+     * @param nodesToUnregister the {@link NodeId}s returned by the previous Register Nodes
+     *     service call.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link UnregisterNodesResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.6">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.8.6</a>
+     */
     public CompletableFuture<UnregisterNodesResponse> unregisterNodesAsync(List<NodeId> nodesToUnregister) {
         return getSessionAsync().thenCompose(session -> {
             UnregisterNodesRequest request = new UnregisterNodesRequest(
