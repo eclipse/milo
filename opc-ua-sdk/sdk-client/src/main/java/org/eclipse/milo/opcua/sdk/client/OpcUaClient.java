@@ -1959,6 +1959,19 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Transfer a Subscription and its MonitoredItems from one Session to another (this) Session.
+     *
+     * @param subscriptionIds a List of server-assigned identifiers to be transferred to this
+     *     Session.
+     * @param sendInitialValues {@code true} if the first Publish response(s) after the transfer
+     *     shall contain the current values of all MonitoredItems in the Subscription where the
+     *     Monitoring Mode is set to {@link MonitoringMode#Reporting}.
+     * @return the {@link TransferSubscriptionsResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.7">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.7</a>
+     */
     public TransferSubscriptionsResponse transferSubscriptions(
         List<UInteger> subscriptionIds,
         boolean sendInitialValues
@@ -1977,6 +1990,20 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Transfer a Subscription and its MonitoredItems from one Session to another (this) Session.
+     *
+     * @param subscriptionIds a List of server-assigned identifiers to be transferred to this
+     *     Session.
+     * @param sendInitialValues {@code true} if the first Publish response(s) after the transfer
+     *     shall contain the current values of all MonitoredItems in the Subscription where the
+     *     Monitoring Mode is set to {@link MonitoringMode#Reporting}.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link TransferSubscriptionsResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.7">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.7</a>
+     */
     public CompletableFuture<TransferSubscriptionsResponse> transferSubscriptionsAsync(
         List<UInteger> subscriptionIds,
         boolean sendInitialValues
@@ -1994,6 +2021,16 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Enable or disable the sending of notifications on one or more subscriptions.
+     *
+     * @param publishingEnabled {@code true} if publishing is enabled.
+     * @param subscriptionIds a List of server-assigned identifiers for subscriptions.
+     * @return the {@link SetPublishingModeResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.4</a>
+     */
     public SetPublishingModeResponse setPublishingMode(
         boolean publishingEnabled,
         List<UInteger> subscriptionIds
@@ -2012,6 +2049,17 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Enable or disable the sending of notifications on one or more subscriptions.
+     *
+     * @param publishingEnabled {@code true} if publishing is enabled.
+     * @param subscriptionIds a List of server-assigned identifiers for subscriptions.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link SetPublishingModeResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.4">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.4</a>
+     */
     public CompletableFuture<SetPublishingModeResponse> setPublishingModeAsync(
         boolean publishingEnabled,
         List<UInteger> subscriptionIds
@@ -2029,6 +2077,18 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Send a {@link PublishRequest} to the server, acknowledging the receipt of
+     * previously-received messages and requesting the server return a NotificationMessage or
+     * keep-alive message.
+     *
+     * @param subscriptionAcknowledgements a List of {@link SubscriptionAcknowledgement}s for one
+     *     or more subscriptions.
+     * @return the {@link PublishResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.5</a>
+     */
     public PublishResponse publish(
         List<SubscriptionAcknowledgement> subscriptionAcknowledgements
     ) throws UaException {
@@ -2043,6 +2103,19 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Send a {@link PublishRequest} to the server, acknowledging the receipt of
+     * previously-received messages and requesting the server return a NotificationMessage or
+     * keep-alive message.
+     *
+     * @param subscriptionAcknowledgements a List of {@link SubscriptionAcknowledgement}s for one
+     *     or more subscriptions.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link PublishResponse}, or completes exceptionally if there is an error invoking the
+     *     service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.5">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.5</a>
+     */
     public CompletableFuture<PublishResponse> publishAsync(
         List<SubscriptionAcknowledgement> subscriptionAcknowledgements
     ) {
@@ -2058,6 +2131,18 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Send a {@link RepublishRequest} to the server, requesting the server republish a
+     * NotificationMessage from its retransmission queue.
+     *
+     * @param subscriptionId the server-assigned identifier for the Subscription.
+     * @param retransmitSequenceNumber the sequence number of the NotificationMessage to be
+     *     republished.
+     * @return the {@link RepublishResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.6">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.6</a>
+     */
     public RepublishResponse republish(
         UInteger subscriptionId,
         UInteger retransmitSequenceNumber
@@ -2076,6 +2161,19 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Send a {@link RepublishRequest} to the server, requesting the server republish a
+     * NotificationMessage from its retransmission queue.
+     *
+     * @param subscriptionId the server-assigned identifier for the Subscription.
+     * @param retransmitSequenceNumber the sequence number of the NotificationMessage to be
+     *     republished.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link RepublishResponse}, or completes exceptionally if there is an error invoking
+     *     the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.6">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.6</a>
+     */
     public CompletableFuture<RepublishResponse> republishAsync(
         UInteger subscriptionId,
         UInteger retransmitSequenceNumber
