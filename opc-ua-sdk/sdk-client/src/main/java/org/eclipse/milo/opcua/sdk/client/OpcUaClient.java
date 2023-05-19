@@ -493,6 +493,7 @@ public class OpcUaClient {
     public CompletableFuture<OpcUaClient> connectAsync() {
         return transport.connect(applicationContext)
             .handle((u, ex) -> sessionFsm.openSession())
+            .thenCompose(Function.identity())
             .thenApply(s -> OpcUaClient.this);
     }
 
