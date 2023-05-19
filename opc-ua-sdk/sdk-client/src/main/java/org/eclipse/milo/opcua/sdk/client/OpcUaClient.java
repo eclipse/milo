@@ -1820,19 +1820,25 @@ public class OpcUaClient {
     //region Subscription Services
 
     /**
-     * Create a new Subscription.
-     * <p>
-     * This method is a convenience method for {@link #createSubscriptionAsync(double, UInteger, UInteger,
-     * UInteger, boolean, UByte)} that blocks until the response is received.
+     * Create a new Subscription belonging to this client's Session.
      *
-     * @param requestedPublishingInterval the requested publishing interval.
-     * @param requestedLifetimeCount the requested lifetime count.
-     * @param requestedMaxKeepAliveCount the requested max keep alive count.
-     * @param maxNotificationsPerPublish the max notifications per publish.
-     * @param publishingEnabled {@code true} if publishing is enabled.
-     * @param priority the priority.
+     * @param requestedPublishingInterval this interval defines the cyclic rate that the
+     *     subscription is being requested to return notifications to the client. This interval is
+     *     expressed in milliseconds.
+     * @param requestedLifetimeCount the requested lifetime count. The lifetime count shall be a
+     *     minimum of three times the keep keep-alive count.
+     * @param requestedMaxKeepAliveCount the requested maximum keep-alive count. When the
+     *     publishing timer has expired this number of times without requiring any notification to
+     *     be sent, the subscription sends a keep-alive message to the client.
+     * @param maxNotificationsPerPublish the maximum number of notifications that the client wishes
+     *     to receive in a single publish response. A value of zero indicates that there is no
+     *     limit.
+     * @param publishingEnabled if {@code true}, publishing is enabled for this subscription.
+     * @param priority indicates the relative priority of the subscription.
      * @return the {@link CreateSubscriptionResponse}.
-     * @throws UaException if a service- or operation-level error occurs.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.2</a>
      */
     public CreateSubscriptionResponse createSubscription(
         double requestedPublishingInterval,
@@ -1860,6 +1866,28 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Create a new Subscription belonging to this client's Session.
+     *
+     * @param requestedPublishingInterval this interval defines the cyclic rate that the
+     *     subscription is being requested to return notifications to the client. This interval is
+     *     expressed in milliseconds.
+     * @param requestedLifetimeCount the requested lifetime count. The lifetime count shall be a
+     *     minimum of three times the keep keep-alive count.
+     * @param requestedMaxKeepAliveCount the requested maximum keep-alive count. When the
+     *     publishing timer has expired this number of times without requiring any notification to
+     *     be sent, the subscription sends a keep-alive message to the client.
+     * @param maxNotificationsPerPublish the maximum number of notifications that the client wishes
+     *     to receive in a single publish response. A value of zero indicates that there is no
+     *     limit.
+     * @param publishingEnabled if {@code true}, publishing is enabled for this subscription.
+     * @param priority indicates the relative priority of the subscription.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link CreateSubscriptionResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.2</a>
+     */
     public CompletableFuture<CreateSubscriptionResponse> createSubscriptionAsync(
         double requestedPublishingInterval,
         UInteger requestedLifetimeCount,
@@ -1885,6 +1913,27 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Modify an existing Subscription belonging to this client's Session.
+     *
+     * @param subscriptionId the server-assigned identifier for the Subscription.
+     * @param requestedPublishingInterval this interval defines the cyclic rate that the
+     *     subscription is being requested to return notifications to the client. This interval is
+     *     expressed in milliseconds.
+     * @param requestedLifetimeCount the requested lifetime count. The lifetime count shall be a
+     *     minimum of three times the keep keep-alive count.
+     * @param requestedMaxKeepAliveCount the requested maximum keep-alive count. When the
+     *     publishing timer has expired this number of times without requiring any notification to
+     *     be sent, the subscription sends a keep-alive message to the client.
+     * @param maxNotificationsPerPublish the maximum number of notifications that the client wishes
+     *     to receive in a single publish response. A value of zero indicates that there is no
+     *     limit.
+     * @param priority indicates the relative priority of the subscription.
+     * @return the {@link ModifySubscriptionResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.3">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.3</a>
+     */
     public ModifySubscriptionResponse modifySubscription(
         UInteger subscriptionId,
         double requestedPublishingInterval,
@@ -1911,6 +1960,26 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Modify an existing Subscription belonging to this client's Session.
+     *
+     * @param subscriptionId the server-assigned identifier for the Subscription.
+     * @param requestedPublishingInterval this interval defines the cyclic rate that the
+     *     subscription is being requested to return notifications to the client. This interval is
+     *     expressed in milliseconds.
+     * @param requestedLifetimeCount the requested lifetime count. The lifetime count shall be a
+     *     minimum of three times the keep keep-alive count.
+     * @param requestedMaxKeepAliveCount the requested maximum keep-alive count. When the
+     *     publishing timer has expired this number of times without requiring any notification to
+     *     be sent, the subscription sends a keep-alive message to the client.
+     * @param maxNotificationsPerPublish the maximum number of notifications that the client wishes
+     *     to receive in a single publish response. A value of zero indicates that there is no
+     *     limit.
+     * @param priority indicates the relative priority of the subscription.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link ModifySubscriptionResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     */
     public CompletableFuture<ModifySubscriptionResponse> modifySubscriptionAsync(
         UInteger subscriptionId,
         double requestedPublishingInterval,
@@ -1936,6 +2005,15 @@ public class OpcUaClient {
         });
     }
 
+    /**
+     * Delete one or more Subscriptions belonging to this client's Session.
+     *
+     * @param subscriptionIds the server-assigned identifiers of the Subscriptions to delete.
+     * @return the {@link DeleteSubscriptionsResponse}.
+     * @throws UaException if there is an error invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.8">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.8</a>
+     */
     public DeleteSubscriptionsResponse deleteSubscriptions(List<UInteger> subscriptionIds) throws UaException {
         try {
             CompletableFuture<DeleteSubscriptionsResponse> future = deleteSubscriptionsAsync(subscriptionIds);
@@ -1947,6 +2025,16 @@ public class OpcUaClient {
         }
     }
 
+    /**
+     * Delete one or more Subscriptions belonging to this client's Session.
+     *
+     * @param subscriptionIds the server-assigned identifiers of the Subscriptions to delete.
+     * @return a {@link CompletableFuture} that completes successfully with the
+     *     {@link DeleteSubscriptionsResponse}, or completes exceptionally if there is an error
+     *     invoking the service.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.8">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.8</a>
+     */
     public CompletableFuture<DeleteSubscriptionsResponse> deleteSubscriptionsAsync(List<UInteger> subscriptionIds) {
         return getSessionAsync().thenCompose(session -> {
             DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest(
