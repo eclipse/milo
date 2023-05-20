@@ -789,7 +789,7 @@ public class AddressSpace {
     }
 
     private CompletableFuture<NodeId> readTypeDefinition(NodeId nodeId) {
-        CompletableFuture<BrowseResult> browseFuture = client.browse(new BrowseDescription(
+        CompletableFuture<BrowseResult> browseFuture = client.browseAsync(new BrowseDescription(
             nodeId,
             BrowseDirection.Forward,
             NodeIds.HasTypeDefinition,
@@ -1118,7 +1118,7 @@ public class AddressSpace {
             )
             .collect(Collectors.toList());
 
-        return client.read(0.0, TimestampsToReturn.Neither, readValueIds);
+        return client.readAsync(0.0, TimestampsToReturn.Neither, readValueIds);
     }
 
     private UaDataTypeNode newDataTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {

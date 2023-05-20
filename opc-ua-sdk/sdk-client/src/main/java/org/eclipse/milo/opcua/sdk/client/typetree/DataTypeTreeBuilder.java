@@ -109,7 +109,7 @@ public final class DataTypeTreeBuilder {
      * @return a {@link DataTypeTree}.
      */
     public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client) {
-        return client.getSession().thenCompose(
+        return client.getSessionAsync().thenCompose(
             session ->
                 buildAsync(client, session)
         );

@@ -12,10 +12,10 @@ package org.eclipse.milo.examples.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
@@ -40,8 +40,7 @@ public class BrowseExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connect().get();
+        client.connect();
 
         // start browsing at root folder
         browseNode("", client, NodeIds.RootFolder);
@@ -60,7 +59,7 @@ public class BrowseExample implements ClientExample {
         );
 
         try {
-            BrowseResult browseResult = client.browse(browse).get();
+            BrowseResult browseResult = client.browse(browse);
 
             List<ReferenceDescription> references = List.of(browseResult.getReferences());
 
@@ -71,7 +70,7 @@ public class BrowseExample implements ClientExample {
                 rd.getNodeId().toNodeId(client.getNamespaceTable())
                     .ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (UaException e) {
             logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
         }
     }

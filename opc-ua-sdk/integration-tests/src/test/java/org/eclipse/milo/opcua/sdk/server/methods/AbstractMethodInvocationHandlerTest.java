@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.methods;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.methods.UaMethodException;
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,12 +34,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTest {
 
     @Test
-    public void inputArgumentResultsIsEmptyOnSuccess() throws ExecutionException, InterruptedException {
-        CallMethodResult result = client.call(new CallMethodRequest(
-            NodeIds.ObjectsFolder,
-            NodeId.parse("ns=2;s=onlyAcceptsPositiveInputs()"),
-            new Variant[]{new Variant(1)}
-        )).get();
+    public void inputArgumentResultsIsEmptyOnSuccess() throws UaException {
+        CallResponse response = client.call(List.of(
+            new CallMethodRequest(
+                NodeIds.ObjectsFolder,
+                NodeId.parse("ns=2;s=onlyAcceptsPositiveInputs()"),
+                new Variant[]{new Variant(1)}
+            )
+        ));
+
+        CallMethodResult result = response.getResults()[0];
 
         assertEquals(StatusCode.GOOD, result.getStatusCode());
         assertEquals(0, result.getInputArgumentResults().length);

@@ -50,8 +50,7 @@ public class EventSubscriptionExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connect().get();
+        client.connect();
 
         // create a subscription and a monitored item
         UaSubscription subscription = client.getSubscriptionManager()

@@ -13,9 +13,12 @@ package org.eclipse.milo.opcua.stack.transport.client.uasc;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 
 public abstract class InboundUascResponseHandler
     extends SimpleChannelInboundHandler<UascResponse> implements UascResponseHandler {
@@ -23,7 +26,23 @@ public abstract class InboundUascResponseHandler
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UascResponse response) {
         if (response.isSuccess()) {
-            handleResponse(response.getRequestId(), response.getResponseMessage());
+            UaResponseMessageType responseMessage = response.getResponseMessage();
+            assert responseMessage != null;
+            ResponseHeader responseHeader = responseMessage.getResponseHeader();
+
+            if (responseHeader.getServiceResult().isGood()) {
+                handleResponse(response.getRequestId(), responseMessage);
+            } else {
+                ServiceFault serviceFault;
+
+                if (responseMessage instanceof ServiceFault) {
+                    serviceFault = (ServiceFault) responseMessage;
+                } else {
+                    serviceFault = new ServiceFault(responseHeader);
+                }
+
+                handleReceiveFailure(response.getRequestId(), new UaServiceFaultException(serviceFault));
+            }
         } else {
             handleReceiveFailure(response.getRequestId(), response.getException());
         }

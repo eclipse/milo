@@ -37,8 +37,7 @@ public class TranslateBrowsePathExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connect().get();
+        client.connect();
 
         TranslateBrowsePathsToNodeIdsResponse response = client.translateBrowsePaths(List.of(new BrowsePath(
             NodeIds.ObjectsFolder,
@@ -62,7 +61,7 @@ public class TranslateBrowsePathExample implements ClientExample {
                     new QualifiedName(2, "UInt64")
                 )
             })
-        ))).get();
+        )));
 
         BrowsePathResult result = List.of(response.getResults()).get(0);
         StatusCode statusCode = result.getStatusCode();

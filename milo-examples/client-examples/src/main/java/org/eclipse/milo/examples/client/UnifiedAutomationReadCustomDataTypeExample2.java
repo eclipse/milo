@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -54,7 +55,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         client.addSessionInitializer(new DataTypeTreeSessionInitializer());
         client.addSessionInitializer(new DataTypeCodecSessionInitializer());
 
-        client.connect().get();
+        client.connect();
 
         readWriteReadPerson(client);
         readWriteReadWorkOrder(client);
@@ -113,11 +114,11 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     }
 
     private static DynamicStruct readValue(OpcUaClient client, NodeId nodeId) throws Exception {
-        DataValue dataValue = client.readValue(
+        DataValue dataValue = client.readValues(
             0.0,
             TimestampsToReturn.Neither,
-            nodeId
-        ).get();
+            List.of(nodeId)
+        ).get(0);
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
         assert xo != null;
@@ -132,7 +133,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
             value.getDataType().getBinaryEncodingId()
         );
 
-        return client.writeValue(nodeId, DataValue.valueOnly(new Variant(xo))).get();
+        return client.writeValues(List.of(nodeId), List.of(DataValue.valueOnly(new Variant(xo)))).get(0);
     }
 
     @Override

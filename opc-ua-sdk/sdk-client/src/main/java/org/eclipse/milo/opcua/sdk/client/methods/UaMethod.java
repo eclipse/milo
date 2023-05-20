@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.methods;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -116,25 +117,29 @@ public class UaMethod {
      * completes exceptionally if an operation- or service-level error occurs.
      */
     public CompletableFuture<Variant[]> callAsync(Variant[] inputs) {
-        CallMethodRequest request = new CallMethodRequest(
+        var request = new CallMethodRequest(
             objectNode.getNodeId(),
             methodNode.getNodeId(),
             inputs
         );
 
-        return client.call(request).thenApply(result -> {
-            StatusCode statusCode = result.getStatusCode();
+        return client.callAsync(List.of(request))
+            .thenApply(response -> response.getResults()[0])
+            .thenCompose(result -> {
+                StatusCode statusCode = result.getStatusCode();
 
-            if (statusCode.isGood()) {
-                return result.getOutputArguments();
-            } else {
-                throw new RuntimeException(new UaMethodException(
-                    statusCode,
-                    result.getInputArgumentResults(),
-                    result.getInputArgumentDiagnosticInfos()
-                ));
-            }
-        });
+                if (statusCode.isGood()) {
+                    return CompletableFuture.completedFuture(result.getOutputArguments());
+                } else {
+                    return CompletableFuture.failedFuture(
+                        new UaMethodException(
+                            statusCode,
+                            result.getInputArgumentResults(),
+                            result.getInputArgumentDiagnosticInfos()
+                        )
+                    );
+                }
+            });
     }
 
 }

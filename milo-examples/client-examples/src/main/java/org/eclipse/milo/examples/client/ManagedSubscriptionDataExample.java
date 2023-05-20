@@ -32,7 +32,7 @@ public class ManagedSubscriptionDataExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        client.connect().get();
+        client.connect();
 
         ManagedSubscription subscription = ManagedSubscription.create(client);
 

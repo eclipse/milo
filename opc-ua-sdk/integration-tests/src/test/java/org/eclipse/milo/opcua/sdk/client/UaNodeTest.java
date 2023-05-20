@@ -117,7 +117,7 @@ public class UaNodeTest extends AbstractClientServerTest {
             )
             .collect(Collectors.toList());
 
-        ReadResponse response = client.read(
+        ReadResponse response = client.readAsync(
             0.0,
             TimestampsToReturn.Both,
             readValueIds

@@ -35,8 +35,7 @@ public class ReadExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connect().get();
+        client.connect();
 
         // synchronous read request via VariableNode
         UaVariableNode node = client.getAddressSpace().getVariableNode(NodeIds.Server_ServerStatus_StartTime);
@@ -62,7 +61,7 @@ public class ReadExample implements ClientExample {
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        return client.readValues(0.0, TimestampsToReturn.Both, nodeIds);
+        return client.readValuesAsync(0.0, TimestampsToReturn.Both, nodeIds);
     }
 
 }

@@ -33,8 +33,7 @@ public class WriteExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connect().get();
+        client.connect();
 
         List<NodeId> nodeIds = List.of(new NodeId(2, "HelloWorld/ScalarTypes/Int32"));
 
@@ -44,12 +43,8 @@ public class WriteExample implements ClientExample {
             // don't write status or timestamps
             DataValue dv = new DataValue(v, null, null);
 
-            // write asynchronously....
-            CompletableFuture<List<StatusCode>> f =
-                client.writeValues(nodeIds, List.of(dv));
-
-            // ...but block for the results so we write in order
-            List<StatusCode> statusCodes = f.get();
+            List<StatusCode> statusCodes = client.writeValues(nodeIds, List.of(dv));
+            
             StatusCode status = statusCodes.get(0);
 
             if (status.isGood()) {

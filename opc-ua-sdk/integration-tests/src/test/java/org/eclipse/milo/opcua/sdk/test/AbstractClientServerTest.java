@@ -43,12 +43,12 @@ public abstract class AbstractClientServerTest {
         client.addSessionInitializer(new DataTypeCodecSessionInitializer());
         client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
 
-        client.connect().get();
+        client.connect();
     }
 
     @AfterAll
     public void stopClientAndServer() throws ExecutionException, InterruptedException {
-        client.disconnect().get();
+        client.disconnectAsync().get();
 
         testNamespace.shutdown();
         server.shutdown().get();

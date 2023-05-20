@@ -1161,13 +1161,13 @@ public class ManagedSubscription {
          * @param subscription the {@link ManagedSubscription} for which notification data was lost.
          */
         default void onNotificationDataLost(ManagedSubscription subscription) {
-            subscription.getClient().call(
+            subscription.getClient().callAsync(List.of(
                 new CallMethodRequest(
                     NodeIds.Server,
                     NodeIds.Server_ResendData,
                     new Variant[]{new Variant(subscription.getSubscription().getSubscriptionId())}
                 )
-            );
+            ));
         }
 
         /**

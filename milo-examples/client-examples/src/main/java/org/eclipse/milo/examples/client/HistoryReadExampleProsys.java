@@ -41,7 +41,7 @@ public class HistoryReadExampleProsys implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        client.connect().get();
+        client.connect();
 
         HistoryReadDetails historyReadDetails = new ReadRawModifiedDetails(
             false,
@@ -66,8 +66,7 @@ public class HistoryReadExampleProsys implements ClientExample {
             TimestampsToReturn.Both,
             false,
             nodesToRead
-        ).get();
-
+        );
 
         HistoryReadResult[] historyReadResults = historyReadResponse.getResults();
 

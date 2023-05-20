@@ -36,8 +36,7 @@ public class ReadNodeExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // synchronous connect
-        client.connect().get();
+        client.connect();
 
         // Get a typed reference to the Server object: ServerNode
         ServerTypeNode serverNode = (ServerTypeNode) client.getAddressSpace().getObjectNode(
