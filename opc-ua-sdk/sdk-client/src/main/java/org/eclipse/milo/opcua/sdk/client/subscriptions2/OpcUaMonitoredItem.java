@@ -13,32 +13,45 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public class OpcUaMonitoredItem {
 
     private double samplingInterval = 1000.0;
+    private MonitoringMode monitoringMode = MonitoringMode.Reporting;
 
     private final OpcUaSubscription subscription;
+    private final ReadValueId readValueId;
 
-    public OpcUaMonitoredItem(OpcUaSubscription subscription) {
+    public OpcUaMonitoredItem(OpcUaSubscription subscription, ReadValueId readValueId) {
         this.subscription = subscription;
-    }
-
-    public OpcUaMonitoredItem(OpcUaSubscription subscription, double samplingInterval) {
-        this.subscription = subscription;
-        this.samplingInterval = samplingInterval;
+        this.readValueId = readValueId;
     }
 
     public void create() throws UaException {}
+
     public void create(Object batch) {}
 
     public void modify() throws UaException {}
+
     public void modify(Object batch) {}
 
     public void delete() throws UaException {}
+
     public void delete(Object batch) {}
+
+    public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
+        // TODO
+    }
+
+    public void setMonitoringMode(MonitoringMode monitoringMode, Object batch) {
+        // TODO
+    }
 
     public void setSamplingInterval(double samplingInterval) {
         this.samplingInterval = samplingInterval;
@@ -105,6 +118,30 @@ public class OpcUaMonitoredItem {
         SYNCHRONIZED,
 
         UNSYNCHRONIZED
+    }
+
+    public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, NodeId nodeId) {
+        return null; // TODO
+    }
+
+    public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, NodeId nodeId, double samplingInterval) {
+        return null; // TODO
+    }
+
+    public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, ReadValueId readValueId) {
+        return null; // TODO
+    }
+
+    public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, ReadValueId readValueId, double samplingInterval) {
+        return null; // TODO
+    }
+
+    public static OpcUaMonitoredItem newEventItem(OpcUaSubscription subscription, NodeId nodeId) {
+        return null; // TODO
+    }
+
+    public static OpcUaMonitoredItem newEventItem(OpcUaSubscription subscription, NodeId nodeId, EventFilter eventFilter) {
+        return null; // TODO
     }
 
 }
