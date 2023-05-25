@@ -10,5 +10,101 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+
 public class OpcUaMonitoredItem {
+
+    private double samplingInterval = 1000.0;
+
+    private final OpcUaSubscription subscription;
+
+    public OpcUaMonitoredItem(OpcUaSubscription subscription) {
+        this.subscription = subscription;
+    }
+
+    public OpcUaMonitoredItem(OpcUaSubscription subscription, double samplingInterval) {
+        this.subscription = subscription;
+        this.samplingInterval = samplingInterval;
+    }
+
+    public void create() throws UaException {}
+    public void create(Object batch) {}
+
+    public void modify() throws UaException {}
+    public void modify(Object batch) {}
+
+    public void delete() throws UaException {}
+    public void delete(Object batch) {}
+
+    public void setSamplingInterval(double samplingInterval) {
+        this.samplingInterval = samplingInterval;
+    }
+
+    public void addDataValueListener(DataValueListener listener) {}
+
+    public void removeDataValueListener(DataValueListener listener) {}
+
+    public void addEventValueListener(EventValueListener listener) {}
+
+    public void removeEventValueListener(EventValueListener listener) {}
+
+    /**
+     * A callback that receives notification of new values for a {@link ManagedDataItem}.
+     */
+    public interface DataValueListener {
+
+        /**
+         * A new {@link DataValue} for {@code item} has arrived.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications
+         * are processed synchronously as a backpressure mechanism. Blocking inside this callback
+         * will prevent subsequent notifications from being processed and new PublishRequests from
+         * being sent.
+         *
+         * @param item the {@link OpcUaMonitoredItem} for which a new value has arrived.
+         * @param value the new {@link DataValue}.
+         */
+        void onDataValueReceived(OpcUaMonitoredItem item, DataValue value);
+
+    }
+
+    /**
+     * A callback that receives notification of new events for a {@link OpcUaMonitoredItem}.
+     */
+    public interface EventValueListener {
+
+        /**
+         * A new event for {@code item} has arrived.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications
+         * are processed synchronously as a backpressure mechanism. Blocking inside this callback
+         * will prevent subsequent notifications from being processed and new PublishRequests from
+         * being sent.
+         *
+         * @param item the {@link OpcUaMonitoredItem} for which a new event has arrived.
+         * @param eventValues the new event field values.
+         */
+        void onEventValueReceived(OpcUaMonitoredItem item, Variant[] eventValues);
+
+    }
+
+    private static class ModificationDiff {
+
+        private Double requestedSamplingInterval;
+        private UInteger requestedQueueSize;
+
+    }
+
+    enum State {
+        INITIAL,
+
+        SYNCHRONIZED,
+
+        UNSYNCHRONIZED
+    }
+
 }

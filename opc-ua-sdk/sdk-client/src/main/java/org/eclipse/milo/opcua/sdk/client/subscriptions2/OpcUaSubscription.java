@@ -28,12 +28,13 @@ public class OpcUaSubscription {
     private double requestedPublishingInterval = 1000.0;
     private UInteger requestedLifetimeCount;
     private UInteger requestedMaxKeepAliveCount;
+    private UInteger maxNotificationsPerPublish;
+    private UByte priority;
 
+    private UInteger subscriptionId;
     private double revisedPublishingInterval;
     private UInteger revisedLifetimeCount;
     private UInteger revisedMaxKeepAliveCount;
-    private UInteger maxNotificationsPerPublish;
-    private UByte priority;
 
     private boolean lifetimeAndKeepAliveCalculated = true;
 
