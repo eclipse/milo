@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,9 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
 public class Playground {
 
     public static void main(String[] args) throws UaException {
@@ -23,11 +26,30 @@ public class Playground {
         client.connect();
 
         var subscription = new OpcUaSubscription(client);
-        subscription.create();
+        System.out.println(subscription);
 
         subscription.setPublishingInterval(250.0);
+        subscription.create();
+
+        System.out.println("Created subscription: " + subscription.getSubscriptionId().orElseThrow());
+
+        subscription.setPublishingInterval(750.0);
+        subscription.setPriority(ubyte(1));
+        subscription.setMaxNotificationsPerPublish(uint(1 << 17));
         subscription.modify();
 
+        System.out.printf("Modified subscription: publishingInterval=%s, priority=%s, maxNotificationsPerPublish=%s%n",
+            subscription.getRevisedPublishingInterval().orElseThrow(),
+            subscription.getPriority(),
+            subscription.getMaxNotificationsPerPublish()
+        );
+
+        System.out.println(subscription);
+
+        client.disconnect();
+    }
+
+    private static void monitoredItems(OpcUaSubscription subscription) throws UaException {
         // create single monitored item
         {
             var monitoredItem = OpcUaMonitoredItem.newDataItem(
