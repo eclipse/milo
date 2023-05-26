@@ -37,7 +37,9 @@ public class Playground {
 
             monitoredItem.addDataValueListener(
                 (item, value) ->
-                    System.out.printf("Received value: %s%n", value)
+                    System.out.printf(
+                        "[%s] Received value: %s%n",
+                        item.getMonitoredItemId(), value)
             );
 
             monitoredItem.create();
@@ -58,7 +60,9 @@ public class Playground {
 
                 monitoredItem.addDataValueListener(
                     (item, value) ->
-                        System.out.printf("Received value: %s%n", value)
+                        System.out.printf(
+                            "[%s] Received value: %s%n",
+                            item.getMonitoredItemId(), value)
                 );
 
                 monitoredItem.create(batch);

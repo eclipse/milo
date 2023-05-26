@@ -57,6 +57,14 @@ public class OpcUaMonitoredItem {
         this.samplingInterval = samplingInterval;
     }
 
+    public UInteger getClientHandle() {
+        return null; // TODO
+    }
+
+    public UInteger getMonitoredItemId() {
+        return null; // TODO
+    }
+
     public void addDataValueListener(DataValueListener listener) {}
 
     public void removeDataValueListener(DataValueListener listener) {}
