@@ -46,6 +46,10 @@ public class Playground {
 
         System.out.println(subscription);
 
+        subscription.delete();
+
+        System.out.println(subscription);
+
         client.disconnect();
     }
 

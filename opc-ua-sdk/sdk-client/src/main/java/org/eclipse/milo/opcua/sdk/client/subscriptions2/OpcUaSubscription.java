@@ -11,10 +11,13 @@
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -22,7 +25,9 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +42,7 @@ public class OpcUaSubscription {
 
     private State state = State.INITIAL;
 
-    private ModificationDiff diff = null;
+    private final AtomicReference<ModificationDiff> diffRef = new AtomicReference<>(null);
 
     private Double requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
     private UInteger requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
@@ -116,22 +121,6 @@ public class OpcUaSubscription {
         }
     }
 
-    public void delete() throws UaException {
-        try {
-            deleteAsync().get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        } finally {
-            // TODO should there be a State.DELETED? or should subscription's be re-usable?
-            state = State.INITIAL;
-        }
-    }
-
-    public CompletableFuture<Unit> deleteAsync() {
-        return null; // TODO
-    }
-
     public void modify() throws UaException {
         try {
             modifyAsync().get();
@@ -147,6 +136,7 @@ public class OpcUaSubscription {
         } else if (state == State.SYNCHRONIZED) {
             return CompletableFuture.completedFuture(Unit.VALUE);
         } else {
+            ModificationDiff diff = diffRef.get();
             assert diff != null;
 
             CompletableFuture<ModifySubscriptionResponse> future = client.modifySubscriptionAsync(
@@ -170,13 +160,73 @@ public class OpcUaSubscription {
                     revisedLifetimeCount = response.getRevisedLifetimeCount();
                     revisedMaxKeepAliveCount = response.getRevisedMaxKeepAliveCount();
 
-                    diff = null;
+                    diffRef.set(null);
                     state = State.SYNCHRONIZED;
                 }
 
                 return CompletableFuture.completedFuture(Unit.VALUE);
             });
         }
+    }
+
+    public void delete() throws UaException {
+        try {
+            deleteAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public synchronized CompletableFuture<Unit> deleteAsync() {
+        if (state != State.INITIAL) {
+            CompletableFuture<DeleteSubscriptionsResponse> future =
+                client.deleteSubscriptionsAsync(List.of(subscriptionId));
+
+            return future.thenCompose(response -> {
+                synchronized (OpcUaSubscription.this) {
+                    subscriptionId = null;
+                    revisedPublishingInterval = null;
+                    revisedLifetimeCount = null;
+                    revisedMaxKeepAliveCount = null;
+
+                    state = State.INITIAL;
+                }
+                return CompletableFuture.completedFuture(Unit.VALUE);
+            });
+        } else {
+            return CompletableFuture.completedFuture(Unit.VALUE);
+        }
+    }
+
+    public synchronized CompletableFuture<Unit> deleteAsync(DeleteSubscriptionBatch batch) {
+        return null; // TODO
+    }
+
+    public void setPublishingMode(boolean enabled) throws UaException {
+        try {
+            setPublishingModeAsync(enabled).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<Unit> setPublishingModeAsync(boolean enabled) {
+        if (state == State.INITIAL) {
+            return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_InvalidState));
+        } else {
+            CompletableFuture<SetPublishingModeResponse> future = client.setPublishingModeAsync(
+                enabled,
+                List.of(subscriptionId)
+            );
+
+            return future.thenCompose(response -> CompletableFuture.completedFuture(Unit.VALUE));
+        }
+    }
+
+    public CompletableFuture<Unit> setPublishingModeAsync(boolean enabled, Object batch) {
+        return null; // TODO
     }
 
     public State getState() {
@@ -266,13 +316,28 @@ public class OpcUaSubscription {
         return maxNotificationsPerPublish;
     }
 
+    /**
+     * Set a new PublishingInterval for this Subscription.
+     * <p>
+     * If the Subscription has not yet been created, this will be the PublishingInterval used
+     * during the create service call.
+     * <p>
+     * If the Subscription has already been created, this will be the PublishingInterval used
+     * during the next modify service call. {@link #getRequestedPublishingInterval()} will not
+     * reflect this change until the modify service call has completed.
+     *
+     * @param publishingInterval the new PublishingInterval.
+     * @see #create()
+     * @see #createAsync()
+     * @see #modify()
+     * @see #modifyAsync()
+     */
     public synchronized void setPublishingInterval(Double publishingInterval) {
         if (state == State.INITIAL) {
             this.requestedPublishingInterval = publishingInterval;
         } else {
-            if (diff == null) {
-                diff = new ModificationDiff();
-            }
+            ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+
             diff.requestedPublishingInterval = publishingInterval;
 
             state = State.UNSYNCHRONIZED;
@@ -287,56 +352,133 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Set a new LifetimeCount for this Subscription.
+     * <p>
+     * If the Subscription has not yet been created, this will be the LifetimeCount used during
+     * the create service call.
+     * <p>
+     * If the Subscription has already been created, this will be the LifetimeCount used during
+     * the next modify service call. {@link #getRequestedLifetimeCount()}} will not reflect this
+     * change until the modify service call has completed.
+     *
+     * @param lifetimeCount the new LifetimeCount.
+     * @see #create()
+     * @see #createAsync()
+     * @see #modify()
+     * @see #modifyAsync()
+     */
     public synchronized void setLifetimeCount(UInteger lifetimeCount) {
         if (state == State.INITIAL) {
             this.requestedLifetimeCount = lifetimeCount;
         } else {
-            if (diff == null) {
-                diff = new ModificationDiff();
-            }
+            ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
             diff.requestedLifetimeCount = lifetimeCount;
 
             state = State.UNSYNCHRONIZED;
         }
     }
 
+    /**
+     * Set a new MaxKeepAliveCount for this Subscription.
+     * <p>
+     * If the Subscription has not yet been created, this will be the MaxKeepAliveCount used during
+     * the create service call.
+     * <p>
+     * If the Subscription has already been created, this will be the MaxKeepAliveCount used during
+     * the next modify service call. {@link #getRequestedMaxKeepAliveCount()}} will not reflect
+     * this change until the modify service call has completed.
+     *
+     * @param maxKeepAliveCount the new MaxKeepAliveCount.
+     * @see #create()
+     * @see #createAsync()
+     * @see #modify()
+     * @see #modifyAsync()
+     */
     public synchronized void setMaxKeepAliveCount(UInteger maxKeepAliveCount) {
         if (state == State.INITIAL) {
             this.requestedMaxKeepAliveCount = maxKeepAliveCount;
         } else {
-            if (diff == null) {
-                diff = new ModificationDiff();
-            }
+            ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
             diff.requestedMaxKeepAliveCount = maxKeepAliveCount;
 
             state = State.UNSYNCHRONIZED;
         }
     }
 
+    /**
+     * Set a new Priority for this Subscription.
+     * <p>
+     * If the Subscription has not yet been created, this will be the Priority used during the
+     * create service call.
+     * <p>
+     * If the Subscription has already been created, this will be the Priority used during the
+     * next modify service call. {@link #getPriority()} will not reflect this change until the
+     * modify service call has completed.
+     *
+     * @param priority the new Priority.
+     * @see #create()
+     * @see #createAsync()
+     * @see #modify()
+     * @see #modifyAsync()
+     */
     public synchronized void setPriority(UByte priority) {
         if (state == State.INITIAL) {
             this.priority = priority;
         } else {
-            if (diff == null) {
-                diff = new ModificationDiff();
-            }
+            ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
             diff.priority = priority;
 
             state = State.UNSYNCHRONIZED;
         }
     }
 
+    /**
+     * Set a new MaxNotificationsPerPublish for this Subscription.
+     * <p>
+     * If the Subscription has not yet been created, this will be the MaxNotificationsPerPublish
+     * used during the create service call.
+     * <p>
+     * If the Subscription has already been created, this will be the MaxNotificationsPerPublish
+     * used during the next modify service call. {@link #getMaxNotificationsPerPublish()} will
+     * not reflect this change until the modify service call has completed.
+     *
+     * @param maxNotificationsPerPublish the new MaxNotificationsPerPublish.
+     * @see #create()
+     * @see #createAsync()
+     * @see #modify()
+     * @see #modifyAsync()
+     */
     public synchronized void setMaxNotificationsPerPublish(UInteger maxNotificationsPerPublish) {
         if (state == State.INITIAL) {
             this.maxNotificationsPerPublish = maxNotificationsPerPublish;
         } else {
-            if (diff == null) {
-                diff = new ModificationDiff();
-            }
+            ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
             diff.maxNotificationsPerPublish = maxNotificationsPerPublish;
 
             state = State.UNSYNCHRONIZED;
         }
+    }
+
+    /**
+     * Set whether the LifetimeCount and MaxKeepAliveCount should be calculated automatically any
+     * time the PublishingInterval is set.
+     *
+     * @param lifetimeAndKeepAliveCalculated {@code true} if the LifetimeCount and
+     *     MaxKeepAliveCount should be calculated automatically.
+     * @see #isLifetimeAndKeepAliveCalculated()
+     */
+    public synchronized void setLifetimeAndKeepAliveCalculated(boolean lifetimeAndKeepAliveCalculated) {
+        this.lifetimeAndKeepAliveCalculated = lifetimeAndKeepAliveCalculated;
+    }
+
+    /**
+     * @return {@code true} if the LifetimeCount and MaxKeepAliveCount are calculated
+     *     automatically any time the Publishing Interval is set.
+     * @see #setLifetimeAndKeepAliveCalculated(boolean)
+     */
+    public boolean isLifetimeAndKeepAliveCalculated() {
+        return lifetimeAndKeepAliveCalculated;
     }
 
     private static UInteger calculateMaxKeepAliveCount(double publishingInterval) {

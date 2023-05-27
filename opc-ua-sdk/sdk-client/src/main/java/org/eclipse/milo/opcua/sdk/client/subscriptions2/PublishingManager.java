@@ -10,6 +10,25 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.function.Consumer;
+
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.NotificationMessage;
+
 public class PublishingManager {
+
+    private final OpcUaClient client;
+
+    public PublishingManager(OpcUaClient client) {
+        this.client = client;
+    }
+
+    void addSubscription(
+        UInteger subscriptionId,
+        Consumer<NotificationMessage> notificationMessageConsumer
+    ) {}
+
+    void removeSubscription(UInteger subscriptionId) {}
 
 }
