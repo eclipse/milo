@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,9 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskQueueTest {
@@ -36,7 +39,7 @@ class TaskQueueTest {
 
         var task = new TestTask();
 
-        taskExecutor.submit(task);
+        taskExecutor.execute(task);
 
         task.awaitExecution();
     }
@@ -48,7 +51,7 @@ class TaskQueueTest {
             .setMaxConcurrentTasks(2)
             .build();
 
-        taskExecutor.submit(new TestTask() {
+        taskExecutor.execute(new TestTask() {
             @Override
             public void execute() {
                 // block indefinitely
@@ -66,7 +69,7 @@ class TaskQueueTest {
             tasks.add(new TestTask());
         }
 
-        tasks.forEach(taskExecutor::submit);
+        tasks.forEach(taskExecutor::execute);
         tasks.forEach(TestTask::awaitExecution);
     }
 
@@ -83,7 +86,7 @@ class TaskQueueTest {
         var regularTasks = new ArrayList<TestTask>();
         for (int i = 0; i < 2; i++) {
             var task = new TestTask();
-            taskExecutor.submit(task);
+            taskExecutor.execute(task);
             regularTasks.add(task);
         }
 
@@ -96,7 +99,7 @@ class TaskQueueTest {
                 }
             };
             elevatedTasks.add(task);
-            taskExecutor.submit(task);
+            taskExecutor.execute(task);
         }
 
         taskExecutor.resume();
@@ -128,7 +131,7 @@ class TaskQueueTest {
         var regularTasks = new ArrayList<TestTask>();
         for (int i = 0; i < 10; i++) {
             var task = new TestTask();
-            taskExecutor.submit(task);
+            taskExecutor.execute(task);
             regularTasks.add(task);
         }
 
@@ -141,7 +144,7 @@ class TaskQueueTest {
                 }
             };
             criticalTasks.add(task);
-            taskExecutor.submit(task);
+            taskExecutor.execute(task);
         }
 
         taskExecutor.resume();
@@ -172,15 +175,15 @@ class TaskQueueTest {
         for (int i = 0; i < 3; i++) {
             var task = new TestTask();
             tasks.add(task);
-            assertTrue(taskExecutor.submit(task));
+            assertTrue(taskExecutor.execute(task));
         }
 
-        assertFalse(taskExecutor.submit(new TestTask()));
+        assertFalse(taskExecutor.execute(new TestTask()));
 
         taskExecutor.resume();
         tasks.forEach(TestTask::awaitExecution);
 
-        assertTrue(taskExecutor.submit(new TestTask()));
+        assertTrue(taskExecutor.execute(new TestTask()));
     }
 
     @Test
@@ -189,8 +192,8 @@ class TaskQueueTest {
 
         var triggeredTask = new TriggeredTestTask();
 
-        taskExecutor.submit(triggeredTask);
-        taskExecutor.submit(new TestTask());
+        taskExecutor.execute(triggeredTask);
+        taskExecutor.execute(new TestTask());
 
         // 1 task not executed, stuck behind still-executing but un-triggered task
         assertEquals(1, taskExecutor.shutdown(false).size());
@@ -207,7 +210,7 @@ class TaskQueueTest {
 
         var triggeredTask = new TriggeredTestTask();
 
-        taskExecutor.submit(triggeredTask);
+        taskExecutor.execute(triggeredTask);
 
         executor.execute(() -> {
             try {
@@ -224,6 +227,31 @@ class TaskQueueTest {
 
         // Hacky, but make sure we actually waited what should have been ~500ms for shutdown
         assertTrue(deltaMs > 250 && deltaMs < 750);
+    }
+
+    @Test
+    void executionCallback() throws ExecutionException, InterruptedException {
+        var taskExecutor = new TaskQueue(executor);
+
+        {
+            var task = new TestTask();
+            CompletionStage<Unit> callback = taskExecutor.submit(task);
+            assertNotNull(callback);
+            task.awaitExecution();
+            callback.toCompletableFuture().get();
+            assertTrue(callback.toCompletableFuture().isDone());
+        }
+
+        {
+            var task = new TriggeredTestTask();
+            CompletionStage<Unit> callback = taskExecutor.submit(task);
+            assertNotNull(callback);
+            assertFalse(callback.toCompletableFuture().isDone());
+            task.trigger();
+            task.awaitExecution();
+            callback.toCompletableFuture().get();
+            assertTrue(callback.toCompletableFuture().isDone());
+        }
     }
 
     private final AtomicInteger sequence = new AtomicInteger(0);
