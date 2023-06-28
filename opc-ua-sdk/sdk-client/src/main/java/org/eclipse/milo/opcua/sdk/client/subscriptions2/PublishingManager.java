@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -17,6 +19,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.NotificationMessage;
 
 public class PublishingManager {
+
+    private final Map<UInteger, SubscriptionDetails> subscriptions = new ConcurrentHashMap<>();
 
     private final OpcUaClient client;
 
@@ -27,8 +31,17 @@ public class PublishingManager {
     void addSubscription(
         UInteger subscriptionId,
         Consumer<NotificationMessage> notificationMessageConsumer
-    ) {}
+    ) {
+
+        subscriptions.put(subscriptionId, new SubscriptionDetails());
+
+        maybeSendPublishRequests();
+    }
 
     void removeSubscription(UInteger subscriptionId) {}
+
+    private void maybeSendPublishRequests() {}
+
+    private static class SubscriptionDetails {}
 
 }
