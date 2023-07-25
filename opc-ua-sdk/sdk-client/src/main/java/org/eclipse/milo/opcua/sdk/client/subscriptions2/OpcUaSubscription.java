@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -114,6 +114,13 @@ public class OpcUaSubscription {
                     state = State.SYNCHRONIZED;
                 }
 
+                client.getPublishingManager().addSubscription(
+                    this,
+                    notificationMessage -> {
+                        // TODO
+                    }
+                );
+
                 return CompletableFuture.completedFuture(Unit.VALUE);
             });
         } else {
@@ -192,6 +199,9 @@ public class OpcUaSubscription {
 
                     state = State.INITIAL;
                 }
+
+                client.getPublishingManager().removeSubscription(this);
+
                 return CompletableFuture.completedFuture(Unit.VALUE);
             });
         } else {

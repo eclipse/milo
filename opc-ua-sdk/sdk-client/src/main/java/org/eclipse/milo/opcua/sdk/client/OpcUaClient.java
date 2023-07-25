@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.PublishingManager;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -302,6 +303,7 @@ public class OpcUaClient {
     private final EncodingContext dynamicEncodingContext;
 
     private final OpcUaSubscriptionManager subscriptionManager;
+    private final PublishingManager publishingManager;
 
     private final SessionFsm sessionFsm;
 
@@ -456,6 +458,7 @@ public class OpcUaClient {
 
         addressSpace = new AddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
+        publishingManager = new PublishingManager(this);
 
         ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);
         VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
@@ -578,6 +581,10 @@ public class OpcUaClient {
 
     public OpcUaSubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
+    }
+
+    public PublishingManager getPublishingManager() {
+        return publishingManager;
     }
 
     /**

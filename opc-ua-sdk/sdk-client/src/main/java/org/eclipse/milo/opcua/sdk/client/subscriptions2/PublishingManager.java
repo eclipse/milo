@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -64,36 +64,42 @@ public class PublishingManager {
         Consumer<NotificationMessage> notificationMessageConsumer
     ) {
 
-        subscriptionDetails.put(subscription.getSubscriptionId(), new SubscriptionDetails(subscription));
+        subscription.getSubscriptionId().ifPresent(id -> {
+            subscriptionDetails.put(id, new SubscriptionDetails(subscription));
 
-        maybeSendPublishRequests();
+            maybeSendPublishRequests();
+        });
     }
 
-    void removeSubscription(UInteger subscriptionId) {}
+    void removeSubscription(OpcUaSubscription subscription) {}
 
     private void maybeSendPublishRequests() {
         long maxPendingPublishes = getMaxPendingPublishes();
 
-        if (maxPendingPublishes == 0) return;
+        if (maxPendingPublishes > 0) {
+            client.getSessionAsync().thenAccept(session -> {
+                AtomicLong pendingCount = pendingCountMap.computeIfAbsent(
+                    session.getSessionId(),
+                    id -> new AtomicLong(0L)
+                );
 
-        client.getSessionAsync().thenAccept(session -> {
-            AtomicLong pendingCount = pendingCountMap.computeIfAbsent(
-                session.getSessionId(), id -> new AtomicLong(0L));
-
-            for (long i = pendingCount.get(); i < maxPendingPublishes; i++) {
-                if (pendingCount.incrementAndGet() <= maxPendingPublishes) {
-                    sendPublishRequest(session, pendingCount);
-                } else {
-                    pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
+                for (long i = pendingCount.get(); i < maxPendingPublishes; i++) {
+                    if (pendingCount.incrementAndGet() <= maxPendingPublishes) {
+                        sendPublishRequest(session, pendingCount);
+                    } else {
+                        pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
+                    }
                 }
-            }
 
-            if (pendingCountMap.size() > 1) {
-                // Prune any old sessions...
-                pendingCountMap.entrySet().removeIf(e ->
-                    !e.getKey().equals(session.getSessionId()));
-            }
-        });
+                if (pendingCountMap.size() > 1) {
+                    // Prune any old sessions...
+                    pendingCountMap.entrySet().removeIf(
+                        e ->
+                            !e.getKey().equals(session.getSessionId())
+                    );
+                }
+            });
+        }
     }
 
     private void sendPublishRequest(OpcUaSession session, AtomicLong pendingCount) {
@@ -101,11 +107,14 @@ public class PublishingManager {
 
         subscriptionDetails.values().forEach(subscription -> {
             synchronized (subscription.availableAcknowledgements) {
-                subscription.availableAcknowledgements.forEach(sequenceNumber ->
-                    subscriptionAcknowledgements.add(new SubscriptionAcknowledgement(
-                        subscription.getSubscriptionId(),
-                        sequenceNumber
-                    ))
+                subscription.availableAcknowledgements.forEach(
+                    sequenceNumber ->
+                        subscription.getSubscription().getSubscriptionId().ifPresent(
+                            subscriptionId ->
+                                subscriptionAcknowledgements.add(
+                                    new SubscriptionAcknowledgement(subscriptionId, sequenceNumber)
+                                )
+                        )
                 );
                 subscription.availableAcknowledgements.clear();
             }
@@ -118,7 +127,7 @@ public class PublishingManager {
 
         UInteger requestHandle = requestHeader.getRequestHandle();
 
-        PublishRequest request = new PublishRequest(
+        var request = new PublishRequest(
             requestHeader,
             subscriptionAcknowledgements.toArray(new SubscriptionAcknowledgement[0])
         );
@@ -131,16 +140,19 @@ public class PublishingManager {
 
             logger.debug(
                 "Sending PublishRequest, requestHandle={}, acknowledgements={}",
-                requestHandle, Arrays.toString(ackStrings));
+                requestHandle, Arrays.toString(ackStrings)
+            );
         }
 
         client.getTransport().sendRequestMessage(request).whenComplete((response, ex) -> {
             if (response instanceof PublishResponse) {
                 PublishResponse publishResponse = (PublishResponse) response;
-                logger.debug("Received PublishResponse, sequenceNumber={}",
-                    publishResponse.getNotificationMessage().getSequenceNumber());
+                logger.debug(
+                    "Received PublishResponse, sequenceNumber={}",
+                    publishResponse.getNotificationMessage().getSequenceNumber()
+                );
 
-                // processingQueue.submit(() -> onPublishComplete(publishResponse, pendingCount));
+                // TODO processingQueue.submit(() -> onPublishComplete(publishResponse, pendingCount));
             } else {
                 StatusCode statusCode = UaException.extract(ex)
                     .map(UaException::getStatusCode)
@@ -157,7 +169,7 @@ public class PublishingManager {
                 }
 
                 UaException uax = UaException.extract(ex).orElse(new UaException(ex));
-                // subscriptionListeners.forEach(l -> l.onPublishFailure(uax));
+                // TODO subscriptionListeners.forEach(l -> l.onPublishFailure(uax));
             }
         });
     }
