@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.transport.server.uasc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -106,7 +107,13 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
             ErrorMessage errorMessage = (ErrorMessage) evt;
             ByteBuf messageBuffer = TcpMessageEncoder.encode(errorMessage);
 
-            ctx.writeAndFlush(messageBuffer).addListener(future -> ctx.close());
+            ctx.writeAndFlush(messageBuffer);
+
+            // Wait 2 seconds before closing the channel without regard for the write result.
+            // Clients are supposed to close the channel upon receiving an Error message, but
+            // an adversarial client may not behave as expected and may not even be reading
+            // responses from their socket.
+            ctx.executor().schedule(() -> ctx.close(), 2, TimeUnit.SECONDS);
         }
 
         super.userEventTriggered(ctx, evt);

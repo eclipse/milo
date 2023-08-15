@@ -24,9 +24,12 @@ import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.jetbrains.annotations.Nullable;
 
 public class EndpointConfig {
+
+    private final Lazy<String> endpointUrl = new Lazy<>();
 
     private final TransportProfile transportProfile;
     private final String bindAddress;
@@ -99,10 +102,11 @@ public class EndpointConfig {
     }
 
     public String getEndpointUrl() {
-        String scheme = transportProfile.getScheme();
-        String p = path.isEmpty() || path.startsWith("/") ? path : "/" + path;
-
-        return String.format("%s://%s:%s%s", scheme, hostname, bindPort, p);
+        return endpointUrl.getOrCompute(() -> {
+            String scheme = transportProfile.getScheme();
+            String p = path.isEmpty() || path.startsWith("/") ? path : "/" + path;
+            return String.format("%s://%s:%s%s", scheme, hostname, bindPort, p);
+        });
     }
 
 
