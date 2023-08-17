@@ -29,7 +29,10 @@ import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
 
 public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascServiceRequest> {
 
-    private final Semaphore concurrentRequestSemaphore = new Semaphore(128);
+    private static final int CONCURRENT_REQUEST_LIMIT =
+        Integer.getInteger("milo.stack.uasc.concurrentRequestLimit", 256);
+
+    private final Semaphore concurrentRequestSemaphore = new Semaphore(CONCURRENT_REQUEST_LIMIT);
     private final AtomicBoolean concurrentRequestLimitExceeded = new AtomicBoolean(false);
 
     private final UascServerConfig config;
