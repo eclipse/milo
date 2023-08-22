@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.channel;
 
+import java.util.concurrent.TimeUnit;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -46,6 +48,12 @@ public class ExceptionHandler {
         ByteBuf messageBuffer = TcpMessageEncoder.encode(error);
 
         ctx.writeAndFlush(messageBuffer).addListener(future -> ctx.close());
+
+        // Wait 2 seconds before closing the channel without regard for the write result.
+        // Clients are supposed to close the channel upon receiving an Error message, but
+        // an adversarial client may not behave as expected and may not even be reading
+        // responses from their socket.
+        ctx.executor().schedule(() -> ctx.close(), 2, TimeUnit.SECONDS);
 
         return error;
     }

@@ -107,7 +107,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<UascServiceRe
             ErrorMessage errorMessage = (ErrorMessage) evt;
             ByteBuf messageBuffer = TcpMessageEncoder.encode(errorMessage);
 
-            ctx.writeAndFlush(messageBuffer);
+            ctx.writeAndFlush(messageBuffer).addListener(future -> ctx.close());
 
             // Wait 2 seconds before closing the channel without regard for the write result.
             // Clients are supposed to close the channel upon receiving an Error message, but
