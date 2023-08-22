@@ -238,7 +238,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 chunkBuffers = new ArrayList<>();
                 headerRef.set(null);
 
-                serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                boolean queuedForDecode = serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
                     ByteBuf message;
                     long requestId;
 
@@ -281,6 +281,19 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         buffersToDecode.clear();
                     }
                 });
+
+                if (!queuedForDecode) {
+                    try {
+                        serializationQueue.pause();
+                        ctx.channel().config().setAutoRead(false);
+                        ExceptionHandler.sendErrorMessage(ctx, new UaException(StatusCodes.Bad_TcpServerTooBusy));
+                    } catch (Exception e) {
+                        throw new UaException(e);
+                    } finally {
+                        buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
+                        buffersToDecode.clear();
+                    }
+                }
             }
         }
     }

@@ -18,11 +18,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
+import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
@@ -128,7 +130,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                 final List<ByteBuf> buffersToDecode = chunkBuffers;
                 chunkBuffers = new ArrayList<>();
 
-                serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                boolean queuedForDecode = serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
                     ByteBuf message;
                     long requestId;
 
@@ -206,6 +208,19 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                         buffersToDecode.clear();
                     }
                 });
+
+                if (!queuedForDecode) {
+                    try {
+                        serializationQueue.pause();
+                        ctx.channel().config().setAutoRead(false);
+                        ExceptionHandler.sendErrorMessage(ctx, new UaException(StatusCodes.Bad_TcpServerTooBusy));
+                    } catch (Exception e) {
+                        throw new UaException(e);
+                    } finally {
+                        buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
+                        buffersToDecode.clear();
+                    }
+                }
             }
         }
     }
