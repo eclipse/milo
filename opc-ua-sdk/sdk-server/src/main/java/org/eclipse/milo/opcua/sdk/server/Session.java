@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
@@ -62,6 +63,9 @@ public class Session implements SessionServiceSet {
 
     private static final int IDENTITY_HISTORY_MAX_SIZE = 10;
 
+    private static final int CONCURRENT_CALL_LIMIT =
+        Integer.getInteger("milo.session.concurrentCallLimit", 64);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<LifecycleListener> listeners = Lists.newCopyOnWriteArrayList();
@@ -71,6 +75,8 @@ public class Session implements SessionServiceSet {
     private final LinkedList<String> clientUserIdHistory = new LinkedList<>();
 
     private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
+
+    private final Semaphore callSemaphore = new Semaphore(CONCURRENT_CALL_LIMIT, true);
 
     private volatile Object identityObject;
     private volatile UserIdentityToken identityToken;
@@ -394,6 +400,10 @@ public class Session implements SessionServiceSet {
     @Override
     public void onCloseSession(ServiceRequest serviceRequest) {
         serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
+    }
+
+    public Semaphore getCallSemaphore() {
+        return callSemaphore;
     }
 
     void close(boolean deleteSubscriptions) {

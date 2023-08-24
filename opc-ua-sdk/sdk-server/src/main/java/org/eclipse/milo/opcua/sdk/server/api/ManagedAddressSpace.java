@@ -12,10 +12,12 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.methods.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.services.MethodServices;
@@ -213,37 +215,56 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     /**
      * Invoke one or more methods belonging to this {@link MethodServices}.
      *
-     * @param context  the {@link CallContext}.
+     * @param context the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
      */
     @Override
     public void call(CallContext context, List<CallMethodRequest> requests) {
         List<CallMethodResult> results = Lists.newArrayListWithCapacity(requests.size());
 
+        Semaphore semaphore = context.getSession()
+            .map(Session::getCallSemaphore)
+            .orElse(null);
+
         for (CallMethodRequest request : requests) {
-            try {
-                MethodInvocationHandler handler = getInvocationHandler(
-                    request.getObjectId(),
-                    request.getMethodId()
-                );
+            if (semaphore == null || semaphore.tryAcquire()) {
+                try {
+                    MethodInvocationHandler handler = getInvocationHandler(
+                        request.getObjectId(),
+                        request.getMethodId()
+                    );
 
-                results.add(handler.invoke(context, request));
-            } catch (UaException e) {
+                    results.add(handler.invoke(context, request));
+                } catch (UaException e) {
+                    results.add(
+                        new CallMethodResult(
+                            e.getStatusCode(),
+                            new StatusCode[0],
+                            new DiagnosticInfo[0],
+                            new Variant[0]
+                        )
+                    );
+                } catch (Throwable t) {
+                    LoggerFactory.getLogger(getClass())
+                        .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
+
+                    results.add(
+                        new CallMethodResult(
+                            new StatusCode(StatusCodes.Bad_InternalError),
+                            new StatusCode[0],
+                            new DiagnosticInfo[0],
+                            new Variant[0]
+                        )
+                    );
+                } finally {
+                    if (semaphore != null) {
+                        semaphore.release();
+                    }
+                }
+            } else {
                 results.add(
                     new CallMethodResult(
-                        e.getStatusCode(),
-                        new StatusCode[0],
-                        new DiagnosticInfo[0],
-                        new Variant[0]
-                    )
-                );
-            } catch (Throwable t) {
-                LoggerFactory.getLogger(getClass())
-                    .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
-
-                results.add(
-                    new CallMethodResult(
-                        new StatusCode(StatusCodes.Bad_InternalError),
+                        new StatusCode(StatusCodes.Bad_ResourceUnavailable),
                         new StatusCode[0],
                         new DiagnosticInfo[0],
                         new Variant[0]
@@ -262,7 +283,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
      * @param methodId the {@link NodeId} identifying the method.
      * @return the {@link MethodInvocationHandler} for {@code methodId}.
      * @throws UaException a {@link UaException} containing the appropriate operation result if
-     *                     either the object or method can't be found.
+     *     either the object or method can't be found.
      */
     protected MethodInvocationHandler getInvocationHandler(NodeId objectId, NodeId methodId) throws UaException {
         UaNode node = nodeManager.getNode(objectId)
