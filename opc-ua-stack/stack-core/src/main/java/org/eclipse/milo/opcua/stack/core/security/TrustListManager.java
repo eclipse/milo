@@ -15,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 
 public interface TrustListManager {
 
@@ -125,5 +126,12 @@ public interface TrustListManager {
      * @return {@code true} if a certificate with a matching thumbprint was found.
      */
     boolean removeRejectedCertificate(ByteString thumbprint);
+
+    /**
+     * Get the last time the Trust List was updated.
+     *
+     * @return the last time the Trust List was updated.
+     */
+    DateTime getLastUpdateTime();
 
 }

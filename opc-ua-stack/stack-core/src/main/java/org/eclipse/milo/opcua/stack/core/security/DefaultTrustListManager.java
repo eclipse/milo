@@ -37,11 +37,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     static final int MAX_REJECTED_CERTIFICATES = 128;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTrustListManager.class);
+
+    private final AtomicReference<DateTime> lastUpdateTime = new AtomicReference<>(DateTime.MIN_VALUE);
 
     private final Set<X509Certificate> issuerCertificates = ConcurrentHashMap.newKeySet();
     private final Set<X509CRL> issuerCrls = ConcurrentHashMap.newKeySet();
@@ -155,6 +159,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         synchronizeIssuerCrls();
         synchronizeTrustedCerts();
         synchronizeTrustedCrls();
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     /**
@@ -217,6 +223,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         replaceCrlsInDir(issuerCrls, issuerCrlDir);
 
         synchronizeIssuerCrls();
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -224,6 +232,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         replaceCrlsInDir(trustedCrls, trustedCrlDir);
 
         synchronizeTrustedCrls();
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -231,6 +241,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         replaceCertificatesInDir(issuerCertificates, issuerCertsDir);
 
         synchronizeIssuerCerts();
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -238,6 +250,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         replaceCertificatesInDir(trustedCertificates, trustedCertsDir);
 
         synchronizeTrustedCerts();
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -245,6 +259,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         issuerCertificates.add(certificate);
 
         writeCertificateToDir(certificate, issuerCertsDir);
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -252,6 +268,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         trustedCertificates.add(certificate);
 
         writeCertificateToDir(certificate, trustedCertsDir);
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -259,6 +277,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         pruneOldRejectedCertificates();
 
         writeCertificateToDir(certificate, rejectedDir);
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
@@ -266,6 +286,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         boolean found = deleteCertificateFile(issuerCertsDir, thumbprint);
 
         synchronizeIssuerCerts();
+
+        lastUpdateTime.set(DateTime.now());
 
         return found;
     }
@@ -275,6 +297,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         boolean found = deleteCertificateFile(trustedCertsDir, thumbprint);
 
         synchronizeTrustedCerts();
+
+        lastUpdateTime.set(DateTime.now());
 
         return found;
     }
@@ -314,6 +338,11 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     public File getRejectedDir() {
         return rejectedDir;
+    }
+
+    @Override
+    public DateTime getLastUpdateTime() {
+        return lastUpdateTime.get();
     }
 
     private synchronized boolean deleteCertificateFile(File certificateDir, ByteString thumbprint) {
