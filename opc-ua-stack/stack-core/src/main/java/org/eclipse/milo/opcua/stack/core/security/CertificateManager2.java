@@ -35,19 +35,6 @@ public interface CertificateManager2 {
     Optional<X509Certificate> getCertificate(ByteString thumbprint);
 
     /**
-     * Get the {@link X509Certificate} identified by {@code certificateGroupId} and
-     * {@code certificateTypeId}.
-     *
-     * @param certificateGroupId the {@link NodeId} of the CertificateGroup the certificate
-     *     belongs to.
-     * @param certificateTypeId the {@link NodeId} of the CertificateType identifying the type of
-     *     certificate.
-     * @return the {@link X509Certificate} identified by {@code certificateGroupId} and
-     *     {@code certificateTypeId}.
-     */
-    Optional<X509Certificate> getCertificate(NodeId certificateGroupId, NodeId certificateTypeId);
-
-    /**
      * Get the {@link X509Certificate} identified by {@code thumbprint} as well as any
      * certificates in its chain.
      *
@@ -57,20 +44,29 @@ public interface CertificateManager2 {
      */
     Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint);
 
-    /**
-     * Get the {@link X509Certificate} identified by {@code certificateGroupId} and
-     * {@code certificateTypeId} as well as any certificates in its chain.
-     *
-     * @param certificateGroupId the {@link NodeId} of the CertificateGroup the certificate
-     *     belongs to.
-     * @param certificateTypeId the {@link NodeId} of the CertificateType identifying the type of
-     *     certificate.
-     * @return the {@link X509Certificate} identified by {@code certificateGroupId} and
-     *     {@code certificateTypeId} as well as any certificates in its chain.
-     */
-    Optional<X509Certificate[]> getCertificateChain(NodeId certificateGroupId, NodeId certificateTypeId);
-
     Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId);
+
+    /**
+     * Get the list of Rejected Certificates.
+     *
+     * @return the list of Rejected {@link X509Certificate}s.
+     */
+    List<X509Certificate> getRejectedCertificates();
+
+    /**
+     * Add {@code certificate} to the Rejected Certificates list.
+     *
+     * @param certificate the {@link X509Certificate} to add to the Rejected Certificates list.
+     */
+    void addRejectedCertificate(X509Certificate certificate);
+
+    /**
+     * Remove the certificate identified by {@code thumbprint} from the Rejected Certificates list.
+     *
+     * @param thumbprint the certificate thumbprint.
+     * @return {@code true} if a certificate with a matching thumbprint was found.
+     */
+    boolean removeRejectedCertificate(ByteString thumbprint);
 
     interface CertificateGroup {
 
@@ -78,37 +74,32 @@ public interface CertificateManager2 {
 
         List<NodeId> getSupportedCertificateTypeIds();
 
-        Optional<KeyPair> getKeyPair(NodeId certificateTypeId);
-
-        Optional<X509Certificate> getCertificate(NodeId certificateTypeId);
-
-        Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId);
-
         TrustListManager getTrustListManager();
 
-        void addCertificate(NodeId certificateTypeId, X509Certificate certificate, KeyPair keyPair);
+        Optional<Certificate> getCertificate(NodeId certificateTypeId);
 
-        void addCertificate(NodeId certificateTypeId, X509Certificate[] certificateChain, KeyPair keyPair);
+        Optional<Certificate> removeCertificate(NodeId certificateTypeId);
 
-        void removeCertificate(NodeId certificateTypeId);
+        void setCertificate(NodeId certificateTypeId, Certificate certificate);
 
-    }
 
-    class DefaultApplicationCertificateGroup implements CertificateGroup {
+        class Certificate {
+            public KeyPair keyPair;
+            public X509Certificate certificate;
+            public X509Certificate[] certificateChain;
 
-        static class Entry {
-            KeyPair keyPair;
-            X509Certificate certificate;
-            X509Certificate[] certificateChain;
-
-            Entry(KeyPair keyPair, X509Certificate certificate, X509Certificate[] certificateChain) {
+            public Certificate(KeyPair keyPair, X509Certificate certificate, X509Certificate[] certificateChain) {
                 this.keyPair = keyPair;
                 this.certificate = certificate;
                 this.certificateChain = certificateChain;
             }
         }
 
-        private final Map<NodeId, Entry> certificates =
+    }
+
+    class DefaultApplicationCertificateGroup implements CertificateGroup {
+
+        private final Map<NodeId, Certificate> certificates =
             Collections.synchronizedMap(new HashMap<>());
 
         @Override
@@ -122,58 +113,27 @@ public interface CertificateManager2 {
         }
 
         @Override
-        public Optional<KeyPair> getKeyPair(NodeId certificateTypeId) {
-            Entry entry = certificates.get(certificateTypeId);
-
-            if (entry == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(entry.keyPair);
-            }
-        }
-
-        @Override
-        public Optional<X509Certificate> getCertificate(NodeId certificateTypeId) {
-            Entry entry = certificates.get(certificateTypeId);
-
-            if (entry == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(entry.certificate);
-            }
-        }
-
-        @Override
-        public Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId) {
-            Entry entry = certificates.get(certificateTypeId);
-
-            if (entry == null) {
-                return Optional.empty();
-            } else {
-                return Optional.of(entry.certificateChain);
-            }
-        }
-
-        @Override
         public TrustListManager getTrustListManager() {
             return null; // TODO
         }
 
         @Override
-        public void addCertificate(NodeId certificateTypeId, X509Certificate certificate, KeyPair keyPair) {
-            var entry = new Entry(keyPair, certificate, new X509Certificate[]{certificate});
-            certificates.put(certificateTypeId, entry);
+        public Optional<Certificate> getCertificate(NodeId certificateTypeId) {
+            return Optional.ofNullable(certificates.get(certificateTypeId));
         }
 
         @Override
-        public void addCertificate(NodeId certificateTypeId, X509Certificate[] certificateChain, KeyPair keyPair) {
-            var entry = new Entry(keyPair, certificateChain[0], certificateChain);
-            certificates.put(certificateTypeId, entry);
+        public Optional<Certificate> removeCertificate(NodeId certificateTypeId) {
+            return Optional.ofNullable(certificates.remove(certificateTypeId));
         }
 
         @Override
-        public void removeCertificate(NodeId certificateTypeId) {
-            certificates.remove(certificateTypeId);
+        public void setCertificate(NodeId certificateTypeId, Certificate certificate) {
+            if (getSupportedCertificateTypeIds().contains(certificateTypeId)) {
+                certificates.put(certificateTypeId, certificate);
+            } else {
+                throw new IllegalArgumentException("unsupported certificate type: " + certificateTypeId);
+            }
         }
 
     }
