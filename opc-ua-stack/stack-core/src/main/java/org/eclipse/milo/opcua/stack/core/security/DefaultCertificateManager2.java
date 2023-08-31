@@ -1,27 +1,23 @@
 package org.eclipse.milo.opcua.stack.core.security;
 
-import com.google.common.collect.Sets;
-import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager2.CertificateGroup.CertificateRecord;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultCertificateManager2 implements CertificateManager2 {
-
-    private final Set<X509Certificate> rejectedCertificates = Sets.newConcurrentHashSet();
 
     private final Map<NodeId, CertificateGroup> certificateGroups = new ConcurrentHashMap<>();
 
@@ -62,23 +58,28 @@ public class DefaultCertificateManager2 implements CertificateManager2 {
         checkNotNull(certificateChain, "certificateChain must be non-null");
         checkArgument(certificateChain.length > 0, "certificateChain must be non-empty");
 
-        var defaultGroup = new DefaultApplicationCertificateGroup(trustListDir, keyPair, certificateChain);
+        KeyManager keyManager = null; // TODO
+        TrustListManager trustListManager = null; // TODO
+        var defaultGroup = new DefaultApplicationCertificateGroup(keyManager, trustListManager);
         certificateGroups.put(defaultGroup.getCertificateGroupId(), defaultGroup);
     }
 
     @Override
     public Optional<KeyPair> getKeyPair(ByteString thumbprint) {
-        return firstMatchingCertificate(thumbprint).map(c -> c.keyPair);
+        return firstMatchingRecord(thumbprint).flatMap(entry -> {
+            Optional<CertificateGroup> group = getCertificateGroup(entry.certificateGroupId);
+            return group.flatMap(g -> g.getKeyPair(entry.certificateTypeId));
+        });
     }
 
     @Override
     public Optional<X509Certificate> getCertificate(ByteString thumbprint) {
-        return firstMatchingCertificate(thumbprint).map(c -> c.certificate);
+        return firstMatchingRecord(thumbprint).map(e -> e.certificateChain[0]);
     }
 
     @Override
     public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
-        return firstMatchingCertificate(thumbprint).map(c -> c.certificateChain);
+        return firstMatchingRecord(thumbprint).map(e -> e.certificateChain);
     }
 
     @Override
@@ -86,27 +87,13 @@ public class DefaultCertificateManager2 implements CertificateManager2 {
         return Optional.ofNullable(certificateGroups.get(certificateGroupId));
     }
 
-    @Override
-    public List<X509Certificate> getRejectedCertificates() {
-        return List.copyOf(rejectedCertificates);
-    }
-
-    @Override
-    public void addRejectedCertificate(X509Certificate certificate) {
-        rejectedCertificates.add(certificate);
-    }
-
-    @Override
-    public boolean removeRejectedCertificate(X509Certificate certificate) {
-        return rejectedCertificates.remove(certificate);
-    }
-
-    private Optional<CertificateGroup.Certificate> firstMatchingCertificate(ByteString thumbprint) {
-        return certificateGroups.values().stream()
-            .flatMap(g -> g.getCertificates().stream())
-            .filter(c -> {
+    private Optional<CertificateRecord> firstMatchingRecord(ByteString thumbprint) {
+        return certificateGroups.values()
+            .stream()
+            .flatMap(group -> group.getCertificateRecords().stream())
+            .filter(record -> {
                 try {
-                    return CertificateUtil.thumbprint(c.certificate).equals(thumbprint);
+                    return CertificateUtil.thumbprint(record.certificateChain[0]).equals(thumbprint);
                 } catch (UaException e) {
                     return false;
                 }
