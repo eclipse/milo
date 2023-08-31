@@ -1,16 +1,14 @@
 package org.eclipse.milo.opcua.stack.core.security;
 
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 public interface CertificateManager2 {
 
@@ -61,12 +59,12 @@ public interface CertificateManager2 {
     void addRejectedCertificate(X509Certificate certificate);
 
     /**
-     * Remove the certificate identified by {@code thumbprint} from the Rejected Certificates list.
+     * Remove {@code certificate} from the Rejected Certificates list.
      *
-     * @param thumbprint the certificate thumbprint.
-     * @return {@code true} if a certificate with a matching thumbprint was found.
+     * @param certificate the {@link X509Certificate} to remove from the Rejected Certificates list.
+     * @return {@code true} if the certificate was removed.
      */
-    boolean removeRejectedCertificate(ByteString thumbprint);
+    boolean removeRejectedCertificate(X509Certificate certificate);
 
     interface CertificateGroup {
 
@@ -75,6 +73,8 @@ public interface CertificateManager2 {
         List<NodeId> getSupportedCertificateTypeIds();
 
         TrustListManager getTrustListManager();
+
+        List<Certificate> getCertificates();
 
         Optional<Certificate> getCertificate(NodeId certificateTypeId);
 
@@ -102,6 +102,26 @@ public interface CertificateManager2 {
         private final Map<NodeId, Certificate> certificates =
             Collections.synchronizedMap(new HashMap<>());
 
+        private final DefaultTrustListManager trustListManager;
+
+        public DefaultApplicationCertificateGroup(File trustListDir) throws IOException {
+            trustListManager = new DefaultTrustListManager(trustListDir);
+        }
+
+        public DefaultApplicationCertificateGroup(
+            File trustListDir,
+            KeyPair keyPair,
+            X509Certificate[] certificateChain
+        ) throws IOException {
+
+            setCertificate(
+                NodeIds.RsaSha256ApplicationCertificateType,
+                new Certificate(keyPair, certificateChain[0], certificateChain)
+            );
+
+            trustListManager = new DefaultTrustListManager(trustListDir);
+        }
+
         @Override
         public NodeId getCertificateGroupId() {
             return NodeIds.ServerConfiguration_CertificateGroups_DefaultApplicationGroup;
@@ -115,6 +135,11 @@ public interface CertificateManager2 {
         @Override
         public TrustListManager getTrustListManager() {
             return null; // TODO
+        }
+
+        @Override
+        public List<Certificate> getCertificates() {
+            return List.copyOf(certificates.values());
         }
 
         @Override
