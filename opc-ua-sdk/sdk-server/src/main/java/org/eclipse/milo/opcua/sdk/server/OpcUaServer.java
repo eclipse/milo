@@ -332,7 +332,7 @@ public class OpcUaServer extends AbstractServiceHandler {
      * This EventBus is not intended for use by user implementations.
      *
      * @return an internal EventBus used to decouple communication between internal components of
-     * the Server implementation.
+     *     the Server implementation.
      */
     public EventBus getInternalEventBus() {
         return eventBus;
@@ -466,7 +466,25 @@ public class OpcUaServer extends AbstractServiceHandler {
             ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
 
             if (serviceHandler != null) {
-                return serviceHandler.handle(context, requestMessage);
+                logger.trace(
+                    "Service request received: path={} handle={} service={} remote={}",
+                    path,
+                    requestMessage.getRequestHeader().getRequestHandle(),
+                    service,
+                    context.getChannel().remoteAddress()
+                );
+
+                return serviceHandler.handle(context, requestMessage).whenComplete(
+                    (r, ex) ->
+                        logger.trace(
+                            "Service request completed: path={} handle={} service={} remote={}",
+                            path,
+                            requestMessage.getRequestHeader().getRequestHandle(),
+                            service,
+                            context.getChannel().remoteAddress(),
+                            ex
+                        )
+                );
             } else {
                 logger.warn("No ServiceHandler registered for path={} service={}", path, service);
 

@@ -22,40 +22,44 @@ public class EndpointUtil {
     private static final Pattern ENDPOINT_URL_PATTERN =
         Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+|\\[.*])(:\\d+)?(/.*)?");
 
-    @Nullable
-    public static String getScheme(@NotNull String endpointUrl) {
-        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+    public static @Nullable String getScheme(String endpointUrl) {
+        if (endpointUrl != null) {
+            Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
-        if (matcher.matches()) {
-            return matcher.group(1);
+            if (matcher.matches()) {
+                return matcher.group(1);
+            }
         }
 
         return null;
     }
 
-    @Nullable
-    public static String getHost(@NotNull String endpointUrl) {
-        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+    public static @Nullable String getHost(String endpointUrl) {
+        if (endpointUrl != null) {
+            Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
-        if (matcher.matches()) {
-            return matcher.group(2);
+            if (matcher.matches()) {
+                return matcher.group(2);
+            }
         }
 
         return null;
     }
 
-    public static int getPort(@NotNull String endpointUrl) {
-        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+    public static int getPort(String endpointUrl) {
+        if (endpointUrl != null) {
+            Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
-        if (matcher.matches()) {
-            try {
-                String group = matcher.group(3);
-                if (group != null && group.startsWith(":")) {
-                    group = group.substring(1);
-                    return Integer.parseInt(group);
+            if (matcher.matches()) {
+                try {
+                    String group = matcher.group(3);
+                    if (group != null && group.startsWith(":")) {
+                        group = group.substring(1);
+                        return Integer.parseInt(group);
+                    }
+                } catch (NumberFormatException ignored) {
+                    // ignored
                 }
-            } catch (NumberFormatException ignored) {
-                // ignored
             }
         }
 
@@ -70,23 +74,24 @@ public class EndpointUtil {
      * @param endpointUrl the endpoint URL.
      * @return the path component from the endpoint URL.
      */
-    @NotNull
-    public static String getPath(@NotNull String endpointUrl) {
-        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+    public static @NotNull String getPath(String endpointUrl) {
+        if (endpointUrl != null) {
+            Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
-        if (matcher.matches()) {
-            String path = matcher.group(4);
+            if (matcher.matches()) {
+                String path = matcher.group(4);
 
-            if (path == null || path.isEmpty()) {
-                path = "/";
-            } else if (path.length() > 1 && path.endsWith("/")) {
-                path = path.substring(0, path.length() - 1);
+                if (path == null || path.isEmpty()) {
+                    path = "/";
+                } else if (path.length() > 1 && path.endsWith("/")) {
+                    path = path.substring(0, path.length() - 1);
+                }
+
+                return path;
             }
-
-            return path;
-        } else {
-            return "/";
         }
+        
+        return "/";
     }
 
     /**
@@ -99,7 +104,7 @@ public class EndpointUtil {
      * @param endpoint the {@link EndpointDescription} to modify.
      * @param hostname the new hostname to use. A null value will result in the original hostname being used.
      * @return an updated {@link EndpointDescription} in which the hostname of the endpoint URL has been replaced with
-     * {@code hostname}.
+     *     {@code hostname}.
      */
     public static EndpointDescription updateUrl(
         @NotNull EndpointDescription endpoint, @Nullable String hostname) {
@@ -116,9 +121,9 @@ public class EndpointUtil {
      *
      * @param endpoint the {@link EndpointDescription} to modify.
      * @param hostname the new hostname to use. A null value will result in the original hostname being used.
-     * @param port     the new port to use. Any value <= 0 will result in the original port being used.
+     * @param port the new port to use. Any value <= 0 will result in the original port being used.
      * @return an updated {@link EndpointDescription} in which the hostname of the endpoint URL has been replaced with
-     * {@code hostname}.
+     *     {@code hostname}.
      */
     public static EndpointDescription updateUrl(
         @NotNull EndpointDescription endpoint, @Nullable String hostname, int port) {
