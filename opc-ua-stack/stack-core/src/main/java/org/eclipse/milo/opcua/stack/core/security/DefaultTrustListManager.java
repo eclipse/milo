@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -83,6 +84,10 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     private final File trustedCrlDir;
 
     private final File rejectedDir;
+
+    public DefaultTrustListManager(Path baseDir) throws IOException {
+        this(baseDir.toFile());
+    }
 
     public DefaultTrustListManager(File baseDir) throws IOException {
         this.baseDir = baseDir;

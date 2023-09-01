@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateManager2;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
@@ -128,10 +127,6 @@ public interface OpcUaServerConfig {
      * @return the {@link CertificateManager} for this server.
      */
     CertificateManager getCertificateManager();
-
-    default CertificateManager2 getCertificateManager2() {
-        return null; // TODO
-    }
 
     /**
      * @return the {@link TrustListManager} for this server.

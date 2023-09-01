@@ -12,11 +12,13 @@ package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class TestCertificateManager implements CertificateManager {
 
@@ -44,13 +46,13 @@ public class TestCertificateManager implements CertificateManager {
     }
 
     @Override
-    public Set<KeyPair> getKeyPairs() {
-        return Set.of(keyPair);
+    public Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId) {
+        return Optional.empty();
     }
 
     @Override
-    public Set<X509Certificate> getCertificates() {
-        return Set.of(certificate);
+    public List<CertificateGroup> getCertificateGroups() {
+        return Collections.emptyList();
     }
 
 }

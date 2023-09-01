@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
@@ -85,17 +87,28 @@ public final class TestServer {
         LoggerFactory.getLogger(TestServer.class)
             .info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
-        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
-
-        DefaultCertificateManager certificateManager = new DefaultCertificateManager(
-            loader.getServerKeyPair(),
-            loader.getServerCertificateChain()
-        );
-
         File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
-        DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
         LoggerFactory.getLogger(TestServer.class)
             .info("pki dir: {}", pkiDir.getAbsolutePath());
+
+        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
+
+        DefaultCertificateManager certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
+            pkiDir.toPath(),
+            new CertificateManager.CertificateFactory() {
+                @Override
+                public KeyPair createKeyPair(NodeId certificateTypeId) {
+                    return loader.getServerKeyPair();
+                }
+
+                @Override
+                public X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair) {
+                    return loader.getServerCertificateChain();
+                }
+            }
+        );
+
+        DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
 
         DefaultServerCertificateValidator certificateValidator =
             new DefaultServerCertificateValidator(trustListManager);
@@ -123,11 +136,7 @@ public final class TestServer {
             }
         );
 
-        // If you need to use multiple certificates you'll have to be smarter than this.
-        X509Certificate certificate = certificateManager.getCertificates()
-            .stream()
-            .findFirst()
-            .orElseThrow(() -> new UaRuntimeException(StatusCodes.Bad_ConfigurationError, "no certificate found"));
+        X509Certificate certificate = loader.getServerCertificate();
 
         // The configured application URI must match the one in the certificate(s)
         String applicationUri = CertificateUtil
