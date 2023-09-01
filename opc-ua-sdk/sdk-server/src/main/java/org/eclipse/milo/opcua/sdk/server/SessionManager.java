@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -58,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -97,7 +99,7 @@ public class SessionManager {
     /**
      * Kill the session identified by {@code nodeId} and optionally delete all its subscriptions.
      *
-     * @param nodeId              the {@link NodeId} identifying the session to kill.
+     * @param nodeId the {@link NodeId} identifying the session to kill.
      * @param deleteSubscriptions {@code true} if all its subscriptions should be deleted as well.
      */
     public void killSession(NodeId nodeId, boolean deleteSubscriptions) {
@@ -272,7 +274,26 @@ public class SessionManager {
                 );
             }
 
-            server.getConfig().getCertificateValidator().validateCertificateChain(
+            X509Certificate serverCertificate =
+                securityConfiguration.getServerCertificate();
+
+            if (serverCertificate == null) {
+                throw new UaException(
+                    StatusCodes.Bad_InternalError,
+                    "server certificate must be non-null"
+                );
+            }
+
+            CertificateGroup certificateGroup = server.getConfig()
+                .getCertificateManager()
+                .getCertificateGroup(CertificateUtil.thumbprint(serverCertificate))
+                .orElseThrow(() ->
+                    new UaException(
+                        StatusCodes.Bad_ConfigurationError,
+                        "no certificate group for server certificate")
+                );
+
+            certificateGroup.getCertificateValidator().validateCertificateChain(
                 clientCertificateChain,
                 clientDescription.getApplicationUri()
             );
@@ -377,7 +398,7 @@ public class SessionManager {
     }
 
     /**
-     * @param endpoint             an {@link EndpointDescription}.
+     * @param endpoint an {@link EndpointDescription}.
      * @param requestedEndpointUrl an endpoint URL.
      * @return {@code true} if the host in {@code endpoint} matches the host in {@code requestedEndpointUrl}.
      */
@@ -674,7 +695,7 @@ public class SessionManager {
      * Null or empty tokens are interpreted as {@link AnonymousIdentityToken}, as per the spec.
      *
      * @param identityTokenXo the {@link ExtensionObject} to decode.
-     * @param tokenPolicies   the {@link UserTokenPolicy}s from the Session's Endpoint.
+     * @param tokenPolicies the {@link UserTokenPolicy}s from the Session's Endpoint.
      * @return a {@link UserIdentityToken} object.
      */
     @NotNull
@@ -726,7 +747,7 @@ public class SessionManager {
      * Validates the policyId on a {@link UserIdentityToken} Object is a policyId that exists on the Endpoint that
      * {@code session} is connected to.
      *
-     * @param session     the current {@link Session}
+     * @param session the current {@link Session}
      * @param tokenObject the {@link UserIdentityToken} Object from the client.
      * @return the first {@link UserTokenPolicy} on the Endpoint matching the policyId.
      * @throws UaException if the token object is invalid or no matching policy is found.

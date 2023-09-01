@@ -17,7 +17,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
@@ -37,8 +36,6 @@ public class OpcUaServerConfigTest {
 
         OpcUaServerConfig original = OpcUaServerConfig.builder()
             .setCertificateManager(new DefaultCertificateManager())
-//            .setTrustListManager(trustListManager)
-            .setCertificateValidator(new DefaultServerCertificateValidator(trustListManager))
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})

@@ -23,8 +23,6 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
@@ -129,16 +127,6 @@ public interface OpcUaServerConfig {
     CertificateManager getCertificateManager();
 
     /**
-     * @return the {@link TrustListManager} for this server.
-     */
-//    TrustListManager getTrustListManager();
-
-    /**
-     * @return the {@link ServerCertificateValidator} for this server.
-     */
-    ServerCertificateValidator getCertificateValidator();
-
-    /**
      * @return the {@link ExecutorService} for this server.
      */
     ExecutorService getExecutor();
@@ -175,8 +163,6 @@ public interface OpcUaServerConfig {
         builder.setLimits(config.getLimits());
         builder.setIdentityValidator(config.getIdentityValidator());
         builder.setCertificateManager(config.getCertificateManager());
-//        builder.setTrustListManager(config.getTrustListManager());
-        builder.setCertificateValidator(config.getCertificateValidator());
         builder.setExecutor(config.getExecutor());
         builder.setScheduledExecutor(config.getScheduledExecutorService());
 

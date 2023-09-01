@@ -61,7 +61,6 @@ import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
@@ -420,11 +419,6 @@ public class OpcUaServer extends AbstractServiceHandler {
         @Override
         public CertificateManager getCertificateManager() {
             return config.getCertificateManager();
-        }
-
-        @Override
-        public CertificateValidator getCertificateValidator() {
-            return config.getCertificateValidator();
         }
 
         @Override

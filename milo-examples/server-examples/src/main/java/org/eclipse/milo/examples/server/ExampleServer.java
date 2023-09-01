@@ -37,8 +37,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -118,9 +116,6 @@ public class ExampleServer {
             }
         );
 
-        var trustListManager = new DefaultTrustListManager(pkiDir);
-        var certificateValidator = new DefaultServerCertificateValidator(trustListManager);
-
         var identityValidator = new UsernameIdentityValidator(
             true,
             authChallenge -> {
@@ -162,8 +157,6 @@ public class ExampleServer {
                     OpcUaServer.SDK_VERSION,
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
-//            .setTrustListManager(trustListManager)
-            .setCertificateValidator(certificateValidator)
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
             .build();

@@ -48,6 +48,12 @@ public class DefaultCertificateManager implements CertificateManager {
     }
 
     @Override
+    public Optional<CertificateGroup> getCertificateGroup(ByteString thumbprint) {
+        return firstMatchingRecord(thumbprint)
+            .flatMap(r -> getCertificateGroup(r.certificateGroupId));
+    }
+
+    @Override
     public Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId) {
         return Optional.ofNullable(certificateGroups.get(certificateGroupId));
     }

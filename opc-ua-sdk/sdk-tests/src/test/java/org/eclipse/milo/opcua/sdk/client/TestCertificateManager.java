@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.MemoryKeyManager;
+import org.eclipse.milo.opcua.stack.core.security.MemoryTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -25,9 +27,27 @@ public class TestCertificateManager implements CertificateManager {
     private final KeyPair keyPair;
     private final X509Certificate certificate;
 
+    private final CertificateGroup certificateGroup;
+
     public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) {
         this.keyPair = keyPair;
         this.certificate = certificate;
+
+        certificateGroup = new DefaultApplicationGroup(
+            new MemoryKeyManager(),
+            new MemoryTrustListManager(),
+            new CertificateFactory() {
+                @Override
+                public KeyPair createKeyPair(NodeId certificateTypeId) {
+                    return keyPair;
+                }
+
+                @Override
+                public X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair) {
+                    return new X509Certificate[]{certificate};
+                }
+            }
+        );
     }
 
     @Override
@@ -46,13 +66,18 @@ public class TestCertificateManager implements CertificateManager {
     }
 
     @Override
+    public Optional<CertificateGroup> getCertificateGroup(ByteString thumbprint) {
+        return Optional.of(certificateGroup);
+    }
+
+    @Override
     public Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId) {
-        return Optional.empty();
+        return Optional.of(certificateGroup);
     }
 
     @Override
     public List<CertificateGroup> getCertificateGroups() {
-        return Collections.emptyList();
+        return List.of(certificateGroup);
     }
 
     @Override

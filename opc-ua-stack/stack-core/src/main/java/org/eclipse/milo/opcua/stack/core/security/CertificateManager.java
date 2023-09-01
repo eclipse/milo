@@ -45,6 +45,8 @@ public interface CertificateManager {
      */
     Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint);
 
+    Optional<CertificateGroup> getCertificateGroup(ByteString thumbprint);
+
     Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId);
 
     List<CertificateGroup> getCertificateGroups();
@@ -125,6 +127,8 @@ public interface CertificateManager {
             X509Certificate[] certificateChain
         ) throws Exception;
 
+        ServerCertificateValidator getCertificateValidator();
+
         class CertificateRecord {
             public final NodeId certificateGroupId;
             public final NodeId certificateTypeId;
@@ -154,6 +158,8 @@ public interface CertificateManager {
 
     class DefaultApplicationGroup implements CertificateGroup {
 
+        private final ServerCertificateValidator certificateValidator;
+
         private final KeyManager keyManager;
         private final TrustListManager trustListManager;
         private final CertificateFactory certificateFactory;
@@ -167,6 +173,8 @@ public interface CertificateManager {
             this.keyManager = keyManager;
             this.trustListManager = trustListManager;
             this.certificateFactory = certificateFactory;
+
+            certificateValidator = new DefaultServerCertificateValidator(trustListManager);
         }
 
         public void initialize() throws Exception {
@@ -294,6 +302,11 @@ public interface CertificateManager {
             } else {
                 throw new UaException(StatusCodes.Bad_InvalidArgument, "certificateTypeId");
             }
+        }
+
+        @Override
+        public ServerCertificateValidator getCertificateValidator() {
+            return certificateValidator;
         }
 
         protected @Nullable String getAlias(NodeId certificateTypeId) {

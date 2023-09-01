@@ -20,8 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
@@ -53,8 +51,6 @@ public class OpcUaServerConfigBuilder {
     private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
 
     private CertificateManager certificateManager;
-    private TrustListManager trustListManager;
-    private ServerCertificateValidator certificateValidator;
 
     private ExecutorService executor;
     private ScheduledExecutorService scheduledExecutor;
@@ -105,16 +101,6 @@ public class OpcUaServerConfigBuilder {
         return this;
     }
 
-//    public OpcUaServerConfigBuilder setTrustListManager(TrustListManager trustListManager) {
-//        this.trustListManager = trustListManager;
-//        return this;
-//    }
-
-    public OpcUaServerConfigBuilder setCertificateValidator(ServerCertificateValidator certificateValidator) {
-        this.certificateValidator = certificateValidator;
-        return this;
-    }
-
     public OpcUaServerConfigBuilder setExecutor(ExecutorService executor) {
         this.executor = executor;
         return this;
@@ -143,8 +129,6 @@ public class OpcUaServerConfigBuilder {
             encodingLimits,
             limits,
             certificateManager,
-//            trustListManager,
-            certificateValidator,
             executor,
             scheduledExecutor
         );
@@ -162,8 +146,6 @@ public class OpcUaServerConfigBuilder {
         private final EncodingLimits encodingLimits;
         private final OpcUaServerConfigLimits limits;
         private final CertificateManager certificateManager;
-//        private final TrustListManager trustListManager;
-        private final ServerCertificateValidator certificateValidator;
         private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutorService;
 
@@ -177,8 +159,6 @@ public class OpcUaServerConfigBuilder {
             EncodingLimits encodingLimits,
             OpcUaServerConfigLimits limits,
             CertificateManager certificateManager,
-//            TrustListManager trustListManager,
-            ServerCertificateValidator certificateValidator,
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutorService
         ) {
@@ -192,8 +172,6 @@ public class OpcUaServerConfigBuilder {
             this.encodingLimits = encodingLimits;
             this.limits = limits;
             this.certificateManager = certificateManager;
-//            this.trustListManager = trustListManager;
-            this.certificateValidator = certificateValidator;
             this.executor = executor;
             this.scheduledExecutorService = scheduledExecutorService;
         }
@@ -241,16 +219,6 @@ public class OpcUaServerConfigBuilder {
         @Override
         public CertificateManager getCertificateManager() {
             return certificateManager;
-        }
-
-//        @Override
-//        public TrustListManager getTrustListManager() {
-//            return trustListManager;
-//        }
-
-        @Override
-        public ServerCertificateValidator getCertificateValidator() {
-            return certificateValidator;
         }
 
         @Override

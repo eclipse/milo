@@ -240,12 +240,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 secureChannel.setSecurityPolicy(securityPolicy);
 
                 if (securityPolicy != SecurityPolicy.None) {
-                    secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
-
-                    CertificateValidator certificateValidator = application.getCertificateValidator();
-
-                    certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
-
                     CertificateManager certificateManager = application.getCertificateManager();
 
                     Optional<X509Certificate[]> localCertificateChain = certificateManager
@@ -255,6 +249,20 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         .getKeyPair(header.getReceiverThumbprint());
 
                     if (localCertificateChain.isPresent() && keyPair.isPresent()) {
+                        secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
+
+                        CertificateManager.CertificateGroup certificateGroup = application.getCertificateManager()
+                            .getCertificateGroup(header.getReceiverThumbprint())
+                            .orElseThrow(() ->
+                                new UaException(
+                                    StatusCodes.Bad_SecurityChecksFailed,
+                                    "no certificate group for provided thumbprint")
+                            );
+
+                        CertificateValidator certificateValidator = certificateGroup.getCertificateValidator();
+
+                        certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
+
                         X509Certificate[] chain = localCertificateChain.get();
 
                         secureChannel.setLocalCertificate(chain[0]);
