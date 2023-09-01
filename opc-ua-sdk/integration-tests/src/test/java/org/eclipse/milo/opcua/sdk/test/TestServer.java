@@ -159,7 +159,7 @@ public final class TestServer {
                     OpcUaServer.SDK_VERSION,
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
-            .setTrustListManager(trustListManager)
+//            .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(identityValidator)
             .setProductUri("urn:eclipse:milo:example-server")

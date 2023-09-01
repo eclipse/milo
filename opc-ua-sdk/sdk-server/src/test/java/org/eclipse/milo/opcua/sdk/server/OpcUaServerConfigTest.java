@@ -37,7 +37,7 @@ public class OpcUaServerConfigTest {
 
         OpcUaServerConfig original = OpcUaServerConfig.builder()
             .setCertificateManager(new DefaultCertificateManager())
-            .setTrustListManager(trustListManager)
+//            .setTrustListManager(trustListManager)
             .setCertificateValidator(new DefaultServerCertificateValidator(trustListManager))
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))

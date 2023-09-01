@@ -131,7 +131,7 @@ public interface OpcUaServerConfig {
     /**
      * @return the {@link TrustListManager} for this server.
      */
-    TrustListManager getTrustListManager();
+//    TrustListManager getTrustListManager();
 
     /**
      * @return the {@link ServerCertificateValidator} for this server.
@@ -175,7 +175,7 @@ public interface OpcUaServerConfig {
         builder.setLimits(config.getLimits());
         builder.setIdentityValidator(config.getIdentityValidator());
         builder.setCertificateManager(config.getCertificateManager());
-        builder.setTrustListManager(config.getTrustListManager());
+//        builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());
         builder.setExecutor(config.getExecutor());
         builder.setScheduledExecutor(config.getScheduledExecutorService());

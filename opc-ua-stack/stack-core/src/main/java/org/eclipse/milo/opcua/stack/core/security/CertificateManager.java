@@ -49,6 +49,61 @@ public interface CertificateManager {
 
     List<CertificateGroup> getCertificateGroups();
 
+    /**
+     * Get the DefaultApplicationGroup {@link CertificateGroup}, if it's configured.
+     * <p>
+     * Servers are required to support the DefaultApplicationGroup CertificateGroup.
+     *
+     * @return the DefaultApplicationGroup {@link CertificateGroup}, if it's configured.
+     */
+    default Optional<CertificateGroup> getDefaultApplicationGroup() {
+        return getCertificateGroup(NodeIds.ServerConfiguration_CertificateGroups_DefaultApplicationGroup);
+    }
+
+    /**
+     * Get the DefaultUserTokenGroup {@link CertificateGroup}, if it's configured.
+     * <p>
+     * Support for the DefaultUserTokenGroup CertificateGroup is optional.
+     *
+     * @return the DefaultUserTokenGroup {@link CertificateGroup}, if it's configured.
+     */
+    default Optional<CertificateGroup> getDefaultUserTokenGroup() {
+        return getCertificateGroup(NodeIds.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup);
+    }
+
+    /**
+     * Get the DefaultHttpsGroup {@link CertificateGroup}, if it's configured.
+     * <p>
+     * Support for the DefaultHttpsGroup CertificateGroup is optional.
+     *
+     * @return the DefaultHttpsGroup {@link CertificateGroup}, if it's configured.
+     */
+    default Optional<CertificateGroup> getDefaultHttpsGroup() {
+        return getCertificateGroup(NodeIds.ServerConfiguration_CertificateGroups_DefaultHttpsGroup);
+    }
+
+    /**
+     * Get the list of Rejected Certificates.
+     *
+     * @return the list of Rejected {@link X509Certificate}s.
+     */
+    List<X509Certificate> getRejectedCertificates();
+
+    /**
+     * Add {@code certificate} to the Rejected Certificates list.
+     *
+     * @param certificate the {@link X509Certificate} to add to the Rejected Certificates list.
+     */
+    void addRejectedCertificate(X509Certificate certificate);
+
+    /**
+     * Remove {@code certificate} from the Rejected Certificates list.
+     *
+     * @param certificate the {@link X509Certificate} to remove from the Rejected Certificates list.
+     * @return {@code true} if the certificate was removed.
+     */
+    boolean removeRejectedCertificate(X509Certificate certificate);
+
     interface CertificateGroup {
 
 
@@ -62,35 +117,13 @@ public interface CertificateManager {
 
         Optional<KeyPair> getKeyPair(NodeId certificateTypeId);
 
-        Optional<X509Certificate[]> getCertificate(NodeId certificateTypeId);
+        Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId);
 
         void updateCertificate(
             NodeId certificateTypeId,
             KeyPair keyPair,
             X509Certificate[] certificateChain
         ) throws Exception;
-
-        /**
-         * Get the list of Rejected Certificates.
-         *
-         * @return the list of Rejected {@link X509Certificate}s.
-         */
-        List<X509Certificate> getRejectedCertificates();
-
-        /**
-         * Add {@code certificate} to the Rejected Certificates list.
-         *
-         * @param certificate the {@link X509Certificate} to add to the Rejected Certificates list.
-         */
-        void addRejectedCertificate(X509Certificate certificate);
-
-        /**
-         * Remove {@code certificate} from the Rejected Certificates list.
-         *
-         * @param certificate the {@link X509Certificate} to remove from the Rejected Certificates list.
-         * @return {@code true} if the certificate was removed.
-         */
-        boolean removeRejectedCertificate(X509Certificate certificate);
 
         class CertificateRecord {
             public final NodeId certificateGroupId;
@@ -210,15 +243,8 @@ public interface CertificateManager {
                 try {
                     KeyManager.KeyRecord keyRecord = keyManager.get(alias, password);
 
-                    if (keyRecord != null) {
-                        KeyPair keyPair = new KeyPair(
-                            keyRecord.certificateChain[0].getPublicKey(),
-                            keyRecord.privateKey
-                        );
-                        return Optional.of(keyPair);
-                    } else {
-                        return Optional.empty();
-                    }
+                    return Optional.ofNullable(keyRecord)
+                        .map(r -> new KeyPair(r.certificateChain[0].getPublicKey(), r.privateKey));
                 } catch (Exception e) {
                     return Optional.empty();
                 }
@@ -228,8 +254,25 @@ public interface CertificateManager {
         }
 
         @Override
-        public Optional<X509Certificate[]> getCertificate(NodeId certificateTypeId) {
-            return Optional.empty();
+        public Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId) {
+            if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
+                String alias = getAlias(certificateTypeId);
+                String password = getPassword(certificateTypeId);
+
+                if (alias == null || password == null) {
+                    return Optional.empty();
+                }
+
+                try {
+                    KeyManager.KeyRecord keyRecord = keyManager.get(alias, password);
+
+                    return Optional.ofNullable(keyRecord).map(r -> r.certificateChain);
+                } catch (Exception e) {
+                    return Optional.empty();
+                }
+            } else {
+                return Optional.empty();
+            }
         }
 
         @Override
@@ -251,21 +294,6 @@ public interface CertificateManager {
             } else {
                 throw new UaException(StatusCodes.Bad_InvalidArgument, "certificateTypeId");
             }
-        }
-
-        @Override
-        public void addRejectedCertificate(X509Certificate certificate) {
-            // TODO
-        }
-
-        @Override
-        public boolean removeRejectedCertificate(X509Certificate certificate) {
-            return false; // TODO
-        }
-
-        @Override
-        public List<X509Certificate> getRejectedCertificates() {
-            return null; // TODO
         }
 
         protected @Nullable String getAlias(NodeId certificateTypeId) {

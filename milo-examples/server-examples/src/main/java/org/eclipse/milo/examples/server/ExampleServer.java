@@ -162,7 +162,7 @@ public class ExampleServer {
                     OpcUaServer.SDK_VERSION,
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
-            .setTrustListManager(trustListManager)
+//            .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")

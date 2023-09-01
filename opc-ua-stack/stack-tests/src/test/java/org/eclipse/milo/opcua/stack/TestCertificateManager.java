@@ -55,4 +55,19 @@ public class TestCertificateManager implements CertificateManager {
         return Collections.emptyList();
     }
 
+    @Override
+    public List<X509Certificate> getRejectedCertificates() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void addRejectedCertificate(X509Certificate certificate) {
+
+    }
+
+    @Override
+    public boolean removeRejectedCertificate(X509Certificate certificate) {
+        return false;
+    }
+
 }

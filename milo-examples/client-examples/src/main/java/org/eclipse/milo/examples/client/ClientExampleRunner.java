@@ -23,6 +23,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -42,7 +43,7 @@ public class ClientExampleRunner {
 
     private ExampleServer exampleServer;
 
-    private DefaultTrustListManager trustListManager;
+    private DefaultTrustListManager clientTrustListManager;
 
     private final ClientExample clientExample;
     private final boolean serverRequired;
@@ -77,10 +78,10 @@ public class ClientExampleRunner {
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
-        trustListManager = new DefaultTrustListManager(pkiDir);
+        clientTrustListManager = new DefaultTrustListManager(pkiDir);
 
         DefaultClientCertificateValidator certificateValidator =
-            new DefaultClientCertificateValidator(trustListManager);
+            new DefaultClientCertificateValidator(clientTrustListManager);
 
         return OpcUaClient.create(
             clientExample.getEndpointUrl(),
@@ -112,10 +113,15 @@ public class ClientExampleRunner {
             // "pki/trusted/certs" directory.
 
             if (serverRequired && exampleServer != null) {
+                CertificateManager certificateManager = exampleServer.getServer().getConfig().getCertificateManager();
+
                 // Make the example server trust the example client certificate by default.
                 client.getConfig().getCertificate().ifPresent(
                     certificate ->
-                        exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
+                        certificateManager.getCertificateGroups().forEach(
+                            group ->
+                                group.getTrustListManager().addTrustedCertificate(certificate)
+                        )
                 );
 
                 // Make the example client trust the example server certificate by default.
@@ -123,7 +129,7 @@ public class ClientExampleRunner {
                     certificateGroup ->
                         certificateGroup.getCertificateRecords().forEach(
                             record ->
-                                trustListManager.addTrustedCertificate(record.certificateChain[0])
+                                clientTrustListManager.addTrustedCertificate(record.certificateChain[0])
                         )
                 );
             }

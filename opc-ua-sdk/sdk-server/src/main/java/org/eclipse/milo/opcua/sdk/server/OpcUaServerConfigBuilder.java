@@ -105,10 +105,10 @@ public class OpcUaServerConfigBuilder {
         return this;
     }
 
-    public OpcUaServerConfigBuilder setTrustListManager(TrustListManager trustListManager) {
-        this.trustListManager = trustListManager;
-        return this;
-    }
+//    public OpcUaServerConfigBuilder setTrustListManager(TrustListManager trustListManager) {
+//        this.trustListManager = trustListManager;
+//        return this;
+//    }
 
     public OpcUaServerConfigBuilder setCertificateValidator(ServerCertificateValidator certificateValidator) {
         this.certificateValidator = certificateValidator;
@@ -143,7 +143,7 @@ public class OpcUaServerConfigBuilder {
             encodingLimits,
             limits,
             certificateManager,
-            trustListManager,
+//            trustListManager,
             certificateValidator,
             executor,
             scheduledExecutor
@@ -162,7 +162,7 @@ public class OpcUaServerConfigBuilder {
         private final EncodingLimits encodingLimits;
         private final OpcUaServerConfigLimits limits;
         private final CertificateManager certificateManager;
-        private final TrustListManager trustListManager;
+//        private final TrustListManager trustListManager;
         private final ServerCertificateValidator certificateValidator;
         private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutorService;
@@ -177,7 +177,7 @@ public class OpcUaServerConfigBuilder {
             EncodingLimits encodingLimits,
             OpcUaServerConfigLimits limits,
             CertificateManager certificateManager,
-            TrustListManager trustListManager,
+//            TrustListManager trustListManager,
             ServerCertificateValidator certificateValidator,
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutorService
@@ -192,7 +192,7 @@ public class OpcUaServerConfigBuilder {
             this.encodingLimits = encodingLimits;
             this.limits = limits;
             this.certificateManager = certificateManager;
-            this.trustListManager = trustListManager;
+//            this.trustListManager = trustListManager;
             this.certificateValidator = certificateValidator;
             this.executor = executor;
             this.scheduledExecutorService = scheduledExecutorService;
@@ -243,10 +243,10 @@ public class OpcUaServerConfigBuilder {
             return certificateManager;
         }
 
-        @Override
-        public TrustListManager getTrustListManager() {
-            return trustListManager;
-        }
+//        @Override
+//        public TrustListManager getTrustListManager() {
+//            return trustListManager;
+//        }
 
         @Override
         public ServerCertificateValidator getCertificateValidator() {
