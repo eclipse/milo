@@ -49,6 +49,7 @@ public interface CertificateManager2 {
 
     interface CertificateGroup {
 
+
         NodeId getCertificateGroupId();
 
         List<NodeId> getSupportedCertificateTypeIds();
@@ -108,14 +109,46 @@ public interface CertificateManager2 {
 
     }
 
-    class DefaultApplicationCertificateGroup implements CertificateGroup {
+    interface CertificateFactory {
+
+        KeyPair createKeyPair(NodeId certificateTypeId);
+
+        X509Certificate createCertificate(NodeId certificateTypeId, KeyPair keyPair);
+
+    }
+
+    class DefaultApplicationGroup implements CertificateGroup {
 
         private final KeyManager keyManager;
         private final TrustListManager trustListManager;
+        private final CertificateFactory certificateFactory;
 
-        public DefaultApplicationCertificateGroup(KeyManager keyManager, TrustListManager trustListManager) {
+        public DefaultApplicationGroup(
+            KeyManager keyManager,
+            TrustListManager trustListManager,
+            CertificateFactory certificateFactory
+        ) {
+
             this.keyManager = keyManager;
             this.trustListManager = trustListManager;
+            this.certificateFactory = certificateFactory;
+        }
+
+        public void initialize() throws Exception {
+            for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
+                String alias = getAlias(certificateTypeId);
+
+                if (!keyManager.contains(alias)) {
+                    KeyPair keyPair = createKeyPair(certificateTypeId);
+                    X509Certificate certificate = createCertificate(certificateTypeId, keyPair);
+
+                    keyManager.set(
+                        alias,
+                        getPassword(certificateTypeId),
+                        new KeyManager.KeyRecord(keyPair.getPrivate(), new X509Certificate[]{certificate})
+                    );
+                }
+            }
         }
 
         @Override
@@ -246,6 +279,14 @@ public interface CertificateManager2 {
             } else {
                 return null;
             }
+        }
+
+        protected KeyPair createKeyPair(NodeId certificateTypeId) {
+            return certificateFactory.createKeyPair(certificateTypeId);
+        }
+
+        protected X509Certificate createCertificate(NodeId certificateTypeId, KeyPair keyPair) {
+            return certificateFactory.createCertificate(certificateTypeId, keyPair);
         }
 
     }

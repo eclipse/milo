@@ -44,12 +44,12 @@ public class DefaultCertificateManager2 implements CertificateManager2 {
      * Create a {@link DefaultCertificateManager2} with a {@link KeyPair} and
      * {@link X509Certificate} chain belonging to the DefaultApplicationGroup instance.
      *
-     * @param trustListDir the directory to manage the Trust List in.
+     * @param pkiDir the directory to manage the Trust List in.
      * @param keyPair the {@link KeyPair}.
      * @param certificateChain the {@link X509Certificate} chain.
      */
     public DefaultCertificateManager2(
-        File trustListDir,
+        File pkiDir,
         KeyPair keyPair,
         X509Certificate[] certificateChain
     ) throws IOException {
@@ -59,8 +59,15 @@ public class DefaultCertificateManager2 implements CertificateManager2 {
         checkArgument(certificateChain.length > 0, "certificateChain must be non-empty");
 
         KeyManager keyManager = null; // TODO
-        TrustListManager trustListManager = null; // TODO
-        var defaultGroup = new DefaultApplicationCertificateGroup(keyManager, trustListManager);
+        TrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
+        CertificateFactory certificateFactory = null; // TODO
+
+        var defaultGroup = new DefaultApplicationGroup(
+            keyManager,
+            trustListManager,
+            certificateFactory
+        );
+
         certificateGroups.put(defaultGroup.getCertificateGroupId(), defaultGroup);
     }
 

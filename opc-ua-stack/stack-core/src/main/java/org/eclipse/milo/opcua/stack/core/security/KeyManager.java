@@ -3,11 +3,15 @@ package org.eclipse.milo.opcua.stack.core.security;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
+import org.jetbrains.annotations.Nullable;
+
 public interface KeyManager {
 
-    KeyRecord get(String alias, String password) throws Exception;
+    boolean contains(String alias) throws Exception;
 
-    KeyRecord remove(String alias, String password) throws Exception;
+    @Nullable KeyRecord get(String alias, String password) throws Exception;
+
+    @Nullable KeyRecord remove(String alias, String password) throws Exception;
 
     void set(String alias, String password, KeyRecord keyRecord) throws Exception;
 
