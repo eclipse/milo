@@ -9,6 +9,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -87,8 +88,12 @@ public class KeyStoreKeyManager implements KeyManager {
             Key key = keyStore.getKey(alias, password.toCharArray());
             Certificate[] certificateChain = keyStore.getCertificateChain(alias);
 
-            if (key instanceof PrivateKey && certificateChain instanceof X509Certificate[]) {
-                return new KeyRecord((PrivateKey) key, (X509Certificate[]) certificateChain);
+            if (key instanceof PrivateKey && certificateChain != null) {
+                X509Certificate[] x509CertificateChain = Arrays.stream(certificateChain)
+                    .map(c -> (X509Certificate) c)
+                    .toArray(X509Certificate[]::new);
+
+                return new KeyRecord((PrivateKey) key, x509CertificateChain);
             } else {
                 return null;
             }
