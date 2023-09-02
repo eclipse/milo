@@ -5,6 +5,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -243,6 +244,8 @@ public interface CertificateManager {
 
     class DefaultApplicationGroup implements CertificateGroup {
 
+        private final AtomicBoolean initialized = new AtomicBoolean(false);
+
         private final ServerCertificateValidator certificateValidator;
 
         private final KeyManager keyManager;
@@ -263,19 +266,21 @@ public interface CertificateManager {
         }
 
         public void initialize() throws Exception {
-            for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
-                String alias = getAlias(certificateTypeId);
+            if (initialized.compareAndSet(false, true)) {
+                for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
+                    String alias = getAlias(certificateTypeId);
 
-                if (!keyManager.contains(alias)) {
-                    KeyPair keyPair = certificateFactory.createKeyPair(certificateTypeId);
-                    X509Certificate[] certificateChain =
-                        certificateFactory.createCertificateChain(certificateTypeId, keyPair);
+                    if (!keyManager.contains(alias)) {
+                        KeyPair keyPair = certificateFactory.createKeyPair(certificateTypeId);
+                        X509Certificate[] certificateChain =
+                            certificateFactory.createCertificateChain(certificateTypeId, keyPair);
 
-                    keyManager.set(
-                        alias,
-                        getPassword(certificateTypeId),
-                        new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain)
-                    );
+                        keyManager.set(
+                            alias,
+                            getPassword(certificateTypeId),
+                            new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain)
+                        );
+                    }
                 }
             }
         }
@@ -408,6 +413,33 @@ public interface CertificateManager {
             } else {
                 return null;
             }
+        }
+
+        /**
+         * Create and initialize a {@link DefaultApplicationGroup}.
+         *
+         * @param keyManager the {@link KeyManager} to use.
+         * @param trustListManager the {@link TrustListManager} to use.
+         * @param certificateFactory the {@link CertificateFactory} to use.
+         * @return an initialized {@link DefaultApplicationGroup} instance.
+         * @throws Exception if an error occurs while initializing the
+         *     {@link DefaultApplicationGroup}.
+         */
+        public static DefaultApplicationGroup createAndInitialize(
+            KeyManager keyManager,
+            TrustListManager trustListManager,
+            CertificateFactory certificateFactory
+        ) throws Exception {
+
+            var defaultApplicationGroup = new DefaultApplicationGroup(
+                keyManager,
+                trustListManager,
+                certificateFactory
+            );
+
+            defaultApplicationGroup.initialize();
+
+            return defaultApplicationGroup;
         }
 
     }

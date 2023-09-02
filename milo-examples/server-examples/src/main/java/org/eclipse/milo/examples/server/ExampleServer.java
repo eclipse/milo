@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.KeyStoreKeyManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -99,10 +100,18 @@ public class ExampleServer {
         LoggerFactory.getLogger(getClass())
             .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
+        var keyManager = KeyStoreKeyManager.createAndInitialize(
+            new KeyStoreKeyManager.KeyStoreSettings(
+                securityTempDir.resolve("example-server.pfx"),
+                () -> "password"
+            )
+        );
+
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
         var certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
             pkiDir.toPath(),
+            keyManager,
             new CertificateManager.CertificateFactory() {
                 @Override
                 public KeyPair createKeyPair(NodeId certificateTypeId) {

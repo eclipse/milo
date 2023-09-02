@@ -27,13 +27,13 @@ public class TestCertificateManager implements CertificateManager {
     private final KeyPair keyPair;
     private final X509Certificate certificate;
 
-    private final CertificateGroup certificateGroup;
+    private final DefaultApplicationGroup certificateGroup;
 
-    public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) {
+    public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) throws Exception {
         this.keyPair = keyPair;
         this.certificate = certificate;
 
-        certificateGroup = new DefaultApplicationGroup(
+        certificateGroup = DefaultApplicationGroup.createAndInitialize(
             new MemoryKeyManager(),
             new MemoryTrustListManager(),
             new CertificateFactory() {
