@@ -45,10 +45,29 @@ public interface CertificateManager {
      */
     Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint);
 
+    /**
+     * Get the {@link CertificateGroup} containing the {@link X509Certificate} identified by
+     * {@code thumbprint}.
+     *
+     * @param thumbprint the thumbprint of the certificate.
+     * @return the {@link CertificateGroup} containing the {@link X509Certificate} identified by
+     *     {@code thumbprint}.
+     */
     Optional<CertificateGroup> getCertificateGroup(ByteString thumbprint);
 
+    /**
+     * Get the {@link CertificateGroup} identified by {@code certificateGroupId}.
+     *
+     * @param certificateGroupId the {@link NodeId} identifying the {@link CertificateGroup}.
+     * @return the {@link CertificateGroup} identified by {@code certificateGroupId}.
+     */
     Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId);
 
+    /**
+     * Get the {@link CertificateGroup}s managed by this {@link CertificateManager}.
+     *
+     * @return the {@link CertificateGroup}s managed by this {@link CertificateManager}.
+     */
     List<CertificateGroup> getCertificateGroups();
 
     /**
@@ -108,25 +127,76 @@ public interface CertificateManager {
 
     interface CertificateGroup {
 
-
+        /**
+         * Get the {@link NodeId} identifying this {@link CertificateGroup}.
+         *
+         * @return the {@link NodeId} identifying this {@link CertificateGroup}.
+         */
         NodeId getCertificateGroupId();
 
+        /**
+         * Get the {@link NodeId}s identifying the types of certificates supported by this
+         * {@link CertificateGroup}.
+         *
+         * @return the {@link NodeId}s identifying the types of certificates supported by this
+         *     {@link CertificateGroup}.
+         */
         List<NodeId> getSupportedCertificateTypeIds();
 
+        /**
+         * Get the {@link TrustListManager} for this {@link CertificateGroup}.
+         *
+         * @return the {@link TrustListManager} for this {@link CertificateGroup}.
+         */
         TrustListManager getTrustListManager();
 
+        /**
+         * Get the {@link CertificateRecord}s belonging to this {@link CertificateGroup}.
+         *
+         * @return the {@link CertificateRecord}s belonging to this {@link CertificateGroup}.
+         */
         List<CertificateRecord> getCertificateRecords();
 
+        /**
+         * Get the {@link KeyPair} associated with the certificate of the type identified by
+         * {@code certificateTypeId}.
+         *
+         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
+         * @return the {@link KeyPair} associated with the certificate of the type identified by
+         *     {@code certificateTypeId}.
+         */
         Optional<KeyPair> getKeyPair(NodeId certificateTypeId);
 
+        /**
+         * Get the {@link X509Certificate} chain associated with the certificate of the type
+         * identified by {@code certificateTypeId}.
+         *
+         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
+         * @return the {@link X509Certificate} chain associated with the certificate of the type
+         *     identified by {@code certificateTypeId}.
+         */
         Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId);
 
+        /**
+         * Update the {@link KeyPair} and {@link X509Certificate} associated with the type
+         * identified by {@code certificateTypeId}.
+         *
+         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
+         * @param keyPair the new {@link KeyPair}.
+         * @param certificateChain the new {@link X509Certificate} chain.
+         * @throws Exception if the update fails.
+         */
         void updateCertificate(
             NodeId certificateTypeId,
             KeyPair keyPair,
             X509Certificate[] certificateChain
         ) throws Exception;
 
+        /**
+         * Get the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
+         *
+         * @return the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
+         */
         ServerCertificateValidator getCertificateValidator();
 
         class CertificateRecord {
@@ -150,8 +220,23 @@ public interface CertificateManager {
 
     interface CertificateFactory {
 
+        /**
+         * Create a {@link KeyPair} for the certificate of the type identified by
+         * {@code certificateTypeId}.
+         *
+         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
+         * @return the new {@link KeyPair}.
+         */
         KeyPair createKeyPair(NodeId certificateTypeId);
 
+        /**
+         * Create a {@link X509Certificate} chain for the certificate of the type identified by
+         * {@code certificateTypeId}.
+         *
+         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
+         * @param keyPair the {@link KeyPair} to use when creating the certificate chain.
+         * @return the new {@link X509Certificate} chain.
+         */
         X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair);
 
     }
