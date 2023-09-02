@@ -104,28 +104,6 @@ public interface CertificateManager {
         return getCertificateGroup(NodeIds.ServerConfiguration_CertificateGroups_DefaultHttpsGroup);
     }
 
-    /**
-     * Get the list of Rejected Certificates.
-     *
-     * @return the list of Rejected {@link X509Certificate}s.
-     */
-    List<X509Certificate> getRejectedCertificates();
-
-    /**
-     * Add {@code certificate} to the Rejected Certificates list.
-     *
-     * @param certificate the {@link X509Certificate} to add to the Rejected Certificates list.
-     */
-    void addRejectedCertificate(X509Certificate certificate);
-
-    /**
-     * Remove {@code certificate} from the Rejected Certificates list.
-     *
-     * @param certificate the {@link X509Certificate} to remove from the Rejected Certificates list.
-     * @return {@code true} if the certificate was removed.
-     */
-    boolean removeRejectedCertificate(X509Certificate certificate);
-
     interface CertificateGroup {
 
         /**

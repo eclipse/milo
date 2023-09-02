@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.stack;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,21 +77,6 @@ public class TestCertificateManager implements CertificateManager {
     @Override
     public List<CertificateGroup> getCertificateGroups() {
         return List.of(certificateGroup);
-    }
-
-    @Override
-    public List<X509Certificate> getRejectedCertificates() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void addRejectedCertificate(X509Certificate certificate) {
-
-    }
-
-    @Override
-    public boolean removeRejectedCertificate(X509Certificate certificate) {
-        return false;
     }
 
 }

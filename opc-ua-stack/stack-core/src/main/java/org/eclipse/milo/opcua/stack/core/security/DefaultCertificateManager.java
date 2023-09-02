@@ -77,21 +77,6 @@ public class DefaultCertificateManager implements CertificateManager {
             .findFirst();
     }
 
-    @Override
-    public void addRejectedCertificate(X509Certificate certificate) {
-        // TODO
-    }
-
-    @Override
-    public boolean removeRejectedCertificate(X509Certificate certificate) {
-        return false; // TODO
-    }
-
-    @Override
-    public List<X509Certificate> getRejectedCertificates() {
-        return null; // TODO
-    }
-
     /**
      * Create an instance of {@link DefaultCertificateManager} pre-populated with an instance of
      * {@link DefaultApplicationGroup}, with keys and certificates managed by {@code keyManager}.
