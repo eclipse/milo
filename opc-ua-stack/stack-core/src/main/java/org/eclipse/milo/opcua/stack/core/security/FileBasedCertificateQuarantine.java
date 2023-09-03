@@ -33,12 +33,18 @@ public class FileBasedCertificateQuarantine implements CertificateQuarantine {
      * directory before the oldest certificates are deleted to make room for
      * newer ones.
      */
-    static final int MAX_REJECTED_CERTIFICATES = 128;
+    static final int DEFAULT_MAX_REJECTED_CERTIFICATES = 128;
 
     private final File rejectedDir;
+    private final int maxRejectedCertificates;
 
     public FileBasedCertificateQuarantine(File rejectedDir) {
+        this(rejectedDir, DEFAULT_MAX_REJECTED_CERTIFICATES);
+    }
+
+    public FileBasedCertificateQuarantine(File rejectedDir, int maxRejectedCertificates) {
         this.rejectedDir = rejectedDir;
+        this.maxRejectedCertificates = maxRejectedCertificates;
 
         assert rejectedDir.exists();
     }
@@ -57,16 +63,19 @@ public class FileBasedCertificateQuarantine implements CertificateQuarantine {
 
     @Override
     public void addRejectedCertificate(X509Certificate certificate) {
-        pruneOldCertificates(rejectedDir);
+        pruneOldCertificates(rejectedDir, maxRejectedCertificates);
 
         writeCertificateFile(rejectedDir, certificate);
     }
 
     @Override
     public void removeRejectedCertificate(X509Certificate certificate) {
-        ByteString thumbprint = ByteString.of(sha1(certificate.getSignature()));
+        try {
+            ByteString thumbprint = CertificateUtil.thumbprint(certificate);
 
-        deleteCertificateFile(rejectedDir, thumbprint);
+            deleteCertificateFile(rejectedDir, thumbprint);
+        } catch (Exception ignored) {
+        }
     }
 
     private static Optional<X509Certificate> decodeCertificateFile(File f) {
@@ -129,11 +138,11 @@ public class FileBasedCertificateQuarantine implements CertificateQuarantine {
      * certificates until there are {@code MAX_REJECTED_CERTIFICATES} - 1 certificates (thus
      * creating room to add a new one).
      */
-    synchronized static void pruneOldCertificates(File rejectedDir) {
+    synchronized static void pruneOldCertificates(File rejectedDir, int maxRejectedCertificates) {
         File[] files = rejectedDir.listFiles();
 
-        if (files != null && files.length >= MAX_REJECTED_CERTIFICATES) {
-            int excessCount = files.length - MAX_REJECTED_CERTIFICATES;
+        if (files != null && files.length >= maxRejectedCertificates) {
+            int excessCount = files.length - maxRejectedCertificates;
 
             // If last modified of any file changes during the sort it can lead
             // to "IllegalArgumentException: Comparison method violates its general contract!"
