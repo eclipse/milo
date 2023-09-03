@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -77,6 +78,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
+import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransportFactory;
@@ -128,7 +130,13 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
-    private final AtomicLong secureChannelIds = new AtomicLong();
+    /**
+     * SecureChannel id sequence, starting at a random value in [1..{@link Integer#MAX_VALUE}],
+     * and wrapping back to 1 after {@link UInteger#MAX_VALUE}.
+     */
+    private final LongSequence secureChannelIds =
+        new LongSequence(1L, UInteger.MAX_VALUE, new Random().nextInt(Integer.MAX_VALUE - 1) + 1);
+
     private final AtomicLong secureChannelTokenIds = new AtomicLong();
 
     private final Map<TransportProfile, OpcServerTransport> transports = new ConcurrentHashMap<>();

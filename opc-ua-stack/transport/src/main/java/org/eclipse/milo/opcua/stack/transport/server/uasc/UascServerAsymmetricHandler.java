@@ -328,6 +328,14 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         request.getRequestType(), secureChannelId
                     );
 
+                    if (request.getRequestType() == SecurityTokenRequestType.Renew) {
+                        if (secureChannelId == 0L) {
+                            throw new UaException(
+                                StatusCodes.Bad_SecurityChecksFailed,
+                                "secure channel renewal for secureChannelId=0");
+                        }
+                    }
+
                     sendOpenSecureChannelResponse(ctx, requestId, request);
                 } catch (Throwable t) {
                     logger.error("Error decoding OpenSecureChannelRequest", t);
@@ -461,13 +469,12 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 });
 
             ctx.channel().attr(ENDPOINT_KEY).set(endpoint);
-        }
-
-        if (requestType == SecurityTokenRequestType.Renew &&
-            secureChannel.getMessageSecurityMode() != request.getSecurityMode()) {
-
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
-                "secure channel renewal requested a different MessageSecurityMode.");
+        } else if (requestType == SecurityTokenRequestType.Renew) {
+            if (secureChannel.getMessageSecurityMode() != request.getSecurityMode()) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    "secure channel renewal requested a different MessageSecurityMode.");
+            }
         }
 
         long channelLifetime = request.getRequestedLifetime().longValue();
