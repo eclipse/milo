@@ -100,21 +100,6 @@ public class MemoryTrustListManager implements TrustListManager {
     }
 
     @Override
-    public void addRejectedCertificate(X509Certificate certificate) {
-        // TODO
-    }
-
-    @Override
-    public boolean removeRejectedCertificate(ByteString thumbprint) {
-        return false; // TODO
-    }
-
-    @Override
-    public List<X509Certificate> getRejectedCertificates() {
-        return Collections.emptyList(); // TODO
-    }
-
-    @Override
     public DateTime getLastUpdateTime() {
         return DateTime.now(); // TODO
     }

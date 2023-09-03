@@ -212,18 +212,6 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     @Override
-    public synchronized List<X509Certificate> getRejectedCertificates() {
-        File[] files = rejectedDir.listFiles();
-        if (files == null) files = new File[0];
-
-        return List.copyOf(
-            Arrays.stream(files)
-                .flatMap(cert -> decodeCertificateFile(cert).stream())
-                .collect(Collectors.toList())
-        );
-    }
-
-    @Override
     public synchronized void setIssuerCrls(List<X509CRL> issuerCrls) {
         replaceCrlsInDir(issuerCrls, issuerCrlDir);
 
@@ -278,15 +266,6 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     @Override
-    public synchronized void addRejectedCertificate(X509Certificate certificate) {
-        pruneOldRejectedCertificates();
-
-        writeCertificateToDir(certificate, rejectedDir);
-
-        lastUpdateTime.set(DateTime.now());
-    }
-
-    @Override
     public synchronized boolean removeIssuerCertificate(ByteString thumbprint) {
         boolean found = deleteCertificateFile(issuerCertsDir, thumbprint);
 
@@ -306,11 +285,6 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         lastUpdateTime.set(DateTime.now());
 
         return found;
-    }
-
-    @Override
-    public synchronized boolean removeRejectedCertificate(ByteString thumbprint) {
-        return deleteCertificateFile(rejectedDir, thumbprint);
     }
 
     public File getBaseDir() {

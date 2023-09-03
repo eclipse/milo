@@ -19,13 +19,19 @@ public class DefaultCertificateManager implements CertificateManager {
 
     private final Map<NodeId, CertificateGroup> certificateGroups = new ConcurrentHashMap<>();
 
-    public DefaultCertificateManager() {}
+    private final CertificateQuarantine certificateQuarantine;
 
-    public DefaultCertificateManager(CertificateGroup group) {
-        this(List.of(group));
+    public DefaultCertificateManager(CertificateQuarantine certificateQuarantine) {
+        this.certificateQuarantine = certificateQuarantine;
     }
 
-    public DefaultCertificateManager(Collection<CertificateGroup> groups) {
+    public DefaultCertificateManager(CertificateQuarantine certificateQuarantine, CertificateGroup group) {
+        this(certificateQuarantine, List.of(group));
+    }
+
+    public DefaultCertificateManager(CertificateQuarantine certificateQuarantine, Collection<CertificateGroup> groups) {
+        this.certificateQuarantine = certificateQuarantine;
+
         groups.forEach(g -> certificateGroups.put(g.getCertificateGroupId(), g));
     }
 
@@ -63,6 +69,11 @@ public class DefaultCertificateManager implements CertificateManager {
         return List.copyOf(certificateGroups.values());
     }
 
+    @Override
+    public CertificateQuarantine getCertificateQuarantine() {
+        return certificateQuarantine;
+    }
+
     private Optional<CertificateRecord> firstMatchingRecord(ByteString thumbprint) {
         return certificateGroups.values()
             .stream()
@@ -87,7 +98,7 @@ public class DefaultCertificateManager implements CertificateManager {
      *     certificates.
      * @return a new {@link DefaultCertificateManager} instance.
      * @throws Exception if an error occurs while initializing the {@link KeyStoreKeyManager} or
-     *     {@link DefaultApplicationGroup}.
+     *                   {@link DefaultApplicationGroup}.
      */
     public static DefaultCertificateManager createWithDefaultApplicationGroup(
         Path pkiDir,
@@ -95,15 +106,20 @@ public class DefaultCertificateManager implements CertificateManager {
         CertificateFactory certificateFactory
     ) throws Exception {
 
+        var certificateQuarantine = new FileBasedCertificateQuarantine(
+            pkiDir.resolve("rejected").toFile()
+        );
+
         var trustListManager = new DefaultTrustListManager(pkiDir);
 
         var defaultGroup = DefaultApplicationGroup.createAndInitialize(
             keyManager,
             trustListManager,
-            certificateFactory
+            certificateFactory,
+            certificateQuarantine
         );
 
-        return new DefaultCertificateManager(defaultGroup);
+        return new DefaultCertificateManager(certificateQuarantine, defaultGroup);
     }
 
 }

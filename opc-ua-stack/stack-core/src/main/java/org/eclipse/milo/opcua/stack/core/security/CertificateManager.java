@@ -72,6 +72,13 @@ public interface CertificateManager {
     List<CertificateGroup> getCertificateGroups();
 
     /**
+     * Get the Server's {@link CertificateQuarantine}.
+     *
+     * @return the Server's {@link CertificateQuarantine}.
+     */
+    CertificateQuarantine getCertificateQuarantine();
+
+    /**
      * Get the DefaultApplicationGroup {@link CertificateGroup}, if it's configured.
      * <p>
      * Servers are required to support the DefaultApplicationGroup CertificateGroup.
@@ -233,14 +240,15 @@ public interface CertificateManager {
         public DefaultApplicationGroup(
             KeyManager keyManager,
             TrustListManager trustListManager,
-            CertificateFactory certificateFactory
+            CertificateFactory certificateFactory,
+            CertificateQuarantine certificateQuarantine
         ) {
 
             this.keyManager = keyManager;
             this.trustListManager = trustListManager;
             this.certificateFactory = certificateFactory;
 
-            certificateValidator = new DefaultServerCertificateValidator(trustListManager);
+            certificateValidator = new DefaultServerCertificateValidator(trustListManager, certificateQuarantine);
         }
 
         public void initialize() throws Exception {
@@ -401,18 +409,20 @@ public interface CertificateManager {
          * @param certificateFactory the {@link CertificateFactory} to use.
          * @return an initialized {@link DefaultApplicationGroup} instance.
          * @throws Exception if an error occurs while initializing the
-         *     {@link DefaultApplicationGroup}.
+         *                   {@link DefaultApplicationGroup}.
          */
         public static DefaultApplicationGroup createAndInitialize(
             KeyManager keyManager,
             TrustListManager trustListManager,
-            CertificateFactory certificateFactory
+            CertificateFactory certificateFactory,
+            CertificateQuarantine certificateQuarantine
         ) throws Exception {
 
             var defaultApplicationGroup = new DefaultApplicationGroup(
                 keyManager,
                 trustListManager,
-                certificateFactory
+                certificateFactory,
+                certificateQuarantine
             );
 
             defaultApplicationGroup.initialize();

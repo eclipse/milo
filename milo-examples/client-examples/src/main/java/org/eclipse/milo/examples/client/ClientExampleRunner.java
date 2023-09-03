@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,8 +81,10 @@ public class ClientExampleRunner {
 
         clientTrustListManager = new DefaultTrustListManager(pkiDir);
 
-        DefaultClientCertificateValidator certificateValidator =
-            new DefaultClientCertificateValidator(clientTrustListManager);
+        var certificateValidator = new DefaultClientCertificateValidator(
+            clientTrustListManager,
+            new MemoryCertificateQuarantine()
+        );
 
         return OpcUaClient.create(
             clientExample.getEndpointUrl(),

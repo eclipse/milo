@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
 import org.eclipse.milo.opcua.stack.core.security.MemoryKeyManager;
 import org.eclipse.milo.opcua.stack.core.security.MemoryTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -23,9 +25,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class TestCertificateManager implements CertificateManager {
 
+    private final CertificateQuarantine certificateQuarantine = new MemoryCertificateQuarantine();
+
     private final KeyPair keyPair;
     private final X509Certificate certificate;
-
     private final DefaultApplicationGroup certificateGroup;
 
     public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) throws Exception {
@@ -45,7 +48,8 @@ public class TestCertificateManager implements CertificateManager {
                 public X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair) {
                     return new X509Certificate[]{certificate};
                 }
-            }
+            },
+            certificateQuarantine
         );
     }
 
@@ -77,6 +81,11 @@ public class TestCertificateManager implements CertificateManager {
     @Override
     public List<CertificateGroup> getCertificateGroups() {
         return List.of(certificateGroup);
+    }
+
+    @Override
+    public CertificateQuarantine getCertificateQuarantine() {
+        return certificateQuarantine;
     }
 
 }
