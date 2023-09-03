@@ -20,10 +20,14 @@ public class LongSequence {
     private final long high;
 
     public LongSequence(long low, long high) {
+        this(low, high, low);
+    }
+
+    public LongSequence(long low, long high, long start) {
         this.low = low;
         this.high = high;
 
-        atomic = new AtomicLong(low);
+        atomic = new AtomicLong(start);
     }
 
     /**
