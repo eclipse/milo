@@ -5,6 +5,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -12,6 +13,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 
 public class MemoryTrustListManager implements TrustListManager {
+
+    private final AtomicReference<DateTime> lastUpdateTime = new AtomicReference<>(DateTime.MIN_VALUE);
 
     private final List<X509Certificate> issuerCertificates = Collections.synchronizedList(new ArrayList<>());
     private final List<X509Certificate> trustedCertificates = Collections.synchronizedList(new ArrayList<>());
@@ -52,6 +55,8 @@ public class MemoryTrustListManager implements TrustListManager {
         synchronized (this.issuerCrls) {
             this.issuerCrls.clear();
             this.issuerCrls.addAll(issuerCrls);
+
+            lastUpdateTime.set(DateTime.now());
         }
     }
 
@@ -60,6 +65,8 @@ public class MemoryTrustListManager implements TrustListManager {
         synchronized (this.trustedCrls) {
             this.trustedCrls.clear();
             this.trustedCrls.addAll(trustedCrls);
+
+            lastUpdateTime.set(DateTime.now());
         }
     }
 
@@ -68,6 +75,8 @@ public class MemoryTrustListManager implements TrustListManager {
         synchronized (this.issuerCertificates) {
             this.issuerCertificates.clear();
             this.issuerCertificates.addAll(issuerCertificates);
+
+            lastUpdateTime.set(DateTime.now());
         }
     }
 
@@ -76,32 +85,50 @@ public class MemoryTrustListManager implements TrustListManager {
         synchronized (this.trustedCertificates) {
             this.trustedCertificates.clear();
             this.trustedCertificates.addAll(trustedCertificates);
+
+            lastUpdateTime.set(DateTime.now());
         }
     }
 
     @Override
     public void addIssuerCertificate(X509Certificate certificate) {
         issuerCertificates.add(certificate);
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
     public void addTrustedCertificate(X509Certificate certificate) {
         trustedCertificates.add(certificate);
+
+        lastUpdateTime.set(DateTime.now());
     }
 
     @Override
     public boolean removeIssuerCertificate(ByteString thumbprint) {
-        return issuerCertificates.removeIf(c -> thumbprintMatches(c, thumbprint));
+        boolean removed = issuerCertificates.removeIf(c -> thumbprintMatches(c, thumbprint));
+
+        if (removed) {
+            lastUpdateTime.set(DateTime.now());
+        }
+
+        return removed;
     }
 
     @Override
     public boolean removeTrustedCertificate(ByteString thumbprint) {
-        return trustedCertificates.removeIf(c -> thumbprintMatches(c, thumbprint));
+        boolean removed = trustedCertificates.removeIf(c -> thumbprintMatches(c, thumbprint));
+
+        if (removed) {
+            lastUpdateTime.set(DateTime.now());
+        }
+
+        return removed;
     }
 
     @Override
     public DateTime getLastUpdateTime() {
-        return DateTime.now(); // TODO
+        return lastUpdateTime.get();
     }
 
     private static boolean thumbprintMatches(X509Certificate certificate, ByteString thumbprint) {

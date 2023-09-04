@@ -98,7 +98,7 @@ public class DefaultCertificateManager implements CertificateManager {
      *     certificates.
      * @return a new {@link DefaultCertificateManager} instance.
      * @throws Exception if an error occurs while initializing the {@link KeyStoreKeyManager} or
-     *                   {@link DefaultApplicationGroup}.
+     *     {@link DefaultApplicationGroup}.
      */
     public static DefaultCertificateManager createWithDefaultApplicationGroup(
         Path pkiDir,
@@ -106,11 +106,11 @@ public class DefaultCertificateManager implements CertificateManager {
         CertificateFactory certificateFactory
     ) throws Exception {
 
-        var certificateQuarantine = new FileBasedCertificateQuarantine(
-            pkiDir.resolve("rejected").toFile()
-        );
+        var trustListManager = FileBasedTrustListManager.createAndInitialize(pkiDir);
 
-        var trustListManager = new DefaultTrustListManager(pkiDir);
+        var certificateQuarantine = FileBasedCertificateQuarantine.create(
+            pkiDir.resolve("rejected").resolve("certs")
+        );
 
         var defaultGroup = DefaultApplicationGroup.createAndInitialize(
             keyManager,

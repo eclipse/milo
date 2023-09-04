@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,8 +24,9 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultClientCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.FileBasedTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class ClientExampleRunner {
 
     private ExampleServer exampleServer;
 
-    private DefaultTrustListManager clientTrustListManager;
+    private TrustListManager clientTrustListManager;
 
     private final ClientExample clientExample;
     private final boolean serverRequired;
@@ -70,16 +70,16 @@ public class ClientExampleRunner {
             throw new Exception("unable to create security dir: " + securityTempDir);
         }
 
-        File pkiDir = securityTempDir.resolve("pki").toFile();
+        Path pkiDir = securityTempDir.resolve("pki");
 
         LoggerFactory.getLogger(getClass())
             .info("security dir: {}", securityTempDir.toAbsolutePath());
         LoggerFactory.getLogger(getClass())
-            .info("security pki dir: {}", pkiDir.getAbsolutePath());
+            .info("security pki dir: {}", pkiDir.toAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
-        clientTrustListManager = new DefaultTrustListManager(pkiDir);
+        clientTrustListManager = FileBasedTrustListManager.createAndInitialize(pkiDir);
 
         var certificateValidator = new DefaultClientCertificateValidator(
             clientTrustListManager,

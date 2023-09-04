@@ -10,14 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
@@ -28,11 +25,7 @@ import static org.testng.Assert.assertEquals;
 public class OpcUaServerConfigTest {
 
     @Test
-    public void testCopy() throws IOException {
-        DefaultTrustListManager trustListManager = new DefaultTrustListManager(
-            Files.createTempDirectory("test").toFile()
-        );
-
+    public void testCopy() {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
         OpcUaServerConfig original = OpcUaServerConfig.builder()
