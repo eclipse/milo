@@ -195,6 +195,13 @@ public interface CertificateManager {
          */
         ServerCertificateValidator getCertificateValidator();
 
+        /**
+         * Get the {@link CertificateFactory} for this {@link CertificateGroup}.
+         *
+         * @return the {@link CertificateFactory} for this {@link CertificateGroup}.
+         */
+        CertificateFactory getCertificateFactory();
+
         class CertificateRecord {
             public final NodeId certificateGroupId;
             public final NodeId certificateTypeId;
@@ -211,29 +218,6 @@ public interface CertificateManager {
                 this.certificateChain = certificateChain;
             }
         }
-
-    }
-
-    interface CertificateFactory {
-
-        /**
-         * Create a {@link KeyPair} for the certificate of the type identified by
-         * {@code certificateTypeId}.
-         *
-         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
-         * @return the new {@link KeyPair}.
-         */
-        KeyPair createKeyPair(NodeId certificateTypeId);
-
-        /**
-         * Create a {@link X509Certificate} chain for the certificate of the type identified by
-         * {@code certificateTypeId}.
-         *
-         * @param certificateTypeId the {@link NodeId} identifying the type of certificate.
-         * @param keyPair the {@link KeyPair} to use when creating the certificate chain.
-         * @return the new {@link X509Certificate} chain.
-         */
-        X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair);
 
     }
 
@@ -394,6 +378,11 @@ public interface CertificateManager {
         @Override
         public ServerCertificateValidator getCertificateValidator() {
             return certificateValidator;
+        }
+
+        @Override
+        public CertificateFactory getCertificateFactory() {
+            return certificateFactory;
         }
 
         protected @Nullable String getAlias(NodeId certificateTypeId) {

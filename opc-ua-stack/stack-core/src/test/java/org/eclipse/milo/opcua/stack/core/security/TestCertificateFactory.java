@@ -9,23 +9,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 
-public class TestCertificateFactory implements CertificateManager.CertificateFactory {
+public class TestCertificateFactory extends RsaSha256CertificateFactory {
 
     @Override
     public KeyPair createKeyPair(NodeId nodeId) {
         assert nodeId.equals(NodeIds.RsaSha256ApplicationCertificateType);
 
-        return createRsaKeyPair();
+        return createRsaSha256KeyPair();
     }
 
     @Override
     public X509Certificate[] createCertificateChain(NodeId nodeId, KeyPair keyPair) {
         assert nodeId.equals(NodeIds.RsaSha256ApplicationCertificateType);
 
-        return createRsaCertificateChain(keyPair);
+        return createRsaSha256CertificateChain(keyPair);
     }
 
-    public KeyPair createRsaKeyPair() {
+    @Override
+    public KeyPair createRsaSha256KeyPair() {
         try {
             return SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
         } catch (NoSuchAlgorithmException e) {
@@ -33,7 +34,8 @@ public class TestCertificateFactory implements CertificateManager.CertificateFac
         }
     }
 
-    public X509Certificate[] createRsaCertificateChain(KeyPair keyPair) {
+    @Override
+    public X509Certificate[] createRsaSha256CertificateChain(KeyPair keyPair) {
         String applicationUri = "urn:eclipse:milo:test";
 
         SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)

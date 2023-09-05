@@ -18,8 +18,8 @@ abstract class KeyManagerTest {
     @BeforeEach
     void setUpKeyManager() throws Exception {
         var factory = new TestCertificateFactory();
-        KeyPair keyPair = factory.createRsaKeyPair();
-        X509Certificate[] certificateChain = factory.createRsaCertificateChain(keyPair);
+        KeyPair keyPair = factory.createRsaSha256KeyPair();
+        X509Certificate[] certificateChain = factory.createRsaSha256CertificateChain(keyPair);
 
         keyManager = newKeyManager();
 
@@ -53,8 +53,8 @@ abstract class KeyManagerTest {
     @Test
     void set() throws Exception {
         var factory = new TestCertificateFactory();
-        KeyPair keyPair = factory.createRsaKeyPair();
-        X509Certificate[] certificateChain = factory.createRsaCertificateChain(keyPair);
+        KeyPair keyPair = factory.createRsaSha256KeyPair();
+        X509Certificate[] certificateChain = factory.createRsaSha256CertificateChain(keyPair);
 
         keyManager.set(
             "test2",

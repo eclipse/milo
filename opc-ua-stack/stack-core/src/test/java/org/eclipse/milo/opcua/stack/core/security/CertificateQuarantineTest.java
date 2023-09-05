@@ -27,8 +27,8 @@ abstract class CertificateQuarantineTest {
 
     @Test
     void addRejectedCertificate() {
-        KeyPair keyPair = certificateFactory.createRsaKeyPair();
-        X509Certificate[] certificateChain = certificateFactory.createRsaCertificateChain(keyPair);
+        KeyPair keyPair = certificateFactory.createRsaSha256KeyPair();
+        X509Certificate[] certificateChain = certificateFactory.createRsaSha256CertificateChain(keyPair);
         X509Certificate certificate = certificateChain[0];
 
         certificateQuarantine.addRejectedCertificate(certificate);
@@ -38,8 +38,8 @@ abstract class CertificateQuarantineTest {
 
     @Test
     void removeRejectedCertificate() {
-        KeyPair keyPair = certificateFactory.createRsaKeyPair();
-        X509Certificate[] certificateChain = certificateFactory.createRsaCertificateChain(keyPair);
+        KeyPair keyPair = certificateFactory.createRsaSha256KeyPair();
+        X509Certificate[] certificateChain = certificateFactory.createRsaSha256CertificateChain(keyPair);
         X509Certificate certificate = certificateChain[0];
 
         certificateQuarantine.addRejectedCertificate(certificate);
@@ -55,8 +55,8 @@ abstract class CertificateQuarantineTest {
     @Test
     void getRejectedCertificates() {
         for (int i = 0; i < 3; i++) {
-            KeyPair keyPair = certificateFactory.createRsaKeyPair();
-            X509Certificate[] certificateChain = certificateFactory.createRsaCertificateChain(keyPair);
+            KeyPair keyPair = certificateFactory.createRsaSha256KeyPair();
+            X509Certificate[] certificateChain = certificateFactory.createRsaSha256CertificateChain(keyPair);
             X509Certificate certificate = certificateChain[0];
 
             certificateQuarantine.addRejectedCertificate(certificate);
@@ -68,8 +68,8 @@ abstract class CertificateQuarantineTest {
     @Test
     void maxRejectedCertificates() {
         for (int i = 0; i < 3; i++) {
-            KeyPair keyPair = certificateFactory.createRsaKeyPair();
-            X509Certificate[] certificateChain = certificateFactory.createRsaCertificateChain(keyPair);
+            KeyPair keyPair = certificateFactory.createRsaSha256KeyPair();
+            X509Certificate[] certificateChain = certificateFactory.createRsaSha256CertificateChain(keyPair);
             X509Certificate certificate = certificateChain[0];
 
             certificateQuarantine.addRejectedCertificate(certificate);
@@ -77,8 +77,8 @@ abstract class CertificateQuarantineTest {
 
         assertEquals(3, certificateQuarantine.getRejectedCertificates().size());
 
-        KeyPair keyPair = certificateFactory.createRsaKeyPair();
-        X509Certificate[] certificateChain = certificateFactory.createRsaCertificateChain(keyPair);
+        KeyPair keyPair = certificateFactory.createRsaSha256KeyPair();
+        X509Certificate[] certificateChain = certificateFactory.createRsaSha256CertificateChain(keyPair);
         X509Certificate certificate = certificateChain[0];
 
         certificateQuarantine.addRejectedCertificate(certificate);

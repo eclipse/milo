@@ -35,14 +35,13 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.KeyStoreKeyManager;
+import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
@@ -113,14 +112,14 @@ public class ExampleServer {
         var certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
             pkiDir.toPath(),
             keyManager,
-            new CertificateManager.CertificateFactory() {
+            new RsaSha256CertificateFactory() {
                 @Override
-                public KeyPair createKeyPair(NodeId certificateTypeId) {
+                protected KeyPair createRsaSha256KeyPair() {
                     return loader.getServerKeyPair();
                 }
 
                 @Override
-                public X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair) {
+                protected X509Certificate[] createRsaSha256CertificateChain(KeyPair keyPair) {
                     return loader.getServerCertificateChain();
                 }
             }
