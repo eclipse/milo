@@ -17,6 +17,13 @@ import org.jetbrains.annotations.Nullable;
 
 public interface KeyManager {
 
+    /**
+     * Check if this {@link KeyManager} is managing an entry for {@code alias}.
+     *
+     * @param alias the alias to check.
+     * @return {@code true} if this {@link KeyManager} is managing an entry for {@code alias}.
+     * @throws Exception if an error occurs while checking.
+     */
     boolean contains(String alias) throws Exception;
 
     @Nullable KeyRecord get(String alias, String password) throws Exception;
