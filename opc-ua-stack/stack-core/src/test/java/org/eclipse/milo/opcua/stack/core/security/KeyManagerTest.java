@@ -25,7 +25,6 @@ abstract class KeyManagerTest {
 
         keyManager.set(
             "test",
-            "password",
             new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain)
         );
     }
@@ -40,14 +39,14 @@ abstract class KeyManagerTest {
 
     @Test
     void get() throws Exception {
-        assertNotNull(keyManager.get("test", "password"));
-        assertNull(keyManager.get("foo", "password"));
+        assertNotNull(keyManager.get("test"));
+        assertNull(keyManager.get("foo"));
     }
 
     @Test
     void remove() throws Exception {
-        assertNotNull(keyManager.remove("test", "password"));
-        assertNull(keyManager.remove("test", "password"));
+        assertNotNull(keyManager.remove("test"));
+        assertNull(keyManager.remove("test"));
         assertFalse(keyManager.contains("test"));
     }
 
@@ -59,7 +58,6 @@ abstract class KeyManagerTest {
 
         keyManager.set(
             "test2",
-            "password",
             new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain)
         );
 

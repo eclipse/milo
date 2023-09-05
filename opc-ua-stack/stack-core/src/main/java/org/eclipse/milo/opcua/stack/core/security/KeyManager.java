@@ -26,11 +26,34 @@ public interface KeyManager {
      */
     boolean contains(String alias) throws Exception;
 
-    @Nullable KeyRecord get(String alias, String password) throws Exception;
+    /**
+     * Get the {@link KeyRecord} for {@code alias}.
+     *
+     * @param alias the alias to get the {@link KeyRecord} for.
+     * @return the {@link KeyRecord} for {@code alias}, or {@code null} if no entry exists for
+     *     {@code alias}.
+     * @throws Exception if an error occurs while getting the {@link KeyRecord}.
+     */
+    @Nullable KeyRecord get(String alias) throws Exception;
 
-    @Nullable KeyRecord remove(String alias, String password) throws Exception;
+    /**
+     * Remove the {@link KeyRecord} for {@code alias}.
+     *
+     * @param alias the alias to remove the {@link KeyRecord} for.
+     * @return the {@link KeyRecord} that was removed, or {@code null} if no entry exists for
+     *     {@code alias}.
+     * @throws Exception if an error occurs while removing the {@link KeyRecord}.
+     */
+    @Nullable KeyRecord remove(String alias) throws Exception;
 
-    void set(String alias, String password, KeyRecord keyRecord) throws Exception;
+    /**
+     * Set the {@link KeyRecord} for {@code alias}.
+     *
+     * @param alias the alias to set the {@link KeyRecord} for.
+     * @param keyRecord the {@link KeyRecord} to set.
+     * @throws Exception if an error occurs while setting the {@link KeyRecord}.
+     */
+    void set(String alias, KeyRecord keyRecord) throws Exception;
 
     class KeyRecord {
         public final PrivateKey privateKey;

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -56,17 +57,17 @@ public class KeyStoreKeyManager implements KeyManager {
             if (keyStoreFile.exists()) {
                 keyStore.load(
                     new FileInputStream(keyStoreFile),
-                    settings.password.get().toCharArray()
+                    settings.getKeyStorePassword.get()
                 );
             } else {
                 keyStore.load(
                     null,
-                    settings.password.get().toCharArray()
+                    settings.getKeyStorePassword.get()
                 );
 
                 keyStore.store(
                     new FileOutputStream(keyStoreFile),
-                    settings.password.get().toCharArray()
+                    settings.getKeyStorePassword.get()
                 );
             }
         }
@@ -87,7 +88,7 @@ public class KeyStoreKeyManager implements KeyManager {
     }
 
     @Override
-    public @Nullable KeyRecord get(String alias, String password) throws Exception {
+    public @Nullable KeyRecord get(String alias) throws Exception {
         if (!initialized.get()) {
             throw new IllegalStateException("KeyStoreKeyManager not initialized");
         }
@@ -95,7 +96,7 @@ public class KeyStoreKeyManager implements KeyManager {
         try {
             keyStoreLock.readLock().lock();
 
-            Key key = keyStore.getKey(alias, password.toCharArray());
+            Key key = keyStore.getKey(alias, settings.getAliasPassword.apply(alias));
             Certificate[] certificateChain = keyStore.getCertificateChain(alias);
 
             if (key instanceof PrivateKey && certificateChain != null) {
@@ -113,7 +114,7 @@ public class KeyStoreKeyManager implements KeyManager {
     }
 
     @Override
-    public synchronized @Nullable KeyRecord remove(String alias, String password) throws Exception {
+    public synchronized @Nullable KeyRecord remove(String alias) throws Exception {
         if (!initialized.get()) {
             throw new IllegalStateException("KeyStoreKeyManager not initialized");
         }
@@ -123,7 +124,7 @@ public class KeyStoreKeyManager implements KeyManager {
 
             KeyStore.Entry entry = keyStore.getEntry(
                 alias,
-                new KeyStore.PasswordProtection(password.toCharArray())
+                new KeyStore.PasswordProtection(settings.getAliasPassword.apply(alias))
             );
 
             if (entry instanceof KeyStore.PrivateKeyEntry) {
@@ -132,7 +133,7 @@ public class KeyStoreKeyManager implements KeyManager {
 
                 keyStore.store(
                     new FileOutputStream(settings.keyStorePath.toFile()),
-                    settings.password.get().toCharArray()
+                    settings.getKeyStorePassword.get()
                 );
 
                 return new KeyRecord(
@@ -148,7 +149,7 @@ public class KeyStoreKeyManager implements KeyManager {
     }
 
     @Override
-    public void set(String alias, String password, KeyRecord keyRecord) throws Exception {
+    public void set(String alias, KeyRecord keyRecord) throws Exception {
         if (!initialized.get()) {
             throw new IllegalStateException("KeyStoreKeyManager not initialized");
         }
@@ -159,13 +160,13 @@ public class KeyStoreKeyManager implements KeyManager {
             keyStore.setKeyEntry(
                 alias,
                 keyRecord.privateKey,
-                password.toCharArray(),
+                settings.getAliasPassword.apply(alias),
                 keyRecord.certificateChain
             );
 
             keyStore.store(
                 new FileOutputStream(settings.keyStorePath.toFile()),
-                settings.password.get().toCharArray()
+                settings.getKeyStorePassword.get()
             );
         } finally {
             keyStoreLock.writeLock().unlock();
@@ -187,11 +188,18 @@ public class KeyStoreKeyManager implements KeyManager {
 
     public static class KeyStoreSettings {
         public final Path keyStorePath;
-        public final Supplier<String> password;
+        public final Supplier<char[]> getKeyStorePassword;
+        public final Function<String, char[]> getAliasPassword;
 
-        public KeyStoreSettings(Path keyStorePath, Supplier<String> password) {
+        public KeyStoreSettings(
+            Path keyStorePath,
+            Supplier<char[]> getKeyStorePassword,
+            Function<String, char[]> getAliasPassword
+        ) {
+
             this.keyStorePath = keyStorePath;
-            this.password = password;
+            this.getKeyStorePassword = getKeyStorePassword;
+            this.getAliasPassword = getAliasPassword;
         }
     }
 

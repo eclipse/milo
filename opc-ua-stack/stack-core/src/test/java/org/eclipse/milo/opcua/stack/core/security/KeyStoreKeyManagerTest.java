@@ -23,7 +23,11 @@ class KeyStoreKeyManagerTest extends KeyManagerTest {
     @Override
     protected KeyManager newKeyManager() throws Exception {
         return KeyStoreKeyManager.createAndInitialize(
-            new KeyStoreSettings(keyStorePath, () -> "password")
+            new KeyStoreSettings(
+                keyStorePath,
+                "password"::toCharArray,
+                alias -> "password".toCharArray()
+            )
         );
     }
 

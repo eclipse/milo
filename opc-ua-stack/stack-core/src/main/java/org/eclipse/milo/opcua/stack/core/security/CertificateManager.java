@@ -237,6 +237,12 @@ public interface CertificateManager {
 
     }
 
+    /**
+     * An implementation of the DefaultApplicationGroup CertificateGroup.
+     * <p>
+     * Supports the {@link NodeIds#RsaSha256ApplicationCertificateType} CertificateType, which can
+     * be used with 2048- and 4096-bit RSA keys.
+     */
     class DefaultApplicationGroup implements CertificateGroup {
 
         private final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -273,7 +279,6 @@ public interface CertificateManager {
 
                         keyManager.set(
                             alias,
-                            getPassword(certificateTypeId),
                             new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain)
                         );
                     }
@@ -302,11 +307,10 @@ public interface CertificateManager {
 
             for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
                 String alias = getAlias(certificateTypeId);
-                String password = getPassword(certificateTypeId);
 
-                if (alias != null && password != null) {
+                if (alias != null) {
                     try {
-                        KeyManager.KeyRecord keyRecord = keyManager.get(alias, password);
+                        KeyManager.KeyRecord keyRecord = keyManager.get(alias);
 
                         if (keyRecord != null) {
                             certificateRecords.add(new CertificateRecord(
@@ -328,14 +332,13 @@ public interface CertificateManager {
         public Optional<KeyPair> getKeyPair(NodeId certificateTypeId) {
             if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
                 String alias = getAlias(certificateTypeId);
-                String password = getPassword(certificateTypeId);
 
-                if (alias == null || password == null) {
+                if (alias == null) {
                     return Optional.empty();
                 }
 
                 try {
-                    KeyManager.KeyRecord keyRecord = keyManager.get(alias, password);
+                    KeyManager.KeyRecord keyRecord = keyManager.get(alias);
 
                     return Optional.ofNullable(keyRecord)
                         .map(r -> new KeyPair(r.certificateChain[0].getPublicKey(), r.privateKey));
@@ -351,14 +354,13 @@ public interface CertificateManager {
         public Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId) {
             if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
                 String alias = getAlias(certificateTypeId);
-                String password = getPassword(certificateTypeId);
 
-                if (alias == null || password == null) {
+                if (alias == null) {
                     return Optional.empty();
                 }
 
                 try {
-                    KeyManager.KeyRecord keyRecord = keyManager.get(alias, password);
+                    KeyManager.KeyRecord keyRecord = keyManager.get(alias);
 
                     return Optional.ofNullable(keyRecord).map(r -> r.certificateChain);
                 } catch (Exception e) {
@@ -378,13 +380,12 @@ public interface CertificateManager {
 
             if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
                 String alias = getAlias(certificateTypeId);
-                String password = getPassword(certificateTypeId);
 
-                if (alias == null || password == null) {
+                if (alias == null) {
                     return;
                 }
 
-                keyManager.set(alias, password, new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain));
+                keyManager.set(alias, new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain));
             } else {
                 throw new UaException(StatusCodes.Bad_InvalidArgument, "certificateTypeId");
             }
@@ -403,14 +404,6 @@ public interface CertificateManager {
             }
         }
 
-        protected @Nullable String getPassword(NodeId certificateTypeId) {
-            if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
-                return "password";
-            } else {
-                return null;
-            }
-        }
-
         /**
          * Create and initialize a {@link DefaultApplicationGroup}.
          *
@@ -419,7 +412,7 @@ public interface CertificateManager {
          * @param certificateFactory the {@link CertificateFactory} to use.
          * @return an initialized {@link DefaultApplicationGroup} instance.
          * @throws Exception if an error occurs while initializing the
-         *                   {@link DefaultApplicationGroup}.
+         *     {@link DefaultApplicationGroup}.
          */
         public static DefaultApplicationGroup createAndInitialize(
             KeyManager keyManager,

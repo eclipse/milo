@@ -103,7 +103,8 @@ public class ExampleServer {
         var keyManager = KeyStoreKeyManager.createAndInitialize(
             new KeyStoreKeyManager.KeyStoreSettings(
                 securityTempDir.resolve("example-server.pfx"),
-                () -> "password"
+                "password"::toCharArray,
+                alias -> "password".toCharArray()
             )
         );
 

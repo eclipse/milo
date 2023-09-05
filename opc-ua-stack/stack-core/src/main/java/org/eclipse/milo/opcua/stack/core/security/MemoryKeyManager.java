@@ -25,17 +25,17 @@ public class MemoryKeyManager implements KeyManager {
     }
 
     @Override
-    public @Nullable KeyRecord get(String alias, String password) throws Exception {
+    public @Nullable KeyRecord get(String alias) throws Exception {
         return keys.get(alias);
     }
 
     @Override
-    public @Nullable KeyRecord remove(String alias, String password) throws Exception {
+    public @Nullable KeyRecord remove(String alias) throws Exception {
         return keys.remove(alias);
     }
 
     @Override
-    public void set(String alias, String password, KeyRecord keyRecord) throws Exception {
+    public void set(String alias, KeyRecord keyRecord) throws Exception {
         keys.put(alias, keyRecord);
     }
 
