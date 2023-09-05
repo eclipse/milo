@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,7 +46,8 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
     }
 
     /**
-     * Create a {@link ClientCertificateValidator} that performs a given set of optional validation checks.
+     * Create a {@link ClientCertificateValidator} that performs a given set of optional
+     * validation checks.
      *
      * @param trustListManager the configured {@link TrustListManager}.
      * @param validationChecks the set of optional {@link ValidationCheck}s to perform.
