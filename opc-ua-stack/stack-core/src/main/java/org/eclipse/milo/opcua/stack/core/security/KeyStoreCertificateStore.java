@@ -20,6 +20,8 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -38,6 +40,8 @@ public class KeyStoreCertificateStore implements CertificateStore {
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     private final ReadWriteLock keyStoreLock = new ReentrantReadWriteLock(true);
+
+    private final Map<String, Entry> cache = new HashMap<>();
 
     private KeyStore keyStore;
 
@@ -77,14 +81,14 @@ public class KeyStoreCertificateStore implements CertificateStore {
     @Override
     public boolean contains(NodeId certificateTypeId) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
+            throw new IllegalStateException("not initialized");
         }
         try {
             keyStoreLock.readLock().lock();
 
             String alias = getAlias(certificateTypeId);
 
-            return alias != null && keyStore.containsAlias(alias);
+            return alias != null && (cache.containsKey(alias) || keyStore.containsAlias(alias));
         } finally {
             keyStoreLock.readLock().unlock();
         }
@@ -93,7 +97,7 @@ public class KeyStoreCertificateStore implements CertificateStore {
     @Override
     public Entry get(NodeId certificateTypeId) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
+            throw new IllegalStateException("not initialized");
         }
 
         try {
@@ -102,6 +106,10 @@ public class KeyStoreCertificateStore implements CertificateStore {
             String alias = getAlias(certificateTypeId);
 
             if (alias != null) {
+                if (cache.containsKey(alias)) {
+                    return cache.get(alias);
+                }
+
                 Key key = keyStore.getKey(alias, settings.getAliasPassword.apply(alias));
                 Certificate[] certificateChain = keyStore.getCertificateChain(alias);
 
@@ -110,7 +118,11 @@ public class KeyStoreCertificateStore implements CertificateStore {
                         .map(c -> (X509Certificate) c)
                         .toArray(X509Certificate[]::new);
 
-                    return new Entry((PrivateKey) key, x509CertificateChain);
+                    var entry = new Entry((PrivateKey) key, x509CertificateChain);
+
+                    cache.putIfAbsent(alias, entry);
+
+                    return entry;
                 } else {
                     return null;
                 }
@@ -125,7 +137,7 @@ public class KeyStoreCertificateStore implements CertificateStore {
     @Override
     public synchronized Entry remove(NodeId certificateTypeId) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
+            throw new IllegalStateException("not initialized");
         }
 
         try {
@@ -142,6 +154,7 @@ public class KeyStoreCertificateStore implements CertificateStore {
                 if (entry instanceof KeyStore.PrivateKeyEntry) {
                     KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) entry;
                     keyStore.deleteEntry(alias);
+                    cache.remove(alias);
 
                     keyStore.store(
                         new FileOutputStream(settings.keyStorePath.toFile()),
@@ -166,7 +179,7 @@ public class KeyStoreCertificateStore implements CertificateStore {
     @Override
     public void set(NodeId certificateTypeId, Entry entry) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
+            throw new IllegalStateException("not initialized");
         }
 
         try {
@@ -185,6 +198,8 @@ public class KeyStoreCertificateStore implements CertificateStore {
                 new FileOutputStream(settings.keyStorePath.toFile()),
                 settings.getKeyStorePassword.get()
             );
+
+            cache.put(alias, entry);
         } finally {
             keyStoreLock.writeLock().unlock();
         }
