@@ -100,7 +100,7 @@ public class ExampleServer {
             .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
         var certificateStore = KeyStoreCertificateStore.createAndInitialize(
-            new KeyStoreCertificateStore.KeyStoreSettings(
+            new KeyStoreCertificateStore.Settings(
                 securityTempDir.resolve("example-server.pfx"),
                 "password"::toCharArray,
                 alias -> "password".toCharArray()

@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.WatchKeyRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,8 +137,8 @@ public class FileBasedTrustListManager implements TrustListManager, Closeable {
             this::synchronizeTrustedCrl
         );
 
-        watchThread = new Thread(new Watcher(watchService, watchKeys));
-        watchThread.setName("trust-list-watcher");
+        watchThread = new Thread(new WatchKeyRunner(watchService, watchKeys));
+        watchThread.setName("milo-trust-list-watcher");
         watchThread.setDaemon(true);
         watchThread.start();
 
@@ -534,46 +534,6 @@ public class FileBasedTrustListManager implements TrustListManager, Closeable {
         } catch (Exception e) {
             LOGGER.error("Error deleting CRL", e);
         }
-    }
-
-    private static class Watcher implements Runnable {
-
-        private final WatchService watchService;
-        private final Map<WatchKey, Runnable> watchKeys;
-
-        Watcher(WatchService watchService, Map<WatchKey, Runnable> watchKeys) {
-            this.watchService = watchService;
-            this.watchKeys = watchKeys;
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    WatchKey key = watchService.take();
-
-                    if (watchKeys.containsKey(key)) {
-                        boolean synchronize = key.pollEvents().stream()
-                            .anyMatch(e -> e.kind() != StandardWatchEventKinds.OVERFLOW);
-
-                        if (synchronize) {
-                            watchKeys.get(key).run();
-                        }
-                    }
-
-                    if (!key.reset()) {
-                        LOGGER.warn("Failed to reset watch key");
-                        break;
-                    }
-                } catch (ClosedWatchServiceException e) {
-                    LOGGER.info("Watcher got closed");
-                    return;
-                } catch (InterruptedException e) {
-                    LOGGER.error("Watcher interrupted.", e);
-                }
-            }
-        }
-
     }
 
     /**
