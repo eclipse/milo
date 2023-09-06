@@ -12,20 +12,48 @@ package org.eclipse.milo.opcua.stack;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+import org.eclipse.milo.opcua.stack.core.security.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.DefaultApplicationGroup;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateStore;
+import org.eclipse.milo.opcua.stack.core.security.MemoryTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class TestCertificateManager implements CertificateManager {
 
+    private final MemoryCertificateQuarantine certificateQuarantine = new MemoryCertificateQuarantine();
+
     private final KeyPair keyPair;
     private final X509Certificate certificate;
+    private final DefaultApplicationGroup certificateGroup;
 
-    public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) {
+    public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) throws Exception {
         this.keyPair = keyPair;
         this.certificate = certificate;
+
+        certificateGroup = DefaultApplicationGroup.createAndInitialize(
+            new MemoryTrustListManager(),
+            new MemoryCertificateStore(),
+            new RsaSha256CertificateFactory() {
+                @Override
+                protected KeyPair createRsaSha256KeyPair() {
+                    return keyPair;
+                }
+
+                @Override
+                protected X509Certificate[] createRsaSha256CertificateChain(KeyPair keyPair) {
+                    return new X509Certificate[]{certificate};
+                }
+            },
+            certificateQuarantine
+        );
     }
 
     @Override
@@ -44,13 +72,23 @@ public class TestCertificateManager implements CertificateManager {
     }
 
     @Override
-    public Set<KeyPair> getKeyPairs() {
-        return Set.of(keyPair);
+    public Optional<CertificateGroup> getCertificateGroup(ByteString thumbprint) {
+        return Optional.of(certificateGroup);
     }
 
     @Override
-    public Set<X509Certificate> getCertificates() {
-        return Set.of(certificate);
+    public Optional<CertificateGroup> getCertificateGroup(NodeId certificateGroupId) {
+        return Optional.of(certificateGroup);
+    }
+
+    @Override
+    public List<CertificateGroup> getCertificateGroups() {
+        return List.of(certificateGroup);
+    }
+
+    @Override
+    public CertificateQuarantine getCertificateQuarantine() {
+        return certificateQuarantine;
     }
 
 }

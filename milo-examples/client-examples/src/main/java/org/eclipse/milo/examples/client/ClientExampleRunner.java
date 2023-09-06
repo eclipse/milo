@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,8 +22,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultClientCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.FileBasedTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,7 @@ public class ClientExampleRunner {
 
     private ExampleServer exampleServer;
 
-    private DefaultTrustListManager trustListManager;
+    private TrustListManager clientTrustListManager;
 
     private final ClientExample clientExample;
     private final boolean serverRequired;
@@ -68,19 +70,21 @@ public class ClientExampleRunner {
             throw new Exception("unable to create security dir: " + securityTempDir);
         }
 
-        File pkiDir = securityTempDir.resolve("pki").toFile();
+        Path pkiDir = securityTempDir.resolve("pki");
 
         LoggerFactory.getLogger(getClass())
             .info("security dir: {}", securityTempDir.toAbsolutePath());
         LoggerFactory.getLogger(getClass())
-            .info("security pki dir: {}", pkiDir.getAbsolutePath());
+            .info("security pki dir: {}", pkiDir.toAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
-        trustListManager = new DefaultTrustListManager(pkiDir);
+        clientTrustListManager = FileBasedTrustListManager.createAndInitialize(pkiDir);
 
-        DefaultClientCertificateValidator certificateValidator =
-            new DefaultClientCertificateValidator(trustListManager);
+        var certificateValidator = new DefaultClientCertificateValidator(
+            clientTrustListManager,
+            new MemoryCertificateQuarantine()
+        );
 
         return OpcUaClient.create(
             clientExample.getEndpointUrl(),
@@ -112,16 +116,24 @@ public class ClientExampleRunner {
             // "pki/trusted/certs" directory.
 
             if (serverRequired && exampleServer != null) {
+                CertificateManager certificateManager = exampleServer.getServer().getConfig().getCertificateManager();
+
                 // Make the example server trust the example client certificate by default.
                 client.getConfig().getCertificate().ifPresent(
                     certificate ->
-                        exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
+                        certificateManager.getCertificateGroups().forEach(
+                            group ->
+                                group.getTrustListManager().addTrustedCertificate(certificate)
+                        )
                 );
 
                 // Make the example client trust the example server certificate by default.
-                exampleServer.getServer().getConfig().getCertificateManager().getCertificates().forEach(
-                    certificate ->
-                        trustListManager.addTrustedCertificate(certificate)
+                exampleServer.getServer().getConfig().getCertificateManager().getCertificateGroups().forEach(
+                    certificateGroup ->
+                        certificateGroup.getCertificateEntries().forEach(
+                            entry ->
+                                clientTrustListManager.addTrustedCertificate(entry.certificateChain[0])
+                        )
                 );
             }
 

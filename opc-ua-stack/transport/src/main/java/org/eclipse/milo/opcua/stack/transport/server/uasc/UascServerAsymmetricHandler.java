@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.security.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -240,12 +241,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 secureChannel.setSecurityPolicy(securityPolicy);
 
                 if (securityPolicy != SecurityPolicy.None) {
-                    secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
-
-                    CertificateValidator certificateValidator = application.getCertificateValidator();
-
-                    certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
-
                     CertificateManager certificateManager = application.getCertificateManager();
 
                     Optional<X509Certificate[]> localCertificateChain = certificateManager
@@ -255,6 +250,20 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         .getKeyPair(header.getReceiverThumbprint());
 
                     if (localCertificateChain.isPresent() && keyPair.isPresent()) {
+                        secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
+
+                        CertificateGroup certificateGroup = application.getCertificateManager()
+                            .getCertificateGroup(header.getReceiverThumbprint())
+                            .orElseThrow(() ->
+                                new UaException(
+                                    StatusCodes.Bad_SecurityChecksFailed,
+                                    "no certificate group for provided thumbprint")
+                            );
+
+                        CertificateValidator certificateValidator = certificateGroup.getCertificateValidator();
+
+                        certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
+
                         X509Certificate[] chain = localCertificateChain.get();
 
                         secureChannel.setLocalCertificate(chain[0]);

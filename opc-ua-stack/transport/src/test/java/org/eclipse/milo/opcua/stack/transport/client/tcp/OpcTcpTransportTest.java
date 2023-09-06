@@ -333,11 +333,6 @@ class OpcTcpTransportTest extends SecurityFixture {
             }
 
             @Override
-            public CertificateValidator getCertificateValidator() {
-                return serverCertificateValidator;
-            }
-
-            @Override
             public Long getNextSecureChannelId() {
                 return secureChannelId.getAndIncrement();
             }

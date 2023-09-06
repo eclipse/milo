@@ -18,7 +18,6 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
@@ -48,7 +47,6 @@ public abstract class SecurityFixture {
     protected volatile KeyPair serverKeyPair4096;
 
     protected volatile CertificateManager serverCertificateManager;
-    protected volatile ServerCertificateValidator serverCertificateValidator;
 
     @BeforeAll
     public void setUp() throws Exception {
@@ -105,7 +103,10 @@ public abstract class SecurityFixture {
             serverCertificate
         );
 
-        serverCertificateValidator = new TestServerCertificateValidator(clientCertificate);
+        serverCertificateManager.getDefaultApplicationGroup()
+            .orElseThrow()
+            .getTrustListManager()
+            .addTrustedCertificate(clientCertificate);
     }
 
 }

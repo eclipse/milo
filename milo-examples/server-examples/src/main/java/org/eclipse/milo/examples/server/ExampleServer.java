@@ -14,6 +14,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.LinkedHashSet;
@@ -35,8 +36,8 @@ import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.KeyStoreCertificateStore;
+import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -98,15 +99,31 @@ public class ExampleServer {
         LoggerFactory.getLogger(getClass())
             .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
-        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
-
-        var certificateManager = new DefaultCertificateManager(
-            loader.getServerKeyPair(),
-            loader.getServerCertificateChain()
+        var certificateStore = KeyStoreCertificateStore.createAndInitialize(
+            new KeyStoreCertificateStore.Settings(
+                securityTempDir.resolve("example-server.pfx"),
+                "password"::toCharArray,
+                alias -> "password".toCharArray()
+            )
         );
 
-        var trustListManager = new DefaultTrustListManager(pkiDir);
-        var certificateValidator = new DefaultServerCertificateValidator(trustListManager);
+        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
+
+        var certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
+            pkiDir.toPath(),
+            certificateStore,
+            new RsaSha256CertificateFactory() {
+                @Override
+                protected KeyPair createRsaSha256KeyPair() {
+                    return loader.getServerKeyPair();
+                }
+
+                @Override
+                protected X509Certificate[] createRsaSha256CertificateChain(KeyPair keyPair) {
+                    return loader.getServerCertificateChain();
+                }
+            }
+        );
 
         var identityValidator = new UsernameIdentityValidator(
             true,
@@ -123,16 +140,7 @@ public class ExampleServer {
 
         var x509IdentityValidator = new X509IdentityValidator(c -> true);
 
-        // If you need to use multiple certificates you'll have to be smarter than this.
-        X509Certificate certificate = certificateManager.getCertificates()
-            .stream()
-            .findFirst()
-            .orElseThrow(
-                () -> new UaRuntimeException(
-                    StatusCodes.Bad_ConfigurationError,
-                    "no certificate found"
-                )
-            );
+        X509Certificate certificate = loader.getServerCertificate();
 
         // The configured application URI must match the one in the certificate(s)
         String applicationUri = CertificateUtil
@@ -158,8 +166,6 @@ public class ExampleServer {
                     OpcUaServer.SDK_VERSION,
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
-            .setTrustListManager(trustListManager)
-            .setCertificateValidator(certificateValidator)
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
             .build();
