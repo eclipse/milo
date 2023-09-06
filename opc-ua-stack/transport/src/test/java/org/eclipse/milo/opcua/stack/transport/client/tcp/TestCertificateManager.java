@@ -15,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.stack.core.security.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateQuarantine;
 import org.eclipse.milo.opcua.stack.core.security.DefaultApplicationGroup;

@@ -130,9 +130,9 @@ public class ClientExampleRunner {
                 // Make the example client trust the example server certificate by default.
                 exampleServer.getServer().getConfig().getCertificateManager().getCertificateGroups().forEach(
                     certificateGroup ->
-                        certificateGroup.getCertificateRecords().forEach(
-                            record ->
-                                clientTrustListManager.addTrustedCertificate(record.certificateChain[0])
+                        certificateGroup.getCertificateEntries().forEach(
+                            entry ->
+                                clientTrustListManager.addTrustedCertificate(entry.certificateChain[0])
                         )
                 );
             }

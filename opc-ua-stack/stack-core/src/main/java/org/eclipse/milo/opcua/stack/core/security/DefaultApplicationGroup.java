@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
  * Supports the {@link NodeIds#RsaSha256ApplicationCertificateType} CertificateType, which can
  * be used with 2048- and 4096-bit RSA keys.
  */
-public class DefaultApplicationGroup implements CertificateManager.CertificateGroup {
+public class DefaultApplicationGroup implements CertificateGroup {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
@@ -85,15 +85,15 @@ public class DefaultApplicationGroup implements CertificateManager.CertificateGr
     }
 
     @Override
-    public List<CertificateRecord> getCertificateRecords() {
-        var certificateRecords = new ArrayList<CertificateRecord>();
+    public List<Entry> getCertificateEntries() {
+        var entries = new ArrayList<Entry>();
 
         for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
             try {
                 CertificateStore.Entry entry = certificateStore.get(certificateTypeId);
 
                 if (entry != null) {
-                    certificateRecords.add(new CertificateRecord(
+                    entries.add(new CertificateGroup.Entry(
                         getCertificateGroupId(),
                         certificateTypeId,
                         entry.certificateChain
@@ -104,7 +104,7 @@ public class DefaultApplicationGroup implements CertificateManager.CertificateGr
             }
         }
 
-        return certificateRecords;
+        return entries;
     }
 
     @Override

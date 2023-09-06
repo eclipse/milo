@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateManager.CertificateGroup.CertificateRecord;
+import org.eclipse.milo.opcua.stack.core.security.CertificateGroup.Entry;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
@@ -47,7 +47,7 @@ public class DefaultCertificateManager implements CertificateManager {
 
     @Override
     public Optional<KeyPair> getKeyPair(ByteString thumbprint) {
-        return firstMatchingRecord(thumbprint).flatMap(entry -> {
+        return firstMatchingEntry(thumbprint).flatMap(entry -> {
             Optional<CertificateGroup> group = getCertificateGroup(entry.certificateGroupId);
             return group.flatMap(g -> g.getKeyPair(entry.certificateTypeId));
         });
@@ -55,17 +55,17 @@ public class DefaultCertificateManager implements CertificateManager {
 
     @Override
     public Optional<X509Certificate> getCertificate(ByteString thumbprint) {
-        return firstMatchingRecord(thumbprint).map(e -> e.certificateChain[0]);
+        return firstMatchingEntry(thumbprint).map(e -> e.certificateChain[0]);
     }
 
     @Override
     public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
-        return firstMatchingRecord(thumbprint).map(e -> e.certificateChain);
+        return firstMatchingEntry(thumbprint).map(e -> e.certificateChain);
     }
 
     @Override
     public Optional<CertificateGroup> getCertificateGroup(ByteString thumbprint) {
-        return firstMatchingRecord(thumbprint)
+        return firstMatchingEntry(thumbprint)
             .flatMap(r -> getCertificateGroup(r.certificateGroupId));
     }
 
@@ -84,13 +84,13 @@ public class DefaultCertificateManager implements CertificateManager {
         return certificateQuarantine;
     }
 
-    private Optional<CertificateRecord> firstMatchingRecord(ByteString thumbprint) {
+    private Optional<Entry> firstMatchingEntry(ByteString thumbprint) {
         return certificateGroups.values()
             .stream()
-            .flatMap(group -> group.getCertificateRecords().stream())
-            .filter(record -> {
+            .flatMap(group -> group.getCertificateEntries().stream())
+            .filter(entry -> {
                 try {
-                    return CertificateUtil.thumbprint(record.certificateChain[0]).equals(thumbprint);
+                    return CertificateUtil.thumbprint(entry.certificateChain[0]).equals(thumbprint);
                 } catch (UaException e) {
                     return false;
                 }
