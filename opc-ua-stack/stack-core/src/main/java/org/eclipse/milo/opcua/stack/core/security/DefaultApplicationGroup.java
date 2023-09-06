@@ -34,13 +34,13 @@ public class DefaultApplicationGroup implements CertificateGroup {
 
     private final ServerCertificateValidator certificateValidator;
 
-    private final CertificateStore certificateStore;
     private final TrustListManager trustListManager;
+    private final CertificateStore certificateStore;
     private final CertificateFactory certificateFactory;
 
     public DefaultApplicationGroup(
-        CertificateStore certificateStore,
         TrustListManager trustListManager,
+        CertificateStore certificateStore,
         CertificateFactory certificateFactory,
         CertificateQuarantine certificateQuarantine
     ) {
@@ -183,8 +183,8 @@ public class DefaultApplicationGroup implements CertificateGroup {
     ) throws Exception {
 
         var defaultApplicationGroup = new DefaultApplicationGroup(
-            certificateStore,
             trustListManager,
+            certificateStore,
             certificateFactory,
             certificateQuarantine
         );

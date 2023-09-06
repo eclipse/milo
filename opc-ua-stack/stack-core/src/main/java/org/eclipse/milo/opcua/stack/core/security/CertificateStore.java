@@ -33,7 +33,7 @@ public interface CertificateStore {
      *
      * @param certificateTypeId the id of the certificate type to get the {@link Entry} for.
      * @return the {@link Entry} for {@code certificateTypeId}, or {@code null} if no entry
-     *     exists for {@code alias}.
+     *     exists for {@code certificateTypeId}.
      * @throws Exception if an error occurs while getting the {@link Entry}.
      */
     @Nullable Entry get(NodeId certificateTypeId) throws Exception;
@@ -49,7 +49,7 @@ public interface CertificateStore {
     @Nullable Entry remove(NodeId certificateTypeId) throws Exception;
 
     /**
-     * Set the {@link Entry} for {@code alias}.
+     * Set the {@link Entry} for {@code certificateTypeId}.
      *
      * @param certificateTypeId the alias to set the {@link Entry} for.
      * @param entry the {@link Entry} to set.
