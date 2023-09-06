@@ -26,11 +26,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KeyStoreKeyManager implements KeyManager {
+public class KeyStoreCertificateStore implements CertificateStore {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -42,7 +43,7 @@ public class KeyStoreKeyManager implements KeyManager {
 
     private final KeyStoreSettings settings;
 
-    public KeyStoreKeyManager(KeyStoreSettings settings) {
+    public KeyStoreCertificateStore(KeyStoreSettings settings) {
         this.settings = settings;
     }
 
@@ -74,37 +75,45 @@ public class KeyStoreKeyManager implements KeyManager {
     }
 
     @Override
-    public boolean contains(String alias) throws Exception {
+    public boolean contains(NodeId certificateTypeId) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreKeyManager not initialized");
+            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
         }
         try {
             keyStoreLock.readLock().lock();
 
-            return keyStore.containsAlias(alias);
+            String alias = getAlias(certificateTypeId);
+
+            return alias != null && keyStore.containsAlias(alias);
         } finally {
             keyStoreLock.readLock().unlock();
         }
     }
 
     @Override
-    public @Nullable KeyRecord get(String alias) throws Exception {
+    public Entry get(NodeId certificateTypeId) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreKeyManager not initialized");
+            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
         }
 
         try {
             keyStoreLock.readLock().lock();
 
-            Key key = keyStore.getKey(alias, settings.getAliasPassword.apply(alias));
-            Certificate[] certificateChain = keyStore.getCertificateChain(alias);
+            String alias = getAlias(certificateTypeId);
 
-            if (key instanceof PrivateKey && certificateChain != null) {
-                X509Certificate[] x509CertificateChain = Arrays.stream(certificateChain)
-                    .map(c -> (X509Certificate) c)
-                    .toArray(X509Certificate[]::new);
+            if (alias != null) {
+                Key key = keyStore.getKey(alias, settings.getAliasPassword.apply(alias));
+                Certificate[] certificateChain = keyStore.getCertificateChain(alias);
 
-                return new KeyRecord((PrivateKey) key, x509CertificateChain);
+                if (key instanceof PrivateKey && certificateChain != null) {
+                    X509Certificate[] x509CertificateChain = Arrays.stream(certificateChain)
+                        .map(c -> (X509Certificate) c)
+                        .toArray(X509Certificate[]::new);
+
+                    return new Entry((PrivateKey) key, x509CertificateChain);
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -114,32 +123,38 @@ public class KeyStoreKeyManager implements KeyManager {
     }
 
     @Override
-    public synchronized @Nullable KeyRecord remove(String alias) throws Exception {
+    public synchronized Entry remove(NodeId certificateTypeId) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreKeyManager not initialized");
+            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
         }
 
         try {
             keyStoreLock.writeLock().lock();
 
-            KeyStore.Entry entry = keyStore.getEntry(
-                alias,
-                new KeyStore.PasswordProtection(settings.getAliasPassword.apply(alias))
-            );
+            String alias = getAlias(certificateTypeId);
 
-            if (entry instanceof KeyStore.PrivateKeyEntry) {
-                KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) entry;
-                keyStore.deleteEntry(alias);
-
-                keyStore.store(
-                    new FileOutputStream(settings.keyStorePath.toFile()),
-                    settings.getKeyStorePassword.get()
+            if (alias != null) {
+                KeyStore.Entry entry = keyStore.getEntry(
+                    alias,
+                    new KeyStore.PasswordProtection(settings.getAliasPassword.apply(alias))
                 );
 
-                return new KeyRecord(
-                    privateKeyEntry.getPrivateKey(),
-                    (X509Certificate[]) privateKeyEntry.getCertificateChain()
-                );
+                if (entry instanceof KeyStore.PrivateKeyEntry) {
+                    KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) entry;
+                    keyStore.deleteEntry(alias);
+
+                    keyStore.store(
+                        new FileOutputStream(settings.keyStorePath.toFile()),
+                        settings.getKeyStorePassword.get()
+                    );
+
+                    return new Entry(
+                        privateKeyEntry.getPrivateKey(),
+                        (X509Certificate[]) privateKeyEntry.getCertificateChain()
+                    );
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -149,19 +164,21 @@ public class KeyStoreKeyManager implements KeyManager {
     }
 
     @Override
-    public void set(String alias, KeyRecord keyRecord) throws Exception {
+    public void set(NodeId certificateTypeId, Entry entry) throws Exception {
         if (!initialized.get()) {
-            throw new IllegalStateException("KeyStoreKeyManager not initialized");
+            throw new IllegalStateException("KeyStoreCertificateStore not initialized");
         }
 
         try {
             keyStoreLock.writeLock().lock();
 
+            String alias = getAlias(certificateTypeId);
+
             keyStore.setKeyEntry(
                 alias,
-                keyRecord.privateKey,
+                entry.privateKey,
                 settings.getAliasPassword.apply(alias),
-                keyRecord.certificateChain
+                entry.certificateChain
             );
 
             keyStore.store(
@@ -173,17 +190,25 @@ public class KeyStoreKeyManager implements KeyManager {
         }
     }
 
+    protected String getAlias(NodeId certificateTypeId) {
+        if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
+            return "server-rsa-sha256";
+        } else {
+            return certificateTypeId.toParseableString();
+        }
+    }
+
     /**
-     * Create and {@link #initialize()} a new {@link KeyStoreKeyManager} instance.
+     * Create and {@link #initialize()} a new {@link KeyStoreCertificateStore} instance.
      *
      * @param settings the {@link KeyStoreSettings} to use.
-     * @return an initialized {@link KeyStoreKeyManager} instance.
-     * @throws Exception if an error occurs while initializing the {@link KeyStoreKeyManager}.
+     * @return an initialized {@link KeyStoreCertificateStore} instance.
+     * @throws Exception if an error occurs while initializing the {@link KeyStoreCertificateStore}.
      */
-    public static KeyStoreKeyManager createAndInitialize(KeyStoreSettings settings) throws Exception {
-        var keyManager = new KeyStoreKeyManager(settings);
-        keyManager.initialize();
-        return keyManager;
+    public static KeyStoreCertificateStore createAndInitialize(KeyStoreSettings settings) throws Exception {
+        var store = new KeyStoreCertificateStore(settings);
+        store.initialize();
+        return store;
     }
 
     public static class KeyStoreSettings {

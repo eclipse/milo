@@ -100,19 +100,20 @@ public class DefaultCertificateManager implements CertificateManager {
 
     /**
      * Create an instance of {@link DefaultCertificateManager} pre-populated with an instance of
-     * {@link DefaultApplicationGroup}, with keys and certificates managed by {@code keyManager}.
+     * {@link DefaultApplicationGroup}, with keys and certificates managed by
+     * {@code certificateStore}.
      *
      * @param pkiDir the base PKI directory this group will operate in.
-     * @param keyManager the {@link KeyManager} managing the keys and certificates.
+     * @param certificateStore the {@link CertificateStore} managing the keys and certificates.
      * @param certificateFactory a {@link CertificateFactory} to use for generating new
      *     certificates.
      * @return a new {@link DefaultCertificateManager} instance.
-     * @throws Exception if an error occurs while initializing the {@link KeyStoreKeyManager} or
+     * @throws Exception if an error occurs while initializing the {@link KeyStoreCertificateStore} or
      *     {@link DefaultApplicationGroup}.
      */
     public static DefaultCertificateManager createWithDefaultApplicationGroup(
         Path pkiDir,
-        KeyManager keyManager,
+        CertificateStore certificateStore,
         CertificateFactory certificateFactory
     ) throws Exception {
 
@@ -123,8 +124,8 @@ public class DefaultCertificateManager implements CertificateManager {
         );
 
         var defaultGroup = DefaultApplicationGroup.createAndInitialize(
-            keyManager,
             trustListManager,
+            certificateStore,
             certificateFactory,
             certificateQuarantine
         );

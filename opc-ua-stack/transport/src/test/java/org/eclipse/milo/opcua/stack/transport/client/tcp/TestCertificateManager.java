@@ -17,8 +17,9 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.DefaultApplicationGroup;
 import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
-import org.eclipse.milo.opcua.stack.core.security.MemoryKeyManager;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateStore;
 import org.eclipse.milo.opcua.stack.core.security.MemoryTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -37,8 +38,8 @@ public class TestCertificateManager implements CertificateManager {
         this.certificate = certificate;
 
         certificateGroup = DefaultApplicationGroup.createAndInitialize(
-            new MemoryKeyManager(),
             new MemoryTrustListManager(),
+            new MemoryCertificateStore(),
             new RsaSha256CertificateFactory() {
                 @Override
                 protected KeyPair createRsaSha256KeyPair() {

@@ -29,7 +29,7 @@ public abstract class RsaSha256CertificateFactory implements CertificateFactory 
 
     @Override
     public KeyPair createKeyPair(NodeId certificateTypeId) throws NoSuchAlgorithmException {
-        if (NodeIds.RsaSha256ApplicationCertificateType.equals(certificateTypeId)) {
+        if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
             return createRsaSha256KeyPair();
         } else {
             throw new UnsupportedOperationException("certificateTypeId: " + certificateTypeId);
@@ -38,7 +38,7 @@ public abstract class RsaSha256CertificateFactory implements CertificateFactory 
 
     @Override
     public X509Certificate[] createCertificateChain(NodeId certificateTypeId, KeyPair keyPair) throws Exception {
-        if (NodeIds.RsaSha256ApplicationCertificateType.equals(certificateTypeId)) {
+        if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
             return createRsaSha256CertificateChain(keyPair);
         } else {
             throw new UnsupportedOperationException("certificateTypeId: " + certificateTypeId);
@@ -55,7 +55,7 @@ public abstract class RsaSha256CertificateFactory implements CertificateFactory 
         List<String> ipAddresses
     ) throws Exception {
 
-        if (NodeIds.RsaSha256ApplicationCertificateType.equals(certificateTypeId)) {
+        if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
             return createRsaSha256SigningRequest(keyPair, subjectName, sanUri, dnsNames, ipAddresses);
         } else {
             throw new UnsupportedOperationException("certificateTypeId: " + certificateTypeId);

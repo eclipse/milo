@@ -36,7 +36,7 @@ import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.KeyStoreKeyManager;
+import org.eclipse.milo.opcua.stack.core.security.KeyStoreCertificateStore;
 import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -99,8 +99,8 @@ public class ExampleServer {
         LoggerFactory.getLogger(getClass())
             .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
-        var keyManager = KeyStoreKeyManager.createAndInitialize(
-            new KeyStoreKeyManager.KeyStoreSettings(
+        var certificateStore = KeyStoreCertificateStore.createAndInitialize(
+            new KeyStoreCertificateStore.KeyStoreSettings(
                 securityTempDir.resolve("example-server.pfx"),
                 "password"::toCharArray,
                 alias -> "password".toCharArray()
@@ -111,7 +111,7 @@ public class ExampleServer {
 
         var certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
             pkiDir.toPath(),
-            keyManager,
+            certificateStore,
             new RsaSha256CertificateFactory() {
                 @Override
                 protected KeyPair createRsaSha256KeyPair() {

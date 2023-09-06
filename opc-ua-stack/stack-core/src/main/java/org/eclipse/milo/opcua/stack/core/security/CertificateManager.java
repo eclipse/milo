@@ -12,17 +12,12 @@ package org.eclipse.milo.opcua.stack.core.security;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.jetbrains.annotations.Nullable;
 
 public interface CertificateManager {
 
@@ -189,18 +184,18 @@ public interface CertificateManager {
         ) throws Exception;
 
         /**
-         * Get the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
-         *
-         * @return the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
-         */
-        ServerCertificateValidator getCertificateValidator();
-
-        /**
          * Get the {@link CertificateFactory} for this {@link CertificateGroup}.
          *
          * @return the {@link CertificateFactory} for this {@link CertificateGroup}.
          */
         CertificateFactory getCertificateFactory();
+
+        /**
+         * Get the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
+         *
+         * @return the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
+         */
+        ServerCertificateValidator getCertificateValidator();
 
         class CertificateRecord {
             public final NodeId certificateGroupId;
@@ -217,209 +212,6 @@ public interface CertificateManager {
                 this.certificateTypeId = certificateTypeId;
                 this.certificateChain = certificateChain;
             }
-        }
-
-    }
-
-    /**
-     * An implementation of the DefaultApplicationGroup CertificateGroup.
-     * <p>
-     * Supports the {@link NodeIds#RsaSha256ApplicationCertificateType} CertificateType, which can
-     * be used with 2048- and 4096-bit RSA keys.
-     */
-    class DefaultApplicationGroup implements CertificateGroup {
-
-        private final AtomicBoolean initialized = new AtomicBoolean(false);
-
-        private final ServerCertificateValidator certificateValidator;
-
-        private final KeyManager keyManager;
-        private final TrustListManager trustListManager;
-        private final CertificateFactory certificateFactory;
-
-        public DefaultApplicationGroup(
-            KeyManager keyManager,
-            TrustListManager trustListManager,
-            CertificateFactory certificateFactory,
-            CertificateQuarantine certificateQuarantine
-        ) {
-
-            this.keyManager = keyManager;
-            this.trustListManager = trustListManager;
-            this.certificateFactory = certificateFactory;
-
-            certificateValidator = new DefaultServerCertificateValidator(trustListManager, certificateQuarantine);
-        }
-
-        public void initialize() throws Exception {
-            if (initialized.compareAndSet(false, true)) {
-                for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
-                    String alias = getAlias(certificateTypeId);
-
-                    if (!keyManager.contains(alias)) {
-                        KeyPair keyPair = certificateFactory.createKeyPair(certificateTypeId);
-                        X509Certificate[] certificateChain =
-                            certificateFactory.createCertificateChain(certificateTypeId, keyPair);
-
-                        keyManager.set(
-                            alias,
-                            new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain)
-                        );
-                    }
-                }
-            }
-        }
-
-        @Override
-        public NodeId getCertificateGroupId() {
-            return NodeIds.ServerConfiguration_CertificateGroups_DefaultApplicationGroup;
-        }
-
-        @Override
-        public List<NodeId> getSupportedCertificateTypeIds() {
-            return List.of(NodeIds.RsaSha256ApplicationCertificateType);
-        }
-
-        @Override
-        public TrustListManager getTrustListManager() {
-            return trustListManager;
-        }
-
-        @Override
-        public List<CertificateRecord> getCertificateRecords() {
-            var certificateRecords = new ArrayList<CertificateRecord>();
-
-            for (NodeId certificateTypeId : getSupportedCertificateTypeIds()) {
-                String alias = getAlias(certificateTypeId);
-
-                if (alias != null) {
-                    try {
-                        KeyManager.KeyRecord keyRecord = keyManager.get(alias);
-
-                        if (keyRecord != null) {
-                            certificateRecords.add(new CertificateRecord(
-                                getCertificateGroupId(),
-                                certificateTypeId,
-                                keyRecord.certificateChain
-                            ));
-                        }
-                    } catch (Exception e) {
-                        return List.of();
-                    }
-                }
-            }
-
-            return certificateRecords;
-        }
-
-        @Override
-        public Optional<KeyPair> getKeyPair(NodeId certificateTypeId) {
-            if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
-                String alias = getAlias(certificateTypeId);
-
-                if (alias == null) {
-                    return Optional.empty();
-                }
-
-                try {
-                    KeyManager.KeyRecord keyRecord = keyManager.get(alias);
-
-                    return Optional.ofNullable(keyRecord)
-                        .map(r -> new KeyPair(r.certificateChain[0].getPublicKey(), r.privateKey));
-                } catch (Exception e) {
-                    return Optional.empty();
-                }
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        @Override
-        public Optional<X509Certificate[]> getCertificateChain(NodeId certificateTypeId) {
-            if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
-                String alias = getAlias(certificateTypeId);
-
-                if (alias == null) {
-                    return Optional.empty();
-                }
-
-                try {
-                    KeyManager.KeyRecord keyRecord = keyManager.get(alias);
-
-                    return Optional.ofNullable(keyRecord).map(r -> r.certificateChain);
-                } catch (Exception e) {
-                    return Optional.empty();
-                }
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        @Override
-        public void updateCertificate(
-            NodeId certificateTypeId,
-            KeyPair keyPair,
-            X509Certificate[] certificateChain
-        ) throws Exception {
-
-            if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
-                String alias = getAlias(certificateTypeId);
-
-                if (alias == null) {
-                    return;
-                }
-
-                keyManager.set(alias, new KeyManager.KeyRecord(keyPair.getPrivate(), certificateChain));
-            } else {
-                throw new UaException(StatusCodes.Bad_InvalidArgument, "certificateTypeId");
-            }
-        }
-
-        @Override
-        public ServerCertificateValidator getCertificateValidator() {
-            return certificateValidator;
-        }
-
-        @Override
-        public CertificateFactory getCertificateFactory() {
-            return certificateFactory;
-        }
-
-        protected @Nullable String getAlias(NodeId certificateTypeId) {
-            if (certificateTypeId.equals(NodeIds.RsaSha256ApplicationCertificateType)) {
-                return "server-rsa-sha256";
-            } else {
-                return null;
-            }
-        }
-
-        /**
-         * Create and initialize a {@link DefaultApplicationGroup}.
-         *
-         * @param keyManager the {@link KeyManager} to use.
-         * @param trustListManager the {@link TrustListManager} to use.
-         * @param certificateFactory the {@link CertificateFactory} to use.
-         * @return an initialized {@link DefaultApplicationGroup} instance.
-         * @throws Exception if an error occurs while initializing the
-         *     {@link DefaultApplicationGroup}.
-         */
-        public static DefaultApplicationGroup createAndInitialize(
-            KeyManager keyManager,
-            TrustListManager trustListManager,
-            CertificateFactory certificateFactory,
-            CertificateQuarantine certificateQuarantine
-        ) throws Exception {
-
-            var defaultApplicationGroup = new DefaultApplicationGroup(
-                keyManager,
-                trustListManager,
-                certificateFactory,
-                certificateQuarantine
-            );
-
-            defaultApplicationGroup.initialize();
-
-            return defaultApplicationGroup;
         }
 
     }

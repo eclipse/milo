@@ -31,7 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.MemoryKeyManager;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateStore;
 import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -93,7 +93,7 @@ public final class TestServer {
 
         DefaultCertificateManager certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
             pkiDir.toPath(),
-            new MemoryKeyManager(),
+            new MemoryCertificateStore(),
             new RsaSha256CertificateFactory() {
                 @Override
                 protected KeyPair createRsaSha256KeyPair() {
