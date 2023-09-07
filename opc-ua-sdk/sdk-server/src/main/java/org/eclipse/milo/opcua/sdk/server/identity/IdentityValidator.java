@@ -17,26 +17,24 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
-public interface IdentityValidator<T> {
+public interface IdentityValidator {
 
     /**
-     * Validate the provided {@link UserIdentityToken} and return an identity Object that represents the user.
-     * <p>
-     * This Object should implement equality in such a way that a subsequent identity validation for the same user
-     * yields a comparable Object.
+     * Validate a {@link UserIdentityToken} and return an {@link Identity} that represents the
+     * user.
      *
-     * @param session        the {@link Session} the request is arriving on.
-     * @param token          the {@link UserIdentityToken}.
-     * @param tokenPolicy    the {@link UserTokenPolicy} specified by the policyId in {@code token}.
-     * @param tokenSignature the {@link SignatureData} sent in the {@link ActivateSessionRequest}
-     * @return an identity object of type {@code T} that represents the authenticated user.
-     * @throws UaException if the token is invalid, rejected, or user access is denied.
+     * @param session the {@link Session} that made the request.
+     * @param token the {@link UserIdentityToken}.
+     * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
+     * @param signature the {@link SignatureData} from the {@link ActivateSessionRequest}.
+     * @return an {@link Identity} that represents the authenticated user.
+     * @throws UaException if the token is invalid, rejected, or user access is otherwise denied.
      */
-    T validateIdentityToken(
+    Identity validateIdentityToken(
         Session session,
         UserIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature
+        UserTokenPolicy policy,
+        SignatureData signature
     ) throws UaException;
 
 }

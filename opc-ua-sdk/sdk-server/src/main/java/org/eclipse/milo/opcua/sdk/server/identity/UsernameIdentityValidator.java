@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.jetbrains.annotations.Nullable;
 
-public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator<String> {
+public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator {
 
     private final boolean anonymousAccessAllowed;
     private final Predicate<AuthenticationChallenge> predicate;
@@ -29,27 +29,25 @@ public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator
         this.predicate = predicate;
     }
 
-    @Nullable
     @Override
-    protected String authenticateAnonymous(Session session) {
+    protected @Nullable Identity.AnonymousIdentity authenticateAnonymous(Session session) {
         if (anonymousAccessAllowed) {
-            return String.format(
-                "anonymous_%s_%s",
-                session.getSessionName(),
-                session.getSessionId().toParseableString()
-            );
+            return new DefaultAnonymousIdentity();
         } else {
             return null;
         }
     }
 
-    @Nullable
     @Override
-    protected String authenticateUsernamePassword(Session session, String username, String password) {
-        AuthenticationChallenge challenge =
-            new AuthenticationChallenge(username, password);
+    protected @Nullable DefaultUsernameIdentity authenticateUsernamePassword(
+        Session session,
+        String username,
+        String password
+    ) {
 
-        return predicate.test(challenge) ? username : null;
+        var challenge = new AuthenticationChallenge(username, password);
+
+        return predicate.test(challenge) ? new DefaultUsernameIdentity(username) : null;
     }
 
     public static final class AuthenticationChallenge {

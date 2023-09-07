@@ -44,7 +44,7 @@ public class OpcUaServerConfigBuilder {
         DateTime.MIN_VALUE
     );
 
-    private IdentityValidator<?> identityValidator = AnonymousIdentityValidator.INSTANCE;
+    private IdentityValidator identityValidator = AnonymousIdentityValidator.INSTANCE;
 
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
@@ -91,7 +91,7 @@ public class OpcUaServerConfigBuilder {
         return this;
     }
 
-    public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator<?> identityValidator) {
+    public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator identityValidator) {
         this.identityValidator = identityValidator;
         return this;
     }
@@ -142,7 +142,7 @@ public class OpcUaServerConfigBuilder {
         private final String applicationUri;
         private final String productUri;
         private final BuildInfo buildInfo;
-        private final IdentityValidator<?> identityValidator;
+        private final IdentityValidator identityValidator;
         private final EncodingLimits encodingLimits;
         private final OpcUaServerConfigLimits limits;
         private final CertificateManager certificateManager;
@@ -155,7 +155,7 @@ public class OpcUaServerConfigBuilder {
             String applicationUri,
             String productUri,
             BuildInfo buildInfo,
-            IdentityValidator<?> identityValidator,
+            IdentityValidator identityValidator,
             EncodingLimits encodingLimits,
             OpcUaServerConfigLimits limits,
             CertificateManager certificateManager,
@@ -177,7 +177,7 @@ public class OpcUaServerConfigBuilder {
         }
 
         @Override
-        public IdentityValidator<?> getIdentityValidator() {
+        public IdentityValidator getIdentityValidator() {
             return identityValidator;
         }
 

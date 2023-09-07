@@ -26,10 +26,10 @@ import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityValidator<T> {
+public abstract class AbstractX509IdentityValidator extends AbstractIdentityValidator {
 
     @Override
-    protected T validateX509Token(
+    protected Identity validateX509Token(
         Session session,
         X509IdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -70,15 +70,15 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
         return authenticateIdentityCertificateOrThrow(session, identityCertificate);
     }
 
-    private T authenticateIdentityCertificateOrThrow(
+    private Identity authenticateIdentityCertificateOrThrow(
         Session session,
         X509Certificate identityCertificate
     ) throws UaException {
 
-        T identityObject = authenticateIdentityCertificate(session, identityCertificate);
+        Identity identity = authenticateIdentityCertificate(session, identityCertificate);
 
-        if (identityObject != null) {
-            return identityObject;
+        if (identity != null) {
+            return identity;
         } else {
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
@@ -89,12 +89,14 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
      * <p>
      * Possession of the private key associated with this certificate has been verified prior to this call.
      *
-     * @param session             the {@link Session} being activated.
+     * @param session the {@link Session} being activated.
      * @param identityCertificate the {@link X509Certificate} identifying the user.
      * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
      */
-    @Nullable
-    protected abstract T authenticateIdentityCertificate(Session session, X509Certificate identityCertificate);
+    protected abstract @Nullable Identity authenticateIdentityCertificate(
+        Session session,
+        X509Certificate identityCertificate
+    );
 
     private static void verifySignature(
         Session session,

@@ -23,36 +23,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A composite {@link IdentityValidator} that tries its component {@link IdentityValidator}s in the order provided.
+ * A composite {@link IdentityValidator} that tries its component {@link IdentityValidator}s in
+ * the order provided.
  */
-public class CompositeValidator<T> implements IdentityValidator<T> {
+public class CompositeValidator implements IdentityValidator {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<IdentityValidator<T>> validators;
+    private final List<IdentityValidator> validators;
 
-    public CompositeValidator(IdentityValidator<T>... validators) {
+    public CompositeValidator(IdentityValidator... validators) {
         this.validators = List.of(validators);
     }
 
-    public CompositeValidator(List<IdentityValidator<T>> validators) {
+    public CompositeValidator(List<IdentityValidator> validators) {
         this.validators = List.copyOf(validators);
     }
 
     @Override
-    public T validateIdentityToken(
+    public Identity validateIdentityToken(
         Session session,
         UserIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
+        UserTokenPolicy policy,
+        SignatureData signature
+    ) throws UaException {
 
-        Iterator<IdentityValidator<T>> iterator = validators.iterator();
+        Iterator<IdentityValidator> iterator = validators.iterator();
 
         while (iterator.hasNext()) {
-            IdentityValidator<T> validator = iterator.next();
+            IdentityValidator validator = iterator.next();
 
             try {
-                return validator.validateIdentityToken(session, token, tokenPolicy, tokenSignature);
+                return validator.validateIdentityToken(session, token, policy, signature);
             } catch (Exception e) {
                 if (!iterator.hasNext()) {
                     throw e;

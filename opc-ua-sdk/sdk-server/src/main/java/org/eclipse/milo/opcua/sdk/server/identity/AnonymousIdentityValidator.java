@@ -15,25 +15,22 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
-public final class AnonymousIdentityValidator extends AbstractIdentityValidator<String> {
+public final class AnonymousIdentityValidator extends AbstractIdentityValidator {
 
     /**
      * A static instance implementing AnonymousIdentityValidator
      */
-    public static final IdentityValidator<String> INSTANCE = new AnonymousIdentityValidator();
+    public static final AnonymousIdentityValidator INSTANCE = new AnonymousIdentityValidator();
 
     @Override
-    public String validateAnonymousToken(
+    public Identity.AnonymousIdentity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy tokenPolicy,
         SignatureData tokenSignature
     ) {
 
-        return String.format("anonymous_%s_%s",
-            session.getSessionName(),
-            session.getSessionId().toParseableString()
-        );
+        return new DefaultAnonymousIdentity();
     }
 
 }

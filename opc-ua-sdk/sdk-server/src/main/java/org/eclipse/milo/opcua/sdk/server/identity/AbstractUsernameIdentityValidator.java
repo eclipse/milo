@@ -25,10 +25,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdentityValidator<T> {
+public abstract class AbstractUsernameIdentityValidator extends AbstractIdentityValidator {
 
     @Override
-    protected T validateAnonymousToken(
+    protected Identity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -39,7 +39,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
     }
 
     @Override
-    protected T validateUsernameToken(
+    protected Identity validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -125,21 +125,21 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         }
     }
 
-    private T authenticateAnonymousOrThrow(Session session) throws UaException {
-        T identityObject = authenticateAnonymous(session);
+    private Identity.AnonymousIdentity authenticateAnonymousOrThrow(Session session) throws UaException {
+        Identity.AnonymousIdentity identity = authenticateAnonymous(session);
 
-        if (identityObject != null) {
-            return identityObject;
+        if (identity != null) {
+            return identity;
         } else {
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
     }
 
-    private T authenticateUsernameOrThrow(Session session, String username, String password) throws UaException {
-        T identityObject = authenticateUsernamePassword(session, username, password);
+    private Identity.UsernameIdentity authenticateUsernameOrThrow(Session session, String username, String password) throws UaException {
+        Identity.UsernameIdentity identity = authenticateUsernamePassword(session, username, password);
 
-        if (identityObject != null) {
-            return identityObject;
+        if (identity != null) {
+            return identity;
         } else {
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
@@ -150,21 +150,23 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
      *
      * @param session the {@link Session} being activated.
      * @return an identity object of type {@code T} representig an anonymous user, or {@code null} if anonymous
-     * authentication is not allowed.
+     *     authentication is not allowed.
      */
-    @Nullable
-    protected abstract T authenticateAnonymous(Session session);
+    protected abstract @Nullable Identity.AnonymousIdentity authenticateAnonymous(Session session);
 
     /**
      * Authenticate {@code username} with {@code password}, returning an identity object of type {@code T} if the
      * authentication succeeded, or {@code null} if the authentication failed.
      *
-     * @param session  the {@link Session} being activated.
+     * @param session the {@link Session} being activated.
      * @param username the username to authenticate.
      * @param password the password to authenticate the user with.
      * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
      */
-    @Nullable
-    protected abstract T authenticateUsernamePassword(Session session, String username, String password);
+    protected abstract @Nullable Identity.UsernameIdentity authenticateUsernamePassword(
+        Session session,
+        String username,
+        String password
+    );
 
 }
