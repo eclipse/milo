@@ -278,10 +278,7 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     private static boolean sessionsHaveSameUser(Session s1, Session s2) {
-        Object identity1 = s1.getIdentityObject();
-        Object identity2 = s2.getIdentityObject();
-
-        return Objects.equals(identity1, identity2);
+        return Objects.equals(s1.getIdentity(), s2.getIdentity());
     }
 
 }

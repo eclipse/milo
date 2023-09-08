@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import com.google.common.base.Objects;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -472,7 +473,7 @@ public class SessionManager {
                         session.getEndpoint().getUserIdentityTokens()
                     );
 
-                    Object identityObject = validateIdentityToken(
+                    Identity identity = validateIdentityToken(
                         session,
                         identityToken,
                         request.getUserTokenSignature()
@@ -484,7 +485,7 @@ public class SessionManager {
                     ByteString serverNonce = NonceUtil.generateNonce(32);
 
                     session.setClientAddress(context.clientAddress());
-                    session.setIdentityObject(identityObject, identityToken);
+                    session.setIdentity(identity, identityToken);
                     session.setLastNonce(serverNonce);
                     session.setLocaleIds(request.getLocaleIds());
 
@@ -505,16 +506,13 @@ public class SessionManager {
                         session.getEndpoint().getUserIdentityTokens()
                     );
 
-                    Object identityObject = validateIdentityToken(
+                    Identity identity = validateIdentityToken(
                         session,
                         identityToken,
                         request.getUserTokenSignature()
                     );
 
-                    boolean sameIdentity = Objects.equal(
-                        identityObject,
-                        session.getIdentityObject()
-                    );
+                    boolean sameIdentity = Objects.equal(identity, session.getIdentity());
 
                     boolean sameCertificate = Objects.equal(
                         clientCertificateBytes,
@@ -567,7 +565,7 @@ public class SessionManager {
                 session.getEndpoint().getUserIdentityTokens()
             );
 
-            Object identityObject = validateIdentityToken(
+            Identity identity = validateIdentityToken(
                 session,
                 identityToken,
                 request.getUserTokenSignature()
@@ -582,7 +580,7 @@ public class SessionManager {
             ByteString serverNonce = NonceUtil.generateNonce(32);
 
             session.setClientAddress(context.clientAddress());
-            session.setIdentityObject(identityObject, identityToken);
+            session.setIdentity(identity, identityToken);
             session.setLocaleIds(request.getLocaleIds());
             session.setLastNonce(serverNonce);
 
@@ -723,10 +721,11 @@ public class SessionManager {
         return new AnonymousIdentityToken(policyId);
     }
 
-    private Object validateIdentityToken(
+    private Identity validateIdentityToken(
         Session session,
         Object tokenObject,
-        SignatureData tokenSignature) throws UaException {
+        SignatureData tokenSignature
+    ) throws UaException {
 
         IdentityValidator identityValidator = server.getConfig().getIdentityValidator();
         UserTokenPolicy tokenPolicy = validatePolicyId(session, tokenObject);

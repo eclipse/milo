@@ -14,6 +14,7 @@ import java.security.cert.X509Certificate;
 
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.X509UserIdentity;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -26,80 +27,84 @@ import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityValidator<T> {
+public abstract class AbstractX509IdentityValidator extends AbstractIdentityValidator {
 
     @Override
-    protected T validateX509Token(
+    protected X509UserIdentity validateX509Token(
         Session session,
         X509IdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature
+        UserTokenPolicy policy,
+        SignatureData signature
     ) throws UaException {
 
         ByteString clientCertificateBs = token.getCertificateData();
-        X509Certificate identityCertificate = CertificateUtil.decodeCertificate(clientCertificateBs.bytesOrEmpty());
+        X509Certificate certificate = CertificateUtil.decodeCertificate(clientCertificateBs.bytesOrEmpty());
 
         // verify the algorithm matches the one specified by the tokenPolicy or else the channel itself
-        if (tokenPolicy.getSecurityPolicyUri() != null) {
-            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(tokenPolicy.getSecurityPolicyUri());
+        if (policy.getSecurityPolicyUri() != null) {
+            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(policy.getSecurityPolicyUri());
 
-            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
+            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(signature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "algorithm in token signature did not match algorithm specified by token policy");
             }
         } else {
             SecurityPolicy securityPolicy = session.getSecurityConfiguration().getSecurityPolicy();
 
-            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
+            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(signature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "algorithm in token signature did not match algorithm specified by secure channel");
             }
         }
 
-        SecurityAlgorithm algorithm = SecurityAlgorithm.fromUri(tokenSignature.getAlgorithm());
+        SecurityAlgorithm algorithm = SecurityAlgorithm.fromUri(signature.getAlgorithm());
 
         if (algorithm != SecurityAlgorithm.None) {
             verifySignature(
                 session,
-                tokenSignature,
-                identityCertificate,
+                signature,
+                certificate,
                 algorithm
             );
         }
 
-        return authenticateIdentityCertificateOrThrow(session, identityCertificate);
+        return authenticateCertificateOrThrow(session, certificate);
     }
 
-    private T authenticateIdentityCertificateOrThrow(
+    private X509UserIdentity authenticateCertificateOrThrow(
         Session session,
-        X509Certificate identityCertificate
+        X509Certificate certificate
     ) throws UaException {
 
-        T identityObject = authenticateIdentityCertificate(session, identityCertificate);
+        X509UserIdentity identity = authenticateCertificate(session, certificate);
 
-        if (identityObject != null) {
-            return identityObject;
+        if (identity != null) {
+            return identity;
         } else {
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
     }
 
     /**
-     * Create and return an identity object for the user identified by {@code identityCertificate}.
+     * Create and return an {@link X509UserIdentity} for the user identified by {@code certificate}.
      * <p>
-     * Possession of the private key associated with this certificate has been verified prior to this call.
+     * Possession of the private key associated with this certificate has been verified prior to
+     * this call.
      *
-     * @param session             the {@link Session} being activated.
-     * @param identityCertificate the {@link X509Certificate} identifying the user.
-     * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
+     * @param session the {@link Session} being activated.
+     * @param certificate the {@link X509Certificate} identifying the user.
+     * @return an {@link X509UserIdentity} if the authentication succeeded, or {@code null} if it
+     *     failed.
      */
-    @Nullable
-    protected abstract T authenticateIdentityCertificate(Session session, X509Certificate identityCertificate);
+    protected abstract @Nullable X509UserIdentity authenticateCertificate(
+        Session session,
+        X509Certificate certificate
+    );
 
     private static void verifySignature(
         Session session,
         SignatureData tokenSignature,
-        X509Certificate identityCertificate,
+        X509Certificate certificate,
         SecurityAlgorithm algorithm
     ) throws UaException {
 
@@ -115,7 +120,7 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
 
             SignatureUtil.verify(
                 algorithm,
-                identityCertificate,
+                certificate,
                 dataBytes,
                 signatureBytes
             );
@@ -134,7 +139,7 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
 
                 SignatureUtil.verify(
                     algorithm,
-                    identityCertificate,
+                    certificate,
                     dataBytes,
                     signatureBytes
                 );
