@@ -23,7 +23,7 @@ public interface IdentityValidator {
      * Validate a {@link UserIdentityToken} and return an {@link Identity} that represents the
      * user.
      *
-     * @param session the {@link Session} that made the request.
+     * @param session the {@link Session} making the request.
      * @param token the {@link UserIdentityToken}.
      * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
      * @param signature the {@link SignatureData} from the {@link ActivateSessionRequest}.

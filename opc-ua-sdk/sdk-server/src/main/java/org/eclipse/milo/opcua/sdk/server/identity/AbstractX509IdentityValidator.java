@@ -32,36 +32,36 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
     protected Identity validateX509Token(
         Session session,
         X509IdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature
+        UserTokenPolicy policy,
+        SignatureData signature
     ) throws UaException {
 
         ByteString clientCertificateBs = token.getCertificateData();
         X509Certificate identityCertificate = CertificateUtil.decodeCertificate(clientCertificateBs.bytesOrEmpty());
 
         // verify the algorithm matches the one specified by the tokenPolicy or else the channel itself
-        if (tokenPolicy.getSecurityPolicyUri() != null) {
-            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(tokenPolicy.getSecurityPolicyUri());
+        if (policy.getSecurityPolicyUri() != null) {
+            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(policy.getSecurityPolicyUri());
 
-            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
+            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(signature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "algorithm in token signature did not match algorithm specified by token policy");
             }
         } else {
             SecurityPolicy securityPolicy = session.getSecurityConfiguration().getSecurityPolicy();
 
-            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
+            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(signature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "algorithm in token signature did not match algorithm specified by secure channel");
             }
         }
 
-        SecurityAlgorithm algorithm = SecurityAlgorithm.fromUri(tokenSignature.getAlgorithm());
+        SecurityAlgorithm algorithm = SecurityAlgorithm.fromUri(signature.getAlgorithm());
 
         if (algorithm != SecurityAlgorithm.None) {
             verifySignature(
                 session,
-                tokenSignature,
+                signature,
                 identityCertificate,
                 algorithm
             );

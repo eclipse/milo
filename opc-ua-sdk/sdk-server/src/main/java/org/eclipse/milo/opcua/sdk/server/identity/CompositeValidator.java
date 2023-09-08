@@ -33,7 +33,7 @@ public class CompositeValidator implements IdentityValidator {
     private final List<IdentityValidator> validators;
 
     public CompositeValidator(IdentityValidator... validators) {
-        this.validators = List.of(validators);
+        this(List.of(validators));
     }
 
     public CompositeValidator(List<IdentityValidator> validators) {

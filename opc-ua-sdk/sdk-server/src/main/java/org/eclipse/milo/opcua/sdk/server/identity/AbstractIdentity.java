@@ -14,6 +14,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A base class for {@link Identity} implementations that manages the user data.
+ */
 public abstract class AbstractIdentity implements Identity {
 
     protected final AtomicReference<Object> userDataRef = new AtomicReference<>();

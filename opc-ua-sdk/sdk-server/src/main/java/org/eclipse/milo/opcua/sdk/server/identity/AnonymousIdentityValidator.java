@@ -26,8 +26,8 @@ public final class AnonymousIdentityValidator extends AbstractIdentityValidator 
     public Identity.AnonymousIdentity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature
+        UserTokenPolicy policy,
+        SignatureData signature
     ) {
 
         return new DefaultAnonymousIdentity();

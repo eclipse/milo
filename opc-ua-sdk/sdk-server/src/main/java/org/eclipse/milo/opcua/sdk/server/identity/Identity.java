@@ -14,6 +14,10 @@ import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.IssuedIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.jetbrains.annotations.Nullable;
 
 public interface Identity {
@@ -29,16 +33,20 @@ public interface Identity {
     @Nullable Object getUserData();
 
     /**
-     * Associate an arbitrary user data object on this identity.
+     * Associate an arbitrary user data object with this identity.
      *
      * @param userData the user data object.
      */
     void setUserData(Object userData);
 
-    interface AnonymousIdentity extends Identity {
+    /**
+     * An {@link Identity} derived from validation of an {@link AnonymousIdentityToken}.
+     */
+    interface AnonymousIdentity extends Identity {}
 
-    }
-
+    /**
+     * An {@link Identity} derived from validation of a {@link UserNameIdentityToken}.
+     */
     interface UsernameIdentity extends Identity {
 
 
@@ -49,6 +57,9 @@ public interface Identity {
 
     }
 
+    /**
+     * An {@link Identity} derived from validation of an {@link X509IdentityToken}.
+     */
     interface X509UserIdentity extends Identity {
 
 
@@ -59,6 +70,9 @@ public interface Identity {
 
     }
 
+    /**
+     * An {@link Identity} derived from validation of an {@link IssuedIdentityToken}.
+     */
     interface IssuedUserIdentity extends Identity {
 
         /**

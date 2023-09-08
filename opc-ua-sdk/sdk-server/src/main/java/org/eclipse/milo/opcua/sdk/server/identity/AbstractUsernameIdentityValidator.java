@@ -31,8 +31,8 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
     protected Identity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature
+        UserTokenPolicy policy,
+        SignatureData signature
     ) throws UaException {
 
         return authenticateAnonymousOrThrow(session);
@@ -42,8 +42,8 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
     protected Identity validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature
+        UserTokenPolicy policy,
+        SignatureData signature
     ) throws UaException {
 
         String username = token.getUserName();
