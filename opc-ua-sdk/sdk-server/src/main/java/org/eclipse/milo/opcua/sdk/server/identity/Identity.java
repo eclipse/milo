@@ -37,7 +37,7 @@ public interface Identity {
      *
      * @param userData the user data object.
      */
-    void setUserData(Object userData);
+    void setUserData(@Nullable Object userData);
 
     /**
      * An {@link Identity} derived from validation of an {@link AnonymousIdentityToken}.
