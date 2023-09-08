@@ -85,8 +85,8 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
     }
 
     /**
-     * Validate an {@link AnonymousIdentityToken} and return an {@link Identity} that represents
-     * the user.
+     * Validate an {@link AnonymousIdentityToken} and return an {@link AnonymousIdentity} that
+     * represents the user.
      * <p>
      * This Identity should implement equality in such a way that different instances representing
      * the same user are comparable.
@@ -109,8 +109,8 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
     }
 
     /**
-     * Validate an {@link UserNameIdentityToken} and return an {@link Identity} that represents
-     * the user.
+     * Validate an {@link UserNameIdentityToken} and return a {@link UsernameIdentity} that
+     * represents the user.
      * <p>
      * This Identity should implement equality in such a way that different instances representing
      * the same user are comparable.
@@ -133,8 +133,8 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
     }
 
     /**
-     * Validate an {@link X509IdentityToken} and return an {@link X509UserIdentity} that represents
-     * the user.
+     * Validate an {@link X509IdentityToken} and return an {@link X509UserIdentity} that
+     * represents the user.
      * <p>
      * This Identity should implement equality in such a way that different instances representing
      * the same user are comparable.
@@ -157,8 +157,8 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
     }
 
     /**
-     * Validate an {@link IssuedIdentityToken} and return an {@link IssuedIdentity} that represents
-     * the user.
+     * Validate an {@link IssuedIdentityToken} and return an {@link IssuedIdentity} that
+     * represents the user.
      * <p>
      * This Identity should implement equality in such a way that different instances representing
      * the same user are comparable.

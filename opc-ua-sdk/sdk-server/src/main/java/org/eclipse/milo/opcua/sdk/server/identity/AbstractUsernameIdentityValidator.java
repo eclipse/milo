@@ -148,7 +148,8 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
     }
 
     /**
-     * Create and return an identity object for an anonymous user.
+     * Create and return an {@link AnonymousIdentity} for the anonymous user, or {@code null} if
+     * anonymous authentication is not allowed.
      *
      * @param session the {@link Session} being activated.
      * @return an {@link AnonymousIdentity}, or {@code null} if anonymous authentication is not

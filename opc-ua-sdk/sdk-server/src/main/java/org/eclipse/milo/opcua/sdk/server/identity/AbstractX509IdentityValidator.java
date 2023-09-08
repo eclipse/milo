@@ -14,6 +14,7 @@ import java.security.cert.X509Certificate;
 
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.X509UserIdentity;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractX509IdentityValidator extends AbstractIdentityValidator {
 
     @Override
-    protected Identity.X509UserIdentity validateX509Token(
+    protected X509UserIdentity validateX509Token(
         Session session,
         X509IdentityToken token,
         UserTokenPolicy policy,
@@ -70,12 +71,12 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
         return authenticateCertificateOrThrow(session, certificate);
     }
 
-    private Identity.X509UserIdentity authenticateCertificateOrThrow(
+    private X509UserIdentity authenticateCertificateOrThrow(
         Session session,
         X509Certificate certificate
     ) throws UaException {
 
-        Identity.X509UserIdentity identity = authenticateCertificate(session, certificate);
+        X509UserIdentity identity = authenticateCertificate(session, certificate);
 
         if (identity != null) {
             return identity;
@@ -85,17 +86,17 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
     }
 
     /**
-     * Create and return an identity object for the user identified by {@code certificate}.
+     * Create and return an {@link X509UserIdentity} for the user identified by {@code certificate}.
      * <p>
      * Possession of the private key associated with this certificate has been verified prior to
      * this call.
      *
      * @param session the {@link Session} being activated.
      * @param certificate the {@link X509Certificate} identifying the user.
-     * @return an {@link Identity.X509UserIdentity} if the authentication succeeded, or
-     *     {@code null} if it failed.
+     * @return an {@link X509UserIdentity} if the authentication succeeded, or {@code null} if it
+     *     failed.
      */
-    protected abstract @Nullable Identity.X509UserIdentity authenticateCertificate(
+    protected abstract @Nullable X509UserIdentity authenticateCertificate(
         Session session,
         X509Certificate certificate
     );
