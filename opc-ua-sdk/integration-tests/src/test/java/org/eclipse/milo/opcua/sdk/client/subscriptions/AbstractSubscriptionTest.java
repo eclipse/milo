@@ -21,22 +21,22 @@ public abstract class AbstractSubscriptionTest extends AbstractClientServerTest 
     protected ManagedSubscription subscription;
 
     @BeforeEach
-    private void createSubscription() throws UaException {
+    public void createSubscription() throws UaException {
         subscription = ManagedSubscription.create(client);
 
-        System.out.println(String.format(
-            "created ManagedSubscription id=%s",
+        System.out.printf(
+            "created ManagedSubscription id=%s%n",
             subscription.getSubscription().getSubscriptionId()
-        ));
+        );
     }
 
     @AfterEach
-    private void deleteSubscription() throws UaException {
+    public void deleteSubscription() throws UaException {
         if (subscription != null) {
-            System.out.println(String.format(
-                "deleting ManagedSubscription id=%s",
+            System.out.printf(
+                "deleting ManagedSubscription id=%s%n",
                 subscription.getSubscription().getSubscriptionId()
-            ));
+            );
 
             subscription.delete();
             subscription = null;
