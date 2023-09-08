@@ -73,7 +73,7 @@ public interface Identity {
     /**
      * An {@link Identity} derived from validation of an {@link IssuedIdentityToken}.
      */
-    interface IssuedUserIdentity extends Identity {
+    interface IssuedIdentity extends Identity {
 
         /**
          * @return a {@link ByteString} containing opaque issued token data.

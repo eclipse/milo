@@ -20,13 +20,14 @@ public class DefaultUsernameIdentity extends AbstractIdentity implements Identit
         this.username = username;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     @Override
     public UserTokenType getUserTokenType() {
         return UserTokenType.UserName;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 
 }

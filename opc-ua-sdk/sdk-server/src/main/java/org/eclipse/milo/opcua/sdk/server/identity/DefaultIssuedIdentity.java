@@ -10,26 +10,25 @@
 
 package org.eclipse.milo.opcua.sdk.server.identity;
 
-import java.security.cert.X509Certificate;
-
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 
-public class DefaultX509UserIdentity extends AbstractIdentity implements Identity.X509UserIdentity {
+public class DefaultIssuedIdentity extends AbstractIdentity implements Identity.IssuedIdentity {
 
-    private final X509Certificate certificate;
+    private final ByteString tokenData;
 
-    public DefaultX509UserIdentity(X509Certificate certificate) {
-        this.certificate = certificate;
+    public DefaultIssuedIdentity(ByteString tokenData) {
+        this.tokenData = tokenData;
     }
 
     @Override
     public UserTokenType getUserTokenType() {
-        return UserTokenType.Certificate;
+        return UserTokenType.IssuedToken;
     }
 
     @Override
-    public X509Certificate getCertificate() {
-        return certificate;
+    public ByteString getTokenData() {
+        return tokenData;
     }
 
 }
