@@ -49,7 +49,6 @@ public interface Identity {
      */
     interface UsernameIdentity extends Identity {
 
-
         /**
          * @return the username for this identity.
          */
@@ -61,7 +60,6 @@ public interface Identity {
      * An {@link Identity} derived from validation of an {@link X509IdentityToken}.
      */
     interface X509UserIdentity extends Identity {
-
 
         /**
          * @return the {@link X509Certificate} for this identity.
