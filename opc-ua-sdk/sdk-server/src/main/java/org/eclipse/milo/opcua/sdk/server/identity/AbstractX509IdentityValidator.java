@@ -37,7 +37,7 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
     ) throws UaException {
 
         ByteString clientCertificateBs = token.getCertificateData();
-        X509Certificate identityCertificate = CertificateUtil.decodeCertificate(clientCertificateBs.bytesOrEmpty());
+        X509Certificate certificate = CertificateUtil.decodeCertificate(clientCertificateBs.bytesOrEmpty());
 
         // verify the algorithm matches the one specified by the tokenPolicy or else the channel itself
         if (policy.getSecurityPolicyUri() != null) {
@@ -62,20 +62,20 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
             verifySignature(
                 session,
                 signature,
-                identityCertificate,
+                certificate,
                 algorithm
             );
         }
 
-        return authenticateIdentityCertificateOrThrow(session, identityCertificate);
+        return authenticateCertificateOrThrow(session, certificate);
     }
 
-    private Identity.X509UserIdentity authenticateIdentityCertificateOrThrow(
+    private Identity.X509UserIdentity authenticateCertificateOrThrow(
         Session session,
-        X509Certificate identityCertificate
+        X509Certificate certificate
     ) throws UaException {
 
-        Identity.X509UserIdentity identity = authenticateIdentityCertificate(session, identityCertificate);
+        Identity.X509UserIdentity identity = authenticateCertificate(session, certificate);
 
         if (identity != null) {
             return identity;
@@ -85,25 +85,25 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
     }
 
     /**
-     * Create and return an identity object for the user identified by {@code identityCertificate}.
+     * Create and return an identity object for the user identified by {@code certificate}.
      * <p>
      * Possession of the private key associated with this certificate has been verified prior to
      * this call.
      *
      * @param session the {@link Session} being activated.
-     * @param identityCertificate the {@link X509Certificate} identifying the user.
+     * @param certificate the {@link X509Certificate} identifying the user.
      * @return an {@link Identity.X509UserIdentity} if the authentication succeeded, or
      *     {@code null} if it failed.
      */
-    protected abstract @Nullable Identity.X509UserIdentity authenticateIdentityCertificate(
+    protected abstract @Nullable Identity.X509UserIdentity authenticateCertificate(
         Session session,
-        X509Certificate identityCertificate
+        X509Certificate certificate
     );
 
     private static void verifySignature(
         Session session,
         SignatureData tokenSignature,
-        X509Certificate identityCertificate,
+        X509Certificate certificate,
         SecurityAlgorithm algorithm
     ) throws UaException {
 
@@ -119,7 +119,7 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
 
             SignatureUtil.verify(
                 algorithm,
-                identityCertificate,
+                certificate,
                 dataBytes,
                 signatureBytes
             );
@@ -138,7 +138,7 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
 
                 SignatureUtil.verify(
                     algorithm,
-                    identityCertificate,
+                    certificate,
                     dataBytes,
                     signatureBytes
                 );
