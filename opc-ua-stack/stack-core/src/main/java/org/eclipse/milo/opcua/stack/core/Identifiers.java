@@ -5,4 +5,5 @@ package org.eclipse.milo.opcua.stack.core;
  *
  * @deprecated use {@link NodeIds} instead.
  */
+@Deprecated
 public final class Identifiers extends NodeIds0 {}
