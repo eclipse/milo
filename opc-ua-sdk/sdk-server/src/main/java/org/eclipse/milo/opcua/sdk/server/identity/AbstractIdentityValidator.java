@@ -18,6 +18,10 @@ import java.security.cert.X509Certificate;
 import javax.crypto.Cipher;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.AnonymousIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.IssuedIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.UsernameIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.X509UserIdentity;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
@@ -91,10 +95,10 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @param token the {@link AnonymousIdentityToken}.
      * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
      * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an {@link Identity} that represents the user.
+     * @return an {@link AnonymousIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Identity validateAnonymousToken(
+    protected AnonymousIdentity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy policy,
@@ -115,10 +119,10 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @param token the {@link UserNameIdentityToken}.
      * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
      * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an {@link Identity} that represents the user.
+     * @return a {@link UsernameIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Identity validateUsernameToken(
+    protected UsernameIdentity validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy policy,
@@ -129,7 +133,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
     }
 
     /**
-     * Validate an {@link X509IdentityToken} and return an {@link Identity} that represents
+     * Validate an {@link X509IdentityToken} and return an {@link X509UserIdentity} that represents
      * the user.
      * <p>
      * This Identity should implement equality in such a way that different instances representing
@@ -139,10 +143,10 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @param token the {@link X509IdentityToken}.
      * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
      * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an {@link Identity} that represents the user.
+     * @return an {@link X509UserIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Identity validateX509Token(
+    protected X509UserIdentity validateX509Token(
         Session session,
         X509IdentityToken token,
         UserTokenPolicy policy,
@@ -153,7 +157,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
     }
 
     /**
-     * Validate an {@link IssuedIdentityToken} and return an {@link Identity} that represents
+     * Validate an {@link IssuedIdentityToken} and return an {@link IssuedIdentity} that represents
      * the user.
      * <p>
      * This Identity should implement equality in such a way that different instances representing
@@ -163,10 +167,10 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @param token the {@link IssuedIdentityToken}.
      * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
      * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an {@link Identity} that represents the user.
+     * @return an {@link IssuedIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Identity validateIssuedIdentityToken(
+    protected IssuedIdentity validateIssuedIdentityToken(
         Session session,
         IssuedIdentityToken token,
         UserTokenPolicy policy,

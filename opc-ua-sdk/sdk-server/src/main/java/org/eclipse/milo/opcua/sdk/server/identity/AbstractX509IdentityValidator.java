@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractX509IdentityValidator extends AbstractIdentityValidator {
 
     @Override
-    protected Identity validateX509Token(
+    protected Identity.X509UserIdentity validateX509Token(
         Session session,
         X509IdentityToken token,
         UserTokenPolicy policy,
@@ -70,12 +70,12 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
         return authenticateIdentityCertificateOrThrow(session, identityCertificate);
     }
 
-    private Identity authenticateIdentityCertificateOrThrow(
+    private Identity.X509UserIdentity authenticateIdentityCertificateOrThrow(
         Session session,
         X509Certificate identityCertificate
     ) throws UaException {
 
-        Identity identity = authenticateIdentityCertificate(session, identityCertificate);
+        Identity.X509UserIdentity identity = authenticateIdentityCertificate(session, identityCertificate);
 
         if (identity != null) {
             return identity;
@@ -87,13 +87,15 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
     /**
      * Create and return an identity object for the user identified by {@code identityCertificate}.
      * <p>
-     * Possession of the private key associated with this certificate has been verified prior to this call.
+     * Possession of the private key associated with this certificate has been verified prior to
+     * this call.
      *
      * @param session the {@link Session} being activated.
      * @param identityCertificate the {@link X509Certificate} identifying the user.
-     * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
+     * @return an {@link Identity.X509UserIdentity} if the authentication succeeded, or
+     *     {@code null} if it failed.
      */
-    protected abstract @Nullable Identity authenticateIdentityCertificate(
+    protected abstract @Nullable Identity.X509UserIdentity authenticateIdentityCertificate(
         Session session,
         X509Certificate identityCertificate
     );

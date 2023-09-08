@@ -39,7 +39,7 @@ public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator
     }
 
     @Override
-    protected @Nullable DefaultUsernameIdentity authenticateUsernamePassword(
+    protected @Nullable Identity.UsernameIdentity authenticateUsernamePassword(
         Session session,
         String username,
         String password

@@ -26,7 +26,7 @@ public class X509IdentityValidator extends AbstractX509IdentityValidator {
 
     @Nullable
     @Override
-    protected DefaultX509UserIdentity authenticateIdentityCertificate(Session session, X509Certificate identityCertificate) {
+    protected Identity.X509UserIdentity authenticateIdentityCertificate(Session session, X509Certificate identityCertificate) {
         if (predicate.test(identityCertificate)) {
             return new DefaultX509UserIdentity(identityCertificate);
         } else {

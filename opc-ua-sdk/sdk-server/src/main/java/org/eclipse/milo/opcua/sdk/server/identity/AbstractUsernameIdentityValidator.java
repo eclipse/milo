@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.AnonymousIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.UsernameIdentity;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -28,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractUsernameIdentityValidator extends AbstractIdentityValidator {
 
     @Override
-    protected Identity validateAnonymousToken(
+    protected AnonymousIdentity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy policy,
@@ -39,7 +41,7 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
     }
 
     @Override
-    protected Identity validateUsernameToken(
+    protected UsernameIdentity validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy policy,
@@ -125,8 +127,8 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
         }
     }
 
-    private Identity.AnonymousIdentity authenticateAnonymousOrThrow(Session session) throws UaException {
-        Identity.AnonymousIdentity identity = authenticateAnonymous(session);
+    private AnonymousIdentity authenticateAnonymousOrThrow(Session session) throws UaException {
+        AnonymousIdentity identity = authenticateAnonymous(session);
 
         if (identity != null) {
             return identity;
@@ -135,8 +137,8 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
         }
     }
 
-    private Identity.UsernameIdentity authenticateUsernameOrThrow(Session session, String username, String password) throws UaException {
-        Identity.UsernameIdentity identity = authenticateUsernamePassword(session, username, password);
+    private UsernameIdentity authenticateUsernameOrThrow(Session session, String username, String password) throws UaException {
+        UsernameIdentity identity = authenticateUsernamePassword(session, username, password);
 
         if (identity != null) {
             return identity;
@@ -149,21 +151,22 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
      * Create and return an identity object for an anonymous user.
      *
      * @param session the {@link Session} being activated.
-     * @return an identity object of type {@code T} representig an anonymous user, or {@code null} if anonymous
-     *     authentication is not allowed.
+     * @return an {@link AnonymousIdentity}, or {@code null} if anonymous authentication is not
+     *     allowed.
      */
-    protected abstract @Nullable Identity.AnonymousIdentity authenticateAnonymous(Session session);
+    protected abstract @Nullable AnonymousIdentity authenticateAnonymous(Session session);
 
     /**
-     * Authenticate {@code username} with {@code password}, returning an identity object of type {@code T} if the
-     * authentication succeeded, or {@code null} if the authentication failed.
+     * Authenticate {@code username} with {@code password}, returning a {@link UsernameIdentity}
+     * if authentication succeeded, or {@code null} if the authentication failed.
      *
      * @param session the {@link Session} being activated.
      * @param username the username to authenticate.
      * @param password the password to authenticate the user with.
-     * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
+     * @return a {@link UsernameIdentity} if the authentication succeeded, or {@code null} if it
+     *     failed.
      */
-    protected abstract @Nullable Identity.UsernameIdentity authenticateUsernamePassword(
+    protected abstract @Nullable UsernameIdentity authenticateUsernamePassword(
         Session session,
         String username,
         String password
