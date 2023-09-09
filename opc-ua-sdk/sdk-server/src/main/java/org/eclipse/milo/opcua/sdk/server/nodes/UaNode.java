@@ -25,7 +25,6 @@ import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -44,14 +43,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
-import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public abstract class UaNode implements UaServerNode {
 
-    private AttributeDelegate attributeDelegate;
     private List<AttributeObserver> observers;
 
     final AttributeFilterChain filterChain = new AttributeFilterChain();
@@ -276,7 +273,7 @@ public abstract class UaNode implements UaServerNode {
      * {@link AttributeObserver}s of the change.
      *
      * @param attributeId the {@link AttributeId} to set the value for.
-     * @param value       the value to set.
+     * @param value the value to set.
      */
     public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
@@ -570,8 +567,8 @@ public abstract class UaNode implements UaServerNode {
     /**
      * Find a {@link UaNode} with the specified {@code browseName} referenced by this node.
      *
-     * @param browseName         the Browse Name of the target node.
-     * @param nodePredicate      a {@link Predicate} used to include/exclude target Nodes.
+     * @param browseName the Browse Name of the target node.
+     * @param nodePredicate a {@link Predicate} used to include/exclude target Nodes.
      * @param referencePredicate a {@link Predicate} used to include/exclude references to follow.
      * @return the target node, if one was found.
      */
@@ -593,9 +590,9 @@ public abstract class UaNode implements UaServerNode {
     /**
      * Find a {@link UaNode} with a Browse Name of {@code browseName}, in {@code namespaceUri}, referenced by this node.
      *
-     * @param namespaceUri       the namespace URI of {@code browseName}.
-     * @param browseName         the Browse Name of the target node.
-     * @param nodePredicate      a {@link Predicate} used to include/exclude target Nodes.
+     * @param namespaceUri the namespace URI of {@code browseName}.
+     * @param browseName the Browse Name of the target node.
+     * @param nodePredicate a {@link Predicate} used to include/exclude target Nodes.
      * @param referencePredicate a {@link Predicate} used to include/exclude references to follow.
      * @return the target node, if one was found.
      */
@@ -703,66 +700,41 @@ public abstract class UaNode implements UaServerNode {
         return filterChain;
     }
 
-    /**
-     * Set the {@link AttributeDelegate} for this node.
-     *
-     * @param attributeDelegate the {@link AttributeDelegate}.
-     */
-    public synchronized void setAttributeDelegate(AttributeDelegate attributeDelegate) {
-        this.attributeDelegate = attributeDelegate;
-    }
-
-    /**
-     * Get the current {@link AttributeDelegate} for this node.
-     *
-     * @return the current {@link AttributeDelegate} for this node.
-     */
-    @Nullable
-    public synchronized AttributeDelegate getAttributeDelegate() {
-        return attributeDelegate;
-    }
-
     @Override
     public DataValue getAttribute(AttributeContext context, AttributeId attributeId) {
-        AttributeDelegate delegate = getAttributeDelegate();
+        try {
+            Object attributeValue = getFilterChain().getAttribute(
+                context.getSession().orElse(null),
+                this,
+                attributeId
+            );
 
-        if (delegate == null) {
-            try {
-                Object attributeValue = getFilterChain().getAttribute(
-                    context.getSession().orElse(null),
-                    this,
-                    attributeId
-                );
+            switch (attributeId) {
+                case Value:
+                    return (DataValue) attributeValue;
 
-                switch (attributeId) {
-                    case Value:
-                        return (DataValue) attributeValue;
+                case DataTypeDefinition:
+                case RolePermissions:
+                case UserRolePermissions:
+                case AccessRestrictions:
+                case AccessLevelEx:
+                    // These attributes are either structures or primitive types, and should
+                    // not expose a null value to clients, so if they are null in the node
+                    // that means they are not implemented/support for the node, and we need
+                    // to return Bad_AttributeIdInvalid.
+                    if (attributeValue == null) {
+                        return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
+                    }
 
-                    case DataTypeDefinition:
-                    case RolePermissions:
-                    case UserRolePermissions:
-                    case AccessRestrictions:
-                    case AccessLevelEx:
-                        // These attributes are either structures or primitive types, and should
-                        // not expose a null value to clients, so if they are null in the node
-                        // that means they are not implemented/support for the node, and we need
-                        // to return Bad_AttributeIdInvalid.
-                        if (attributeValue == null) {
-                            return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
-                        }
-
-                        // intentional fall-through
-                    default:
-                        return dv(attributeValue);
-                }
-            } catch (Throwable t) {
-                StatusCode statusCode = UaException.extractStatusCode(t)
-                    .orElse(new StatusCode(StatusCodes.Bad_InternalError));
-
-                return new DataValue(statusCode);
+                    // intentional fall-through
+                default:
+                    return dv(attributeValue);
             }
-        } else {
-            return delegate.getAttribute(context, this, attributeId);
+        } catch (Throwable t) {
+            StatusCode statusCode = UaException.extractStatusCode(t)
+                .orElse(new StatusCode(StatusCodes.Bad_InternalError));
+
+            return new DataValue(statusCode);
         }
     }
 
@@ -773,25 +745,19 @@ public abstract class UaNode implements UaServerNode {
         DataValue value
     ) throws UaException {
 
-        AttributeDelegate delegate = getAttributeDelegate();
+        try {
+            getFilterChain().setAttribute(
+                context.getSession().orElse(null),
+                this,
+                attributeId,
+                attributeId == AttributeId.Value ? value : value.getValue().getValue()
+            );
+        } catch (Throwable t) {
+            long statusCode = UaException.extractStatusCode(t)
+                .map(StatusCode::getValue)
+                .orElse(StatusCodes.Bad_InternalError);
 
-        if (delegate == null) {
-            try {
-                getFilterChain().setAttribute(
-                    context.getSession().orElse(null),
-                    this,
-                    attributeId,
-                    attributeId == AttributeId.Value ? value : value.getValue().getValue()
-                );
-            } catch (Throwable t) {
-                long statusCode = UaException.extractStatusCode(t)
-                    .map(StatusCode::getValue)
-                    .orElse(StatusCodes.Bad_InternalError);
-
-                throw new UaException(statusCode, t);
-            }
-        } else {
-            delegate.setAttribute(context, this, attributeId, value);
+            throw new UaException(statusCode, t);
         }
     }
 

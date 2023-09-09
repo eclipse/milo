@@ -16,7 +16,6 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeWriter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -58,8 +57,8 @@ public interface UaServerNode extends Node {
     /**
      * Read the specified attribute.
      * <p>
-     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
-     * will be returned.
+     * If the attribute is not specified on this node, a value with status
+     * {@link StatusCodes#Bad_AttributeIdInvalid} will be returned.
      *
      * @param attribute the id of the attribute to read.
      * @return the value of the specified attribute.
@@ -71,12 +70,12 @@ public interface UaServerNode extends Node {
     /**
      * Read the specified attribute.
      * <p>
-     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
-     * will be returned.
+     * If the attribute is not specified on this node, a value with status
+     * {@link StatusCodes#Bad_AttributeIdInvalid} will be returned.
      *
-     * @param attribute    the id of the attribute to read.
-     * @param timestamps   the {@link TimestampsToReturn}.
-     * @param indexRange   the index range to read. Must be a parseable by {@link NumericRange}.
+     * @param attribute the id of the attribute to read.
+     * @param timestamps the {@link TimestampsToReturn}.
+     * @param indexRange the index range to read. Must be a parseable by {@link NumericRange}.
      * @param dataEncoding the requested data encoding.
      * @return the value of the specified attribute.
      */
@@ -85,7 +84,8 @@ public interface UaServerNode extends Node {
         UInteger attribute,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange,
-        @Nullable QualifiedName dataEncoding) {
+        @Nullable QualifiedName dataEncoding
+    ) {
 
         return AttributeId.from(attribute)
             .map(attributeId -> readAttribute(context, attributeId, timestamps, indexRange, dataEncoding))
@@ -93,14 +93,15 @@ public interface UaServerNode extends Node {
     }
 
     /**
-     * Read the specified attribute, applying {@code timestamps} and {@code indexRange} if specified.
+     * Read the specified attribute, applying {@code timestamps} and {@code indexRange} if
+     * specified.
      * <p>
-     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
-     * will be returned.
+     * If the attribute is not specified on this node, a value with status
+     * {@link StatusCodes#Bad_AttributeIdInvalid} will be returned.
      *
-     * @param attributeId  the id of the attribute to read.
-     * @param timestamps   the {@link TimestampsToReturn}.
-     * @param indexRange   the index range to read. Must be a parseable by {@link NumericRange}.
+     * @param attributeId the id of the attribute to read.
+     * @param timestamps the {@link TimestampsToReturn}.
+     * @param indexRange the index range to read. Must be a parseable by {@link NumericRange}.
      * @param dataEncoding the requested data encoding.
      * @return the value of the specified attribute.
      */
@@ -109,7 +110,8 @@ public interface UaServerNode extends Node {
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange,
-        @Nullable QualifiedName dataEncoding) {
+        @Nullable QualifiedName dataEncoding
+    ) {
 
         return AttributeReader.readAttribute(context, this, attributeId, timestamps, indexRange, dataEncoding);
     }
@@ -117,9 +119,9 @@ public interface UaServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param context    the {@link AttributeContext}.
-     * @param attribute  the id of the attribute to write.
-     * @param value      the {@link DataValue} write.
+     * @param context the {@link AttributeContext}.
+     * @param attribute the id of the attribute to write.
+     * @param value the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
@@ -127,7 +129,8 @@ public interface UaServerNode extends Node {
         AttributeContext context,
         UInteger attribute,
         DataValue value,
-        String indexRange) throws UaException {
+        String indexRange
+    ) throws UaException {
 
         Optional<AttributeId> attributeId = AttributeId.from(attribute);
 
@@ -141,38 +144,38 @@ public interface UaServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param context     the {@link AttributeContext}.
+     * @param context the {@link AttributeContext}.
      * @param attributeId the {@link AttributeId} of the attribute to write.
-     * @param value       the {@link DataValue} write.
-     * @param indexRange  the index range to write. Must be a parseable by {@link NumericRange}.
+     * @param value the {@link DataValue} write.
+     * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
         AttributeContext context,
         AttributeId attributeId,
         DataValue value,
-        String indexRange) throws UaException {
+        String indexRange
+    ) throws UaException {
 
         AttributeWriter.writeAttribute(context, this, attributeId, value, indexRange);
     }
 
     /**
-     * Get an attribute of this node, taking the {@link AttributeContext} into account and respecting any
-     * {@link AttributeDelegate} this node may have.
+     * Get an attribute of this node, taking the {@link AttributeContext} into account.
      *
-     * @param context     the {@link AttributeContext} to get the attribute in.
+     * @param context the {@link AttributeContext} to get the attribute in.
      * @param attributeId the {@link AttributeId} to get.
-     * @return a {@link DataValue} containing the attribute value or a {@link StatusCode} describing any failure.
+     * @return a {@link DataValue} containing the attribute value or a {@link StatusCode}
+     *     describing any failure.
      */
     DataValue getAttribute(AttributeContext context, AttributeId attributeId);
 
     /**
-     * Set an attribute of this node, taking the {@link AttributeContext} into account and respecting any
-     * {@link AttributeDelegate} this node may have.
+     * Set an attribute of this node, taking the {@link AttributeContext} into account.
      *
-     * @param context     the {@link AttributeContext} to set the attribute in.
+     * @param context the {@link AttributeContext} to set the attribute in.
      * @param attributeId the {@link AttributeId} to set.
-     * @param value       the new {@link DataValue} to set for the attribute.
+     * @param value the new {@link DataValue} to set for the attribute.
      * @throws UaException if setting the attribute failed for any reason.
      */
     void setAttribute(AttributeContext context, AttributeId attributeId, DataValue value) throws UaException;
