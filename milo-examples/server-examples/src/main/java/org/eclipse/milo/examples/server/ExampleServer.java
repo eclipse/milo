@@ -99,6 +99,8 @@ public class ExampleServer {
         LoggerFactory.getLogger(getClass())
             .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
+        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
+
         var certificateStore = KeyStoreCertificateStore.createAndInitialize(
             new KeyStoreCertificateStore.Settings(
                 securityTempDir.resolve("example-server.pfx"),
@@ -106,8 +108,6 @@ public class ExampleServer {
                 alias -> "password".toCharArray()
             )
         );
-
-        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
         var certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
             pkiDir.toPath(),
