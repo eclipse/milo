@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operator;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operators;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -422,7 +421,8 @@ public class EventContentFilter {
     private static Object getSimpleAttribute(
         @NotNull FilterContext context,
         @NotNull SimpleAttributeOperand operand,
-        @NotNull BaseEventTypeNode eventNode) throws UaException {
+        @NotNull BaseEventTypeNode eventNode
+    ) throws UaException {
 
         NodeId typeDefinitionId = operand.getTypeDefinitionId();
 
@@ -466,13 +466,8 @@ public class EventContentFilter {
 
             String indexRange = operand.getIndexRange();
 
-            AttributeContext attributeContext = new AttributeContext(
-                context.getServer(),
-                context.getSession().orElse(null)
-            );
-
             DataValue value = AttributeReader.readAttribute(
-                attributeContext,
+                context,
                 targetNode,
                 attributeId,
                 TimestampsToReturn.Neither,

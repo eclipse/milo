@@ -19,8 +19,8 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNode;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -52,18 +52,16 @@ public class AttributeWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AttributeWriter.class);
 
-    public static void writeAttribute(AttributeContext context,
+    public static void writeAttribute(AccessContext context,
                                       UaServerNode node,
                                       AttributeId attributeId,
                                       DataValue value,
                                       @Nullable String indexRange) throws UaException {
 
-        AttributeContext internalContext = new AttributeContext(context.getServer());
-
         NodeClass nodeClass = node.getNodeClass();
 
         if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
-            Set<AccessLevel> accessLevels = getAccessLevels(node, internalContext);
+            Set<AccessLevel> accessLevels = getAccessLevels(node, AccessContext.INTERNAL);
             if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
                 throw new UaException(StatusCodes.Bad_NotWritable);
             }
@@ -85,7 +83,7 @@ public class AttributeWriter {
             } else {
                 WriteMask writeMask = writeMaskForAttribute(attributeId);
 
-                Set<WriteMask> writeMasks = getWriteMasks(node, internalContext);
+                Set<WriteMask> writeMasks = getWriteMasks(node, AccessContext.INTERNAL);
                 if (!writeMasks.contains(writeMask)) {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -103,7 +101,7 @@ public class AttributeWriter {
             NumericRange range = NumericRange.parse(indexRange);
 
             DataValue current = node.getAttribute(
-                internalContext,
+                AccessContext.INTERNAL,
                 attributeId
             );
 
@@ -131,17 +129,17 @@ public class AttributeWriter {
         if (attributeId == AttributeId.Value) {
             NodeId dataType = extract(
                 node.getAttribute(
-                    internalContext,
+                    AccessContext.INTERNAL,
                     AttributeId.DataType)
             );
 
             if (dataType != null) {
-                value = validateDataType(context.getServer(), dataType, value);
+                value = validateDataType(node.getNodeContext().getServer(), dataType, value);
             }
 
             Integer valueRank = extract(
                 node.getAttribute(
-                    internalContext,
+                    AccessContext.INTERNAL,
                     AttributeId.ValueRank)
             );
 

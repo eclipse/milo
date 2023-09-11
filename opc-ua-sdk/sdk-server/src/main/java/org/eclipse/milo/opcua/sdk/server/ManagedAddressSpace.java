@@ -17,7 +17,6 @@ import java.util.concurrent.Semaphore;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.methods.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -144,7 +143,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
             if (node != null) {
                 DataValue value = node.readAttribute(
-                    new AttributeContext(context),
+                    context,
                     readValueId.getAttributeId(),
                     timestamps,
                     readValueId.getIndexRange(),
@@ -181,7 +180,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             if (node != null) {
                 try {
                     node.writeAttribute(
-                        new AttributeContext(context),
+                        context,
                         writeValue.getAttributeId(),
                         writeValue.getValue(),
                         writeValue.getIndexRange()

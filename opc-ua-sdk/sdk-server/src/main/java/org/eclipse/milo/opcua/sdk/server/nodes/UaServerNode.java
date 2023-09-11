@@ -16,6 +16,7 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeWriter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -63,7 +64,7 @@ public interface UaServerNode extends Node {
      * @param attribute the id of the attribute to read.
      * @return the value of the specified attribute.
      */
-    default DataValue readAttribute(AttributeContext context, UInteger attribute) {
+    default DataValue readAttribute(AccessContext context, UInteger attribute) {
         return readAttribute(context, attribute, null, null, null);
     }
 
@@ -80,7 +81,7 @@ public interface UaServerNode extends Node {
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(
-        AttributeContext context,
+        AccessContext context,
         UInteger attribute,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange,
@@ -106,7 +107,7 @@ public interface UaServerNode extends Node {
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(
-        AttributeContext context,
+        AccessContext context,
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange,
@@ -119,14 +120,14 @@ public interface UaServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param context the {@link AttributeContext}.
+     * @param context the {@link AccessContext}.
      * @param attribute the id of the attribute to write.
      * @param value the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        AttributeContext context,
+        AccessContext context,
         UInteger attribute,
         DataValue value,
         String indexRange
@@ -144,14 +145,14 @@ public interface UaServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param context the {@link AttributeContext}.
+     * @param context the {@link AccessContext}.
      * @param attributeId the {@link AttributeId} of the attribute to write.
      * @param value the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        AttributeContext context,
+        AccessContext context,
         AttributeId attributeId,
         DataValue value,
         String indexRange
@@ -161,23 +162,23 @@ public interface UaServerNode extends Node {
     }
 
     /**
-     * Get an attribute of this node, taking the {@link AttributeContext} into account.
+     * Get an attribute of this node, taking the {@link AccessContext} into account.
      *
-     * @param context the {@link AttributeContext} to get the attribute in.
+     * @param context the {@link AccessContext} to get the attribute in.
      * @param attributeId the {@link AttributeId} to get.
      * @return a {@link DataValue} containing the attribute value or a {@link StatusCode}
      *     describing any failure.
      */
-    DataValue getAttribute(AttributeContext context, AttributeId attributeId);
+    DataValue getAttribute(AccessContext context, AttributeId attributeId);
 
     /**
-     * Set an attribute of this node, taking the {@link AttributeContext} into account.
+     * Set an attribute of this node, taking the {@link AccessContext} into account.
      *
-     * @param context the {@link AttributeContext} to set the attribute in.
+     * @param context the {@link AccessContext} to set the attribute in.
      * @param attributeId the {@link AttributeId} to set.
      * @param value the new {@link DataValue} to set for the attribute.
      * @throws UaException if setting the attribute failed for any reason.
      */
-    void setAttribute(AttributeContext context, AttributeId attributeId, DataValue value) throws UaException;
+    void setAttribute(AccessContext context, AttributeId attributeId, DataValue value) throws UaException;
 
 }
