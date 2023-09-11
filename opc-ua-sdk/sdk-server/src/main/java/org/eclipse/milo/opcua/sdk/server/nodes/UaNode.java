@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
@@ -701,7 +702,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public DataValue getAttribute(AttributeContext context, AttributeId attributeId) {
+    public DataValue getAttribute(AccessContext context, AttributeId attributeId) {
         try {
             Object attributeValue = getFilterChain().getAttribute(
                 context.getSession().orElse(null),
@@ -740,7 +741,7 @@ public abstract class UaNode implements UaServerNode {
 
     @Override
     public void setAttribute(
-        AttributeContext context,
+        AccessContext context,
         AttributeId attributeId,
         DataValue value
     ) throws UaException {

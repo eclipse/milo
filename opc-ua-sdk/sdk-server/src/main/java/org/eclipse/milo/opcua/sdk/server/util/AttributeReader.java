@@ -18,9 +18,9 @@ import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -46,7 +46,7 @@ import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
 public class AttributeReader {
 
     public static DataValue readAttribute(
-        AttributeContext context,
+        AccessContext context,
         UaServerNode node,
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
@@ -54,12 +54,10 @@ public class AttributeReader {
         @Nullable QualifiedName encodingName) {
 
         try {
-            AttributeContext internalContext = new AttributeContext(context.getServer());
-
             NodeClass nodeClass = node.getNodeClass();
 
             if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
-                Set<AccessLevel> accessLevels = getAccessLevels(node, internalContext);
+                Set<AccessLevel> accessLevels = getAccessLevels(node, AccessContext.INTERNAL);
                 if (!accessLevels.contains(AccessLevel.CurrentRead)) {
                     throw new UaException(StatusCodes.Bad_NotReadable);
                 }
@@ -84,7 +82,7 @@ public class AttributeReader {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
                 }
 
-                boolean structured = isStructureSubtype(context.getServer(), dataTypeId);
+                boolean structured = isStructureSubtype(node.getNodeContext().getServer(), dataTypeId);
 
                 if (!structured) {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
@@ -103,7 +101,7 @@ public class AttributeReader {
                     Object newValue = transformArray(
                         valueObject,
                         (ExtensionObject xo) ->
-                            transcode(context, node, xo, encodingName),
+                            transcode(node, xo, encodingName),
                         ExtensionObject.class
                     );
 
@@ -111,7 +109,7 @@ public class AttributeReader {
                 } else if (valueClazz == ExtensionObject.class) {
                     ExtensionObject xo = (ExtensionObject) valueObject;
 
-                    Object newValue = transcode(context, node, xo, encodingName);
+                    Object newValue = transcode(node, xo, encodingName);
 
                     dvb.setValue(new Variant(newValue));
                 }
@@ -157,7 +155,6 @@ public class AttributeReader {
     }
 
     private static ExtensionObject transcode(
-        AttributeContext context,
         UaServerNode node,
         ExtensionObject xo,
         QualifiedName encodingName
@@ -176,14 +173,14 @@ public class AttributeReader {
         if (OpcUaDefaultBinaryEncoding.ENCODING_NAME.equals(encodingName)) {
             newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
         } else {
-            newEncoding = context.getServer().getEncodingManager().getEncoding(encodingName);
+            newEncoding = node.getNodeContext().getServer().getEncodingManager().getEncoding(encodingName);
         }
 
-        NodeId newEncodingId = getEncodingId(context, node, encodingName);
+        NodeId newEncodingId = getEncodingId(node, encodingName);
 
         if (newEncodingId != null) {
             return xo.transcode(
-                context.getServer().getEncodingContext(),
+                node.getNodeContext().getServer().getEncodingContext(),
                 newEncodingId,
                 newEncoding
             );
@@ -192,8 +189,7 @@ public class AttributeReader {
         }
     }
 
-    @Nullable
-    private static NodeId getEncodingId(AttributeContext context, UaServerNode node, QualifiedName encodingName) {
+    private static @Nullable NodeId getEncodingId(UaServerNode node, QualifiedName encodingName) {
         // TODO avoid dynamic lookup by registering codecs with their associated DataType and Encoding name
         NodeId dataTypeId;
         if (node instanceof VariableNode) {
@@ -204,7 +200,7 @@ public class AttributeReader {
             return null;
         }
 
-        AddressSpaceManager addressSpaceManager = context.getServer().getAddressSpaceManager();
+        AddressSpaceManager addressSpaceManager = node.getNodeContext().getServer().getAddressSpaceManager();
 
         UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
 

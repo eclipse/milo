@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -181,14 +180,9 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
      * @throws UaException if either Executable or UserExecutable attributes are not {@code true}.
      */
     protected void checkExecutableAttributes(AccessContext accessContext) throws UaException {
-        AttributeContext attributeContext = new AttributeContext(
-            node.getNodeContext().getServer(),
-            accessContext.getSession().orElse(null)
-        );
-
         Boolean executable = AttributeUtil.extract(
             node.getAttribute(
-                attributeContext,
+                accessContext,
                 AttributeId.Executable
             )
         );
@@ -199,7 +193,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
 
         Boolean userExecutable = AttributeUtil.extract(
             node.getAttribute(
-                attributeContext,
+                accessContext,
                 AttributeId.UserExecutable
             )
         );

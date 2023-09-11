@@ -14,7 +14,7 @@ import java.util.Set;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -57,7 +57,7 @@ public class AttributeUtil {
 
     public static Set<AccessLevel> getAccessLevels(
         UaServerNode node,
-        AttributeContext context) throws UaException {
+        AccessContext context) throws UaException {
 
         UByte accessLevel = extract(
             node.getAttribute(
@@ -74,7 +74,7 @@ public class AttributeUtil {
 
     public static Set<AccessLevel> getUserAccessLevels(
         UaServerNode node,
-        AttributeContext context) throws UaException {
+        AccessContext context) throws UaException {
 
         UByte userAccessLevel = extract(
             node.getAttribute(
@@ -91,7 +91,7 @@ public class AttributeUtil {
 
     public static Set<WriteMask> getWriteMasks(
         UaServerNode node,
-        AttributeContext internalContext) throws UaException {
+        AccessContext internalContext) throws UaException {
 
         UInteger writeMask = extract(
             node.getAttribute(
@@ -109,7 +109,7 @@ public class AttributeUtil {
 
     public static Set<WriteMask> getUserWriteMasks(
         UaServerNode node,
-        AttributeContext internalContext) throws UaException {
+        AccessContext internalContext) throws UaException {
 
         UInteger userWriteMask = extract(
             node.getAttribute(
