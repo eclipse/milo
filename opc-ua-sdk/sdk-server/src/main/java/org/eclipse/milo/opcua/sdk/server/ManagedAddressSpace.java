@@ -142,15 +142,17 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             UaServerNode node = nodeManager.get(readValueId.getNodeId());
 
             if (node != null) {
-                DataValue value = node.readAttribute(
+                DataValue value = AttributeReader.readAttribute(
                     context,
+                    node,
                     readValueId.getAttributeId(),
                     timestamps,
                     readValueId.getIndexRange(),
                     readValueId.getDataEncoding()
                 );
 
-                logger.debug("Read value {} from attribute {} of {}",
+                logger.debug(
+                    "Read value {} from attribute {} of {}",
                     value.getValue().getValue(),
                     AttributeId.from(readValueId.getAttributeId())
                         .map(Object::toString).orElse("unknown"),
@@ -179,8 +181,9 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
             if (node != null) {
                 try {
-                    node.writeAttribute(
+                    AttributeWriter.writeAttribute(
                         context,
+                        node,
                         writeValue.getAttributeId(),
                         writeValue.getValue(),
                         writeValue.getIndexRange()

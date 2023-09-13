@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.util;
+package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.Optional;
 import java.util.Set;
@@ -18,9 +18,6 @@ import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
-import org.eclipse.milo.opcua.sdk.server.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -33,14 +30,15 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
 import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
 
 public class AttributeReader {
@@ -48,51 +46,80 @@ public class AttributeReader {
     public static DataValue readAttribute(
         AccessContext context,
         UaServerNode node,
+        UInteger attributeId,
+        @Nullable TimestampsToReturn timestamps,
+        @Nullable String indexRange,
+        @Nullable QualifiedName encodingName
+    ) {
+
+        return AttributeId.from(attributeId)
+            .map(id -> readAttribute(context, node, id, timestamps, indexRange, encodingName))
+            .orElseGet(() -> new DataValue(StatusCodes.Bad_AttributeIdInvalid));
+    }
+
+    public static DataValue readAttribute(
+        AccessContext context,
+        UaServerNode node,
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange,
-        @Nullable QualifiedName encodingName) {
+        @Nullable QualifiedName encodingName
+    ) {
 
-        try {
-            NodeClass nodeClass = node.getNodeClass();
+        if (!AttributeId.getAttributes(node.getNodeClass()).contains(attributeId)) {
+            return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
+        }
 
-            if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
-                Set<AccessLevel> accessLevels = getAccessLevels(node, AccessContext.INTERNAL);
+        if (attributeId == AttributeId.Value && node instanceof VariableNode) {
+            VariableNode variableNode = (VariableNode) node;
+
+            AccessLevelExType accessLevelEx = variableNode.getAccessLevelEx();
+
+            if (accessLevelEx != null) {
+                if (!accessLevelEx.getCurrentRead()) {
+                    return new DataValue(StatusCodes.Bad_NotReadable);
+                }
+            } else {
+                Set<AccessLevel> accessLevels = AccessLevel.fromValue(variableNode.getAccessLevel());
                 if (!accessLevels.contains(AccessLevel.CurrentRead)) {
-                    throw new UaException(StatusCodes.Bad_NotReadable);
-                }
-
-                Set<AccessLevel> userAccessLevels = getUserAccessLevels(node, context);
-                if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
-                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                    return new DataValue(StatusCodes.Bad_NotReadable);
                 }
             }
 
-            if (encodingName != null && encodingName.isNotNull()) {
-                if (attributeId != AttributeId.Value) {
-                    throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
-                }
+            Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(
+                (UByte) node.getAttribute(context, AttributeId.UserAccessLevel)
+            );
+            if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
+                return new DataValue(StatusCodes.Bad_UserAccessDenied);
+            }
+        }
 
-                NodeId dataTypeId;
-                if (node instanceof VariableNode) {
-                    dataTypeId = ((VariableNode) node).getDataType();
-                } else if (node instanceof VariableTypeNode) {
-                    dataTypeId = ((VariableTypeNode) node).getDataType();
-                } else {
-                    throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
-                }
-
-                boolean structured = isStructureSubtype(node.getNodeContext().getServer(), dataTypeId);
-
-                if (!structured) {
-                    throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
-                }
+        if (encodingName != null && encodingName.isNotNull()) {
+            if (attributeId != AttributeId.Value) {
+                return new DataValue(StatusCodes.Bad_DataEncodingInvalid);
             }
 
-            final DataValue.Builder dvb = node.getAttribute(context, attributeId).copy();
+            NodeId dataTypeId;
+            if (node instanceof VariableNode) {
+                dataTypeId = ((VariableNode) node).getDataType();
+            } else if (node instanceof VariableTypeNode) {
+                dataTypeId = ((VariableTypeNode) node).getDataType();
+            } else {
+                return new DataValue(StatusCodes.Bad_DataEncodingInvalid);
+            }
 
-            // Maybe transcode the structure...
-            if (dvb.value.isNotNull()) {
+            if (!isStructureSubtype(node.getNodeContext().getServer(), dataTypeId)) {
+                return new DataValue(StatusCodes.Bad_DataEncodingInvalid);
+            }
+        }
+
+        Object value = node.getAttribute(context, attributeId);
+
+        if (attributeId == AttributeId.Value) {
+            DataValue dv = (DataValue) value;
+            DataValue.Builder dvb = dv.copy();
+
+            if (encodingName != null && encodingName.isNotNull() && dv.getValue().isNotNull()) {
                 final Object valueObject = dvb.value.getValue();
 
                 Class<?> valueClazz = valueObject.getClass();
@@ -115,23 +142,53 @@ public class AttributeReader {
                 }
             }
 
-            // Apply index range if provided...
             if (indexRange != null) {
-                NumericRange range = NumericRange.parse(indexRange);
+                try {
+                    NumericRange range = NumericRange.parse(indexRange);
 
-                Object valueAtRange = NumericRange.readFromValueAtRange(dvb.value, range);
+                    Object valueAtRange = NumericRange.readFromValueAtRange(dv.getValue().getValue(), range);
 
-                dvb.setValue(new Variant(valueAtRange));
+                    return dvb.setValue(Variant.of(valueAtRange))
+                        .applyTimestamps(attributeId, timestamps)
+                        .build();
+                } catch (UaException e) {
+                    return new DataValue(e.getStatusCode());
+                }
+            } else {
+                return dvb.applyTimestamps(attributeId, timestamps).build();
+            }
+        } else {
+            // These attributes are either structures or primitive types, and should
+            // not expose a null value to clients, so if they are null in the Node
+            // that means they are not implemented/supported for the node, and we need
+            // to return Bad_AttributeIdInvalid.
+
+            switch (attributeId) {
+                case DataTypeDefinition:
+                case RolePermissions:
+                case UserRolePermissions:
+                case AccessRestrictions:
+                case AccessLevelEx:
+                    if (value == null) {
+                        return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
+                    }
             }
 
-            // Add or remove timestamps based on TimestampsToReturn...
-            if (timestamps != null) {
-                dvb.applyTimestamps(attributeId, timestamps);
+            if (indexRange != null) {
+                try {
+                    NumericRange range = NumericRange.parse(indexRange);
+
+                    value = NumericRange.readFromValueAtRange(value, range);
+                } catch (UaException e) {
+                    return new DataValue(e.getStatusCode());
+                }
             }
 
-            return dvb.build();
-        } catch (UaException e) {
-            return new DataValue(e.getStatusCode());
+            return DataValue.newValue()
+                .setValue(Variant.of(value))
+                .setStatus(StatusCode.GOOD)
+                .applyTimestamps(attributeId, timestamps)
+                .build();
         }
     }
 

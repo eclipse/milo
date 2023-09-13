@@ -112,8 +112,10 @@ public final class NumericRange {
     }
 
     public static Object readFromValueAtRange(Variant value, NumericRange range) throws UaException {
-        Object array = value.getValue();
+        return readFromValueAtRange(value.getValue(), range);
+    }
 
+    public static Object readFromValueAtRange(Object array, NumericRange range) throws UaException {
         if (array == null) {
             throw new UaException(StatusCodes.Bad_IndexRangeNoData);
         }
@@ -176,12 +178,23 @@ public final class NumericRange {
         }
     }
 
-    public static Object writeToValueAtRange(Variant currentVariant,
-                                             Variant updateVariant,
-                                             NumericRange range) throws UaException {
+    public static Object writeToValueAtRange(
+        Variant currentVariant,
+        Variant updateVariant,
+        NumericRange range
+    ) throws UaException {
 
         Object current = currentVariant.getValue();
         Object update = updateVariant.getValue();
+
+        return writeToValueAtRange(current, update, range);
+    }
+
+    public static Object writeToValueAtRange(
+        Object current,
+        Object update,
+        NumericRange range
+    ) throws UaException {
 
         if (current == null || update == null) {
             throw new UaException(StatusCodes.Bad_IndexRangeNoData);

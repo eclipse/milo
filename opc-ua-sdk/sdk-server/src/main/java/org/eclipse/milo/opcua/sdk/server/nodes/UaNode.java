@@ -30,22 +30,20 @@ import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public abstract class UaNode implements UaServerNode {
@@ -702,64 +700,22 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public DataValue getAttribute(AccessContext context, AttributeId attributeId) {
-        try {
-            Object attributeValue = getFilterChain().getAttribute(
-                context.getSession().orElse(null),
-                this,
-                attributeId
-            );
-
-            switch (attributeId) {
-                case Value:
-                    return (DataValue) attributeValue;
-
-                case DataTypeDefinition:
-                case RolePermissions:
-                case UserRolePermissions:
-                case AccessRestrictions:
-                case AccessLevelEx:
-                    // These attributes are either structures or primitive types, and should
-                    // not expose a null value to clients, so if they are null in the node
-                    // that means they are not implemented/support for the node, and we need
-                    // to return Bad_AttributeIdInvalid.
-                    if (attributeValue == null) {
-                        return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-
-                    // intentional fall-through
-                default:
-                    return dv(attributeValue);
-            }
-        } catch (Throwable t) {
-            StatusCode statusCode = UaException.extractStatusCode(t)
-                .orElse(new StatusCode(StatusCodes.Bad_InternalError));
-
-            return new DataValue(statusCode);
-        }
+    public @Nullable Object getAttribute(AccessContext context, AttributeId attributeId) {
+        return getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            this,
+            attributeId
+        );
     }
 
     @Override
-    public void setAttribute(
-        AccessContext context,
-        AttributeId attributeId,
-        DataValue value
-    ) throws UaException {
-
-        try {
-            getFilterChain().setAttribute(
-                context.getSession().orElse(null),
-                this,
-                attributeId,
-                attributeId == AttributeId.Value ? value : value.getValue().getValue()
-            );
-        } catch (Throwable t) {
-            long statusCode = UaException.extractStatusCode(t)
-                .map(StatusCode::getValue)
-                .orElse(StatusCodes.Bad_InternalError);
-
-            throw new UaException(statusCode, t);
-        }
+    public void setAttribute(AccessContext context, AttributeId attributeId, @Nullable Object value) {
+        getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            this,
+            attributeId,
+            value
+        );
     }
 
 }
