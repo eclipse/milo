@@ -18,7 +18,6 @@ import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -180,23 +179,13 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
      * @throws UaException if either Executable or UserExecutable attributes are not {@code true}.
      */
     protected void checkExecutableAttributes(AccessContext accessContext) throws UaException {
-        Boolean executable = AttributeUtil.extract(
-            node.getAttribute(
-                accessContext,
-                AttributeId.Executable
-            )
-        );
+        Boolean executable = node.isExecutable();
 
         if (executable == null || !executable) {
             throw new UaException(StatusCode.BAD);
         }
 
-        Boolean userExecutable = AttributeUtil.extract(
-            node.getAttribute(
-                accessContext,
-                AttributeId.UserExecutable
-            )
-        );
+        Boolean userExecutable = (Boolean) node.getAttribute(accessContext, AttributeId.UserExecutable);
 
         if (userExecutable == null || !userExecutable) {
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
@@ -224,8 +213,8 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
      * execute.
      *
      * @param invocationContext the {@link InvocationContext}.
-     * @param inputValues       the user-supplied values for the input arguments. Each value has been verified to be of
-     *                          the type specified by its {@link Argument}.
+     * @param inputValues the user-supplied values for the input arguments. Each value has been verified to be of
+     *     the type specified by its {@link Argument}.
      * @return this output values matching this Method's output arguments, if any.
      * @throws UaException if invocation has failed for some reason.
      */
