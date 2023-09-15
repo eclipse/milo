@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -701,21 +702,27 @@ public abstract class UaNode implements UaServerNode {
 
     @Override
     public @Nullable Object getAttribute(AccessContext context, AttributeId attributeId) {
-        return getFilterChain().getAttribute(
-            context.getSession().orElse(null),
-            this,
-            attributeId
-        );
+        return getFilterChain().getAttribute(context.getSession().orElse(null), this, attributeId);
+    }
+
+    @Override
+    public @Nullable Object readAttribute(AccessContext context, AttributeId attributeId) throws UaException {
+        return getFilterChain().readAttribute(context.getSession().orElse(null), this, attributeId);
     }
 
     @Override
     public void setAttribute(AccessContext context, AttributeId attributeId, @Nullable Object value) {
-        getFilterChain().setAttribute(
-            context.getSession().orElse(null),
-            this,
-            attributeId,
-            value
-        );
+        getFilterChain().setAttribute(context.getSession().orElse(null), this, attributeId, value);
+    }
+
+    @Override
+    public void writeAttribute(
+        AccessContext context,
+        AttributeId attributeId,
+        @Nullable Object value
+    ) throws UaException {
+
+        getFilterChain().writeAttribute(context.getSession().orElse(null), this, attributeId, value);
     }
 
 }

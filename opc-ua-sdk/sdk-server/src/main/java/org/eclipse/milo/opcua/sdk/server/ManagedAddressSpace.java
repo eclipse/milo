@@ -152,11 +152,11 @@ public abstract class ManagedAddressSpace implements AddressSpace {
                 );
 
                 logger.debug(
-                    "Read value {} from attribute {} of {}",
-                    value.getValue().getValue(),
+                    "read: nodeId={}, attributeId={}, value={}",
+                    node.getNodeId(),
                     AttributeId.from(readValueId.getAttributeId())
                         .map(Object::toString).orElse("unknown"),
-                    node.getNodeId()
+                    value
                 );
 
                 results.add(value);
@@ -180,28 +180,24 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             UaServerNode node = nodeManager.get(writeValue.getNodeId());
 
             if (node != null) {
-                try {
-                    AttributeWriter.writeAttribute(
-                        context,
-                        node,
-                        writeValue.getAttributeId(),
-                        writeValue.getValue(),
-                        writeValue.getIndexRange()
-                    );
+                StatusCode result = AttributeWriter.writeAttribute(
+                    context,
+                    node,
+                    writeValue.getAttributeId(),
+                    writeValue.getValue(),
+                    writeValue.getIndexRange()
+                );
 
-                    results.add(StatusCode.GOOD);
+                results.add(result);
 
-                    logger.debug(
-                        "Wrote value {} to {} attribute of {}",
-                        writeValue.getValue().getValue(),
-                        AttributeId.from(writeValue.getAttributeId())
-                            .map(Object::toString).orElse("unknown"),
-                        node.getNodeId()
-                    );
-                } catch (UaException e) {
-                    logger.error("Unable to write value={}", writeValue.getValue(), e);
-                    results.add(e.getStatusCode());
-                }
+                logger.debug(
+                    "write: nodeId={}, attributeId={}, value={}, result={}",
+                    node.getNodeId(),
+                    AttributeId.from(writeValue.getAttributeId())
+                        .map(Object::toString).orElse("unknown"),
+                    writeValue.getValue().getValue(),
+                    result
+                );
             } else {
                 results.add(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
             }

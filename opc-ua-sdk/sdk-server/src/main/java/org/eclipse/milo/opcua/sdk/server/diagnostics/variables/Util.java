@@ -20,7 +20,7 @@ import java.util.function.Function;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -61,7 +61,7 @@ class Util {
 
     static AttributeFilter diagnosticValueFilter(
         AtomicBoolean diagnosticsEnabled,
-        Function<GetAttributeContext, DataValue> get
+        Function<AttributeFilterContext, DataValue> get
     ) {
 
         return AttributeFilters.getValue(ctx -> {
