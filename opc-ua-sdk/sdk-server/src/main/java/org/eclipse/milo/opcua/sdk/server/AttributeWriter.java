@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -47,33 +48,33 @@ public class AttributeWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AttributeWriter.class);
 
-    public static void writeAttribute(
+    public static StatusCode writeAttribute(
         AccessContext context,
         UaServerNode node,
         UInteger attributeId,
         DataValue value,
         @Nullable String indexRange
-    ) throws UaException {
+    ) {
 
         Optional<AttributeId> aid = AttributeId.from(attributeId);
 
         if (aid.isPresent()) {
-            writeAttribute(context, node, aid.get(), value, indexRange);
+            return writeAttribute(context, node, aid.get(), value, indexRange);
         } else {
-            throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
+            return new StatusCode(StatusCodes.Bad_AttributeIdInvalid);
         }
     }
 
-    public static void writeAttribute(
+    public static StatusCode writeAttribute(
         AccessContext context,
         UaServerNode node,
         AttributeId attributeId,
         DataValue value,
         @Nullable String indexRange
-    ) throws UaException {
+    ) {
 
         if (!AttributeId.getAttributes(node.getNodeClass()).contains(attributeId)) {
-            throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
+            return new StatusCode(StatusCodes.Bad_AttributeIdInvalid);
         }
 
         if (attributeId == AttributeId.Value && node instanceof VariableNode) {
@@ -83,12 +84,12 @@ public class AttributeWriter {
 
             if (accessLevelEx != null) {
                 if (!accessLevelEx.getCurrentWrite()) {
-                    throw new UaException(StatusCodes.Bad_NotWritable);
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
                 }
             } else {
                 Set<AccessLevel> accessLevels = AccessLevel.fromValue(variableNode.getAccessLevel());
                 if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
-                    throw new UaException(StatusCodes.Bad_NotWritable);
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
                 }
             }
 
@@ -96,7 +97,7 @@ public class AttributeWriter {
                 (UByte) node.getAttribute(context, AttributeId.UserAccessLevel)
             );
             if (!userAccessLevels.contains(AccessLevel.CurrentWrite)) {
-                throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                return new StatusCode(StatusCodes.Bad_UserAccessDenied);
             }
         } else {
             if (attributeId == AttributeId.UserRolePermissions) {
@@ -107,20 +108,20 @@ public class AttributeWriter {
                 // standard Role model defined in 4.8.
                 //
                 // This Attribute shall not be writeable.
-                throw new UaException(StatusCodes.Bad_NotWritable);
+                return new StatusCode(StatusCodes.Bad_NotWritable);
             } else {
                 WriteMask writeMask = writeMaskForAttribute(attributeId);
 
                 Set<WriteMask> writeMasks = WriteMask.fromMask(node.getWriteMask());
                 if (!writeMasks.contains(writeMask)) {
-                    throw new UaException(StatusCodes.Bad_NotWritable);
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
                 }
 
                 Set<WriteMask> userWriteMasks = WriteMask.fromMask(
                     (UInteger) node.getAttribute(context, AttributeId.UserWriteMask)
                 );
                 if (!userWriteMasks.contains(writeMask)) {
-                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                    return new StatusCode(StatusCodes.Bad_UserAccessDenied);
                 }
             }
         }
@@ -128,20 +129,24 @@ public class AttributeWriter {
         Variant updateVariant = value.getValue();
 
         if (indexRange != null) {
-            NumericRange range = NumericRange.parse(indexRange);
+            try {
+                NumericRange range = NumericRange.parse(indexRange);
 
-            Object current = node.getAttribute(
-                AccessContext.INTERNAL,
-                attributeId
-            );
+                Object current = node.getAttribute(
+                    AccessContext.INTERNAL,
+                    attributeId
+                );
 
-            Object valueAtRange = NumericRange.writeToValueAtRange(
-                Variant.of(current),
-                updateVariant,
-                range
-            );
+                Object valueAtRange = NumericRange.writeToValueAtRange(
+                    Variant.of(current),
+                    updateVariant,
+                    range
+                );
 
-            updateVariant = new Variant(valueAtRange);
+                updateVariant = new Variant(valueAtRange);
+            } catch (UaException e) {
+                return e.getStatusCode();
+            }
         }
 
         DateTime sourceTime = value.getSourceTime();
@@ -155,38 +160,47 @@ public class AttributeWriter {
         );
 
         if (attributeId == AttributeId.Value) {
-            NodeId dataTypeId;
-            if (node instanceof VariableNode) {
-                dataTypeId = ((VariableNode) node).getDataType();
-            } else if (node instanceof VariableTypeNode) {
-                dataTypeId = ((VariableTypeNode) node).getDataType();
-            } else {
-                dataTypeId = null;
-            }
+            try {
+                NodeId dataTypeId;
+                if (node instanceof VariableNode) {
+                    dataTypeId = ((VariableNode) node).getDataType();
+                } else if (node instanceof VariableTypeNode) {
+                    dataTypeId = ((VariableTypeNode) node).getDataType();
+                } else {
+                    dataTypeId = null;
+                }
 
-            if (dataTypeId != null) {
-                value = validateDataType(node.getNodeContext().getServer(), dataTypeId, value);
-            }
+                if (dataTypeId != null) {
+                    value = validateDataType(node.getNodeContext().getServer(), dataTypeId, value);
+                }
 
-            Integer valueRank;
-            UInteger[] arrayDimensions;
-            if (node instanceof VariableNode) {
-                valueRank = ((VariableNode) node).getValueRank();
-                arrayDimensions = ((VariableNode) node).getArrayDimensions();
-            } else if (node instanceof VariableTypeNode) {
-                valueRank = ((VariableTypeNode) node).getValueRank();
-                arrayDimensions = ((VariableTypeNode) node).getArrayDimensions();
-            } else {
-                valueRank = 0;
-                arrayDimensions = null;
-            }
+                Integer valueRank;
+                UInteger[] arrayDimensions;
+                if (node instanceof VariableNode) {
+                    valueRank = ((VariableNode) node).getValueRank();
+                    arrayDimensions = ((VariableNode) node).getArrayDimensions();
+                } else if (node instanceof VariableTypeNode) {
+                    valueRank = ((VariableTypeNode) node).getValueRank();
+                    arrayDimensions = ((VariableTypeNode) node).getArrayDimensions();
+                } else {
+                    valueRank = 0;
+                    arrayDimensions = null;
+                }
 
-            if (valueRank > 0) {
-                validateArrayType(valueRank, arrayDimensions, value);
+                if (valueRank > 0) {
+                    validateArrayType(valueRank, arrayDimensions, value);
+                }
+            } catch (UaException e) {
+                return e.getStatusCode();
             }
         }
 
-        node.setAttribute(context, attributeId, value);
+        try {
+            node.writeAttribute(context, attributeId, value);
+            return StatusCode.GOOD;
+        } catch (UaException e) {
+            return e.getStatusCode();
+        }
     }
 
     private static WriteMask writeMaskForAttribute(AttributeId attributeId) {

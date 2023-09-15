@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -106,13 +107,17 @@ public class AttributeWriterTest {
             varNode.setDataType(dataType);
         }
 
-        AttributeWriter.writeAttribute(
+        StatusCode result = AttributeWriter.writeAttribute(
             Optional::empty,
             varNode,
             AttributeId.Value,
             value,
             null
         );
+
+        if (!result.isGood()) {
+            throw new UaException(result);
+        }
     }
 
     private UaVariableNode createMockNode(

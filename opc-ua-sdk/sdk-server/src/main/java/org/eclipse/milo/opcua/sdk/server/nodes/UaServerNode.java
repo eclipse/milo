@@ -16,6 +16,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.jetbrains.annotations.Nullable;
 
 public interface UaServerNode extends Node {
@@ -54,6 +55,19 @@ public interface UaServerNode extends Node {
     @Nullable Object getAttribute(AccessContext context, AttributeId attributeId);
 
     /**
+     * Read an attribute of this node, considering an {@link AccessContext}.
+     * <p>
+     * This is similar to {@link #getAttribute(AccessContext, AttributeId)} except the underlying
+     * implementation is allowed to throw {@link UaException} to indicate failure of some kind.
+     *
+     * @param context the {@link AccessContext} to consider.
+     * @param attributeId the {@link AttributeId} to read.
+     * @return the attribute value.
+     * @throws UaException if the attribute cannot be read.
+     */
+    @Nullable Object readAttribute(AccessContext context, AttributeId attributeId) throws UaException;
+
+    /**
      * Set an attribute of this node, considering an {@link AccessContext}.
      *
      * @param context the {@link AccessContext} to consider when setting the attribute.
@@ -61,5 +75,19 @@ public interface UaServerNode extends Node {
      * @param value the new value to set for the attribute.
      */
     void setAttribute(AccessContext context, AttributeId attributeId, @Nullable Object value);
+
+    /**
+     * Write an attribute of this node, considering an {@link AccessContext}.
+     * <p>
+     * This is similar to {@link #setAttribute(AccessContext, AttributeId, Object)} except the
+     * underlying implementation is allowed to throw {@link UaException} to indicate failure of
+     * some kind.
+     *
+     * @param context the {@link AccessContext} to consider.
+     * @param attributeId the {@link AttributeId} to write.
+     * @param value the new value to set for the attribute.
+     * @throws UaException if the attribute cannot be written.
+     */
+    void writeAttribute(AccessContext context, AttributeId attributeId, @Nullable Object value) throws UaException;
 
 }

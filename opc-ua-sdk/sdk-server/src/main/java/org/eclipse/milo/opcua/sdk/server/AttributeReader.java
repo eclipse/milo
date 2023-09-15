@@ -113,7 +113,12 @@ public class AttributeReader {
             }
         }
 
-        Object value = node.getAttribute(context, attributeId);
+        Object value;
+        try {
+            value = node.readAttribute(context, attributeId);
+        } catch (UaException e) {
+            return new DataValue(e.getStatusCode());
+        }
 
         if (attributeId == AttributeId.Value) {
             DataValue dv = (DataValue) value;
