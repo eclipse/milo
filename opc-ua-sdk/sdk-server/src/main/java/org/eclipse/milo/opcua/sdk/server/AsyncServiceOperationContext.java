@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,15 +13,34 @@ package org.eclipse.milo.opcua.sdk.server;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.jetbrains.annotations.Nullable;
 
-public class AsyncOperationContext<R> {
+public class AsyncServiceOperationContext<T, R> extends ServiceOperationContext<T> {
 
     private final CompletableFuture<R> future = new CompletableFuture<>();
 
     private final OpcUaServer server;
 
-    public AsyncOperationContext(OpcUaServer server) {
+    public AsyncServiceOperationContext(OpcUaServer server, @Nullable Session session) {
+        super(session);
+
+        this.server = server;
+    }
+
+    public AsyncServiceOperationContext(
+        OpcUaServer server,
+        @Nullable Session session,
+        DiagnosticsContext<T> diagnosticsContext,
+        @Nullable String auditEntryId,
+        UInteger timeoutHint,
+        ExtensionObject additionalHeader
+    ) {
+
+        super(session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
+
         this.server = server;
     }
 

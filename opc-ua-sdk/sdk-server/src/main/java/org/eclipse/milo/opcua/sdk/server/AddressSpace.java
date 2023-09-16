@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -59,11 +58,11 @@ public interface AddressSpace {
     /**
      * Read one or more values from nodes belonging to this {@link AddressSpace}.
      * <p>
-     * Complete the operation with {@link ReadContext#success(Object)}.
+     * Complete the operation with {@link ReadContext#success}.
      *
-     * @param context      the {@link ReadContext}.
-     * @param maxAge       requested max age.
-     * @param timestamps   requested timestamp values.
+     * @param context the {@link ReadContext}.
+     * @param maxAge requested max age.
+     * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
      */
     void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds);
@@ -71,9 +70,9 @@ public interface AddressSpace {
     /**
      * Write one or more values to nodes belonging to this {@link AddressSpace}.
      * <p>
-     * Complete the operation with {@link WriteContext#success(Object)}.
+     * Complete the operation with {@link WriteContext#success}.
      *
-     * @param context     the {@link WriteContext}.
+     * @param context the {@link WriteContext}.
      * @param writeValues the values to write.
      */
     void write(WriteContext context, List<WriteValue> writeValues);
@@ -81,10 +80,10 @@ public interface AddressSpace {
     /**
      * Read history values from nodes belonging to this {@link AddressSpace}.
      * <p>
-     * Complete the operation with {@link HistoryReadContext#success(Object)}.
+     * Complete the operation with {@link HistoryReadContext#success}.
      *
-     * @param context      the {@link HistoryReadContext}.
-     * @param timestamps   requested timestamp values.
+     * @param context the {@link HistoryReadContext}.
+     * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
      */
     default void historyRead(
@@ -106,9 +105,9 @@ public interface AddressSpace {
     /**
      * Update history values in nodes belonging to this {@link AddressSpace}.
      * <p>
-     * Complete the operation with {@link HistoryUpdateContext#success(Object)}.
+     * Complete the operation with {@link HistoryUpdateContext#success}.
      *
-     * @param context       the {@link HistoryUpdateContext}.
+     * @param context the {@link HistoryUpdateContext}.
      * @param updateDetails the values to read.
      */
     default void historyUpdate(
@@ -132,7 +131,7 @@ public interface AddressSpace {
     /**
      * Invoke one or more methods belonging to this {@link AddressSpace}.
      *
-     * @param context  the {@link CallContext}.
+     * @param context the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
      */
     default void call(CallContext context, List<CallMethodRequest> requests) {
@@ -158,10 +157,10 @@ public interface AddressSpace {
      * The sampling interval has already been revised to fit within the configured server limits and to be at least the
      * value of the Minimum Sampling Interval attribute for the Node if it was present.
      *
-     * @param itemToMonitor             the item that will be monitored.
-     * @param requestedQueueSize        the requested queue size.
+     * @param itemToMonitor the item that will be monitored.
+     * @param requestedQueueSize the requested queue size.
      * @param requestedSamplingInterval the requested sampling interval.
-     * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
+     * @param revisionCallback the callback to invoke to revise the sampling interval and queue size.
      */
     default void onCreateDataItem(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
@@ -180,10 +179,10 @@ public interface AddressSpace {
      * The sampling interval has already been revised to fit within the configured server limits and to be at least the
      * value of the Minimum Sampling Interval attribute for the Node if it was present.
      *
-     * @param itemToModify              the item that will be modified.
-     * @param requestedQueueSize        the requested queue size.
+     * @param itemToModify the item that will be modified.
+     * @param requestedQueueSize the requested queue size.
      * @param requestedSamplingInterval the requested sampling interval.
-     * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
+     * @param revisionCallback the callback to invoke to revise the sampling interval and queue size.
      */
     default void onModifyDataItem(
         @SuppressWarnings("unused") ReadValueId itemToModify,
@@ -199,9 +198,9 @@ public interface AddressSpace {
      * <p>
      * This is a chance to revise the requested queue size.
      *
-     * @param itemToMonitor      the item that will be monitored.
+     * @param itemToMonitor the item that will be monitored.
      * @param requestedQueueSize the requested queue size.
-     * @param revisionCallback   the callback to invoke to revise the queue size.
+     * @param revisionCallback the callback to invoke to revise the queue size.
      */
     default void onCreateEventItem(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
@@ -216,9 +215,9 @@ public interface AddressSpace {
      * <p>
      * This is a chance to revise the requested queue size.
      *
-     * @param itemToModify       the item that will be modified.
+     * @param itemToModify the item that will be modified.
      * @param requestedQueueSize the requested queue size.
-     * @param revisionCallback   the callback to invoke to revise the queue size.
+     * @param revisionCallback the callback to invoke to revise the queue size.
      */
     default void onModifyEventItem(
         @SuppressWarnings("unused") ReadValueId itemToModify,
@@ -328,7 +327,7 @@ public interface AddressSpace {
      * Like {@link #browse(BrowseContext, ViewDescription, NodeId)} but with a null/empty {@link ViewDescription}.
      *
      * @param context the {@link BrowseContext}.
-     * @param nodeId  the {@link NodeId} to browse.
+     * @param nodeId the {@link NodeId} to browse.
      */
     default void browse(BrowseContext context, NodeId nodeId) {
         ViewDescription view = new ViewDescription(
@@ -347,8 +346,8 @@ public interface AddressSpace {
      * invoked with {@link StatusCodes#Bad_NodeIdUnknown}.
      *
      * @param context the {@link BrowseContext}.
-     * @param view    the {@link ViewDescription}.
-     * @param nodeId  the {@link NodeId} to browse.
+     * @param view the {@link ViewDescription}.
+     * @param nodeId the {@link NodeId} to browse.
      */
     void browse(BrowseContext context, ViewDescription view, NodeId nodeId);
 
@@ -359,8 +358,8 @@ public interface AddressSpace {
      * The Node identified by {@code nodeId} may be managed by another AddressSpace.
      *
      * @param context the {@link BrowseContext}.
-     * @param view    the {@link ViewDescription}.
-     * @param nodeId  the {@link NodeId} to get references fo.
+     * @param view the {@link ViewDescription}.
+     * @param nodeId the {@link NodeId} to get references fo.
      */
     void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
@@ -395,7 +394,7 @@ public interface AddressSpace {
 
     //endregion
 
-    final class ReadContext extends ServiceOperationContext<ReadValueId, DataValue> {
+    final class ReadContext extends AsyncServiceOperationContext<ReadValueId, List<DataValue>> {
 
         public ReadContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -415,7 +414,7 @@ public interface AddressSpace {
 
     }
 
-    final class WriteContext extends ServiceOperationContext<WriteValue, StatusCode> {
+    final class WriteContext extends AsyncServiceOperationContext<WriteValue, List<StatusCode>> {
 
         public WriteContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -435,7 +434,7 @@ public interface AddressSpace {
 
     }
 
-    final class HistoryReadContext extends ServiceOperationContext<HistoryReadValueId, HistoryReadResult> {
+    final class HistoryReadContext extends AsyncServiceOperationContext<HistoryReadValueId, List<HistoryReadResult>> {
 
         public HistoryReadContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -455,7 +454,8 @@ public interface AddressSpace {
 
     }
 
-    final class HistoryUpdateContext extends ServiceOperationContext<HistoryUpdateDetails, HistoryUpdateResult> {
+    final class HistoryUpdateContext extends
+        AsyncServiceOperationContext<HistoryUpdateDetails, List<HistoryUpdateResult>> {
 
         public HistoryUpdateContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -475,7 +475,7 @@ public interface AddressSpace {
 
     }
 
-    final class CallContext extends ServiceOperationContext<CallMethodRequest, CallMethodResult> {
+    final class CallContext extends AsyncServiceOperationContext<CallMethodRequest, List<CallMethodResult>> {
 
         public CallContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -495,7 +495,7 @@ public interface AddressSpace {
 
     }
 
-    final class AddNodesContext extends ServiceOperationContext<AddNodesItem, AddNodesResult> {
+    final class AddNodesContext extends AsyncServiceOperationContext<AddNodesItem, List<AddNodesResult>> {
 
         public AddNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -515,7 +515,7 @@ public interface AddressSpace {
 
     }
 
-    final class DeleteNodesContext extends ServiceOperationContext<DeleteNodesItem, StatusCode> {
+    final class DeleteNodesContext extends AsyncServiceOperationContext<DeleteNodesItem, List<StatusCode>> {
 
         public DeleteNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -535,7 +535,7 @@ public interface AddressSpace {
 
     }
 
-    final class AddReferencesContext extends ServiceOperationContext<AddReferencesItem, StatusCode> {
+    final class AddReferencesContext extends AsyncServiceOperationContext<AddReferencesItem, List<StatusCode>> {
 
         public AddReferencesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -555,7 +555,7 @@ public interface AddressSpace {
 
     }
 
-    final class DeleteReferencesContext extends ServiceOperationContext<DeleteReferencesItem, StatusCode> {
+    final class DeleteReferencesContext extends AsyncServiceOperationContext<DeleteReferencesItem, List<StatusCode>> {
 
         public DeleteReferencesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -575,24 +575,27 @@ public interface AddressSpace {
 
     }
 
-    final class BrowseContext extends AsyncOperationContext<List<Reference>> implements AccessContext {
-
-        private final Session session;
+    final class BrowseContext extends AsyncServiceOperationContext<NodeId, List<Reference>> {
 
         public BrowseContext(OpcUaServer server, @Nullable Session session) {
-            super(server);
-
-            this.session = session;
+            super(server, session);
         }
 
-        @Override
-        public Optional<Session> getSession() {
-            return Optional.ofNullable(session);
+        public BrowseContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<NodeId> diagnosticsContext,
+            @Nullable String auditEntryId,
+            UInteger timeoutHint,
+            ExtensionObject additionalHeader
+        ) {
+
+            super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
         }
 
     }
 
-    final class RegisterNodesContext extends ServiceOperationContext<NodeId, NodeId> implements AccessContext {
+    final class RegisterNodesContext extends AsyncServiceOperationContext<NodeId, List<NodeId>> {
 
         public RegisterNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -612,7 +615,7 @@ public interface AddressSpace {
 
     }
 
-    final class UnregisterNodesContext extends ServiceOperationContext<NodeId, Unit> implements AccessContext {
+    final class UnregisterNodesContext extends AsyncServiceOperationContext<NodeId, List<Unit>> {
 
         public UnregisterNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
