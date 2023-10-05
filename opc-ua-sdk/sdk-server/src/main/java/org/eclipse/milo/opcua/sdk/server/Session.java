@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,11 @@ public class Session {
 
     public @Nullable Identity getIdentity() {
         return identity;
+    }
+
+    public List<NodeId> getRoleIds() {
+        // TODO
+        return Collections.emptyList();
     }
 
     @Nullable

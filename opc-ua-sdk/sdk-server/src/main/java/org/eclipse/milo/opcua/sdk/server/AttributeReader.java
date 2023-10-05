@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,6 +94,35 @@ public class AttributeReader {
                 (UByte) node.getAttribute(context, AttributeId.UserAccessLevel)
             );
             if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
+                return new DataValue(StatusCodes.Bad_UserAccessDenied);
+            }
+        }
+
+        RolePermissionType[] rolePermissions = node.getRolePermissions();
+        if (rolePermissions != null) {
+            boolean hasReadPermission = Arrays.stream(rolePermissions)
+                .anyMatch(rp -> rp.getPermissions().getRead());
+
+            if (!hasReadPermission) {
+                return new DataValue(StatusCodes.Bad_UserAccessDenied);
+            }
+        }
+
+        RolePermissionType[] userRolePermissions = (RolePermissionType[]) node.getAttribute(
+            context,
+            AttributeId.UserRolePermissions
+        );
+
+        if (userRolePermissions != null) {
+            List<NodeId> roleIds = context.getSession()
+                .map(Session::getRoleIds)
+                .orElse(Collections.emptyList());
+
+            boolean hasReadPermission = Arrays.stream(userRolePermissions)
+                .filter(rp -> roleIds.contains(rp.getRoleId()))
+                .anyMatch(rp -> rp.getPermissions().getRead());
+
+            if (!hasReadPermission) {
                 return new DataValue(StatusCodes.Bad_UserAccessDenied);
             }
         }
