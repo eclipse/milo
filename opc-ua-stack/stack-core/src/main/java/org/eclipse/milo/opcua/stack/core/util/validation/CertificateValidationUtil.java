@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -696,13 +696,12 @@ public class CertificateValidationUtil {
      * @param field          the field id.
      * @param fieldPredicate a predicate to test the field value.
      * @return {@code true} if the field was found and the predicate tested true.
-     * @throws UaException if SubjectAlternativeNames can't be obtained from the certificate.
      */
     private static boolean checkSubjectAltNameField(
         X509Certificate certificate,
         int field,
         Predicate<Object> fieldPredicate
-    ) throws UaException {
+    ) {
 
         try {
             Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
@@ -720,7 +719,7 @@ public class CertificateValidationUtil {
 
             return false;
         } catch (CertificateParsingException e) {
-            throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+            return false;
         }
     }
 
