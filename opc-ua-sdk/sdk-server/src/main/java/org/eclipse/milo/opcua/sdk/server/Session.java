@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,10 +14,10 @@ import java.net.InetAddress;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -145,21 +145,19 @@ public class Session {
         return identity;
     }
 
-    public List<NodeId> getRoleIds() {
-        // TODO
-        return Collections.emptyList();
-    }
-
-    @Nullable
-    public UserIdentityToken getIdentityToken() {
+    public @Nullable UserIdentityToken getIdentityToken() {
         return identityToken;
     }
 
-    @Nullable
-    public UserTokenType getTokenType() {
+    public @Nullable UserTokenType getTokenType() {
         UserIdentityToken token = identityToken;
 
         return token != null ? getTokenType(token) : null;
+    }
+
+    public Optional<List<NodeId>> getRoleIds() {
+        return server.getRoleManager()
+            .map(roleManager -> roleManager.getRoleIds(identity));
     }
 
     /**
@@ -178,8 +176,7 @@ public class Session {
      *
      * @return the clientUserId of this {@link Session}.
      */
-    @Nullable
-    public String getClientUserId() {
+    public @Nullable String getClientUserId() {
         return getClientUserId(identityToken);
     }
 

@@ -11,10 +11,10 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
@@ -98,32 +98,37 @@ public class AttributeReader {
             }
         }
 
-        RolePermissionType[] rolePermissions = node.getRolePermissions();
-        if (rolePermissions != null) {
-            boolean hasReadPermission = Arrays.stream(rolePermissions)
-                .anyMatch(rp -> rp.getPermissions().getRead());
+        List<NodeId> roleIds = context.getSession().flatMap(Session::getRoleIds).orElse(null);
 
-            if (!hasReadPermission) {
-                return new DataValue(StatusCodes.Bad_UserAccessDenied);
+        if (roleIds != null) {
+            // If non-null, there is a Session and Server has been configured with a
+            // RoleManager that provides Identity to RoleId mappings, so we can proceed with
+            // checking the RolePermissions and UserRolePermissions attributes.
+
+            RolePermissionType[] rolePermissions = node.getRolePermissions();
+
+            if (rolePermissions != null) {
+                boolean hasReadPermission = Stream.of(rolePermissions)
+                    .anyMatch(rp -> rp.getPermissions().getRead());
+
+                if (!hasReadPermission) {
+                    return new DataValue(StatusCodes.Bad_UserAccessDenied);
+                }
             }
-        }
 
-        RolePermissionType[] userRolePermissions = (RolePermissionType[]) node.getAttribute(
-            context,
-            AttributeId.UserRolePermissions
-        );
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) node.getAttribute(
+                context,
+                AttributeId.UserRolePermissions
+            );
 
-        if (userRolePermissions != null) {
-            List<NodeId> roleIds = context.getSession()
-                .map(Session::getRoleIds)
-                .orElse(Collections.emptyList());
+            if (userRolePermissions != null) {
+                boolean hasReadPermission = Arrays.stream(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getRead());
 
-            boolean hasReadPermission = Arrays.stream(userRolePermissions)
-                .filter(rp -> roleIds.contains(rp.getRoleId()))
-                .anyMatch(rp -> rp.getPermissions().getRead());
-
-            if (!hasReadPermission) {
-                return new DataValue(StatusCodes.Bad_UserAccessDenied);
+                if (!hasReadPermission) {
+                    return new DataValue(StatusCodes.Bad_UserAccessDenied);
+                }
             }
         }
 

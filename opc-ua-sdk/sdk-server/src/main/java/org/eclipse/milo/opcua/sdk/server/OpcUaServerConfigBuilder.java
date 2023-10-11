@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +52,8 @@ public class OpcUaServerConfigBuilder {
     private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
 
     private CertificateManager certificateManager;
+
+    private RoleManager roleManager;
 
     private ExecutorService executor;
     private ScheduledExecutorService scheduledExecutor;
@@ -101,6 +104,11 @@ public class OpcUaServerConfigBuilder {
         return this;
     }
 
+    public OpcUaServerConfigBuilder setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
+        return this;
+    }
+
     public OpcUaServerConfigBuilder setExecutor(ExecutorService executor) {
         this.executor = executor;
         return this;
@@ -129,6 +137,7 @@ public class OpcUaServerConfigBuilder {
             encodingLimits,
             limits,
             certificateManager,
+            roleManager,
             executor,
             scheduledExecutor
         );
@@ -146,6 +155,7 @@ public class OpcUaServerConfigBuilder {
         private final EncodingLimits encodingLimits;
         private final OpcUaServerConfigLimits limits;
         private final CertificateManager certificateManager;
+        private final RoleManager roleManager;
         private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutorService;
 
@@ -159,6 +169,7 @@ public class OpcUaServerConfigBuilder {
             EncodingLimits encodingLimits,
             OpcUaServerConfigLimits limits,
             CertificateManager certificateManager,
+            RoleManager roleManager,
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutorService
         ) {
@@ -172,6 +183,7 @@ public class OpcUaServerConfigBuilder {
             this.encodingLimits = encodingLimits;
             this.limits = limits;
             this.certificateManager = certificateManager;
+            this.roleManager = roleManager;
             this.executor = executor;
             this.scheduledExecutorService = scheduledExecutorService;
         }
@@ -219,6 +231,11 @@ public class OpcUaServerConfigBuilder {
         @Override
         public CertificateManager getCertificateManager() {
             return certificateManager;
+        }
+
+        @Override
+        public Optional<RoleManager> getRoleManager() {
+            return Optional.ofNullable(roleManager);
         }
 
         @Override
