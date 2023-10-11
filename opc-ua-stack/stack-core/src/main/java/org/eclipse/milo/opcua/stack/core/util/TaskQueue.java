@@ -327,7 +327,7 @@ public final class TaskQueue {
 
     }
 
-    interface Task {
+    public interface Task {
 
         /**
          * Execute this {@link Task}.
@@ -345,7 +345,7 @@ public final class TaskQueue {
 
     }
 
-    enum TaskPriority {
+    public enum TaskPriority {
 
         /**
          * The default priority for a task. No special treatment.
