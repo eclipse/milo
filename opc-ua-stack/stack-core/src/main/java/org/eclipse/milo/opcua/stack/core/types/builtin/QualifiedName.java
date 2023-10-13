@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -35,8 +35,8 @@ public final class QualifiedName {
      * The name part of the QualifiedName is restricted to 512 characters.
      *
      * @param namespaceIndex index that identifies the namespace that defines the name. This index is the index of that
-     *                       namespace in the local Server’s NamespaceArray.
-     * @param name           the text portion of the QualifiedName.
+     *     namespace in the local Server’s NamespaceArray.
+     * @param name the text portion of the QualifiedName.
      */
     public QualifiedName(int namespaceIndex, @Nullable String name) {
         this(ushort(namespaceIndex), name);
@@ -46,8 +46,8 @@ public final class QualifiedName {
      * The name part of the QualifiedName is restricted to 512 characters.
      *
      * @param namespaceIndex index that identifies the namespace that defines the name. This index is the index of that
-     *                       namespace in the local Server’s NamespaceArray.
-     * @param name           the text portion of the QualifiedName.
+     *     namespace in the local Server’s NamespaceArray.
+     * @param name the text portion of the QualifiedName.
      */
     public QualifiedName(@NotNull UShort namespaceIndex, @Nullable String name) {
         Preconditions.checkNotNull(namespaceIndex);
@@ -67,7 +67,7 @@ public final class QualifiedName {
     }
 
     public boolean isNull() {
-        return name == null;
+        return name == null || name.isEmpty();
     }
 
     public boolean isNotNull() {
@@ -80,7 +80,7 @@ public final class QualifiedName {
      * If the target namespace URI is not present in the namespace table this {@link QualifiedName} is returned.
      *
      * @param namespaceTable the {@link NamespaceTable}.
-     * @param namespaceUri   the target namespace URI.
+     * @param namespaceUri the target namespace URI.
      * @return a new {@link QualifiedName} in the namespace index indicated by {@code namespaceUri}.
      */
     public QualifiedName reindex(NamespaceTable namespaceTable, String namespaceUri) {
@@ -120,7 +120,8 @@ public final class QualifiedName {
 
         QualifiedName that = (QualifiedName) o;
 
-        return Objects.equals(name, that.name) && namespaceIndex.equals(that.namespaceIndex);
+        return namespaceIndex.equals(that.namespaceIndex) &&
+            (Objects.equals(name, that.name) || isNull() && that.isNull());
     }
 
     @Override
