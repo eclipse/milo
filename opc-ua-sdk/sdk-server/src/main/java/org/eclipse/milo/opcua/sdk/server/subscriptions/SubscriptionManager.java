@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -85,6 +86,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
@@ -510,6 +512,31 @@ public class SubscriptionManager {
                 if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
                     throw new UaException(StatusCodes.Bad_UserAccessDenied);
                 }
+
+                List<NodeId> roleIds = session.getRoleIds().orElse(null);
+
+                if (roleIds != null) {
+                    RolePermissionType[] rolePermissions = attributeGroup.getRolePermissions();
+                    if (rolePermissions != null) {
+                        boolean hasReadPermission = Stream.of(rolePermissions)
+                            .anyMatch(rp -> rp.getPermissions().getRead());
+
+                        if (!hasReadPermission) {
+                            throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                        }
+                    }
+
+                    RolePermissionType[] userRolePermissions = attributeGroup.getUserRolePermissions();
+                    if (userRolePermissions != null) {
+                        boolean hasReadPermission = Arrays.stream(userRolePermissions)
+                            .filter(rp -> roleIds.contains(rp.getRoleId()))
+                            .anyMatch(rp -> rp.getPermissions().getRead());
+
+                        if (!hasReadPermission) {
+                            throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                        }
+                    }
+                }
             }
 
             // Validate the requested index range by parsing it.
@@ -929,7 +956,9 @@ public class SubscriptionManager {
                     f.apply(AttributeId.UserAccessLevel),
                     f.apply(AttributeId.EventNotifier),
                     f.apply(AttributeId.MinimumSamplingInterval),
-                    f.apply(AttributeId.DataType)
+                    f.apply(AttributeId.DataType),
+                    f.apply(AttributeId.RolePermissions),
+                    f.apply(AttributeId.UserRolePermissions)
                 );
             })
             .collect(toList());
@@ -946,13 +975,15 @@ public class SubscriptionManager {
         return context.getFuture().thenApply(attributeValues -> {
             Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
 
-            for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 5) {
+            for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 7) {
                 monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
                     attributeValues.get(attrIdx),
                     attributeValues.get(attrIdx + 1),
                     attributeValues.get(attrIdx + 2),
                     attributeValues.get(attrIdx + 3),
-                    attributeValues.get(attrIdx + 4)
+                    attributeValues.get(attrIdx + 4),
+                    attributeValues.get(attrIdx + 5),
+                    attributeValues.get(attrIdx + 6)
                 ));
             }
 
@@ -1340,8 +1371,8 @@ public class SubscriptionManager {
      * Split {@code monitoredItems} into a list of {@link DataItem}s and a list of {@link EventItem}s and invoke the
      * corresponding {@link Consumer} for each list if non-empty.
      *
-     * @param monitoredItems    the list of MonitoredItems to group.
-     * @param dataItemConsumer  a {@link Consumer} that accepts a non-empty list of {@link DataItem}s.
+     * @param monitoredItems the list of MonitoredItems to group.
+     * @param dataItemConsumer a {@link Consumer} that accepts a non-empty list of {@link DataItem}s.
      * @param eventItemConsumer a {@link Consumer} that accepts a non-empty list of {@link EventItem}s.
      */
     private static void byMonitoredItemType(
@@ -1426,13 +1457,17 @@ public class SubscriptionManager {
         final DataValue eventNotifierValue;
         final DataValue minimumSamplingIntervalValue;
         final DataValue dataType;
+        final DataValue rolePermissions;
+        final DataValue userRolePermissions;
 
         AttributeGroup(
             DataValue accessLevelValue,
             DataValue userAccessLevelValue,
             DataValue eventNotifierValue,
             DataValue minimumSamplingIntervalValue,
-            DataValue dataType
+            DataValue dataType,
+            DataValue rolePermissions,
+            DataValue userRolePermissions
         ) {
 
             this.accessLevelValue = accessLevelValue;
@@ -1440,11 +1475,12 @@ public class SubscriptionManager {
             this.eventNotifierValue = eventNotifierValue;
             this.minimumSamplingIntervalValue = minimumSamplingIntervalValue;
             this.dataType = dataType;
+            this.rolePermissions = rolePermissions;
+            this.userRolePermissions = userRolePermissions;
         }
 
-        @Nullable
-        UByte getAccessLevel() throws UaException {
-            Object value = getValue(accessLevelValue);
+        @Nullable UByte getAccessLevel() throws UaException {
+            Object value = unwrap(accessLevelValue);
 
             if (value instanceof UByte) {
                 return (UByte) value;
@@ -1453,9 +1489,8 @@ public class SubscriptionManager {
             }
         }
 
-        @Nullable
-        UByte getUserAccessLevel() throws UaException {
-            Object value = getValue(userAccessLevelValue);
+        @Nullable UByte getUserAccessLevel() throws UaException {
+            Object value = unwrap(userAccessLevelValue);
 
             if (value instanceof UByte) {
                 return (UByte) value;
@@ -1464,9 +1499,8 @@ public class SubscriptionManager {
             }
         }
 
-        @Nullable
-        UByte getEventNotifier() throws UaException {
-            Object value = getValue(eventNotifierValue);
+        @Nullable UByte getEventNotifier() throws UaException {
+            Object value = unwrap(eventNotifierValue);
 
             if (value instanceof UByte) {
                 return (UByte) value;
@@ -1475,9 +1509,8 @@ public class SubscriptionManager {
             }
         }
 
-        @Nullable
-        Double getMinimumSamplingInterval() throws UaException {
-            Object value = getValue(minimumSamplingIntervalValue);
+        @Nullable Double getMinimumSamplingInterval() throws UaException {
+            Object value = unwrap(minimumSamplingIntervalValue);
 
             if (value instanceof Double) {
                 return (Double) value;
@@ -1486,9 +1519,8 @@ public class SubscriptionManager {
             }
         }
 
-        @Nullable
-        NodeId getDataType() throws UaException {
-            Object value = getValue(dataType);
+        @Nullable NodeId getDataType() throws UaException {
+            Object value = unwrap(dataType);
 
             if (value instanceof NodeId) {
                 return (NodeId) value;
@@ -1497,18 +1529,34 @@ public class SubscriptionManager {
             }
         }
 
-        private Object getValue(DataValue dataValue) throws UaException {
+        @Nullable RolePermissionType[] getRolePermissions() throws UaException {
+            Object value = unwrap(rolePermissions);
+
+            if (value instanceof RolePermissionType[]) {
+                return (RolePermissionType[]) value;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable RolePermissionType[] getUserRolePermissions() throws UaException {
+            Object value = unwrap(userRolePermissions);
+
+            if (value instanceof RolePermissionType[]) {
+                return (RolePermissionType[]) value;
+            } else {
+                return null;
+            }
+        }
+
+        private Object unwrap(DataValue dataValue) throws UaException {
             StatusCode statusCode = dataValue.getStatusCode();
 
-            if (statusCode == null) {
-                throw new UaException(StatusCode.BAD);
+            if (statusCode != null && statusCode.isGood()) {
+                return dataValue.getValue().getValue();
+            } else {
+                return null;
             }
-
-            if (statusCode.isBad()) {
-                throw new UaException(statusCode);
-            }
-
-            return dataValue.getValue().getValue();
         }
     }
 
