@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -514,7 +514,9 @@ public class SubscriptionManager {
 
             // Validate the requested index range by parsing it.
             String indexRange = request.getItemToMonitor().getIndexRange();
-            if (indexRange != null) NumericRange.parse(indexRange);
+            if (indexRange != null && !indexRange.isEmpty()) {
+                NumericRange.parse(indexRange);
+            }
 
             Double minimumSamplingInterval = -1.0;
             try {
@@ -1340,8 +1342,8 @@ public class SubscriptionManager {
      * Split {@code monitoredItems} into a list of {@link DataItem}s and a list of {@link EventItem}s and invoke the
      * corresponding {@link Consumer} for each list if non-empty.
      *
-     * @param monitoredItems    the list of MonitoredItems to group.
-     * @param dataItemConsumer  a {@link Consumer} that accepts a non-empty list of {@link DataItem}s.
+     * @param monitoredItems the list of MonitoredItems to group.
+     * @param dataItemConsumer a {@link Consumer} that accepts a non-empty list of {@link DataItem}s.
      * @param eventItemConsumer a {@link Consumer} that accepts a non-empty list of {@link EventItem}s.
      */
     private static void byMonitoredItemType(

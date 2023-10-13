@@ -128,7 +128,7 @@ public class AttributeWriter {
 
         Variant updateVariant = value.getValue();
 
-        if (indexRange != null) {
+        if (indexRange != null && !indexRange.isEmpty()) {
             try {
                 NumericRange range = NumericRange.parse(indexRange);
 

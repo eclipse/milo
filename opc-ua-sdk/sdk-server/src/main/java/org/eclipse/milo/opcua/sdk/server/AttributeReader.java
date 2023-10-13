@@ -147,7 +147,7 @@ public class AttributeReader {
                 }
             }
 
-            if (indexRange != null) {
+            if (indexRange != null && !indexRange.isEmpty()) {
                 try {
                     NumericRange range = NumericRange.parse(indexRange);
 
@@ -179,7 +179,7 @@ public class AttributeReader {
                     }
             }
 
-            if (indexRange != null) {
+            if (indexRange != null && !indexRange.isEmpty()) {
                 try {
                     NumericRange range = NumericRange.parse(indexRange);
 
