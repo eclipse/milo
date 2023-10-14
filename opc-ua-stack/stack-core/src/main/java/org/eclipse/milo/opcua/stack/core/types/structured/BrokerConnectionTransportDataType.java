@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.2.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.2.3</a>
@@ -42,11 +43,12 @@ public class BrokerConnectionTransportDataType extends ConnectionTransportDataTy
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15726");
 
-    private final String resourceUri;
+    private final @Nullable String resourceUri;
 
-    private final String authenticationProfileUri;
+    private final @Nullable String authenticationProfileUri;
 
-    public BrokerConnectionTransportDataType(String resourceUri, String authenticationProfileUri) {
+    public BrokerConnectionTransportDataType(@Nullable String resourceUri,
+                                             @Nullable String authenticationProfileUri) {
         this.resourceUri = resourceUri;
         this.authenticationProfileUri = authenticationProfileUri;
     }
@@ -71,11 +73,11 @@ public class BrokerConnectionTransportDataType extends ConnectionTransportDataTy
         return JSON_ENCODING_ID;
     }
 
-    public String getResourceUri() {
+    public @Nullable String getResourceUri() {
         return resourceUri;
     }
 
-    public String getAuthenticationProfileUri() {
+    public @Nullable String getAuthenticationProfileUri() {
         return authenticationProfileUri;
     }
 

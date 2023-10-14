@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.5.4">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.5.4</a>
@@ -42,9 +43,9 @@ public class HistoryEvent extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15273");
 
-    private final HistoryEventFieldList[] events;
+    private final HistoryEventFieldList @Nullable [] events;
 
-    public HistoryEvent(HistoryEventFieldList[] events) {
+    public HistoryEvent(HistoryEventFieldList @Nullable [] events) {
         this.events = events;
     }
 
@@ -68,7 +69,7 @@ public class HistoryEvent extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public HistoryEventFieldList[] getEvents() {
+    public HistoryEventFieldList @Nullable [] getEvents() {
         return events;
     }
 

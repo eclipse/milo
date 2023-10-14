@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.5">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.5</a>
@@ -42,16 +43,17 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23988");
 
-    private final String name;
+    private final @Nullable String name;
 
-    private final String[] dataSetFolder;
+    private final String @Nullable [] dataSetFolder;
 
     private final DataSetMetaDataType dataSetMetaData;
 
     private final SubscribedDataSetDataType subscribedDataSet;
 
-    public StandaloneSubscribedDataSetDataType(String name, String[] dataSetFolder,
-                                               DataSetMetaDataType dataSetMetaData, SubscribedDataSetDataType subscribedDataSet) {
+    public StandaloneSubscribedDataSetDataType(@Nullable String name,
+                                               String @Nullable [] dataSetFolder, DataSetMetaDataType dataSetMetaData,
+                                               SubscribedDataSetDataType subscribedDataSet) {
         this.name = name;
         this.dataSetFolder = dataSetFolder;
         this.dataSetMetaData = dataSetMetaData;
@@ -78,11 +80,11 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
-    public String[] getDataSetFolder() {
+    public String @Nullable [] getDataSetFolder() {
         return dataSetFolder;
     }
 

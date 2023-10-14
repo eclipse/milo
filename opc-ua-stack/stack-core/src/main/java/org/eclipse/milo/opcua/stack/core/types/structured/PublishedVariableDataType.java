@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.7.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.7.1</a>
@@ -58,11 +59,11 @@ public class PublishedVariableDataType extends Structure implements UaStructured
 
     private final Variant substituteValue;
 
-    private final QualifiedName[] metaDataProperties;
+    private final QualifiedName @Nullable [] metaDataProperties;
 
     public PublishedVariableDataType(NodeId publishedVariable, UInteger attributeId,
                                      Double samplingIntervalHint, UInteger deadbandType, Double deadbandValue, String indexRange,
-                                     Variant substituteValue, QualifiedName[] metaDataProperties) {
+                                     Variant substituteValue, QualifiedName @Nullable [] metaDataProperties) {
         this.publishedVariable = publishedVariable;
         this.attributeId = attributeId;
         this.samplingIntervalHint = samplingIntervalHint;
@@ -121,7 +122,7 @@ public class PublishedVariableDataType extends Structure implements UaStructured
         return substituteValue;
     }
 
-    public QualifiedName[] getMetaDataProperties() {
+    public QualifiedName @Nullable [] getMetaDataProperties() {
         return metaDataProperties;
     }
 

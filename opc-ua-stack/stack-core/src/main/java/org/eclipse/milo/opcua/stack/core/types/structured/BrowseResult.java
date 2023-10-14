@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.6">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.6</a>
@@ -48,10 +49,10 @@ public class BrowseResult extends Structure implements UaStructuredType {
 
     private final ByteString continuationPoint;
 
-    private final ReferenceDescription[] references;
+    private final ReferenceDescription @Nullable [] references;
 
     public BrowseResult(StatusCode statusCode, ByteString continuationPoint,
-                        ReferenceDescription[] references) {
+                        ReferenceDescription @Nullable [] references) {
         this.statusCode = statusCode;
         this.continuationPoint = continuationPoint;
         this.references = references;
@@ -85,7 +86,7 @@ public class BrowseResult extends Structure implements UaStructuredType {
         return continuationPoint;
     }
 
-    public ReferenceDescription[] getReferences() {
+    public ReferenceDescription @Nullable [] getReferences() {
         return references;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/6.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/6.3.2</a>
@@ -42,14 +43,14 @@ public class SessionlessInvokeResponseType extends Structure implements UaStruct
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15092");
 
-    private final String[] namespaceUris;
+    private final String @Nullable [] namespaceUris;
 
-    private final String[] serverUris;
+    private final String @Nullable [] serverUris;
 
     private final UInteger serviceId;
 
-    public SessionlessInvokeResponseType(String[] namespaceUris, String[] serverUris,
-                                         UInteger serviceId) {
+    public SessionlessInvokeResponseType(String @Nullable [] namespaceUris,
+                                         String @Nullable [] serverUris, UInteger serviceId) {
         this.namespaceUris = namespaceUris;
         this.serverUris = serverUris;
         this.serviceId = serviceId;
@@ -75,11 +76,11 @@ public class SessionlessInvokeResponseType extends Structure implements UaStruct
         return JSON_ENCODING_ID;
     }
 
-    public String[] getNamespaceUris() {
+    public String @Nullable [] getNamespaceUris() {
         return namespaceUris;
     }
 
-    public String[] getServerUris() {
+    public String @Nullable [] getServerUris() {
         return serverUris;
     }
 

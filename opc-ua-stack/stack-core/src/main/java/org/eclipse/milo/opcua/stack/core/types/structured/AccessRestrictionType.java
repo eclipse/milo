@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
@@ -54,13 +53,13 @@ public class AccessRestrictionType extends OptionSetUI16<AccessRestrictionType.F
     }
 
     @Override
-    public Set<AccessRestrictionType.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static AccessRestrictionType of(AccessRestrictionType.Field... fields) {
+    public static AccessRestrictionType of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -70,7 +69,7 @@ public class AccessRestrictionType extends OptionSetUI16<AccessRestrictionType.F
         return new AccessRestrictionType(UShort.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         SigningRequired(0),
 
         EncryptionRequired(1),

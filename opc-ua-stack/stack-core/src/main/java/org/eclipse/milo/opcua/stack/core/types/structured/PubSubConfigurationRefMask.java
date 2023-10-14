@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -90,13 +89,13 @@ public class PubSubConfigurationRefMask extends OptionSetUI32<PubSubConfiguratio
     }
 
     @Override
-    public Set<PubSubConfigurationRefMask.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static PubSubConfigurationRefMask of(PubSubConfigurationRefMask.Field... fields) {
+    public static PubSubConfigurationRefMask of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -106,7 +105,7 @@ public class PubSubConfigurationRefMask extends OptionSetUI32<PubSubConfiguratio
         return new PubSubConfigurationRefMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         ElementAdd(0),
 
         ElementMatch(1),

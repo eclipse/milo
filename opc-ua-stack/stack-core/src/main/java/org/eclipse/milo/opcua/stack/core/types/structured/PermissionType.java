@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -106,13 +105,13 @@ public class PermissionType extends OptionSetUI32<PermissionType.Field> {
     }
 
     @Override
-    public Set<PermissionType.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static PermissionType of(PermissionType.Field... fields) {
+    public static PermissionType of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -122,7 +121,7 @@ public class PermissionType extends OptionSetUI32<PermissionType.Field> {
         return new PermissionType(UInteger.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         Browse(0),
 
         ReadRolePermissions(1),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -142,13 +141,13 @@ public class AttributeWriteMask extends OptionSetUI32<AttributeWriteMask.Field> 
     }
 
     @Override
-    public Set<AttributeWriteMask.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static AttributeWriteMask of(AttributeWriteMask.Field... fields) {
+    public static AttributeWriteMask of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -158,7 +157,7 @@ public class AttributeWriteMask extends OptionSetUI32<AttributeWriteMask.Field> 
         return new AttributeWriteMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         AccessLevel(0),
 
         ArrayDimensions(1),

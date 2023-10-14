@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/6.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/6.3.2</a>
@@ -44,16 +45,16 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
 
     private final UInteger urisVersion;
 
-    private final String[] namespaceUris;
+    private final String @Nullable [] namespaceUris;
 
-    private final String[] serverUris;
+    private final String @Nullable [] serverUris;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
     private final UInteger serviceId;
 
-    public SessionlessInvokeRequestType(UInteger urisVersion, String[] namespaceUris,
-                                        String[] serverUris, String[] localeIds, UInteger serviceId) {
+    public SessionlessInvokeRequestType(UInteger urisVersion, String @Nullable [] namespaceUris,
+                                        String @Nullable [] serverUris, String @Nullable [] localeIds, UInteger serviceId) {
         this.urisVersion = urisVersion;
         this.namespaceUris = namespaceUris;
         this.serverUris = serverUris;
@@ -85,15 +86,15 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         return urisVersion;
     }
 
-    public String[] getNamespaceUris() {
+    public String @Nullable [] getNamespaceUris() {
         return namespaceUris;
     }
 
-    public String[] getServerUris() {
+    public String @Nullable [] getServerUris() {
         return serverUris;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 

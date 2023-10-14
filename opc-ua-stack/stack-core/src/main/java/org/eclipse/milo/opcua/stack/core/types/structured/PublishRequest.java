@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.5/#5.13.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.5/#5.13.5.2</a>
@@ -44,10 +45,10 @@ public class PublishRequest extends Structure implements UaRequestMessageType {
 
     private final RequestHeader requestHeader;
 
-    private final SubscriptionAcknowledgement[] subscriptionAcknowledgements;
+    private final SubscriptionAcknowledgement @Nullable [] subscriptionAcknowledgements;
 
     public PublishRequest(RequestHeader requestHeader,
-                          SubscriptionAcknowledgement[] subscriptionAcknowledgements) {
+                          SubscriptionAcknowledgement @Nullable [] subscriptionAcknowledgements) {
         this.requestHeader = requestHeader;
         this.subscriptionAcknowledgements = subscriptionAcknowledgements;
     }
@@ -76,7 +77,7 @@ public class PublishRequest extends Structure implements UaRequestMessageType {
         return requestHeader;
     }
 
-    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() {
+    public SubscriptionAcknowledgement @Nullable [] getSubscriptionAcknowledgements() {
         return subscriptionAcknowledgements;
     }
 

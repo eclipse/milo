@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.4/#5.13.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.4/#5.13.4.2</a>
@@ -46,10 +47,10 @@ public class SetPublishingModeRequest extends Structure implements UaRequestMess
 
     private final Boolean publishingEnabled;
 
-    private final UInteger[] subscriptionIds;
+    private final UInteger @Nullable [] subscriptionIds;
 
     public SetPublishingModeRequest(RequestHeader requestHeader, Boolean publishingEnabled,
-                                    UInteger[] subscriptionIds) {
+                                    UInteger @Nullable [] subscriptionIds) {
         this.requestHeader = requestHeader;
         this.publishingEnabled = publishingEnabled;
         this.subscriptionIds = subscriptionIds;
@@ -83,7 +84,7 @@ public class SetPublishingModeRequest extends Structure implements UaRequestMess
         return publishingEnabled;
     }
 
-    public UInteger[] getSubscriptionIds() {
+    public UInteger @Nullable [] getSubscriptionIds() {
         return subscriptionIds;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.7.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.7.4</a>
@@ -45,12 +46,12 @@ public class PubSubConfigurationValueDataType extends Structure implements UaStr
 
     private final PubSubConfigurationRefDataType configurationElement;
 
-    private final String name;
+    private final @Nullable String name;
 
     private final Variant identifier;
 
     public PubSubConfigurationValueDataType(PubSubConfigurationRefDataType configurationElement,
-                                            String name, Variant identifier) {
+                                            @Nullable String name, Variant identifier) {
         this.configurationElement = configurationElement;
         this.name = name;
         this.identifier = identifier;
@@ -80,7 +81,7 @@ public class PubSubConfigurationValueDataType extends Structure implements UaStr
         return configurationElement;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.8/#5.13.8.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.8/#5.13.8.2</a>
@@ -44,9 +45,10 @@ public class DeleteSubscriptionsRequest extends Structure implements UaRequestMe
 
     private final RequestHeader requestHeader;
 
-    private final UInteger[] subscriptionIds;
+    private final UInteger @Nullable [] subscriptionIds;
 
-    public DeleteSubscriptionsRequest(RequestHeader requestHeader, UInteger[] subscriptionIds) {
+    public DeleteSubscriptionsRequest(RequestHeader requestHeader,
+                                      UInteger @Nullable [] subscriptionIds) {
         this.requestHeader = requestHeader;
         this.subscriptionIds = subscriptionIds;
     }
@@ -75,7 +77,7 @@ public class DeleteSubscriptionsRequest extends Structure implements UaRequestMe
         return requestHeader;
     }
 
-    public UInteger[] getSubscriptionIds() {
+    public UInteger @Nullable [] getSubscriptionIds() {
         return subscriptionIds;
     }
 

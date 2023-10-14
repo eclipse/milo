@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.3/#5.8.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.3/#5.8.3.2</a>
@@ -47,10 +48,10 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
 
     private final Boolean releaseContinuationPoints;
 
-    private final ByteString[] continuationPoints;
+    private final ByteString @Nullable [] continuationPoints;
 
     public BrowseNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoints,
-                             ByteString[] continuationPoints) {
+                             ByteString @Nullable [] continuationPoints) {
         this.requestHeader = requestHeader;
         this.releaseContinuationPoints = releaseContinuationPoints;
         this.continuationPoints = continuationPoints;
@@ -84,7 +85,7 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
         return releaseContinuationPoints;
     }
 
-    public ByteString[] getContinuationPoints() {
+    public ByteString @Nullable [] getContinuationPoints() {
         return continuationPoints;
     }
 

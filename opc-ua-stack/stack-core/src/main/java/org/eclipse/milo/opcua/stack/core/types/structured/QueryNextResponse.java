@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.4/#5.9.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.4/#5.9.4.2</a>
@@ -45,11 +46,11 @@ public class QueryNextResponse extends Structure implements UaResponseMessageTyp
 
     private final ResponseHeader responseHeader;
 
-    private final QueryDataSet[] queryDataSets;
+    private final QueryDataSet @Nullable [] queryDataSets;
 
     private final ByteString revisedContinuationPoint;
 
-    public QueryNextResponse(ResponseHeader responseHeader, QueryDataSet[] queryDataSets,
+    public QueryNextResponse(ResponseHeader responseHeader, QueryDataSet @Nullable [] queryDataSets,
                              ByteString revisedContinuationPoint) {
         this.responseHeader = responseHeader;
         this.queryDataSets = queryDataSets;
@@ -80,7 +81,7 @@ public class QueryNextResponse extends Structure implements UaResponseMessageTyp
         return responseHeader;
     }
 
-    public QueryDataSet[] getQueryDataSets() {
+    public QueryDataSet @Nullable [] getQueryDataSets() {
         return queryDataSets;
     }
 

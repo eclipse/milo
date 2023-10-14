@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.3/#5.6.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.3/#5.6.3.2</a>
@@ -49,12 +50,12 @@ public class ActivateSessionResponse extends Structure implements UaResponseMess
 
     private final ByteString serverNonce;
 
-    private final StatusCode[] results;
+    private final StatusCode @Nullable [] results;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
     public ActivateSessionResponse(ResponseHeader responseHeader, ByteString serverNonce,
-                                   StatusCode[] results, DiagnosticInfo[] diagnosticInfos) {
+                                   StatusCode @Nullable [] results, DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.serverNonce = serverNonce;
         this.results = results;
@@ -89,11 +90,11 @@ public class ActivateSessionResponse extends Structure implements UaResponseMess
         return serverNonce;
     }
 
-    public StatusCode[] getResults() {
+    public StatusCode @Nullable [] getResults() {
         return results;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
     }
 

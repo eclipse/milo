@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1</a>
@@ -46,12 +47,12 @@ public class ParsingResult extends Structure implements UaStructuredType {
 
     private final StatusCode statusCode;
 
-    private final StatusCode[] dataStatusCodes;
+    private final StatusCode @Nullable [] dataStatusCodes;
 
-    private final DiagnosticInfo[] dataDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] dataDiagnosticInfos;
 
-    public ParsingResult(StatusCode statusCode, StatusCode[] dataStatusCodes,
-                         DiagnosticInfo[] dataDiagnosticInfos) {
+    public ParsingResult(StatusCode statusCode, StatusCode @Nullable [] dataStatusCodes,
+                         DiagnosticInfo @Nullable [] dataDiagnosticInfos) {
         this.statusCode = statusCode;
         this.dataStatusCodes = dataStatusCodes;
         this.dataDiagnosticInfos = dataDiagnosticInfos;
@@ -81,11 +82,11 @@ public class ParsingResult extends Structure implements UaStructuredType {
         return statusCode;
     }
 
-    public StatusCode[] getDataStatusCodes() {
+    public StatusCode @Nullable [] getDataStatusCodes() {
         return dataStatusCodes;
     }
 
-    public DiagnosticInfo[] getDataDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDataDiagnosticInfos() {
         return dataDiagnosticInfos;
     }
 

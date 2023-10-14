@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.3">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.3</a>
@@ -43,23 +44,24 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15087");
 
-    private final String applicationUri;
+    private final @Nullable String applicationUri;
 
-    private final String productUri;
+    private final @Nullable String productUri;
 
     private final LocalizedText applicationName;
 
     private final ApplicationType applicationType;
 
-    private final String gatewayServerUri;
+    private final @Nullable String gatewayServerUri;
 
-    private final String discoveryProfileUri;
+    private final @Nullable String discoveryProfileUri;
 
-    private final String[] discoveryUrls;
+    private final String @Nullable [] discoveryUrls;
 
-    public ApplicationDescription(String applicationUri, String productUri,
-                                  LocalizedText applicationName, ApplicationType applicationType, String gatewayServerUri,
-                                  String discoveryProfileUri, String[] discoveryUrls) {
+    public ApplicationDescription(@Nullable String applicationUri, @Nullable String productUri,
+                                  LocalizedText applicationName, ApplicationType applicationType,
+                                  @Nullable String gatewayServerUri, @Nullable String discoveryProfileUri,
+                                  String @Nullable [] discoveryUrls) {
         this.applicationUri = applicationUri;
         this.productUri = productUri;
         this.applicationName = applicationName;
@@ -89,11 +91,11 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
         return JSON_ENCODING_ID;
     }
 
-    public String getApplicationUri() {
+    public @Nullable String getApplicationUri() {
         return applicationUri;
     }
 
-    public String getProductUri() {
+    public @Nullable String getProductUri() {
         return productUri;
     }
 
@@ -105,15 +107,15 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
         return applicationType;
     }
 
-    public String getGatewayServerUri() {
+    public @Nullable String getGatewayServerUri() {
         return gatewayServerUri;
     }
 
-    public String getDiscoveryProfileUri() {
+    public @Nullable String getDiscoveryProfileUri() {
         return discoveryProfileUri;
     }
 
-    public String[] getDiscoveryUrls() {
+    public String @Nullable [] getDiscoveryUrls() {
         return discoveryUrls;
     }
 

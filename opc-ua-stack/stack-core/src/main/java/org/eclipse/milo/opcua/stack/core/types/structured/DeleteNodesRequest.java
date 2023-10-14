@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.7.4/#5.7.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.7.4/#5.7.4.2</a>
@@ -44,9 +45,10 @@ public class DeleteNodesRequest extends Structure implements UaRequestMessageTyp
 
     private final RequestHeader requestHeader;
 
-    private final DeleteNodesItem[] nodesToDelete;
+    private final DeleteNodesItem @Nullable [] nodesToDelete;
 
-    public DeleteNodesRequest(RequestHeader requestHeader, DeleteNodesItem[] nodesToDelete) {
+    public DeleteNodesRequest(RequestHeader requestHeader,
+                              DeleteNodesItem @Nullable [] nodesToDelete) {
         this.requestHeader = requestHeader;
         this.nodesToDelete = nodesToDelete;
     }
@@ -75,7 +77,7 @@ public class DeleteNodesRequest extends Structure implements UaRequestMessageTyp
         return requestHeader;
     }
 
-    public DeleteNodesItem[] getNodesToDelete() {
+    public DeleteNodesItem @Nullable [] getNodesToDelete() {
         return nodesToDelete;
     }
 

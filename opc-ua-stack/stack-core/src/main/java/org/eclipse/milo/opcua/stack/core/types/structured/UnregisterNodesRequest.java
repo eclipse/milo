@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.6/#5.8.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.6/#5.8.6.2</a>
@@ -44,9 +45,10 @@ public class UnregisterNodesRequest extends Structure implements UaRequestMessag
 
     private final RequestHeader requestHeader;
 
-    private final NodeId[] nodesToUnregister;
+    private final NodeId @Nullable [] nodesToUnregister;
 
-    public UnregisterNodesRequest(RequestHeader requestHeader, NodeId[] nodesToUnregister) {
+    public UnregisterNodesRequest(RequestHeader requestHeader,
+                                  NodeId @Nullable [] nodesToUnregister) {
         this.requestHeader = requestHeader;
         this.nodesToUnregister = nodesToUnregister;
     }
@@ -75,7 +77,7 @@ public class UnregisterNodesRequest extends Structure implements UaRequestMessag
         return requestHeader;
     }
 
-    public NodeId[] getNodesToUnregister() {
+    public NodeId @Nullable [] getNodesToUnregister() {
         return nodesToUnregister;
     }
 

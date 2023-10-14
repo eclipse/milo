@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.4/#6.4.4.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.4/#6.4.4.1</a>
@@ -49,12 +50,12 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
 
     private final Double processingInterval;
 
-    private final NodeId[] aggregateType;
+    private final NodeId @Nullable [] aggregateType;
 
     private final AggregateConfiguration aggregateConfiguration;
 
     public ReadProcessedDetails(DateTime startTime, DateTime endTime, Double processingInterval,
-                                NodeId[] aggregateType, AggregateConfiguration aggregateConfiguration) {
+                                NodeId @Nullable [] aggregateType, AggregateConfiguration aggregateConfiguration) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.processingInterval = processingInterval;
@@ -94,7 +95,7 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
         return processingInterval;
     }
 
-    public NodeId[] getAggregateType() {
+    public NodeId @Nullable [] getAggregateType() {
         return aggregateType;
     }
 

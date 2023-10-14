@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.2.2</a>
@@ -44,19 +45,21 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15050");
 
-    private final String name;
+    private final @Nullable String name;
 
     private final LocalizedText description;
 
-    private final FieldMetaData[] fields;
+    private final FieldMetaData @Nullable [] fields;
 
     private final UUID dataSetClassId;
 
     private final ConfigurationVersionDataType configurationVersion;
 
-    public DataSetMetaDataType(String[] namespaces, StructureDescription[] structureDataTypes,
-                               EnumDescription[] enumDataTypes, SimpleTypeDescription[] simpleDataTypes, String name,
-                               LocalizedText description, FieldMetaData[] fields, UUID dataSetClassId,
+    public DataSetMetaDataType(String @Nullable [] namespaces,
+                               StructureDescription @Nullable [] structureDataTypes,
+                               EnumDescription @Nullable [] enumDataTypes,
+                               SimpleTypeDescription @Nullable [] simpleDataTypes, @Nullable String name,
+                               LocalizedText description, FieldMetaData @Nullable [] fields, UUID dataSetClassId,
                                ConfigurationVersionDataType configurationVersion) {
         super(namespaces, structureDataTypes, enumDataTypes, simpleDataTypes);
         this.name = name;
@@ -86,7 +89,7 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -94,7 +97,7 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         return description;
     }
 
-    public FieldMetaData[] getFields() {
+    public FieldMetaData @Nullable [] getFields() {
         return fields;
     }
 

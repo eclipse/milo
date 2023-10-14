@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.7.2/#5.7.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.7.2/#5.7.2.2</a>
@@ -44,9 +45,9 @@ public class AddNodesRequest extends Structure implements UaRequestMessageType {
 
     private final RequestHeader requestHeader;
 
-    private final AddNodesItem[] nodesToAdd;
+    private final AddNodesItem @Nullable [] nodesToAdd;
 
-    public AddNodesRequest(RequestHeader requestHeader, AddNodesItem[] nodesToAdd) {
+    public AddNodesRequest(RequestHeader requestHeader, AddNodesItem @Nullable [] nodesToAdd) {
         this.requestHeader = requestHeader;
         this.nodesToAdd = nodesToAdd;
     }
@@ -75,7 +76,7 @@ public class AddNodesRequest extends Structure implements UaRequestMessageType {
         return requestHeader;
     }
 
-    public AddNodesItem[] getNodesToAdd() {
+    public AddNodesItem @Nullable [] getNodesToAdd() {
         return nodesToAdd;
     }
 

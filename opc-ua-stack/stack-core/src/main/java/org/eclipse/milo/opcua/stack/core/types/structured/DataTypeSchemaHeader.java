@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.31">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.31</a>
@@ -38,16 +39,18 @@ public abstract class DataTypeSchemaHeader extends Structure implements UaStruct
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16151");
 
-    private final String[] namespaces;
+    private final String @Nullable [] namespaces;
 
-    private final StructureDescription[] structureDataTypes;
+    private final StructureDescription @Nullable [] structureDataTypes;
 
-    private final EnumDescription[] enumDataTypes;
+    private final EnumDescription @Nullable [] enumDataTypes;
 
-    private final SimpleTypeDescription[] simpleDataTypes;
+    private final SimpleTypeDescription @Nullable [] simpleDataTypes;
 
-    public DataTypeSchemaHeader(String[] namespaces, StructureDescription[] structureDataTypes,
-                                EnumDescription[] enumDataTypes, SimpleTypeDescription[] simpleDataTypes) {
+    public DataTypeSchemaHeader(String @Nullable [] namespaces,
+                                StructureDescription @Nullable [] structureDataTypes,
+                                EnumDescription @Nullable [] enumDataTypes,
+                                SimpleTypeDescription @Nullable [] simpleDataTypes) {
         this.namespaces = namespaces;
         this.structureDataTypes = structureDataTypes;
         this.enumDataTypes = enumDataTypes;
@@ -74,19 +77,19 @@ public abstract class DataTypeSchemaHeader extends Structure implements UaStruct
         return JSON_ENCODING_ID;
     }
 
-    public String[] getNamespaces() {
+    public String @Nullable [] getNamespaces() {
         return namespaces;
     }
 
-    public StructureDescription[] getStructureDataTypes() {
+    public StructureDescription @Nullable [] getStructureDataTypes() {
         return structureDataTypes;
     }
 
-    public EnumDescription[] getEnumDataTypes() {
+    public EnumDescription @Nullable [] getEnumDataTypes() {
         return enumDataTypes;
     }
 
-    public SimpleTypeDescription[] getSimpleDataTypes() {
+    public SimpleTypeDescription @Nullable [] getSimpleDataTypes() {
         return simpleDataTypes;
     }
 

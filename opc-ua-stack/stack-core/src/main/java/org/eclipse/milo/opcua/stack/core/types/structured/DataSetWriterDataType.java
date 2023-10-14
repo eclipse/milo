@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.5.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.5.1</a>
@@ -43,7 +44,7 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16156");
 
-    private final String name;
+    private final @Nullable String name;
 
     private final Boolean enabled;
 
@@ -53,17 +54,18 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
 
     private final UInteger keyFrameCount;
 
-    private final String dataSetName;
+    private final @Nullable String dataSetName;
 
-    private final KeyValuePair[] dataSetWriterProperties;
+    private final KeyValuePair @Nullable [] dataSetWriterProperties;
 
     private final DataSetWriterTransportDataType transportSettings;
 
     private final DataSetWriterMessageDataType messageSettings;
 
-    public DataSetWriterDataType(String name, Boolean enabled, UShort dataSetWriterId,
-                                 DataSetFieldContentMask dataSetFieldContentMask, UInteger keyFrameCount, String dataSetName,
-                                 KeyValuePair[] dataSetWriterProperties, DataSetWriterTransportDataType transportSettings,
+    public DataSetWriterDataType(@Nullable String name, Boolean enabled, UShort dataSetWriterId,
+                                 DataSetFieldContentMask dataSetFieldContentMask, UInteger keyFrameCount,
+                                 @Nullable String dataSetName, KeyValuePair @Nullable [] dataSetWriterProperties,
+                                 DataSetWriterTransportDataType transportSettings,
                                  DataSetWriterMessageDataType messageSettings) {
         this.name = name;
         this.enabled = enabled;
@@ -96,7 +98,7 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -116,11 +118,11 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
         return keyFrameCount;
     }
 
-    public String getDataSetName() {
+    public @Nullable String getDataSetName() {
         return dataSetName;
     }
 
-    public KeyValuePair[] getDataSetWriterProperties() {
+    public KeyValuePair @Nullable [] getDataSetWriterProperties() {
         return dataSetWriterProperties;
     }
 

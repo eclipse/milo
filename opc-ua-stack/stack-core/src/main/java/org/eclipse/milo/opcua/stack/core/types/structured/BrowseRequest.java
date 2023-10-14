@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.2/#5.8.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.2/#5.8.2.2</a>
@@ -48,10 +49,10 @@ public class BrowseRequest extends Structure implements UaRequestMessageType {
 
     private final UInteger requestedMaxReferencesPerNode;
 
-    private final BrowseDescription[] nodesToBrowse;
+    private final BrowseDescription @Nullable [] nodesToBrowse;
 
     public BrowseRequest(RequestHeader requestHeader, ViewDescription view,
-                         UInteger requestedMaxReferencesPerNode, BrowseDescription[] nodesToBrowse) {
+                         UInteger requestedMaxReferencesPerNode, BrowseDescription @Nullable [] nodesToBrowse) {
         this.requestHeader = requestHeader;
         this.view = view;
         this.requestedMaxReferencesPerNode = requestedMaxReferencesPerNode;
@@ -90,7 +91,7 @@ public class BrowseRequest extends Structure implements UaRequestMessageType {
         return requestedMaxReferencesPerNode;
     }
 
-    public BrowseDescription[] getNodesToBrowse() {
+    public BrowseDescription @Nullable [] getNodesToBrowse() {
         return nodesToBrowse;
     }
 

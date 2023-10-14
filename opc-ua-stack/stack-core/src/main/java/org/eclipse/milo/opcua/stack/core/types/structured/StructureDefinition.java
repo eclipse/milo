@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.5">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.5</a>
@@ -48,10 +49,10 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
 
     private final StructureType structureType;
 
-    private final StructureField[] fields;
+    private final StructureField @Nullable [] fields;
 
     public StructureDefinition(NodeId defaultEncodingId, NodeId baseDataType,
-                               StructureType structureType, StructureField[] fields) {
+                               StructureType structureType, StructureField @Nullable [] fields) {
         this.defaultEncodingId = defaultEncodingId;
         this.baseDataType = baseDataType;
         this.structureType = structureType;
@@ -90,7 +91,7 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         return structureType;
     }
 
-    public StructureField[] getFields() {
+    public StructureField @Nullable [] getFields() {
         return fields;
     }
 

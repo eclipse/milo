@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.2</a>
@@ -43,12 +44,12 @@ public class ContentFilterResult extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15228");
 
-    private final ContentFilterElementResult[] elementResults;
+    private final ContentFilterElementResult @Nullable [] elementResults;
 
-    private final DiagnosticInfo[] elementDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] elementDiagnosticInfos;
 
-    public ContentFilterResult(ContentFilterElementResult[] elementResults,
-                               DiagnosticInfo[] elementDiagnosticInfos) {
+    public ContentFilterResult(ContentFilterElementResult @Nullable [] elementResults,
+                               DiagnosticInfo @Nullable [] elementDiagnosticInfos) {
         this.elementResults = elementResults;
         this.elementDiagnosticInfos = elementDiagnosticInfos;
     }
@@ -73,11 +74,11 @@ public class ContentFilterResult extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public ContentFilterElementResult[] getElementResults() {
+    public ContentFilterElementResult @Nullable [] getElementResults() {
         return elementResults;
     }
 
-    public DiagnosticInfo[] getElementDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getElementDiagnosticInfos() {
         return elementDiagnosticInfos;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.3</a>
@@ -50,7 +51,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     private final Integer valueRank;
 
-    private final UInteger[] arrayDimensions;
+    private final UInteger @Nullable [] arrayDimensions;
 
     private final UByte accessLevel;
 
@@ -62,7 +63,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     public VariableAttributes(UInteger specifiedAttributes, LocalizedText displayName,
                               LocalizedText description, UInteger writeMask, UInteger userWriteMask, Variant value,
-                              NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel,
+                              NodeId dataType, Integer valueRank, UInteger @Nullable [] arrayDimensions, UByte accessLevel,
                               UByte userAccessLevel, Double minimumSamplingInterval, Boolean historizing) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.value = value;
@@ -107,7 +108,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
         return valueRank;
     }
 
-    public UInteger[] getArrayDimensions() {
+    public UInteger @Nullable [] getArrayDimensions() {
         return arrayDimensions;
     }
 

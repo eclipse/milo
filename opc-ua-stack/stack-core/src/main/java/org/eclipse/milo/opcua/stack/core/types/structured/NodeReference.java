@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(
     callSuper = false
@@ -45,10 +46,10 @@ public class NodeReference extends Structure implements UaStructuredType {
 
     private final Boolean isForward;
 
-    private final NodeId[] referencedNodeIds;
+    private final NodeId @Nullable [] referencedNodeIds;
 
     public NodeReference(NodeId nodeId, NodeId referenceTypeId, Boolean isForward,
-                         NodeId[] referencedNodeIds) {
+                         NodeId @Nullable [] referencedNodeIds) {
         this.nodeId = nodeId;
         this.referenceTypeId = referenceTypeId;
         this.isForward = isForward;
@@ -87,7 +88,7 @@ public class NodeReference extends Structure implements UaStructuredType {
         return isForward;
     }
 
-    public NodeId[] getReferencedNodeIds() {
+    public NodeId @Nullable [] getReferencedNodeIds() {
         return referencedNodeIds;
     }
 

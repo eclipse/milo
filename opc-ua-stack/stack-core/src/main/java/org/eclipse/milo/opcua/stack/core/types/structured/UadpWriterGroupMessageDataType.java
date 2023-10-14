@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataSetOrderingType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.1.7">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.1.7</a>
@@ -51,11 +52,11 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
 
     private final Double samplingOffset;
 
-    private final Double[] publishingOffset;
+    private final Double @Nullable [] publishingOffset;
 
     public UadpWriterGroupMessageDataType(UInteger groupVersion, DataSetOrderingType dataSetOrdering,
                                           UadpNetworkMessageContentMask networkMessageContentMask, Double samplingOffset,
-                                          Double[] publishingOffset) {
+                                          Double @Nullable [] publishingOffset) {
         this.groupVersion = groupVersion;
         this.dataSetOrdering = dataSetOrdering;
         this.networkMessageContentMask = networkMessageContentMask;
@@ -99,7 +100,7 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         return samplingOffset;
     }
 
-    public Double[] getPublishingOffset() {
+    public Double @Nullable [] getPublishingOffset() {
         return publishingOffset;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.4/#5.4.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.4/#5.4.4.2</a>
@@ -44,14 +45,14 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
 
     private final RequestHeader requestHeader;
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
-    private final String[] profileUris;
+    private final String @Nullable [] profileUris;
 
-    public GetEndpointsRequest(RequestHeader requestHeader, String endpointUrl, String[] localeIds,
-                               String[] profileUris) {
+    public GetEndpointsRequest(RequestHeader requestHeader, @Nullable String endpointUrl,
+                               String @Nullable [] localeIds, String @Nullable [] profileUris) {
         this.requestHeader = requestHeader;
         this.endpointUrl = endpointUrl;
         this.localeIds = localeIds;
@@ -82,15 +83,15 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
         return requestHeader;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 
-    public String[] getProfileUris() {
+    public String @Nullable [] getProfileUris() {
         return profileUris;
     }
 

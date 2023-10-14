@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.15">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.15</a>
@@ -38,9 +39,9 @@ public abstract class UserIdentityToken extends Structure implements UaStructure
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15140");
 
-    private final String policyId;
+    private final @Nullable String policyId;
 
-    public UserIdentityToken(String policyId) {
+    public UserIdentityToken(@Nullable String policyId) {
         this.policyId = policyId;
     }
 
@@ -64,7 +65,7 @@ public abstract class UserIdentityToken extends Structure implements UaStructure
         return JSON_ENCODING_ID;
     }
 
-    public String getPolicyId() {
+    public @Nullable String getPolicyId() {
         return policyId;
     }
 

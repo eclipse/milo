@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.1</a>
@@ -46,9 +47,10 @@ public class ContentFilterElement extends Structure implements UaStructuredType 
 
     private final FilterOperator filterOperator;
 
-    private final ExtensionObject[] filterOperands;
+    private final ExtensionObject @Nullable [] filterOperands;
 
-    public ContentFilterElement(FilterOperator filterOperator, ExtensionObject[] filterOperands) {
+    public ContentFilterElement(FilterOperator filterOperator,
+                                ExtensionObject @Nullable [] filterOperands) {
         this.filterOperator = filterOperator;
         this.filterOperands = filterOperands;
     }
@@ -77,7 +79,7 @@ public class ContentFilterElement extends Structure implements UaStructuredType 
         return filterOperator;
     }
 
-    public ExtensionObject[] getFilterOperands() {
+    public ExtensionObject @Nullable [] getFilterOperands() {
         return filterOperands;
     }
 

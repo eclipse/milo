@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.32">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.32</a>
@@ -43,25 +44,26 @@ public class RegisteredServer extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15102");
 
-    private final String serverUri;
+    private final @Nullable String serverUri;
 
-    private final String productUri;
+    private final @Nullable String productUri;
 
-    private final LocalizedText[] serverNames;
+    private final LocalizedText @Nullable [] serverNames;
 
     private final ApplicationType serverType;
 
-    private final String gatewayServerUri;
+    private final @Nullable String gatewayServerUri;
 
-    private final String[] discoveryUrls;
+    private final String @Nullable [] discoveryUrls;
 
-    private final String semaphoreFilePath;
+    private final @Nullable String semaphoreFilePath;
 
     private final Boolean isOnline;
 
-    public RegisteredServer(String serverUri, String productUri, LocalizedText[] serverNames,
-                            ApplicationType serverType, String gatewayServerUri, String[] discoveryUrls,
-                            String semaphoreFilePath, Boolean isOnline) {
+    public RegisteredServer(@Nullable String serverUri, @Nullable String productUri,
+                            LocalizedText @Nullable [] serverNames, ApplicationType serverType,
+                            @Nullable String gatewayServerUri, String @Nullable [] discoveryUrls,
+                            @Nullable String semaphoreFilePath, Boolean isOnline) {
         this.serverUri = serverUri;
         this.productUri = productUri;
         this.serverNames = serverNames;
@@ -92,15 +94,15 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getServerUri() {
+    public @Nullable String getServerUri() {
         return serverUri;
     }
 
-    public String getProductUri() {
+    public @Nullable String getProductUri() {
         return productUri;
     }
 
-    public LocalizedText[] getServerNames() {
+    public LocalizedText @Nullable [] getServerNames() {
         return serverNames;
     }
 
@@ -108,15 +110,15 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         return serverType;
     }
 
-    public String getGatewayServerUri() {
+    public @Nullable String getGatewayServerUri() {
         return gatewayServerUri;
     }
 
-    public String[] getDiscoveryUrls() {
+    public String @Nullable [] getDiscoveryUrls() {
         return discoveryUrls;
     }
 
-    public String getSemaphoreFilePath() {
+    public @Nullable String getSemaphoreFilePath() {
         return semaphoreFilePath;
     }
 

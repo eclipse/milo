@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrokerTransportQualityOfService;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.3.5">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.3.5</a>
@@ -43,16 +44,17 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16524");
 
-    private final String queueName;
+    private final @Nullable String queueName;
 
-    private final String resourceUri;
+    private final @Nullable String resourceUri;
 
-    private final String authenticationProfileUri;
+    private final @Nullable String authenticationProfileUri;
 
     private final BrokerTransportQualityOfService requestedDeliveryGuarantee;
 
-    public BrokerWriterGroupTransportDataType(String queueName, String resourceUri,
-                                              String authenticationProfileUri, BrokerTransportQualityOfService requestedDeliveryGuarantee) {
+    public BrokerWriterGroupTransportDataType(@Nullable String queueName,
+                                              @Nullable String resourceUri, @Nullable String authenticationProfileUri,
+                                              BrokerTransportQualityOfService requestedDeliveryGuarantee) {
         this.queueName = queueName;
         this.resourceUri = resourceUri;
         this.authenticationProfileUri = authenticationProfileUri;
@@ -79,15 +81,15 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
         return JSON_ENCODING_ID;
     }
 
-    public String getQueueName() {
+    public @Nullable String getQueueName() {
         return queueName;
     }
 
-    public String getResourceUri() {
+    public @Nullable String getResourceUri() {
         return resourceUri;
     }
 
-    public String getAuthenticationProfileUri() {
+    public @Nullable String getAuthenticationProfileUri() {
         return authenticationProfileUri;
     }
 

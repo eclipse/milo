@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2</a>
@@ -47,9 +48,9 @@ public class CallMethodRequest extends Structure implements UaStructuredType {
 
     private final NodeId methodId;
 
-    private final Variant[] inputArguments;
+    private final Variant @Nullable [] inputArguments;
 
-    public CallMethodRequest(NodeId objectId, NodeId methodId, Variant[] inputArguments) {
+    public CallMethodRequest(NodeId objectId, NodeId methodId, Variant @Nullable [] inputArguments) {
         this.objectId = objectId;
         this.methodId = methodId;
         this.inputArguments = inputArguments;
@@ -83,7 +84,7 @@ public class CallMethodRequest extends Structure implements UaStructuredType {
         return methodId;
     }
 
-    public Variant[] getInputArguments() {
+    public Variant @Nullable [] getInputArguments() {
         return inputArguments;
     }
 

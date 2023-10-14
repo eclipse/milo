@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.2</a>
@@ -42,28 +43,28 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23989");
 
-    private final String name;
+    private final @Nullable String name;
 
-    private final String[] securityGroupFolder;
+    private final String @Nullable [] securityGroupFolder;
 
     private final Double keyLifetime;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
     private final UInteger maxFutureKeyCount;
 
     private final UInteger maxPastKeyCount;
 
-    private final String securityGroupId;
+    private final @Nullable String securityGroupId;
 
-    private final RolePermissionType[] rolePermissions;
+    private final RolePermissionType @Nullable [] rolePermissions;
 
-    private final KeyValuePair[] groupProperties;
+    private final KeyValuePair @Nullable [] groupProperties;
 
-    public SecurityGroupDataType(String name, String[] securityGroupFolder, Double keyLifetime,
-                                 String securityPolicyUri, UInteger maxFutureKeyCount, UInteger maxPastKeyCount,
-                                 String securityGroupId, RolePermissionType[] rolePermissions,
-                                 KeyValuePair[] groupProperties) {
+    public SecurityGroupDataType(@Nullable String name, String @Nullable [] securityGroupFolder,
+                                 Double keyLifetime, @Nullable String securityPolicyUri, UInteger maxFutureKeyCount,
+                                 UInteger maxPastKeyCount, @Nullable String securityGroupId,
+                                 RolePermissionType @Nullable [] rolePermissions, KeyValuePair @Nullable [] groupProperties) {
         this.name = name;
         this.securityGroupFolder = securityGroupFolder;
         this.keyLifetime = keyLifetime;
@@ -95,11 +96,11 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
-    public String[] getSecurityGroupFolder() {
+    public String @Nullable [] getSecurityGroupFolder() {
         return securityGroupFolder;
     }
 
@@ -107,7 +108,7 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
         return keyLifetime;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 
@@ -119,15 +120,15 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
         return maxPastKeyCount;
     }
 
-    public String getSecurityGroupId() {
+    public @Nullable String getSecurityGroupId() {
         return securityGroupId;
     }
 
-    public RolePermissionType[] getRolePermissions() {
+    public RolePermissionType @Nullable [] getRolePermissions() {
         return rolePermissions;
     }
 
-    public KeyValuePair[] getGroupProperties() {
+    public KeyValuePair @Nullable [] getGroupProperties() {
         return groupProperties;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdentityCriteriaType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.3">https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.3</a>
@@ -41,9 +42,9 @@ public abstract class IdentityMappingRuleType extends Structure implements UaStr
 
     private final IdentityCriteriaType criteriaType;
 
-    private final String criteria;
+    private final @Nullable String criteria;
 
-    public IdentityMappingRuleType(IdentityCriteriaType criteriaType, String criteria) {
+    public IdentityMappingRuleType(IdentityCriteriaType criteriaType, @Nullable String criteria) {
         this.criteriaType = criteriaType;
         this.criteria = criteria;
     }
@@ -72,7 +73,7 @@ public abstract class IdentityMappingRuleType extends Structure implements UaStr
         return criteriaType;
     }
 
-    public String getCriteria() {
+    public @Nullable String getCriteria() {
         return criteria;
     }
 

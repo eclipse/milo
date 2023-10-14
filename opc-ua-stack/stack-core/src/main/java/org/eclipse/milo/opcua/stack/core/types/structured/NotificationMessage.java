@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.26">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.26</a>
@@ -48,10 +49,10 @@ public class NotificationMessage extends Structure implements UaStructuredType {
 
     private final DateTime publishTime;
 
-    private final ExtensionObject[] notificationData;
+    private final ExtensionObject @Nullable [] notificationData;
 
     public NotificationMessage(UInteger sequenceNumber, DateTime publishTime,
-                               ExtensionObject[] notificationData) {
+                               ExtensionObject @Nullable [] notificationData) {
         this.sequenceNumber = sequenceNumber;
         this.publishTime = publishTime;
         this.notificationData = notificationData;
@@ -85,7 +86,7 @@ public class NotificationMessage extends Structure implements UaStructuredType {
         return publishTime;
     }
 
-    public ExtensionObject[] getNotificationData() {
+    public ExtensionObject @Nullable [] getNotificationData() {
         return notificationData;
     }
 

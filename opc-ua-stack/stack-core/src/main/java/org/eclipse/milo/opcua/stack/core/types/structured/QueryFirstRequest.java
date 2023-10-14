@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1</a>
@@ -46,7 +47,7 @@ public class QueryFirstRequest extends Structure implements UaRequestMessageType
 
     private final ViewDescription view;
 
-    private final NodeTypeDescription[] nodeTypes;
+    private final NodeTypeDescription @Nullable [] nodeTypes;
 
     private final ContentFilter filter;
 
@@ -55,8 +56,8 @@ public class QueryFirstRequest extends Structure implements UaRequestMessageType
     private final UInteger maxReferencesToReturn;
 
     public QueryFirstRequest(RequestHeader requestHeader, ViewDescription view,
-                             NodeTypeDescription[] nodeTypes, ContentFilter filter, UInteger maxDataSetsToReturn,
-                             UInteger maxReferencesToReturn) {
+                             NodeTypeDescription @Nullable [] nodeTypes, ContentFilter filter,
+                             UInteger maxDataSetsToReturn, UInteger maxReferencesToReturn) {
         this.requestHeader = requestHeader;
         this.view = view;
         this.nodeTypes = nodeTypes;
@@ -93,7 +94,7 @@ public class QueryFirstRequest extends Structure implements UaRequestMessageType
         return view;
     }
 
-    public NodeTypeDescription[] getNodeTypes() {
+    public NodeTypeDescription @Nullable [] getNodeTypes() {
         return nodeTypes;
     }
 

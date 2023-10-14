@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.4</a>
@@ -42,26 +43,28 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23990");
 
-    private final StandaloneSubscribedDataSetDataType[] subscribedDataSets;
+    private final StandaloneSubscribedDataSetDataType @Nullable [] subscribedDataSets;
 
-    private final DataSetMetaDataType[] dataSetClasses;
+    private final DataSetMetaDataType @Nullable [] dataSetClasses;
 
-    private final EndpointDescription[] defaultSecurityKeyServices;
+    private final EndpointDescription @Nullable [] defaultSecurityKeyServices;
 
-    private final SecurityGroupDataType[] securityGroups;
+    private final SecurityGroupDataType @Nullable [] securityGroups;
 
-    private final PubSubKeyPushTargetDataType[] pubSubKeyPushTargets;
+    private final PubSubKeyPushTargetDataType @Nullable [] pubSubKeyPushTargets;
 
     private final UInteger configurationVersion;
 
-    private final KeyValuePair[] configurationProperties;
+    private final KeyValuePair @Nullable [] configurationProperties;
 
-    public PubSubConfiguration2DataType(PublishedDataSetDataType[] publishedDataSets,
-                                        PubSubConnectionDataType[] connections, Boolean enabled,
-                                        StandaloneSubscribedDataSetDataType[] subscribedDataSets,
-                                        DataSetMetaDataType[] dataSetClasses, EndpointDescription[] defaultSecurityKeyServices,
-                                        SecurityGroupDataType[] securityGroups, PubSubKeyPushTargetDataType[] pubSubKeyPushTargets,
-                                        UInteger configurationVersion, KeyValuePair[] configurationProperties) {
+    public PubSubConfiguration2DataType(PublishedDataSetDataType @Nullable [] publishedDataSets,
+                                        PubSubConnectionDataType @Nullable [] connections, Boolean enabled,
+                                        StandaloneSubscribedDataSetDataType @Nullable [] subscribedDataSets,
+                                        DataSetMetaDataType @Nullable [] dataSetClasses,
+                                        EndpointDescription @Nullable [] defaultSecurityKeyServices,
+                                        SecurityGroupDataType @Nullable [] securityGroups,
+                                        PubSubKeyPushTargetDataType @Nullable [] pubSubKeyPushTargets, UInteger configurationVersion,
+                                        KeyValuePair @Nullable [] configurationProperties) {
         super(publishedDataSets, connections, enabled);
         this.subscribedDataSets = subscribedDataSets;
         this.dataSetClasses = dataSetClasses;
@@ -92,23 +95,23 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         return JSON_ENCODING_ID;
     }
 
-    public StandaloneSubscribedDataSetDataType[] getSubscribedDataSets() {
+    public StandaloneSubscribedDataSetDataType @Nullable [] getSubscribedDataSets() {
         return subscribedDataSets;
     }
 
-    public DataSetMetaDataType[] getDataSetClasses() {
+    public DataSetMetaDataType @Nullable [] getDataSetClasses() {
         return dataSetClasses;
     }
 
-    public EndpointDescription[] getDefaultSecurityKeyServices() {
+    public EndpointDescription @Nullable [] getDefaultSecurityKeyServices() {
         return defaultSecurityKeyServices;
     }
 
-    public SecurityGroupDataType[] getSecurityGroups() {
+    public SecurityGroupDataType @Nullable [] getSecurityGroups() {
         return securityGroups;
     }
 
-    public PubSubKeyPushTargetDataType[] getPubSubKeyPushTargets() {
+    public PubSubKeyPushTargetDataType @Nullable [] getPubSubKeyPushTargets() {
         return pubSubKeyPushTargets;
     }
 
@@ -116,7 +119,7 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         return configurationVersion;
     }
 
-    public KeyValuePair[] getConfigurationProperties() {
+    public KeyValuePair @Nullable [] getConfigurationProperties() {
         return configurationProperties;
     }
 

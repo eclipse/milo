@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.4/#6.8.4.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.4/#6.8.4.1</a>
@@ -47,10 +48,10 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
 
     private final EventFilter filter;
 
-    private final HistoryEventFieldList[] eventData;
+    private final HistoryEventFieldList @Nullable [] eventData;
 
     public UpdateEventDetails(NodeId nodeId, PerformUpdateType performInsertReplace,
-                              EventFilter filter, HistoryEventFieldList[] eventData) {
+                              EventFilter filter, HistoryEventFieldList @Nullable [] eventData) {
         super(nodeId);
         this.performInsertReplace = performInsertReplace;
         this.filter = filter;
@@ -85,7 +86,7 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
         return filter;
     }
 
-    public HistoryEventFieldList[] getEventData() {
+    public HistoryEventFieldList @Nullable [] getEventData() {
         return eventData;
     }
 

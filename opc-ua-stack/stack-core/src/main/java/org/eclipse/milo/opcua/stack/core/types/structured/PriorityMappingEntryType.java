@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.2/#5.3.2.1">https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.2/#5.3.2.1</a>
@@ -43,16 +44,16 @@ public class PriorityMappingEntryType extends Structure implements UaStructuredT
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=25247");
 
-    private final String mappingUri;
+    private final @Nullable String mappingUri;
 
-    private final String priorityLabel;
+    private final @Nullable String priorityLabel;
 
     private final UByte priorityValuePcp;
 
     private final UInteger priorityValueDscp;
 
-    public PriorityMappingEntryType(String mappingUri, String priorityLabel, UByte priorityValuePcp,
-                                    UInteger priorityValueDscp) {
+    public PriorityMappingEntryType(@Nullable String mappingUri, @Nullable String priorityLabel,
+                                    UByte priorityValuePcp, UInteger priorityValueDscp) {
         this.mappingUri = mappingUri;
         this.priorityLabel = priorityLabel;
         this.priorityValuePcp = priorityValuePcp;
@@ -79,11 +80,11 @@ public class PriorityMappingEntryType extends Structure implements UaStructuredT
         return JSON_ENCODING_ID;
     }
 
-    public String getMappingUri() {
+    public @Nullable String getMappingUri() {
         return mappingUri;
     }
 
-    public String getPriorityLabel() {
+    public @Nullable String getPriorityLabel() {
         return priorityLabel;
     }
 

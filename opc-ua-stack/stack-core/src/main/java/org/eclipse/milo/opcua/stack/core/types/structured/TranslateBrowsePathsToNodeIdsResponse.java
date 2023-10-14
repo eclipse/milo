@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.4/#5.8.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.4/#5.8.4.2</a>
@@ -45,12 +46,12 @@ public class TranslateBrowsePathsToNodeIdsResponse extends Structure implements 
 
     private final ResponseHeader responseHeader;
 
-    private final BrowsePathResult[] results;
+    private final BrowsePathResult @Nullable [] results;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
     public TranslateBrowsePathsToNodeIdsResponse(ResponseHeader responseHeader,
-                                                 BrowsePathResult[] results, DiagnosticInfo[] diagnosticInfos) {
+                                                 BrowsePathResult @Nullable [] results, DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.results = results;
         this.diagnosticInfos = diagnosticInfos;
@@ -80,11 +81,11 @@ public class TranslateBrowsePathsToNodeIdsResponse extends Structure implements 
         return responseHeader;
     }
 
-    public BrowsePathResult[] getResults() {
+    public BrowsePathResult @Nullable [] getResults() {
         return results;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
     }
 

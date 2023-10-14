@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.6">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.6</a>
@@ -49,13 +50,14 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
 
     private final Integer valueRank;
 
-    private final UInteger[] arrayDimensions;
+    private final UInteger @Nullable [] arrayDimensions;
 
     private final Boolean isAbstract;
 
     public VariableTypeAttributes(UInteger specifiedAttributes, LocalizedText displayName,
                                   LocalizedText description, UInteger writeMask, UInteger userWriteMask, Variant value,
-                                  NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, Boolean isAbstract) {
+                                  NodeId dataType, Integer valueRank, UInteger @Nullable [] arrayDimensions,
+                                  Boolean isAbstract) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.value = value;
         this.dataType = dataType;
@@ -96,7 +98,7 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
         return valueRank;
     }
 
-    public UInteger[] getArrayDimensions() {
+    public UInteger @Nullable [] getArrayDimensions() {
         return arrayDimensions;
     }
 

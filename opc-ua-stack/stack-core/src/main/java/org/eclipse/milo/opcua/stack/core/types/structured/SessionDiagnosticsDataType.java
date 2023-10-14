@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.11">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.11</a>
@@ -45,15 +46,15 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     private final NodeId sessionId;
 
-    private final String sessionName;
+    private final @Nullable String sessionName;
 
     private final ApplicationDescription clientDescription;
 
-    private final String serverUri;
+    private final @Nullable String serverUri;
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
     private final Double actualSessionTimeout;
 
@@ -129,16 +130,16 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     private final ServiceCounterDataType unregisterNodesCount;
 
-    public SessionDiagnosticsDataType(NodeId sessionId, String sessionName,
-                                      ApplicationDescription clientDescription, String serverUri, String endpointUrl,
-                                      String[] localeIds, Double actualSessionTimeout, UInteger maxResponseMessageSize,
-                                      DateTime clientConnectionTime, DateTime clientLastContactTime,
-                                      UInteger currentSubscriptionsCount, UInteger currentMonitoredItemsCount,
-                                      UInteger currentPublishRequestsInQueue, ServiceCounterDataType totalRequestCount,
-                                      UInteger unauthorizedRequestCount, ServiceCounterDataType readCount,
-                                      ServiceCounterDataType historyReadCount, ServiceCounterDataType writeCount,
-                                      ServiceCounterDataType historyUpdateCount, ServiceCounterDataType callCount,
-                                      ServiceCounterDataType createMonitoredItemsCount,
+    public SessionDiagnosticsDataType(NodeId sessionId, @Nullable String sessionName,
+                                      ApplicationDescription clientDescription, @Nullable String serverUri,
+                                      @Nullable String endpointUrl, String @Nullable [] localeIds, Double actualSessionTimeout,
+                                      UInteger maxResponseMessageSize, DateTime clientConnectionTime,
+                                      DateTime clientLastContactTime, UInteger currentSubscriptionsCount,
+                                      UInteger currentMonitoredItemsCount, UInteger currentPublishRequestsInQueue,
+                                      ServiceCounterDataType totalRequestCount, UInteger unauthorizedRequestCount,
+                                      ServiceCounterDataType readCount, ServiceCounterDataType historyReadCount,
+                                      ServiceCounterDataType writeCount, ServiceCounterDataType historyUpdateCount,
+                                      ServiceCounterDataType callCount, ServiceCounterDataType createMonitoredItemsCount,
                                       ServiceCounterDataType modifyMonitoredItemsCount,
                                       ServiceCounterDataType setMonitoringModeCount, ServiceCounterDataType setTriggeringCount,
                                       ServiceCounterDataType deleteMonitoredItemsCount,
@@ -222,7 +223,7 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
         return sessionId;
     }
 
-    public String getSessionName() {
+    public @Nullable String getSessionName() {
         return sessionName;
     }
 
@@ -230,15 +231,15 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
         return clientDescription;
     }
 
-    public String getServerUri() {
+    public @Nullable String getServerUri() {
         return serverUri;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 

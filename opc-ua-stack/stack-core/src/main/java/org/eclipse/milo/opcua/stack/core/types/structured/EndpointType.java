@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.2</a>
@@ -43,16 +44,16 @@ public class EndpointType extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16150");
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
     private final MessageSecurityMode securityMode;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
-    private final String transportProfileUri;
+    private final @Nullable String transportProfileUri;
 
-    public EndpointType(String endpointUrl, MessageSecurityMode securityMode,
-                        String securityPolicyUri, String transportProfileUri) {
+    public EndpointType(@Nullable String endpointUrl, MessageSecurityMode securityMode,
+                        @Nullable String securityPolicyUri, @Nullable String transportProfileUri) {
         this.endpointUrl = endpointUrl;
         this.securityMode = securityMode;
         this.securityPolicyUri = securityPolicyUri;
@@ -79,7 +80,7 @@ public class EndpointType extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
@@ -87,11 +88,11 @@ public class EndpointType extends Structure implements UaStructuredType {
         return securityMode;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 
-    public String getTransportProfileUri() {
+    public @Nullable String getTransportProfileUri() {
         return transportProfileUri;
     }
 

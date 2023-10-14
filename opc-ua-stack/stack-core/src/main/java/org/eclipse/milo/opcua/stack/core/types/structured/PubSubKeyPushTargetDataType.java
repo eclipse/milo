@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.3</a>
@@ -43,13 +44,13 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=25562");
 
-    private final String applicationUri;
+    private final @Nullable String applicationUri;
 
-    private final String[] pushTargetFolder;
+    private final String @Nullable [] pushTargetFolder;
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
     private final UserTokenPolicy userTokenType;
 
@@ -57,14 +58,15 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
 
     private final Double retryInterval;
 
-    private final KeyValuePair[] pushTargetProperties;
+    private final KeyValuePair @Nullable [] pushTargetProperties;
 
-    private final String[] securityGroups;
+    private final String @Nullable [] securityGroups;
 
-    public PubSubKeyPushTargetDataType(String applicationUri, String[] pushTargetFolder,
-                                       String endpointUrl, String securityPolicyUri, UserTokenPolicy userTokenType,
-                                       UShort requestedKeyCount, Double retryInterval, KeyValuePair[] pushTargetProperties,
-                                       String[] securityGroups) {
+    public PubSubKeyPushTargetDataType(@Nullable String applicationUri,
+                                       String @Nullable [] pushTargetFolder, @Nullable String endpointUrl,
+                                       @Nullable String securityPolicyUri, UserTokenPolicy userTokenType, UShort requestedKeyCount,
+                                       Double retryInterval, KeyValuePair @Nullable [] pushTargetProperties,
+                                       String @Nullable [] securityGroups) {
         this.applicationUri = applicationUri;
         this.pushTargetFolder = pushTargetFolder;
         this.endpointUrl = endpointUrl;
@@ -96,19 +98,19 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
         return JSON_ENCODING_ID;
     }
 
-    public String getApplicationUri() {
+    public @Nullable String getApplicationUri() {
         return applicationUri;
     }
 
-    public String[] getPushTargetFolder() {
+    public String @Nullable [] getPushTargetFolder() {
         return pushTargetFolder;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 
@@ -124,11 +126,11 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
         return retryInterval;
     }
 
-    public KeyValuePair[] getPushTargetProperties() {
+    public KeyValuePair @Nullable [] getPushTargetProperties() {
         return pushTargetProperties;
     }
 
-    public String[] getSecurityGroups() {
+    public String @Nullable [] getSecurityGroups() {
         return securityGroups;
     }
 

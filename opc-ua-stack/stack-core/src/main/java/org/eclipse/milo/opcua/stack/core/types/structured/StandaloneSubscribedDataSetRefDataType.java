@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.4</a>
@@ -42,9 +43,9 @@ public class StandaloneSubscribedDataSetRefDataType extends SubscribedDataSetDat
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23987");
 
-    private final String dataSetName;
+    private final @Nullable String dataSetName;
 
-    public StandaloneSubscribedDataSetRefDataType(String dataSetName) {
+    public StandaloneSubscribedDataSetRefDataType(@Nullable String dataSetName) {
         this.dataSetName = dataSetName;
     }
 
@@ -68,7 +69,7 @@ public class StandaloneSubscribedDataSetRefDataType extends SubscribedDataSetDat
         return JSON_ENCODING_ID;
     }
 
-    public String getDataSetName() {
+    public @Nullable String getDataSetName() {
         return dataSetName;
     }
 

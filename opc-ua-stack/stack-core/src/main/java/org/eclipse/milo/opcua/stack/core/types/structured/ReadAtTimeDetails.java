@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.5/#6.4.5.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.5/#6.4.5.1</a>
@@ -43,11 +44,11 @@ public class ReadAtTimeDetails extends HistoryReadDetails implements UaStructure
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15269");
 
-    private final DateTime[] reqTimes;
+    private final DateTime @Nullable [] reqTimes;
 
     private final Boolean useSimpleBounds;
 
-    public ReadAtTimeDetails(DateTime[] reqTimes, Boolean useSimpleBounds) {
+    public ReadAtTimeDetails(DateTime @Nullable [] reqTimes, Boolean useSimpleBounds) {
         this.reqTimes = reqTimes;
         this.useSimpleBounds = useSimpleBounds;
     }
@@ -72,7 +73,7 @@ public class ReadAtTimeDetails extends HistoryReadDetails implements UaStructure
         return JSON_ENCODING_ID;
     }
 
-    public DateTime[] getReqTimes() {
+    public DateTime @Nullable [] getReqTimes() {
         return reqTimes;
     }
 

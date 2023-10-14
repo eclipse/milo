@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.20">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.20</a>
@@ -42,9 +43,9 @@ public class EndpointUrlListDataType extends Structure implements UaStructuredTy
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15363");
 
-    private final String[] endpointUrlList;
+    private final String @Nullable [] endpointUrlList;
 
-    public EndpointUrlListDataType(String[] endpointUrlList) {
+    public EndpointUrlListDataType(String @Nullable [] endpointUrlList) {
         this.endpointUrlList = endpointUrlList;
     }
 
@@ -68,7 +69,7 @@ public class EndpointUrlListDataType extends Structure implements UaStructuredTy
         return JSON_ENCODING_ID;
     }
 
-    public String[] getEndpointUrlList() {
+    public String @Nullable [] getEndpointUrlList() {
         return endpointUrlList;
     }
 

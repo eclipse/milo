@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.6/#6.2.6.7.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.6/#6.2.6.7.1</a>
@@ -53,22 +54,24 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
 
     private final UByte priority;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
-    private final String headerLayoutUri;
+    private final @Nullable String headerLayoutUri;
 
     private final WriterGroupTransportDataType transportSettings;
 
     private final WriterGroupMessageDataType messageSettings;
 
-    private final DataSetWriterDataType[] dataSetWriters;
+    private final DataSetWriterDataType @Nullable [] dataSetWriters;
 
-    public WriterGroupDataType(String name, Boolean enabled, MessageSecurityMode securityMode,
-                               String securityGroupId, EndpointDescription[] securityKeyServices,
-                               UInteger maxNetworkMessageSize, KeyValuePair[] groupProperties, UShort writerGroupId,
-                               Double publishingInterval, Double keepAliveTime, UByte priority, String[] localeIds,
-                               String headerLayoutUri, WriterGroupTransportDataType transportSettings,
-                               WriterGroupMessageDataType messageSettings, DataSetWriterDataType[] dataSetWriters) {
+    public WriterGroupDataType(@Nullable String name, Boolean enabled,
+                               MessageSecurityMode securityMode, @Nullable String securityGroupId,
+                               EndpointDescription @Nullable [] securityKeyServices, UInteger maxNetworkMessageSize,
+                               KeyValuePair @Nullable [] groupProperties, UShort writerGroupId, Double publishingInterval,
+                               Double keepAliveTime, UByte priority, String @Nullable [] localeIds,
+                               @Nullable String headerLayoutUri, WriterGroupTransportDataType transportSettings,
+                               WriterGroupMessageDataType messageSettings,
+                               DataSetWriterDataType @Nullable [] dataSetWriters) {
         super(name, enabled, securityMode, securityGroupId, securityKeyServices, maxNetworkMessageSize, groupProperties);
         this.writerGroupId = writerGroupId;
         this.publishingInterval = publishingInterval;
@@ -117,11 +120,11 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         return priority;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 
-    public String getHeaderLayoutUri() {
+    public @Nullable String getHeaderLayoutUri() {
         return headerLayoutUri;
     }
 
@@ -133,7 +136,7 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         return messageSettings;
     }
 
-    public DataSetWriterDataType[] getDataSetWriters() {
+    public DataSetWriterDataType @Nullable [] getDataSetWriters() {
         return dataSetWriters;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.3/#5.4.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.3/#5.4.3.2</a>
@@ -48,10 +49,10 @@ public class FindServersOnNetworkRequest extends Structure implements UaRequestM
 
     private final UInteger maxRecordsToReturn;
 
-    private final String[] serverCapabilityFilter;
+    private final String @Nullable [] serverCapabilityFilter;
 
     public FindServersOnNetworkRequest(RequestHeader requestHeader, UInteger startingRecordId,
-                                       UInteger maxRecordsToReturn, String[] serverCapabilityFilter) {
+                                       UInteger maxRecordsToReturn, String @Nullable [] serverCapabilityFilter) {
         this.requestHeader = requestHeader;
         this.startingRecordId = startingRecordId;
         this.maxRecordsToReturn = maxRecordsToReturn;
@@ -90,7 +91,7 @@ public class FindServersOnNetworkRequest extends Structure implements UaRequestM
         return maxRecordsToReturn;
     }
 
-    public String[] getServerCapabilityFilter() {
+    public String @Nullable [] getServerCapabilityFilter() {
         return serverCapabilityFilter;
     }
 

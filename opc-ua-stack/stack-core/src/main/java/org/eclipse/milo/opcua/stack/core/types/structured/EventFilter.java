@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3</a>
@@ -42,11 +43,11 @@ public class EventFilter extends MonitoringFilter implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15295");
 
-    private final SimpleAttributeOperand[] selectClauses;
+    private final SimpleAttributeOperand @Nullable [] selectClauses;
 
     private final ContentFilter whereClause;
 
-    public EventFilter(SimpleAttributeOperand[] selectClauses, ContentFilter whereClause) {
+    public EventFilter(SimpleAttributeOperand @Nullable [] selectClauses, ContentFilter whereClause) {
         this.selectClauses = selectClauses;
         this.whereClause = whereClause;
     }
@@ -71,7 +72,7 @@ public class EventFilter extends MonitoringFilter implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public SimpleAttributeOperand[] getSelectClauses() {
+    public SimpleAttributeOperand @Nullable [] getSelectClauses() {
         return selectClauses;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.4">https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.4</a>
@@ -42,14 +43,14 @@ public class UserManagementDataType extends Structure implements UaStructuredTyp
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=24300");
 
-    private final String userName;
+    private final @Nullable String userName;
 
     private final UserConfigurationMask userConfiguration;
 
-    private final String description;
+    private final @Nullable String description;
 
-    public UserManagementDataType(String userName, UserConfigurationMask userConfiguration,
-                                  String description) {
+    public UserManagementDataType(@Nullable String userName, UserConfigurationMask userConfiguration,
+                                  @Nullable String description) {
         this.userName = userName;
         this.userConfiguration = userConfiguration;
         this.description = description;
@@ -75,7 +76,7 @@ public class UserManagementDataType extends Structure implements UaStructuredTyp
         return JSON_ENCODING_ID;
     }
 
-    public String getUserName() {
+    public @Nullable String getUserName() {
         return userName;
     }
 
@@ -83,7 +84,7 @@ public class UserManagementDataType extends Structure implements UaStructuredTyp
         return userConfiguration;
     }
 
-    public String getDescription() {
+    public @Nullable String getDescription() {
         return description;
     }
 

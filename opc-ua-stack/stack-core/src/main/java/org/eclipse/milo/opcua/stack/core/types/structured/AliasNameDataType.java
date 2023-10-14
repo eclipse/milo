@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part17/7.2">https://reference.opcfoundation.org/v105/Core/docs/Part17/7.2</a>
@@ -45,9 +46,9 @@ public class AliasNameDataType extends Structure implements UaStructuredType {
 
     private final QualifiedName aliasName;
 
-    private final ExpandedNodeId[] referencedNodes;
+    private final ExpandedNodeId @Nullable [] referencedNodes;
 
-    public AliasNameDataType(QualifiedName aliasName, ExpandedNodeId[] referencedNodes) {
+    public AliasNameDataType(QualifiedName aliasName, ExpandedNodeId @Nullable [] referencedNodes) {
         this.aliasName = aliasName;
         this.referencedNodes = referencedNodes;
     }
@@ -76,7 +77,7 @@ public class AliasNameDataType extends Structure implements UaStructuredType {
         return aliasName;
     }
 
-    public ExpandedNodeId[] getReferencedNodes() {
+    public ExpandedNodeId @Nullable [] getReferencedNodes() {
         return referencedNodes;
     }
 

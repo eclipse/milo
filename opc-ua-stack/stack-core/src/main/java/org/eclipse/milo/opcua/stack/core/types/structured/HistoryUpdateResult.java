@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.5/#5.10.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.5/#5.10.5.2</a>
@@ -46,12 +47,12 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
 
     private final StatusCode statusCode;
 
-    private final StatusCode[] operationResults;
+    private final StatusCode @Nullable [] operationResults;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
-    public HistoryUpdateResult(StatusCode statusCode, StatusCode[] operationResults,
-                               DiagnosticInfo[] diagnosticInfos) {
+    public HistoryUpdateResult(StatusCode statusCode, StatusCode @Nullable [] operationResults,
+                               DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.statusCode = statusCode;
         this.operationResults = operationResults;
         this.diagnosticInfos = diagnosticInfos;
@@ -81,11 +82,11 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
         return statusCode;
     }
 
-    public StatusCode[] getOperationResults() {
+    public StatusCode @Nullable [] getOperationResults() {
         return operationResults;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
     }
 

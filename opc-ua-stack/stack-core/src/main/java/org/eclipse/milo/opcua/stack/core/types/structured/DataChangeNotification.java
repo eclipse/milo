@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.25.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.25.2</a>
@@ -43,12 +44,12 @@ public class DataChangeNotification extends NotificationData implements UaStruct
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15345");
 
-    private final MonitoredItemNotification[] monitoredItems;
+    private final MonitoredItemNotification @Nullable [] monitoredItems;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
-    public DataChangeNotification(MonitoredItemNotification[] monitoredItems,
-                                  DiagnosticInfo[] diagnosticInfos) {
+    public DataChangeNotification(MonitoredItemNotification @Nullable [] monitoredItems,
+                                  DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.monitoredItems = monitoredItems;
         this.diagnosticInfos = diagnosticInfos;
     }
@@ -73,11 +74,11 @@ public class DataChangeNotification extends NotificationData implements UaStruct
         return JSON_ENCODING_ID;
     }
 
-    public MonitoredItemNotification[] getMonitoredItems() {
+    public MonitoredItemNotification @Nullable [] getMonitoredItems() {
         return monitoredItems;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
     }
 

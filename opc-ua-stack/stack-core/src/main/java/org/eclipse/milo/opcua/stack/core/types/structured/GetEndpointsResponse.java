@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.4/#5.4.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.4/#5.4.4.2</a>
@@ -44,9 +45,10 @@ public class GetEndpointsResponse extends Structure implements UaResponseMessage
 
     private final ResponseHeader responseHeader;
 
-    private final EndpointDescription[] endpoints;
+    private final EndpointDescription @Nullable [] endpoints;
 
-    public GetEndpointsResponse(ResponseHeader responseHeader, EndpointDescription[] endpoints) {
+    public GetEndpointsResponse(ResponseHeader responseHeader,
+                                EndpointDescription @Nullable [] endpoints) {
         this.responseHeader = responseHeader;
         this.endpoints = endpoints;
     }
@@ -75,7 +77,7 @@ public class GetEndpointsResponse extends Structure implements UaResponseMessage
         return responseHeader;
     }
 
-    public EndpointDescription[] getEndpoints() {
+    public EndpointDescription @Nullable [] getEndpoints() {
         return endpoints;
     }
 

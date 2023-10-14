@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(
     callSuper = false
@@ -42,28 +43,28 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
 
     private final NodeId createSessionId;
 
-    private final String createClientName;
+    private final @Nullable String createClientName;
 
     private final DateTime invocationCreationTime;
 
     private final DateTime lastTransitionTime;
 
-    private final String lastMethodCall;
+    private final @Nullable String lastMethodCall;
 
     private final NodeId lastMethodSessionId;
 
-    private final Argument[] lastMethodInputArguments;
+    private final Argument @Nullable [] lastMethodInputArguments;
 
-    private final Argument[] lastMethodOutputArguments;
+    private final Argument @Nullable [] lastMethodOutputArguments;
 
     private final DateTime lastMethodCallTime;
 
     private final StatusResult lastMethodReturnStatus;
 
-    public ProgramDiagnosticDataType(NodeId createSessionId, String createClientName,
-                                     DateTime invocationCreationTime, DateTime lastTransitionTime, String lastMethodCall,
-                                     NodeId lastMethodSessionId, Argument[] lastMethodInputArguments,
-                                     Argument[] lastMethodOutputArguments, DateTime lastMethodCallTime,
+    public ProgramDiagnosticDataType(NodeId createSessionId, @Nullable String createClientName,
+                                     DateTime invocationCreationTime, DateTime lastTransitionTime, @Nullable String lastMethodCall,
+                                     NodeId lastMethodSessionId, Argument @Nullable [] lastMethodInputArguments,
+                                     Argument @Nullable [] lastMethodOutputArguments, DateTime lastMethodCallTime,
                                      StatusResult lastMethodReturnStatus) {
         this.createSessionId = createSessionId;
         this.createClientName = createClientName;
@@ -101,7 +102,7 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
         return createSessionId;
     }
 
-    public String getCreateClientName() {
+    public @Nullable String getCreateClientName() {
         return createClientName;
     }
 
@@ -113,7 +114,7 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
         return lastTransitionTime;
     }
 
-    public String getLastMethodCall() {
+    public @Nullable String getLastMethodCall() {
         return lastMethodCall;
     }
 
@@ -121,11 +122,11 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
         return lastMethodSessionId;
     }
 
-    public Argument[] getLastMethodInputArguments() {
+    public Argument @Nullable [] getLastMethodInputArguments() {
         return lastMethodInputArguments;
     }
 
-    public Argument[] getLastMethodOutputArguments() {
+    public Argument @Nullable [] getLastMethodOutputArguments() {
         return lastMethodOutputArguments;
     }
 

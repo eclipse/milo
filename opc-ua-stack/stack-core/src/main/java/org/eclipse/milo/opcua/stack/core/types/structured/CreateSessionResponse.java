@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2</a>
@@ -55,9 +56,9 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
 
     private final ByteString serverCertificate;
 
-    private final EndpointDescription[] serverEndpoints;
+    private final EndpointDescription @Nullable [] serverEndpoints;
 
-    private final SignedSoftwareCertificate[] serverSoftwareCertificates;
+    private final SignedSoftwareCertificate @Nullable [] serverSoftwareCertificates;
 
     private final SignatureData serverSignature;
 
@@ -65,9 +66,9 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
 
     public CreateSessionResponse(ResponseHeader responseHeader, NodeId sessionId,
                                  NodeId authenticationToken, Double revisedSessionTimeout, ByteString serverNonce,
-                                 ByteString serverCertificate, EndpointDescription[] serverEndpoints,
-                                 SignedSoftwareCertificate[] serverSoftwareCertificates, SignatureData serverSignature,
-                                 UInteger maxRequestMessageSize) {
+                                 ByteString serverCertificate, EndpointDescription @Nullable [] serverEndpoints,
+                                 SignedSoftwareCertificate @Nullable [] serverSoftwareCertificates,
+                                 SignatureData serverSignature, UInteger maxRequestMessageSize) {
         this.responseHeader = responseHeader;
         this.sessionId = sessionId;
         this.authenticationToken = authenticationToken;
@@ -124,11 +125,11 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
         return serverCertificate;
     }
 
-    public EndpointDescription[] getServerEndpoints() {
+    public EndpointDescription @Nullable [] getServerEndpoints() {
         return serverEndpoints;
     }
 
-    public SignedSoftwareCertificate[] getServerSoftwareCertificates() {
+    public SignedSoftwareCertificate @Nullable [] getServerSoftwareCertificates() {
         return serverSoftwareCertificates;
     }
 

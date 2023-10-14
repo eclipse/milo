@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2</a>
@@ -44,9 +45,9 @@ public class CallRequest extends Structure implements UaRequestMessageType {
 
     private final RequestHeader requestHeader;
 
-    private final CallMethodRequest[] methodsToCall;
+    private final CallMethodRequest @Nullable [] methodsToCall;
 
-    public CallRequest(RequestHeader requestHeader, CallMethodRequest[] methodsToCall) {
+    public CallRequest(RequestHeader requestHeader, CallMethodRequest @Nullable [] methodsToCall) {
         this.requestHeader = requestHeader;
         this.methodsToCall = methodsToCall;
     }
@@ -75,7 +76,7 @@ public class CallRequest extends Structure implements UaRequestMessageType {
         return requestHeader;
     }
 
-    public CallMethodRequest[] getMethodsToCall() {
+    public CallMethodRequest @Nullable [] getMethodsToCall() {
         return methodsToCall;
     }
 

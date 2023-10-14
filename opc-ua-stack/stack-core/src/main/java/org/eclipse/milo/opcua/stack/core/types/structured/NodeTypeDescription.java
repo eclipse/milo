@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1</a>
@@ -46,10 +47,10 @@ public class NodeTypeDescription extends Structure implements UaStructuredType {
 
     private final Boolean includeSubTypes;
 
-    private final QueryDataDescription[] dataToReturn;
+    private final QueryDataDescription @Nullable [] dataToReturn;
 
     public NodeTypeDescription(ExpandedNodeId typeDefinitionNode, Boolean includeSubTypes,
-                               QueryDataDescription[] dataToReturn) {
+                               QueryDataDescription @Nullable [] dataToReturn) {
         this.typeDefinitionNode = typeDefinitionNode;
         this.includeSubTypes = includeSubTypes;
         this.dataToReturn = dataToReturn;
@@ -83,7 +84,7 @@ public class NodeTypeDescription extends Structure implements UaStructuredType {
         return includeSubTypes;
     }
 
-    public QueryDataDescription[] getDataToReturn() {
+    public QueryDataDescription @Nullable [] getDataToReturn() {
         return dataToReturn;
     }
 

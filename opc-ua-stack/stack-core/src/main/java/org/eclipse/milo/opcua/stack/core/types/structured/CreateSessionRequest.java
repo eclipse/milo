@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2</a>
@@ -47,11 +48,11 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
 
     private final ApplicationDescription clientDescription;
 
-    private final String serverUri;
+    private final @Nullable String serverUri;
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
-    private final String sessionName;
+    private final @Nullable String sessionName;
 
     private final ByteString clientNonce;
 
@@ -62,8 +63,8 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
     private final UInteger maxResponseMessageSize;
 
     public CreateSessionRequest(RequestHeader requestHeader, ApplicationDescription clientDescription,
-                                String serverUri, String endpointUrl, String sessionName, ByteString clientNonce,
-                                ByteString clientCertificate, Double requestedSessionTimeout,
+                                @Nullable String serverUri, @Nullable String endpointUrl, @Nullable String sessionName,
+                                ByteString clientNonce, ByteString clientCertificate, Double requestedSessionTimeout,
                                 UInteger maxResponseMessageSize) {
         this.requestHeader = requestHeader;
         this.clientDescription = clientDescription;
@@ -104,15 +105,15 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
         return clientDescription;
     }
 
-    public String getServerUri() {
+    public @Nullable String getServerUri() {
         return serverUri;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
-    public String getSessionName() {
+    public @Nullable String getSessionName() {
         return sessionName;
     }
 
