@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,8 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 public class ReadExample implements ClientExample {
 
@@ -48,7 +50,7 @@ public class ReadExample implements ClientExample {
             DataValue v0 = values.get(0);
             DataValue v1 = values.get(1);
 
-            logger.info("State={}", ServerState.from((Integer) v0.getValue().getValue()));
+            logger.info("State={}", ServerState.from((Integer) requireNonNull(v0.getValue().getValue())));
             logger.info("CurrentTime={}", v1.getValue().getValue());
 
             future.complete(client);

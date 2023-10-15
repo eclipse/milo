@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.1</a>
@@ -42,9 +43,9 @@ public class AdditionalParametersType extends Structure implements UaStructuredT
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=17547");
 
-    private final KeyValuePair[] parameters;
+    private final KeyValuePair @Nullable [] parameters;
 
-    public AdditionalParametersType(KeyValuePair[] parameters) {
+    public AdditionalParametersType(KeyValuePair @Nullable [] parameters) {
         this.parameters = parameters;
     }
 
@@ -68,7 +69,7 @@ public class AdditionalParametersType extends Structure implements UaStructuredT
         return JSON_ENCODING_ID;
     }
 
-    public KeyValuePair[] getParameters() {
+    public KeyValuePair @Nullable [] getParameters() {
         return parameters;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(
     callSuper = false
@@ -42,16 +43,17 @@ public class TrustListDataType extends Structure implements UaStructuredType {
 
     private final UInteger specifiedLists;
 
-    private final ByteString[] trustedCertificates;
+    private final ByteString @Nullable [] trustedCertificates;
 
-    private final ByteString[] trustedCrls;
+    private final ByteString @Nullable [] trustedCrls;
 
-    private final ByteString[] issuerCertificates;
+    private final ByteString @Nullable [] issuerCertificates;
 
-    private final ByteString[] issuerCrls;
+    private final ByteString @Nullable [] issuerCrls;
 
-    public TrustListDataType(UInteger specifiedLists, ByteString[] trustedCertificates,
-                             ByteString[] trustedCrls, ByteString[] issuerCertificates, ByteString[] issuerCrls) {
+    public TrustListDataType(UInteger specifiedLists, ByteString @Nullable [] trustedCertificates,
+                             ByteString @Nullable [] trustedCrls, ByteString @Nullable [] issuerCertificates,
+                             ByteString @Nullable [] issuerCrls) {
         this.specifiedLists = specifiedLists;
         this.trustedCertificates = trustedCertificates;
         this.trustedCrls = trustedCrls;
@@ -83,19 +85,19 @@ public class TrustListDataType extends Structure implements UaStructuredType {
         return specifiedLists;
     }
 
-    public ByteString[] getTrustedCertificates() {
+    public ByteString @Nullable [] getTrustedCertificates() {
         return trustedCertificates;
     }
 
-    public ByteString[] getTrustedCrls() {
+    public ByteString @Nullable [] getTrustedCrls() {
         return trustedCrls;
     }
 
-    public ByteString[] getIssuerCertificates() {
+    public ByteString @Nullable [] getIssuerCertificates() {
         return issuerCertificates;
     }
 
-    public ByteString[] getIssuerCrls() {
+    public ByteString @Nullable [] getIssuerCrls() {
         return issuerCrls;
     }
 

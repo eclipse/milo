@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.7/#6.8.7.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.7/#6.8.7.1</a>
@@ -43,9 +44,9 @@ public class DeleteEventDetails extends HistoryUpdateDetails implements UaStruct
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15285");
 
-    private final ByteString[] eventIds;
+    private final ByteString @Nullable [] eventIds;
 
-    public DeleteEventDetails(NodeId nodeId, ByteString[] eventIds) {
+    public DeleteEventDetails(NodeId nodeId, ByteString @Nullable [] eventIds) {
         super(nodeId);
         this.eventIds = eventIds;
     }
@@ -70,7 +71,7 @@ public class DeleteEventDetails extends HistoryUpdateDetails implements UaStruct
         return JSON_ENCODING_ID;
     }
 
-    public ByteString[] getEventIds() {
+    public ByteString @Nullable [] getEventIds() {
         return eventIds;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.25.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.25.3</a>
@@ -42,9 +43,9 @@ public class EventNotificationList extends NotificationData implements UaStructu
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15347");
 
-    private final EventFieldList[] events;
+    private final EventFieldList @Nullable [] events;
 
-    public EventNotificationList(EventFieldList[] events) {
+    public EventNotificationList(EventFieldList @Nullable [] events) {
         this.events = events;
     }
 
@@ -68,7 +69,7 @@ public class EventNotificationList extends NotificationData implements UaStructu
         return JSON_ENCODING_ID;
     }
 
-    public EventFieldList[] getEvents() {
+    public EventFieldList @Nullable [] getEvents() {
         return events;
     }
 

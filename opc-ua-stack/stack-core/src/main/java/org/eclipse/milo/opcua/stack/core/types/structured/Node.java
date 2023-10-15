@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/4.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part3/4.3.1</a>
@@ -59,19 +60,19 @@ public class Node extends Structure implements UaStructuredType {
 
     private final UInteger userWriteMask;
 
-    private final RolePermissionType[] rolePermissions;
+    private final RolePermissionType @Nullable [] rolePermissions;
 
-    private final RolePermissionType[] userRolePermissions;
+    private final RolePermissionType @Nullable [] userRolePermissions;
 
     private final UShort accessRestrictions;
 
-    private final ReferenceNode[] references;
+    private final ReferenceNode @Nullable [] references;
 
     public Node(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                UInteger userWriteMask, RolePermissionType[] rolePermissions,
-                RolePermissionType[] userRolePermissions, UShort accessRestrictions,
-                ReferenceNode[] references) {
+                UInteger userWriteMask, RolePermissionType @Nullable [] rolePermissions,
+                RolePermissionType @Nullable [] userRolePermissions, UShort accessRestrictions,
+                ReferenceNode @Nullable [] references) {
         this.nodeId = nodeId;
         this.nodeClass = nodeClass;
         this.browseName = browseName;
@@ -133,11 +134,11 @@ public class Node extends Structure implements UaStructuredType {
         return userWriteMask;
     }
 
-    public RolePermissionType[] getRolePermissions() {
+    public RolePermissionType @Nullable [] getRolePermissions() {
         return rolePermissions;
     }
 
-    public RolePermissionType[] getUserRolePermissions() {
+    public RolePermissionType @Nullable [] getUserRolePermissions() {
         return userRolePermissions;
     }
 
@@ -145,7 +146,7 @@ public class Node extends Structure implements UaStructuredType {
         return accessRestrictions;
     }
 
-    public ReferenceNode[] getReferences() {
+    public ReferenceNode @Nullable [] getReferences() {
         return references;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.8/#6.2.8.2.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.8/#6.2.8.2.1</a>
@@ -47,13 +48,14 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
 
     private final ReaderGroupMessageDataType messageSettings;
 
-    private final DataSetReaderDataType[] dataSetReaders;
+    private final DataSetReaderDataType @Nullable [] dataSetReaders;
 
-    public ReaderGroupDataType(String name, Boolean enabled, MessageSecurityMode securityMode,
-                               String securityGroupId, EndpointDescription[] securityKeyServices,
-                               UInteger maxNetworkMessageSize, KeyValuePair[] groupProperties,
-                               ReaderGroupTransportDataType transportSettings, ReaderGroupMessageDataType messageSettings,
-                               DataSetReaderDataType[] dataSetReaders) {
+    public ReaderGroupDataType(@Nullable String name, Boolean enabled,
+                               MessageSecurityMode securityMode, @Nullable String securityGroupId,
+                               EndpointDescription @Nullable [] securityKeyServices, UInteger maxNetworkMessageSize,
+                               KeyValuePair @Nullable [] groupProperties, ReaderGroupTransportDataType transportSettings,
+                               ReaderGroupMessageDataType messageSettings,
+                               DataSetReaderDataType @Nullable [] dataSetReaders) {
         super(name, enabled, securityMode, securityGroupId, securityKeyServices, maxNetworkMessageSize, groupProperties);
         this.transportSettings = transportSettings;
         this.messageSettings = messageSettings;
@@ -88,7 +90,7 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
         return messageSettings;
     }
 
-    public DataSetReaderDataType[] getDataSetReaders() {
+    public DataSetReaderDataType @Nullable [] getDataSetReaders() {
         return dataSetReaders;
     }
 

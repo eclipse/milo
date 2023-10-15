@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.4/#7.7.4.5">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.4/#7.7.4.5</a>
@@ -45,13 +46,13 @@ public class SimpleAttributeOperand extends FilterOperand implements UaStructure
 
     private final NodeId typeDefinitionId;
 
-    private final QualifiedName[] browsePath;
+    private final QualifiedName @Nullable [] browsePath;
 
     private final UInteger attributeId;
 
     private final String indexRange;
 
-    public SimpleAttributeOperand(NodeId typeDefinitionId, QualifiedName[] browsePath,
+    public SimpleAttributeOperand(NodeId typeDefinitionId, QualifiedName @Nullable [] browsePath,
                                   UInteger attributeId, String indexRange) {
         this.typeDefinitionId = typeDefinitionId;
         this.browsePath = browsePath;
@@ -83,7 +84,7 @@ public class SimpleAttributeOperand extends FilterOperand implements UaStructure
         return typeDefinitionId;
     }
 
-    public QualifiedName[] getBrowsePath() {
+    public QualifiedName @Nullable [] getBrowsePath() {
         return browsePath;
     }
 

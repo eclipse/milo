@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -70,13 +69,13 @@ public class JsonDataSetMessageContentMask extends OptionSetUI32<JsonDataSetMess
     }
 
     @Override
-    public Set<JsonDataSetMessageContentMask.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static JsonDataSetMessageContentMask of(JsonDataSetMessageContentMask.Field... fields) {
+    public static JsonDataSetMessageContentMask of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -86,7 +85,7 @@ public class JsonDataSetMessageContentMask extends OptionSetUI32<JsonDataSetMess
         return new JsonDataSetMessageContentMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         DataSetWriterId(0),
 
         MetaDataVersion(1),

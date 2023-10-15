@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.9.3/#5.9.3.1</a>
@@ -46,19 +47,19 @@ public class QueryFirstResponse extends Structure implements UaResponseMessageTy
 
     private final ResponseHeader responseHeader;
 
-    private final QueryDataSet[] queryDataSets;
+    private final QueryDataSet @Nullable [] queryDataSets;
 
     private final ByteString continuationPoint;
 
-    private final ParsingResult[] parsingResults;
+    private final ParsingResult @Nullable [] parsingResults;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
     private final ContentFilterResult filterResult;
 
-    public QueryFirstResponse(ResponseHeader responseHeader, QueryDataSet[] queryDataSets,
-                              ByteString continuationPoint, ParsingResult[] parsingResults,
-                              DiagnosticInfo[] diagnosticInfos, ContentFilterResult filterResult) {
+    public QueryFirstResponse(ResponseHeader responseHeader, QueryDataSet @Nullable [] queryDataSets,
+                              ByteString continuationPoint, ParsingResult @Nullable [] parsingResults,
+                              DiagnosticInfo @Nullable [] diagnosticInfos, ContentFilterResult filterResult) {
         this.responseHeader = responseHeader;
         this.queryDataSets = queryDataSets;
         this.continuationPoint = continuationPoint;
@@ -91,7 +92,7 @@ public class QueryFirstResponse extends Structure implements UaResponseMessageTy
         return responseHeader;
     }
 
-    public QueryDataSet[] getQueryDataSets() {
+    public QueryDataSet @Nullable [] getQueryDataSets() {
         return queryDataSets;
     }
 
@@ -99,11 +100,11 @@ public class QueryFirstResponse extends Structure implements UaResponseMessageTy
         return continuationPoint;
     }
 
-    public ParsingResult[] getParsingResults() {
+    public ParsingResult @Nullable [] getParsingResults() {
         return parsingResults;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
     }
 

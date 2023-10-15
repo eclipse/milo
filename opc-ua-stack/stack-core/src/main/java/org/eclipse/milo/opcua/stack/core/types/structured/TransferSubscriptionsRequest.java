@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.7/#5.13.7.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.7/#5.13.7.2</a>
@@ -44,12 +45,12 @@ public class TransferSubscriptionsRequest extends Structure implements UaRequest
 
     private final RequestHeader requestHeader;
 
-    private final UInteger[] subscriptionIds;
+    private final UInteger @Nullable [] subscriptionIds;
 
     private final Boolean sendInitialValues;
 
-    public TransferSubscriptionsRequest(RequestHeader requestHeader, UInteger[] subscriptionIds,
-                                        Boolean sendInitialValues) {
+    public TransferSubscriptionsRequest(RequestHeader requestHeader,
+                                        UInteger @Nullable [] subscriptionIds, Boolean sendInitialValues) {
         this.requestHeader = requestHeader;
         this.subscriptionIds = subscriptionIds;
         this.sendInitialValues = sendInitialValues;
@@ -79,7 +80,7 @@ public class TransferSubscriptionsRequest extends Structure implements UaRequest
         return requestHeader;
     }
 
-    public UInteger[] getSubscriptionIds() {
+    public UInteger @Nullable [] getSubscriptionIds() {
         return subscriptionIds;
     }
 

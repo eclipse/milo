@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3</a>
@@ -44,14 +45,15 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15314");
 
-    private final StatusCode[] selectClauseResults;
+    private final StatusCode @Nullable [] selectClauseResults;
 
-    private final DiagnosticInfo[] selectClauseDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] selectClauseDiagnosticInfos;
 
     private final ContentFilterResult whereClauseResult;
 
-    public EventFilterResult(StatusCode[] selectClauseResults,
-                             DiagnosticInfo[] selectClauseDiagnosticInfos, ContentFilterResult whereClauseResult) {
+    public EventFilterResult(StatusCode @Nullable [] selectClauseResults,
+                             DiagnosticInfo @Nullable [] selectClauseDiagnosticInfos,
+                             ContentFilterResult whereClauseResult) {
         this.selectClauseResults = selectClauseResults;
         this.selectClauseDiagnosticInfos = selectClauseDiagnosticInfos;
         this.whereClauseResult = whereClauseResult;
@@ -77,11 +79,11 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
         return JSON_ENCODING_ID;
     }
 
-    public StatusCode[] getSelectClauseResults() {
+    public StatusCode @Nullable [] getSelectClauseResults() {
         return selectClauseResults;
     }
 
-    public DiagnosticInfo[] getSelectClauseDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getSelectClauseDiagnosticInfos() {
         return selectClauseDiagnosticInfos;
     }
 

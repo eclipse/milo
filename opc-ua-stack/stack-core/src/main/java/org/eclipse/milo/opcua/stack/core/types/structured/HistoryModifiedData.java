@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.5.3">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.5.3</a>
@@ -43,9 +44,10 @@ public class HistoryModifiedData extends HistoryData implements UaStructuredType
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15272");
 
-    private final ModificationInfo[] modificationInfos;
+    private final ModificationInfo @Nullable [] modificationInfos;
 
-    public HistoryModifiedData(DataValue[] dataValues, ModificationInfo[] modificationInfos) {
+    public HistoryModifiedData(DataValue @Nullable [] dataValues,
+                               ModificationInfo @Nullable [] modificationInfos) {
         super(dataValues);
         this.modificationInfos = modificationInfos;
     }
@@ -70,7 +72,7 @@ public class HistoryModifiedData extends HistoryData implements UaStructuredType
         return JSON_ENCODING_ID;
     }
 
-    public ModificationInfo[] getModificationInfos() {
+    public ModificationInfo @Nullable [] getModificationInfos() {
         return modificationInfos;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.34">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.34</a>
@@ -54,12 +55,13 @@ public class ResponseHeader extends Structure implements UaStructuredType {
 
     private final DiagnosticInfo serviceDiagnostics;
 
-    private final String[] stringTable;
+    private final String @Nullable [] stringTable;
 
     private final ExtensionObject additionalHeader;
 
     public ResponseHeader(DateTime timestamp, UInteger requestHandle, StatusCode serviceResult,
-                          DiagnosticInfo serviceDiagnostics, String[] stringTable, ExtensionObject additionalHeader) {
+                          DiagnosticInfo serviceDiagnostics, String @Nullable [] stringTable,
+                          ExtensionObject additionalHeader) {
         this.timestamp = timestamp;
         this.requestHandle = requestHandle;
         this.serviceResult = serviceResult;
@@ -104,7 +106,7 @@ public class ResponseHeader extends Structure implements UaStructuredType {
         return serviceDiagnostics;
     }
 
-    public String[] getStringTable() {
+    public String @Nullable [] getStringTable() {
         return stringTable;
     }
 

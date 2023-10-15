@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -97,7 +97,7 @@ public final class ByteString implements Serializable {
 
         ByteString that = (ByteString) o;
 
-        return Arrays.equals(bytes, that.bytes);
+        return Arrays.equals(bytes, that.bytes) || (isNullOrEmpty() && that.isNullOrEmpty());
     }
 
     @Override

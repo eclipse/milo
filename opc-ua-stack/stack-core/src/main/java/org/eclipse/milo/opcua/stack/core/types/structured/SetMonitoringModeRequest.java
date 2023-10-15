@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.4/#5.12.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.4/#5.12.4.2</a>
@@ -49,10 +50,10 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
 
     private final MonitoringMode monitoringMode;
 
-    private final UInteger[] monitoredItemIds;
+    private final UInteger @Nullable [] monitoredItemIds;
 
     public SetMonitoringModeRequest(RequestHeader requestHeader, UInteger subscriptionId,
-                                    MonitoringMode monitoringMode, UInteger[] monitoredItemIds) {
+                                    MonitoringMode monitoringMode, UInteger @Nullable [] monitoredItemIds) {
         this.requestHeader = requestHeader;
         this.subscriptionId = subscriptionId;
         this.monitoringMode = monitoringMode;
@@ -91,7 +92,7 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
         return monitoringMode;
     }
 
-    public UInteger[] getMonitoredItemIds() {
+    public UInteger @Nullable [] getMonitoredItemIds() {
         return monitoredItemIds;
     }
 

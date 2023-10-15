@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.3/#5.12.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.3/#5.12.3.2</a>
@@ -49,10 +50,11 @@ public class ModifyMonitoredItemsRequest extends Structure implements UaRequestM
 
     private final TimestampsToReturn timestampsToReturn;
 
-    private final MonitoredItemModifyRequest[] itemsToModify;
+    private final MonitoredItemModifyRequest @Nullable [] itemsToModify;
 
     public ModifyMonitoredItemsRequest(RequestHeader requestHeader, UInteger subscriptionId,
-                                       TimestampsToReturn timestampsToReturn, MonitoredItemModifyRequest[] itemsToModify) {
+                                       TimestampsToReturn timestampsToReturn,
+                                       MonitoredItemModifyRequest @Nullable [] itemsToModify) {
         this.requestHeader = requestHeader;
         this.subscriptionId = subscriptionId;
         this.timestampsToReturn = timestampsToReturn;
@@ -91,7 +93,7 @@ public class ModifyMonitoredItemsRequest extends Structure implements UaRequestM
         return timestampsToReturn;
     }
 
-    public MonitoredItemModifyRequest[] getItemsToModify() {
+    public MonitoredItemModifyRequest @Nullable [] getItemsToModify() {
         return itemsToModify;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.8.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.8.4</a>
@@ -44,12 +45,12 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
 
     private final NodeId eventNotifier;
 
-    private final SimpleAttributeOperand[] selectedFields;
+    private final SimpleAttributeOperand @Nullable [] selectedFields;
 
     private final ContentFilter filter;
 
-    public PublishedEventsDataType(NodeId eventNotifier, SimpleAttributeOperand[] selectedFields,
-                                   ContentFilter filter) {
+    public PublishedEventsDataType(NodeId eventNotifier,
+                                   SimpleAttributeOperand @Nullable [] selectedFields, ContentFilter filter) {
         this.eventNotifier = eventNotifier;
         this.selectedFields = selectedFields;
         this.filter = filter;
@@ -79,7 +80,7 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
         return eventNotifier;
     }
 
-    public SimpleAttributeOperand[] getSelectedFields() {
+    public SimpleAttributeOperand @Nullable [] getSelectedFields() {
         return selectedFields;
     }
 

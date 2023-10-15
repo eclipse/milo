@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -26,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BrowseExample implements ClientExample {
@@ -61,7 +61,8 @@ public class BrowseExample implements ClientExample {
         try {
             BrowseResult browseResult = client.browse(browse);
 
-            List<ReferenceDescription> references = List.of(browseResult.getReferences());
+            ReferenceDescription[] references =
+                requireNonNullElse(browseResult.getReferences(), new ReferenceDescription[0]);
 
             for (ReferenceDescription rd : references) {
                 logger.info("{} Node={}", indent, rd.getBrowseName().getName());

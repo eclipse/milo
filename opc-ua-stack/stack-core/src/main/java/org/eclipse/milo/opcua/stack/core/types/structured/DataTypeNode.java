@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(
     callSuper = true
@@ -49,9 +50,10 @@ public class DataTypeNode extends TypeNode implements UaStructuredType {
 
     public DataTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask, RolePermissionType[] rolePermissions,
-                        RolePermissionType[] userRolePermissions, UShort accessRestrictions,
-                        ReferenceNode[] references, Boolean isAbstract, ExtensionObject dataTypeDefinition) {
+                        UInteger userWriteMask, RolePermissionType @Nullable [] rolePermissions,
+                        RolePermissionType @Nullable [] userRolePermissions, UShort accessRestrictions,
+                        ReferenceNode @Nullable [] references, Boolean isAbstract,
+                        ExtensionObject dataTypeDefinition) {
         super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         this.isAbstract = isAbstract;
         this.dataTypeDefinition = dataTypeDefinition;

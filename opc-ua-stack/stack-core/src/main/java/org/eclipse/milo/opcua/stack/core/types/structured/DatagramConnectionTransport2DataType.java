@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.2.7">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.2.7</a>
@@ -46,13 +47,13 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
 
     private final UInteger discoveryMaxMessageSize;
 
-    private final String qosCategory;
+    private final @Nullable String qosCategory;
 
-    private final QosDataType[] datagramQos;
+    private final QosDataType @Nullable [] datagramQos;
 
     public DatagramConnectionTransport2DataType(NetworkAddressDataType discoveryAddress,
-                                                UInteger discoveryAnnounceRate, UInteger discoveryMaxMessageSize, String qosCategory,
-                                                QosDataType[] datagramQos) {
+                                                UInteger discoveryAnnounceRate, UInteger discoveryMaxMessageSize,
+                                                @Nullable String qosCategory, QosDataType @Nullable [] datagramQos) {
         super(discoveryAddress);
         this.discoveryAnnounceRate = discoveryAnnounceRate;
         this.discoveryMaxMessageSize = discoveryMaxMessageSize;
@@ -88,11 +89,11 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         return discoveryMaxMessageSize;
     }
 
-    public String getQosCategory() {
+    public @Nullable String getQosCategory() {
         return qosCategory;
     }
 
-    public QosDataType[] getDatagramQos() {
+    public QosDataType @Nullable [] getDatagramQos() {
         return datagramQos;
     }
 

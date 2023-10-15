@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.7">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.7</a>
@@ -44,13 +45,14 @@ public class RedundantServerDataType extends Structure implements UaStructuredTy
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15362");
 
-    private final String serverId;
+    private final @Nullable String serverId;
 
     private final UByte serviceLevel;
 
     private final ServerState serverState;
 
-    public RedundantServerDataType(String serverId, UByte serviceLevel, ServerState serverState) {
+    public RedundantServerDataType(@Nullable String serverId, UByte serviceLevel,
+                                   ServerState serverState) {
         this.serverId = serverId;
         this.serviceLevel = serviceLevel;
         this.serverState = serverState;
@@ -76,7 +78,7 @@ public class RedundantServerDataType extends Structure implements UaStructuredTy
         return JSON_ENCODING_ID;
     }
 
-    public String getServerId() {
+    public @Nullable String getServerId() {
         return serverId;
     }
 

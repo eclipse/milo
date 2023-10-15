@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.37">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.37</a>
@@ -43,11 +44,11 @@ public class SignatureData extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15137");
 
-    private final String algorithm;
+    private final @Nullable String algorithm;
 
     private final ByteString signature;
 
-    public SignatureData(String algorithm, ByteString signature) {
+    public SignatureData(@Nullable String algorithm, ByteString signature) {
         this.algorithm = algorithm;
         this.signature = signature;
     }
@@ -72,7 +73,7 @@ public class SignatureData extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getAlgorithm() {
+    public @Nullable String getAlgorithm() {
         return algorithm;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.3.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.3.4</a>
@@ -42,12 +43,12 @@ public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType i
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16311");
 
-    private final String parentNodeName;
+    private final @Nullable String parentNodeName;
 
-    private final RolePermissionType[] rolePermissions;
+    private final RolePermissionType @Nullable [] rolePermissions;
 
-    public SubscribedDataSetMirrorDataType(String parentNodeName,
-                                           RolePermissionType[] rolePermissions) {
+    public SubscribedDataSetMirrorDataType(@Nullable String parentNodeName,
+                                           RolePermissionType @Nullable [] rolePermissions) {
         this.parentNodeName = parentNodeName;
         this.rolePermissions = rolePermissions;
     }
@@ -72,11 +73,11 @@ public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType i
         return JSON_ENCODING_ID;
     }
 
-    public String getParentNodeName() {
+    public @Nullable String getParentNodeName() {
         return parentNodeName;
     }
 
-    public RolePermissionType[] getRolePermissions() {
+    public RolePermissionType @Nullable [] getRolePermissions() {
         return rolePermissions;
     }
 

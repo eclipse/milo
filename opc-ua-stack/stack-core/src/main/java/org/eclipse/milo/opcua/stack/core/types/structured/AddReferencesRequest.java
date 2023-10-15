@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.7.3/#5.7.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.7.3/#5.7.3.2</a>
@@ -44,9 +45,10 @@ public class AddReferencesRequest extends Structure implements UaRequestMessageT
 
     private final RequestHeader requestHeader;
 
-    private final AddReferencesItem[] referencesToAdd;
+    private final AddReferencesItem @Nullable [] referencesToAdd;
 
-    public AddReferencesRequest(RequestHeader requestHeader, AddReferencesItem[] referencesToAdd) {
+    public AddReferencesRequest(RequestHeader requestHeader,
+                                AddReferencesItem @Nullable [] referencesToAdd) {
         this.requestHeader = requestHeader;
         this.referencesToAdd = referencesToAdd;
     }
@@ -75,7 +77,7 @@ public class AddReferencesRequest extends Structure implements UaRequestMessageT
         return requestHeader;
     }
 
-    public AddReferencesItem[] getReferencesToAdd() {
+    public AddReferencesItem @Nullable [] getReferencesToAdd() {
         return referencesToAdd;
     }
 

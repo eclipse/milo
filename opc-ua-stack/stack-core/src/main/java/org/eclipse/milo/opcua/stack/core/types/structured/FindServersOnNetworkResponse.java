@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.3/#5.4.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.3/#5.4.3.2</a>
@@ -47,10 +48,10 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
 
     private final DateTime lastCounterResetTime;
 
-    private final ServerOnNetwork[] servers;
+    private final ServerOnNetwork @Nullable [] servers;
 
     public FindServersOnNetworkResponse(ResponseHeader responseHeader, DateTime lastCounterResetTime,
-                                        ServerOnNetwork[] servers) {
+                                        ServerOnNetwork @Nullable [] servers) {
         this.responseHeader = responseHeader;
         this.lastCounterResetTime = lastCounterResetTime;
         this.servers = servers;
@@ -84,7 +85,7 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
         return lastCounterResetTime;
     }
 
-    public ServerOnNetwork[] getServers() {
+    public ServerOnNetwork @Nullable [] getServers() {
         return servers;
     }
 

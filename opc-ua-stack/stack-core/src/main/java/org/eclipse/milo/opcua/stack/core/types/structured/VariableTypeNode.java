@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(
     callSuper = true
@@ -49,16 +50,16 @@ public class VariableTypeNode extends TypeNode implements UaStructuredType {
 
     private final Integer valueRank;
 
-    private final UInteger[] arrayDimensions;
+    private final UInteger @Nullable [] arrayDimensions;
 
     private final Boolean isAbstract;
 
     public VariableTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                            UInteger userWriteMask, RolePermissionType[] rolePermissions,
-                            RolePermissionType[] userRolePermissions, UShort accessRestrictions,
-                            ReferenceNode[] references, Variant value, NodeId dataType, Integer valueRank,
-                            UInteger[] arrayDimensions, Boolean isAbstract) {
+                            UInteger userWriteMask, RolePermissionType @Nullable [] rolePermissions,
+                            RolePermissionType @Nullable [] userRolePermissions, UShort accessRestrictions,
+                            ReferenceNode @Nullable [] references, Variant value, NodeId dataType, Integer valueRank,
+                            UInteger @Nullable [] arrayDimensions, Boolean isAbstract) {
         super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         this.value = value;
         this.dataType = dataType;
@@ -99,7 +100,7 @@ public class VariableTypeNode extends TypeNode implements UaStructuredType {
         return valueRank;
     }
 
-    public UInteger[] getArrayDimensions() {
+    public UInteger @Nullable [] getArrayDimensions() {
         return arrayDimensions;
     }
 

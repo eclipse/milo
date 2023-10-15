@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -206,7 +206,10 @@ public class SessionManager {
         EndpointDescription[] serverEndpoints = server.getApplicationContext()
             .getEndpointDescriptions()
             .stream()
-            .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+            .filter(ed -> {
+                String endpointUrl = ed.getEndpointUrl();
+                return endpointUrl == null || !endpointUrl.endsWith("/discovery");
+            })
             .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
             .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
             .map(SessionManager::stripNonEssentialFields)
@@ -219,7 +222,10 @@ public class SessionManager {
             serverEndpoints = server.getApplicationContext()
                 .getEndpointDescriptions()
                 .stream()
-                .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+                .filter(ed -> {
+                    String endpointUrl = ed.getEndpointUrl();
+                    return endpointUrl == null || !endpointUrl.endsWith("/discovery");
+                })
                 .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
                 .map(SessionManager::stripNonEssentialFields)
                 .toArray(EndpointDescription[]::new);
@@ -450,7 +456,8 @@ public class SessionManager {
     public ActivateSessionResponse activateSession(ServiceRequestContext context, ActivateSessionRequest request) throws UaException {
         long secureChannelId = context.getSecureChannel().getChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
-        List<SignedSoftwareCertificate> clientSoftwareCertificates = List.of(request.getClientSoftwareCertificates());
+        SignedSoftwareCertificate[] clientSoftwareCertificates =
+            requireNonNullElse(request.getClientSoftwareCertificates(), new SignedSoftwareCertificate[0]);
 
         Session session = createdSessions.get(authToken);
 
@@ -479,7 +486,7 @@ public class SessionManager {
                         request.getUserTokenSignature()
                     );
 
-                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
                     Arrays.fill(results, StatusCode.GOOD);
 
                     ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -533,7 +540,7 @@ public class SessionManager {
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);
 
-                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
                         Arrays.fill(results, StatusCode.GOOD);
 
                         ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -574,7 +581,7 @@ public class SessionManager {
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
 
-            StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+            StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
             Arrays.fill(results, StatusCode.GOOD);
 
             ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -756,11 +763,10 @@ public class SessionManager {
             UserIdentityToken token = (UserIdentityToken) tokenObject;
             String policyId = token.getPolicyId();
 
-            List<UserTokenPolicy> userIdentityTokens =
-                List.of(session.getEndpoint().getUserIdentityTokens());
+            UserTokenPolicy[] userIdentityTokens =
+                requireNonNullElse(session.getEndpoint().getUserIdentityTokens(), new UserTokenPolicy[0]);
 
-            Optional<UserTokenPolicy> policy = userIdentityTokens
-                .stream()
+            Optional<UserTokenPolicy> policy = Stream.of(userIdentityTokens)
                 .filter(t -> Objects.equal(policyId, t.getPolicyId()))
                 .findFirst();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -82,6 +83,11 @@ public final class NumericRange {
     }
 
     public static NumericRange parse(String range) throws UaException {
+        Preconditions.checkArgument(
+            range != null && !range.isEmpty(),
+            "range must not be null or empty"
+        );
+
         try {
             String[] ss = range.split(",");
             Bounds[] bounds = new Bounds[ss.length];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.4">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.4</a>
@@ -43,20 +44,21 @@ public class BuildInfo extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15361");
 
-    private final String productUri;
+    private final @Nullable String productUri;
 
-    private final String manufacturerName;
+    private final @Nullable String manufacturerName;
 
-    private final String productName;
+    private final @Nullable String productName;
 
-    private final String softwareVersion;
+    private final @Nullable String softwareVersion;
 
-    private final String buildNumber;
+    private final @Nullable String buildNumber;
 
     private final DateTime buildDate;
 
-    public BuildInfo(String productUri, String manufacturerName, String productName,
-                     String softwareVersion, String buildNumber, DateTime buildDate) {
+    public BuildInfo(@Nullable String productUri, @Nullable String manufacturerName,
+                     @Nullable String productName, @Nullable String softwareVersion, @Nullable String buildNumber,
+                     DateTime buildDate) {
         this.productUri = productUri;
         this.manufacturerName = manufacturerName;
         this.productName = productName;
@@ -85,23 +87,23 @@ public class BuildInfo extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getProductUri() {
+    public @Nullable String getProductUri() {
         return productUri;
     }
 
-    public String getManufacturerName() {
+    public @Nullable String getManufacturerName() {
         return manufacturerName;
     }
 
-    public String getProductName() {
+    public @Nullable String getProductName() {
         return productName;
     }
 
-    public String getSoftwareVersion() {
+    public @Nullable String getSoftwareVersion() {
         return softwareVersion;
     }
 
-    public String getBuildNumber() {
+    public @Nullable String getBuildNumber() {
         return buildNumber;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.6/#5.4.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.6/#5.4.6.2</a>
@@ -47,10 +48,10 @@ public class RegisterServer2Request extends Structure implements UaRequestMessag
 
     private final RegisteredServer server;
 
-    private final ExtensionObject[] discoveryConfiguration;
+    private final ExtensionObject @Nullable [] discoveryConfiguration;
 
     public RegisterServer2Request(RequestHeader requestHeader, RegisteredServer server,
-                                  ExtensionObject[] discoveryConfiguration) {
+                                  ExtensionObject @Nullable [] discoveryConfiguration) {
         this.requestHeader = requestHeader;
         this.server = server;
         this.discoveryConfiguration = discoveryConfiguration;
@@ -84,7 +85,7 @@ public class RegisterServer2Request extends Structure implements UaRequestMessag
         return server;
     }
 
-    public ExtensionObject[] getDiscoveryConfiguration() {
+    public ExtensionObject @Nullable [] getDiscoveryConfiguration() {
         return discoveryConfiguration;
     }
 

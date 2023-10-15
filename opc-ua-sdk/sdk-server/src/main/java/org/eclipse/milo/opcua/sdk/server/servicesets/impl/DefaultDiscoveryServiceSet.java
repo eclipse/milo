@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -61,7 +61,10 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
         List<EndpointDescription> allEndpoints = server.getApplicationContext()
             .getEndpointDescriptions()
             .stream()
-            .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+            .filter(ed -> {
+                String endpointUrl = ed.getEndpointUrl();
+                return endpointUrl == null || !endpointUrl.endsWith("/discovery");
+            })
             .filter(ed -> filterProfileUris(ed, profileUris))
             .distinct()
             .collect(Collectors.toList());

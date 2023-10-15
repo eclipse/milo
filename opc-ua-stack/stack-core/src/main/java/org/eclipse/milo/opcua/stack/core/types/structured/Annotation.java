@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.5">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.5</a>
@@ -43,13 +44,13 @@ public class Annotation extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15382");
 
-    private final String message;
+    private final @Nullable String message;
 
-    private final String userName;
+    private final @Nullable String userName;
 
     private final DateTime annotationTime;
 
-    public Annotation(String message, String userName, DateTime annotationTime) {
+    public Annotation(@Nullable String message, @Nullable String userName, DateTime annotationTime) {
         this.message = message;
         this.userName = userName;
         this.annotationTime = annotationTime;
@@ -75,11 +76,11 @@ public class Annotation extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return message;
     }
 
-    public String getUserName() {
+    public @Nullable String getUserName() {
         return userName;
     }
 

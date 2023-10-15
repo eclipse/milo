@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.3/#6.8.3.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.3/#6.8.3.1</a>
@@ -46,10 +47,10 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails implements 
 
     private final PerformUpdateType performInsertReplace;
 
-    private final DataValue[] updateValues;
+    private final DataValue @Nullable [] updateValues;
 
     public UpdateStructureDataDetails(NodeId nodeId, PerformUpdateType performInsertReplace,
-                                      DataValue[] updateValues) {
+                                      DataValue @Nullable [] updateValues) {
         super(nodeId);
         this.performInsertReplace = performInsertReplace;
         this.updateValues = updateValues;
@@ -79,7 +80,7 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails implements 
         return performInsertReplace;
     }
 
-    public DataValue[] getUpdateValues() {
+    public DataValue @Nullable [] getUpdateValues() {
         return updateValues;
     }
 

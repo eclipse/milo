@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
@@ -76,7 +78,7 @@ public class BrowseHelper {
             .sendRequestMessage(browseRequest)
             .thenApply(BrowseResponse.class::cast)
             .thenCompose(response -> {
-                BrowseResult result = response.getResults()[0];
+                BrowseResult result = requireNonNull(response.getResults())[0];
 
                 List<ReferenceDescription> references =
                     Collections.synchronizedList(new ArrayList<>());
@@ -93,7 +95,7 @@ public class BrowseHelper {
     ) {
 
         if (result.getStatusCode().isGood()) {
-            references.addAll(List.of(result.getReferences()));
+            Collections.addAll(references, requireNonNullElse(result.getReferences(), new ReferenceDescription[0]));
 
             ByteString nextContinuationPoint = result.getContinuationPoint();
 
@@ -127,7 +129,7 @@ public class BrowseHelper {
             .sendRequestMessage(browseNextRequest)
             .thenApply(BrowseNextResponse.class::cast)
             .thenCompose(response -> {
-                BrowseResult result = response.getResults()[0];
+                BrowseResult result = requireNonNull(response.getResults())[0];
 
                 return maybeBrowseNext(client, session, references, result);
             });

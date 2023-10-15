@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.5/#5.12.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.5/#5.12.5.2</a>
@@ -46,17 +47,17 @@ public class SetTriggeringResponse extends Structure implements UaResponseMessag
 
     private final ResponseHeader responseHeader;
 
-    private final StatusCode[] addResults;
+    private final StatusCode @Nullable [] addResults;
 
-    private final DiagnosticInfo[] addDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] addDiagnosticInfos;
 
-    private final StatusCode[] removeResults;
+    private final StatusCode @Nullable [] removeResults;
 
-    private final DiagnosticInfo[] removeDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] removeDiagnosticInfos;
 
-    public SetTriggeringResponse(ResponseHeader responseHeader, StatusCode[] addResults,
-                                 DiagnosticInfo[] addDiagnosticInfos, StatusCode[] removeResults,
-                                 DiagnosticInfo[] removeDiagnosticInfos) {
+    public SetTriggeringResponse(ResponseHeader responseHeader, StatusCode @Nullable [] addResults,
+                                 DiagnosticInfo @Nullable [] addDiagnosticInfos, StatusCode @Nullable [] removeResults,
+                                 DiagnosticInfo @Nullable [] removeDiagnosticInfos) {
         this.responseHeader = responseHeader;
         this.addResults = addResults;
         this.addDiagnosticInfos = addDiagnosticInfos;
@@ -88,19 +89,19 @@ public class SetTriggeringResponse extends Structure implements UaResponseMessag
         return responseHeader;
     }
 
-    public StatusCode[] getAddResults() {
+    public StatusCode @Nullable [] getAddResults() {
         return addResults;
     }
 
-    public DiagnosticInfo[] getAddDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getAddDiagnosticInfos() {
         return addDiagnosticInfos;
     }
 
-    public StatusCode[] getRemoveResults() {
+    public StatusCode @Nullable [] getRemoveResults() {
         return removeResults;
     }
 
-    public DiagnosticInfo[] getRemoveDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getRemoveDiagnosticInfos() {
         return removeDiagnosticInfos;
     }
 

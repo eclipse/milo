@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.2/#5.10.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.2/#5.10.2.2</a>
@@ -49,10 +50,10 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
 
     private final TimestampsToReturn timestampsToReturn;
 
-    private final ReadValueId[] nodesToRead;
+    private final ReadValueId @Nullable [] nodesToRead;
 
     public ReadRequest(RequestHeader requestHeader, Double maxAge,
-                       TimestampsToReturn timestampsToReturn, ReadValueId[] nodesToRead) {
+                       TimestampsToReturn timestampsToReturn, ReadValueId @Nullable [] nodesToRead) {
         this.requestHeader = requestHeader;
         this.maxAge = maxAge;
         this.timestampsToReturn = timestampsToReturn;
@@ -91,7 +92,7 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
         return timestampsToReturn;
     }
 
-    public ReadValueId[] getNodesToRead() {
+    public ReadValueId @Nullable [] getNodesToRead() {
         return nodesToRead;
     }
 

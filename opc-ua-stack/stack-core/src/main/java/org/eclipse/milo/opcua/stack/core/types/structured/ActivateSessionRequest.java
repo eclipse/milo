@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.3/#5.6.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.3/#5.6.3.2</a>
@@ -47,17 +48,18 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
 
     private final SignatureData clientSignature;
 
-    private final SignedSoftwareCertificate[] clientSoftwareCertificates;
+    private final SignedSoftwareCertificate @Nullable [] clientSoftwareCertificates;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
     private final ExtensionObject userIdentityToken;
 
     private final SignatureData userTokenSignature;
 
     public ActivateSessionRequest(RequestHeader requestHeader, SignatureData clientSignature,
-                                  SignedSoftwareCertificate[] clientSoftwareCertificates, String[] localeIds,
-                                  ExtensionObject userIdentityToken, SignatureData userTokenSignature) {
+                                  SignedSoftwareCertificate @Nullable [] clientSoftwareCertificates,
+                                  String @Nullable [] localeIds, ExtensionObject userIdentityToken,
+                                  SignatureData userTokenSignature) {
         this.requestHeader = requestHeader;
         this.clientSignature = clientSignature;
         this.clientSoftwareCertificates = clientSoftwareCertificates;
@@ -94,11 +96,11 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
         return clientSignature;
     }
 
-    public SignedSoftwareCertificate[] getClientSoftwareCertificates() {
+    public SignedSoftwareCertificate @Nullable [] getClientSoftwareCertificates() {
         return clientSoftwareCertificates;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 

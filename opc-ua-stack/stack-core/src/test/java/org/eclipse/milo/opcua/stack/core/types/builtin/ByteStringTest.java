@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,14 @@ public class ByteStringTest {
 
         assertNotEquals(bs1, bs3);
         assertNotEquals(bs2, bs3);
+    }
+
+    @Test
+    public void nullEquality() {
+        assertEquals(new ByteString(null), new ByteString(null));
+        assertEquals(new ByteString(new byte[0]), new ByteString(new byte[0]));
+        assertEquals(new ByteString(null), new ByteString(new byte[0]));
+        assertEquals(new ByteString(new byte[0]), new ByteString(null));
     }
 
 }

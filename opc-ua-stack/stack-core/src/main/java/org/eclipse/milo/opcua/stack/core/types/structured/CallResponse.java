@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2</a>
@@ -45,12 +46,12 @@ public class CallResponse extends Structure implements UaResponseMessageType {
 
     private final ResponseHeader responseHeader;
 
-    private final CallMethodResult[] results;
+    private final CallMethodResult @Nullable [] results;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
-    public CallResponse(ResponseHeader responseHeader, CallMethodResult[] results,
-                        DiagnosticInfo[] diagnosticInfos) {
+    public CallResponse(ResponseHeader responseHeader, CallMethodResult @Nullable [] results,
+                        DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.results = results;
         this.diagnosticInfos = diagnosticInfos;
@@ -80,11 +81,11 @@ public class CallResponse extends Structure implements UaResponseMessageType {
         return responseHeader;
     }
 
-    public CallMethodResult[] getResults() {
+    public CallMethodResult @Nullable [] getResults() {
         return results;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.6">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.6</a>
@@ -51,10 +52,10 @@ public class AxisInformation extends Structure implements UaStructuredType {
 
     private final AxisScaleEnumeration axisScaleType;
 
-    private final Double[] axisSteps;
+    private final Double @Nullable [] axisSteps;
 
     public AxisInformation(EUInformation engineeringUnits, Range euRange, LocalizedText title,
-                           AxisScaleEnumeration axisScaleType, Double[] axisSteps) {
+                           AxisScaleEnumeration axisScaleType, Double @Nullable [] axisSteps) {
         this.engineeringUnits = engineeringUnits;
         this.euRange = euRange;
         this.title = title;
@@ -98,7 +99,7 @@ public class AxisInformation extends Structure implements UaStructuredType {
         return axisScaleType;
     }
 
-    public Double[] getAxisSteps() {
+    public Double @Nullable [] getAxisSteps() {
         return axisSteps;
     }
 

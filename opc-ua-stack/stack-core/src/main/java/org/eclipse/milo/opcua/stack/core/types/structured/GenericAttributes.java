@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.10">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.10</a>
@@ -42,11 +43,11 @@ public class GenericAttributes extends NodeAttributes implements UaStructuredTyp
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15164");
 
-    private final GenericAttributeValue[] attributeValues;
+    private final GenericAttributeValue @Nullable [] attributeValues;
 
     public GenericAttributes(UInteger specifiedAttributes, LocalizedText displayName,
                              LocalizedText description, UInteger writeMask, UInteger userWriteMask,
-                             GenericAttributeValue[] attributeValues) {
+                             GenericAttributeValue @Nullable [] attributeValues) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.attributeValues = attributeValues;
     }
@@ -71,7 +72,7 @@ public class GenericAttributes extends NodeAttributes implements UaStructuredTyp
         return JSON_ENCODING_ID;
     }
 
-    public GenericAttributeValue[] getAttributeValues() {
+    public GenericAttributeValue @Nullable [] getAttributeValues() {
         return attributeValues;
     }
 

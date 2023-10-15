@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.12">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.12</a>
@@ -46,26 +47,27 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
 
     private final NodeId sessionId;
 
-    private final String clientUserIdOfSession;
+    private final @Nullable String clientUserIdOfSession;
 
-    private final String[] clientUserIdHistory;
+    private final String @Nullable [] clientUserIdHistory;
 
-    private final String authenticationMechanism;
+    private final @Nullable String authenticationMechanism;
 
-    private final String encoding;
+    private final @Nullable String encoding;
 
-    private final String transportProtocol;
+    private final @Nullable String transportProtocol;
 
     private final MessageSecurityMode securityMode;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
     private final ByteString clientCertificate;
 
-    public SessionSecurityDiagnosticsDataType(NodeId sessionId, String clientUserIdOfSession,
-                                              String[] clientUserIdHistory, String authenticationMechanism, String encoding,
-                                              String transportProtocol, MessageSecurityMode securityMode, String securityPolicyUri,
-                                              ByteString clientCertificate) {
+    public SessionSecurityDiagnosticsDataType(NodeId sessionId,
+                                              @Nullable String clientUserIdOfSession, String @Nullable [] clientUserIdHistory,
+                                              @Nullable String authenticationMechanism, @Nullable String encoding,
+                                              @Nullable String transportProtocol, MessageSecurityMode securityMode,
+                                              @Nullable String securityPolicyUri, ByteString clientCertificate) {
         this.sessionId = sessionId;
         this.clientUserIdOfSession = clientUserIdOfSession;
         this.clientUserIdHistory = clientUserIdHistory;
@@ -101,23 +103,23 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         return sessionId;
     }
 
-    public String getClientUserIdOfSession() {
+    public @Nullable String getClientUserIdOfSession() {
         return clientUserIdOfSession;
     }
 
-    public String[] getClientUserIdHistory() {
+    public String @Nullable [] getClientUserIdHistory() {
         return clientUserIdHistory;
     }
 
-    public String getAuthenticationMechanism() {
+    public @Nullable String getAuthenticationMechanism() {
         return authenticationMechanism;
     }
 
-    public String getEncoding() {
+    public @Nullable String getEncoding() {
         return encoding;
     }
 
-    public String getTransportProtocol() {
+    public @Nullable String getTransportProtocol() {
         return transportProtocol;
     }
 
@@ -125,7 +127,7 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         return securityMode;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 

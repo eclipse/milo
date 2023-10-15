@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI8;
-import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
 /**
@@ -50,13 +49,13 @@ public class EventNotifierType extends OptionSetUI8<EventNotifierType.Field> {
     }
 
     @Override
-    public Set<EventNotifierType.Field> toSet() {
+    public Set<Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static EventNotifierType of(EventNotifierType.Field... fields) {
+    public static EventNotifierType of(Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -66,7 +65,7 @@ public class EventNotifierType extends OptionSetUI8<EventNotifierType.Field> {
         return new EventNotifierType(UByte.valueOf(bits));
     }
 
-    public enum Field implements OptionSetUInteger.BitIndex {
+    public enum Field implements BitIndex {
         SubscribeToEvents(0),
 
         HistoryRead(2),

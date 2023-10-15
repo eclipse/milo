@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
@@ -279,7 +280,7 @@ public class DiscoveryClient {
         return discoveryClient.connectAsync()
             .thenCompose(c -> c.findServers(endpointUrl, new String[0], new String[0]))
             .whenComplete((e, ex) -> discoveryClient.disconnectAsync())
-            .thenApply(response -> List.of(response.getServers()));
+            .thenApply(response -> Lists.ofNullable(response.getServers()));
     }
 
     /**
@@ -365,7 +366,7 @@ public class DiscoveryClient {
         return discoveryClient.connectAsync()
             .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
             .whenComplete((e, ex) -> discoveryClient.disconnectAsync())
-            .thenApply(response -> List.of(response.getEndpoints()));
+            .thenApply(response -> Lists.ofNullable(response.getEndpoints()));
     }
 
     private static class DefaultEncodingContext implements EncodingContext {

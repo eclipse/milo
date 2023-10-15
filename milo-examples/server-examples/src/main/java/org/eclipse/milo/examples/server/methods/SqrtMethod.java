@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 public class SqrtMethod extends AbstractMethodInvocationHandler {
 
@@ -58,7 +60,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
     protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) {
         logger.debug("Invoking sqrt() method of objectId={}", invocationContext.getObjectId());
 
-        double x = (double) inputValues[0].getValue();
+        double x = (double) requireNonNull(inputValues[0].getValue());
         double xSqrt = Math.sqrt(x);
 
         return new Variant[]{Variant.ofDouble(xSqrt)};

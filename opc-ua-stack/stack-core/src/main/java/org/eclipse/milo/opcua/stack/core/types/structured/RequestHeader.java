@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.33">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.33</a>
@@ -52,14 +53,14 @@ public class RequestHeader extends Structure implements UaStructuredType {
 
     private final UInteger returnDiagnostics;
 
-    private final String auditEntryId;
+    private final @Nullable String auditEntryId;
 
     private final UInteger timeoutHint;
 
     private final ExtensionObject additionalHeader;
 
     public RequestHeader(NodeId authenticationToken, DateTime timestamp, UInteger requestHandle,
-                         UInteger returnDiagnostics, String auditEntryId, UInteger timeoutHint,
+                         UInteger returnDiagnostics, @Nullable String auditEntryId, UInteger timeoutHint,
                          ExtensionObject additionalHeader) {
         this.authenticationToken = authenticationToken;
         this.timestamp = timestamp;
@@ -106,7 +107,7 @@ public class RequestHeader extends Structure implements UaStructuredType {
         return returnDiagnostics;
     }
 
-    public String getAuditEntryId() {
+    public @Nullable String getAuditEntryId() {
         return auditEntryId;
     }
 

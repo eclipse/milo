@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.28">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.28</a>
@@ -47,9 +48,10 @@ public class QueryDataSet extends Structure implements UaStructuredType {
 
     private final ExpandedNodeId typeDefinitionNode;
 
-    private final Variant[] values;
+    private final Variant @Nullable [] values;
 
-    public QueryDataSet(ExpandedNodeId nodeId, ExpandedNodeId typeDefinitionNode, Variant[] values) {
+    public QueryDataSet(ExpandedNodeId nodeId, ExpandedNodeId typeDefinitionNode,
+                        Variant @Nullable [] values) {
         this.nodeId = nodeId;
         this.typeDefinitionNode = typeDefinitionNode;
         this.values = values;
@@ -83,7 +85,7 @@ public class QueryDataSet extends Structure implements UaStructuredType {
         return typeDefinitionNode;
     }
 
-    public Variant[] getValues() {
+    public Variant @Nullable [] getValues() {
         return values;
     }
 

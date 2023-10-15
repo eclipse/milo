@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.1</a>
@@ -43,28 +44,29 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16281");
 
-    private final String name;
+    private final @Nullable String name;
 
     private final Boolean enabled;
 
     private final Variant publisherId;
 
-    private final String transportProfileUri;
+    private final @Nullable String transportProfileUri;
 
     private final NetworkAddressDataType address;
 
-    private final KeyValuePair[] connectionProperties;
+    private final KeyValuePair @Nullable [] connectionProperties;
 
     private final ConnectionTransportDataType transportSettings;
 
-    private final WriterGroupDataType[] writerGroups;
+    private final WriterGroupDataType @Nullable [] writerGroups;
 
-    private final ReaderGroupDataType[] readerGroups;
+    private final ReaderGroupDataType @Nullable [] readerGroups;
 
-    public PubSubConnectionDataType(String name, Boolean enabled, Variant publisherId,
-                                    String transportProfileUri, NetworkAddressDataType address,
-                                    KeyValuePair[] connectionProperties, ConnectionTransportDataType transportSettings,
-                                    WriterGroupDataType[] writerGroups, ReaderGroupDataType[] readerGroups) {
+    public PubSubConnectionDataType(@Nullable String name, Boolean enabled, Variant publisherId,
+                                    @Nullable String transportProfileUri, NetworkAddressDataType address,
+                                    KeyValuePair @Nullable [] connectionProperties, ConnectionTransportDataType transportSettings,
+                                    WriterGroupDataType @Nullable [] writerGroups,
+                                    ReaderGroupDataType @Nullable [] readerGroups) {
         this.name = name;
         this.enabled = enabled;
         this.publisherId = publisherId;
@@ -96,7 +98,7 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -108,7 +110,7 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
         return publisherId;
     }
 
-    public String getTransportProfileUri() {
+    public @Nullable String getTransportProfileUri() {
         return transportProfileUri;
     }
 
@@ -116,7 +118,7 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
         return address;
     }
 
-    public KeyValuePair[] getConnectionProperties() {
+    public KeyValuePair @Nullable [] getConnectionProperties() {
         return connectionProperties;
     }
 
@@ -124,11 +126,11 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
         return transportSettings;
     }
 
-    public WriterGroupDataType[] getWriterGroups() {
+    public WriterGroupDataType @Nullable [] getWriterGroups() {
         return writerGroups;
     }
 
-    public ReaderGroupDataType[] getReaderGroups() {
+    public ReaderGroupDataType @Nullable [] getReaderGroups() {
         return readerGroups;
     }
 

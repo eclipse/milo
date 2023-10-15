@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2</a>
@@ -47,14 +48,15 @@ public class CallMethodResult extends Structure implements UaStructuredType {
 
     private final StatusCode statusCode;
 
-    private final StatusCode[] inputArgumentResults;
+    private final StatusCode @Nullable [] inputArgumentResults;
 
-    private final DiagnosticInfo[] inputArgumentDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] inputArgumentDiagnosticInfos;
 
-    private final Variant[] outputArguments;
+    private final Variant @Nullable [] outputArguments;
 
-    public CallMethodResult(StatusCode statusCode, StatusCode[] inputArgumentResults,
-                            DiagnosticInfo[] inputArgumentDiagnosticInfos, Variant[] outputArguments) {
+    public CallMethodResult(StatusCode statusCode, StatusCode @Nullable [] inputArgumentResults,
+                            DiagnosticInfo @Nullable [] inputArgumentDiagnosticInfos,
+                            Variant @Nullable [] outputArguments) {
         this.statusCode = statusCode;
         this.inputArgumentResults = inputArgumentResults;
         this.inputArgumentDiagnosticInfos = inputArgumentDiagnosticInfos;
@@ -85,15 +87,15 @@ public class CallMethodResult extends Structure implements UaStructuredType {
         return statusCode;
     }
 
-    public StatusCode[] getInputArgumentResults() {
+    public StatusCode @Nullable [] getInputArgumentResults() {
         return inputArgumentResults;
     }
 
-    public DiagnosticInfo[] getInputArgumentDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getInputArgumentDiagnosticInfos() {
         return inputArgumentDiagnosticInfos;
     }
 
-    public Variant[] getOutputArguments() {
+    public Variant @Nullable [] getOutputArguments() {
         return outputArguments;
     }
 

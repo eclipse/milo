@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.36">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.36</a>
@@ -43,15 +44,17 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15714");
 
-    private final String schemaLocation;
+    private final @Nullable String schemaLocation;
 
-    private final KeyValuePair[] fileHeader;
+    private final KeyValuePair @Nullable [] fileHeader;
 
     private final Variant body;
 
-    public UABinaryFileDataType(String[] namespaces, StructureDescription[] structureDataTypes,
-                                EnumDescription[] enumDataTypes, SimpleTypeDescription[] simpleDataTypes,
-                                String schemaLocation, KeyValuePair[] fileHeader, Variant body) {
+    public UABinaryFileDataType(String @Nullable [] namespaces,
+                                StructureDescription @Nullable [] structureDataTypes,
+                                EnumDescription @Nullable [] enumDataTypes,
+                                SimpleTypeDescription @Nullable [] simpleDataTypes, @Nullable String schemaLocation,
+                                KeyValuePair @Nullable [] fileHeader, Variant body) {
         super(namespaces, structureDataTypes, enumDataTypes, simpleDataTypes);
         this.schemaLocation = schemaLocation;
         this.fileHeader = fileHeader;
@@ -78,11 +81,11 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
         return JSON_ENCODING_ID;
     }
 
-    public String getSchemaLocation() {
+    public @Nullable String getSchemaLocation() {
         return schemaLocation;
     }
 
-    public KeyValuePair[] getFileHeader() {
+    public KeyValuePair @Nullable [] getFileHeader() {
         return fileHeader;
     }
 

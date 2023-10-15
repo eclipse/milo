@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.6/#6.4.6.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.6/#6.4.6.1</a>
@@ -43,9 +44,9 @@ public class ReadAnnotationDataDetails extends HistoryReadDetails implements UaS
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23512");
 
-    private final DateTime[] reqTimes;
+    private final DateTime @Nullable [] reqTimes;
 
-    public ReadAnnotationDataDetails(DateTime[] reqTimes) {
+    public ReadAnnotationDataDetails(DateTime @Nullable [] reqTimes) {
         this.reqTimes = reqTimes;
     }
 
@@ -69,7 +70,7 @@ public class ReadAnnotationDataDetails extends HistoryReadDetails implements UaS
         return JSON_ENCODING_ID;
     }
 
-    public DateTime[] getReqTimes() {
+    public DateTime @Nullable [] getReqTimes() {
         return reqTimes;
     }
 

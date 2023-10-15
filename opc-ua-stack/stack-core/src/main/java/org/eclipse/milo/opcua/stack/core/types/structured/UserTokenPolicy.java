@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.42">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.42</a>
@@ -43,18 +44,19 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15098");
 
-    private final String policyId;
+    private final @Nullable String policyId;
 
     private final UserTokenType tokenType;
 
-    private final String issuedTokenType;
+    private final @Nullable String issuedTokenType;
 
-    private final String issuerEndpointUrl;
+    private final @Nullable String issuerEndpointUrl;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
-    public UserTokenPolicy(String policyId, UserTokenType tokenType, String issuedTokenType,
-                           String issuerEndpointUrl, String securityPolicyUri) {
+    public UserTokenPolicy(@Nullable String policyId, UserTokenType tokenType,
+                           @Nullable String issuedTokenType, @Nullable String issuerEndpointUrl,
+                           @Nullable String securityPolicyUri) {
         this.policyId = policyId;
         this.tokenType = tokenType;
         this.issuedTokenType = issuedTokenType;
@@ -82,7 +84,7 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getPolicyId() {
+    public @Nullable String getPolicyId() {
         return policyId;
     }
 
@@ -90,15 +92,15 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
         return tokenType;
     }
 
-    public String getIssuedTokenType() {
+    public @Nullable String getIssuedTokenType() {
         return issuedTokenType;
     }
 
-    public String getIssuerEndpointUrl() {
+    public @Nullable String getIssuerEndpointUrl() {
         return issuerEndpointUrl;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,16 +13,29 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 public class QualifiedNameTest {
 
     @Test
-    public void testToStringAndBack1() {
+    public void parseableStringSymmetry() {
         assertSymmetry("0:foo");
+        assertSymmetry("0:foo:bar");
     }
 
     @Test
-    public void testToStringAndBack2() {
-        assertSymmetry("0:foo:bar");
+    public void isNull() {
+        assertTrue(new QualifiedName(0, null).isNull());
+        assertTrue(new QualifiedName(0, "").isNull());
+    }
+
+    @Test
+    public void nullEquality() {
+        assertEquals(new QualifiedName(0, ""), new QualifiedName(0, ""));
+        assertEquals(new QualifiedName(0, null), new QualifiedName(0, null));
+        assertEquals(new QualifiedName(0, null), new QualifiedName(0, ""));
+        assertEquals(new QualifiedName(0, ""), new QualifiedName(0, null));
     }
 
     private void assertSymmetry(String string) {

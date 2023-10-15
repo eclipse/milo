@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.10</a>
@@ -42,7 +43,7 @@ public class StructureField extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15065");
 
-    private final String name;
+    private final @Nullable String name;
 
     private final LocalizedText description;
 
@@ -50,14 +51,15 @@ public class StructureField extends Structure implements UaStructuredType {
 
     private final Integer valueRank;
 
-    private final UInteger[] arrayDimensions;
+    private final UInteger @Nullable [] arrayDimensions;
 
     private final UInteger maxStringLength;
 
     private final Boolean isOptional;
 
-    public StructureField(String name, LocalizedText description, NodeId dataType, Integer valueRank,
-                          UInteger[] arrayDimensions, UInteger maxStringLength, Boolean isOptional) {
+    public StructureField(@Nullable String name, LocalizedText description, NodeId dataType,
+                          Integer valueRank, UInteger @Nullable [] arrayDimensions, UInteger maxStringLength,
+                          Boolean isOptional) {
         this.name = name;
         this.description = description;
         this.dataType = dataType;
@@ -87,7 +89,7 @@ public class StructureField extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -103,7 +105,7 @@ public class StructureField extends Structure implements UaStructuredType {
         return valueRank;
     }
 
-    public UInteger[] getArrayDimensions() {
+    public UInteger @Nullable [] getArrayDimensions() {
         return arrayDimensions;
     }
 

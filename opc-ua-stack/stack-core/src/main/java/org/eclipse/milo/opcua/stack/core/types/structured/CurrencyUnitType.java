@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.2">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.2</a>
@@ -46,11 +47,11 @@ public class CurrencyUnitType extends Structure implements UaStructuredType {
 
     private final Byte exponent;
 
-    private final String alphabeticCode;
+    private final @Nullable String alphabeticCode;
 
     private final LocalizedText currency;
 
-    public CurrencyUnitType(Short numericCode, Byte exponent, String alphabeticCode,
+    public CurrencyUnitType(Short numericCode, Byte exponent, @Nullable String alphabeticCode,
                             LocalizedText currency) {
         this.numericCode = numericCode;
         this.exponent = exponent;
@@ -86,7 +87,7 @@ public class CurrencyUnitType extends Structure implements UaStructuredType {
         return exponent;
     }
 
-    public String getAlphabeticCode() {
+    public @Nullable String getAlphabeticCode() {
         return alphabeticCode;
     }
 

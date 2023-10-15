@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.15/#12.3.15.3">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.15/#12.3.15.3</a>
@@ -43,14 +44,14 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15142");
 
-    private final String userName;
+    private final @Nullable String userName;
 
     private final ByteString password;
 
-    private final String encryptionAlgorithm;
+    private final @Nullable String encryptionAlgorithm;
 
-    public UserNameIdentityToken(String policyId, String userName, ByteString password,
-                                 String encryptionAlgorithm) {
+    public UserNameIdentityToken(@Nullable String policyId, @Nullable String userName,
+                                 ByteString password, @Nullable String encryptionAlgorithm) {
         super(policyId);
         this.userName = userName;
         this.password = password;
@@ -77,7 +78,7 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         return JSON_ENCODING_ID;
     }
 
-    public String getUserName() {
+    public @Nullable String getUserName() {
         return userName;
     }
 
@@ -85,7 +86,7 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         return password;
     }
 
-    public String getEncryptionAlgorithm() {
+    public @Nullable String getEncryptionAlgorithm() {
         return encryptionAlgorithm;
     }
 

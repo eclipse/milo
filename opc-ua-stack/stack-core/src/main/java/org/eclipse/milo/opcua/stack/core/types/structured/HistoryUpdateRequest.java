@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.5/#5.10.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.5/#5.10.5.2</a>
@@ -45,9 +46,10 @@ public class HistoryUpdateRequest extends Structure implements UaRequestMessageT
 
     private final RequestHeader requestHeader;
 
-    private final ExtensionObject[] historyUpdateDetails;
+    private final ExtensionObject @Nullable [] historyUpdateDetails;
 
-    public HistoryUpdateRequest(RequestHeader requestHeader, ExtensionObject[] historyUpdateDetails) {
+    public HistoryUpdateRequest(RequestHeader requestHeader,
+                                ExtensionObject @Nullable [] historyUpdateDetails) {
         this.requestHeader = requestHeader;
         this.historyUpdateDetails = historyUpdateDetails;
     }
@@ -76,7 +78,7 @@ public class HistoryUpdateRequest extends Structure implements UaRequestMessageT
         return requestHeader;
     }
 
-    public ExtensionObject[] getHistoryUpdateDetails() {
+    public ExtensionObject @Nullable [] getHistoryUpdateDetails() {
         return historyUpdateDetails;
     }
 

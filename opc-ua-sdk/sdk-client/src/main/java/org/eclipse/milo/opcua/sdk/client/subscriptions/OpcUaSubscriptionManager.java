@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -59,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
@@ -697,9 +698,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
-                List<ExtensionObject> notificationData = List.of(notificationMessage.getNotificationData());
+                ExtensionObject[] notificationData = notificationMessage.getNotificationData();
 
-                if (notificationData.isEmpty()) {
+                if (notificationData == null || notificationData.length == 0) {
                     subscriptionListeners.forEach(
                         listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
                     );
@@ -708,111 +709,113 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                         listener -> listener.onKeepAliveNotification(
                             subscription, notificationMessage.getPublishTime())
                     );
-                }
+                } else {
+                    for (ExtensionObject xo : notificationData) {
+                        Object o = xo.decode(client.getStaticEncodingContext());
 
-                for (ExtensionObject xo : notificationData) {
-                    Object o = xo.decode(client.getStaticEncodingContext());
+                        if (o instanceof DataChangeNotification) {
+                            DataChangeNotification dcn = (DataChangeNotification) o;
+                            MonitoredItemNotification[] monitoredItemNotifications =
+                                requireNonNullElse(dcn.getMonitoredItems(), new MonitoredItemNotification[0]);
+                            int notificationCount = monitoredItemNotifications.length;
 
-                    if (o instanceof DataChangeNotification) {
-                        DataChangeNotification dcn = (DataChangeNotification) o;
-                        List<MonitoredItemNotification> monitoredItemNotifications = List.of(dcn.getMonitoredItems());
-                        int notificationCount = monitoredItemNotifications.size();
+                            logger.debug("Received {} MonitoredItemNotifications", notificationCount);
 
-                        logger.debug("Received {} MonitoredItemNotifications", notificationCount);
+                            for (MonitoredItemNotification min : monitoredItemNotifications) {
+                                logger.trace("MonitoredItemNotification: clientHandle={}, value={}",
+                                    min.getClientHandle(), min.getValue());
 
-                        for (MonitoredItemNotification min : monitoredItemNotifications) {
-                            logger.trace("MonitoredItemNotification: clientHandle={}, value={}",
-                                min.getClientHandle(), min.getValue());
+                                OpcUaMonitoredItem item = items.get(min.getClientHandle());
+                                if (item != null) item.onValueArrived(min.getValue());
+                                else logger.warn("no item for clientHandle=" + min.getClientHandle());
+                            }
 
-                            OpcUaMonitoredItem item = items.get(min.getClientHandle());
-                            if (item != null) item.onValueArrived(min.getValue());
-                            else logger.warn("no item for clientHandle=" + min.getClientHandle());
-                        }
+                            if (notificationCount == 0) {
+                                subscriptionListeners.forEach(
+                                    listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+                                );
 
-                        if (notificationCount == 0) {
-                            subscriptionListeners.forEach(
-                                listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
-                            );
+                                subscription.getNotificationListeners().forEach(
+                                    listener -> listener.onKeepAliveNotification(
+                                        subscription, notificationMessage.getPublishTime())
+                                );
+                            } else {
+                                if (!subscription.getNotificationListeners().isEmpty()) {
+                                    List<UaMonitoredItem> monitoredItems = new ArrayList<>();
+                                    List<DataValue> dataValues = new ArrayList<>();
 
-                            subscription.getNotificationListeners().forEach(
-                                listener -> listener.onKeepAliveNotification(
-                                    subscription, notificationMessage.getPublishTime())
-                            );
-                        } else {
+                                    for (MonitoredItemNotification n : monitoredItemNotifications) {
+                                        UaMonitoredItem item = subscription
+                                            .getItemsByClientHandle().get(n.getClientHandle());
+
+                                        if (item != null) {
+                                            monitoredItems.add(item);
+                                            dataValues.add(n.getValue());
+                                        }
+                                    }
+
+                                    subscription.getNotificationListeners().forEach(
+                                        listener -> listener.onDataChangeNotification(
+                                            subscription,
+                                            monitoredItems,
+                                            dataValues,
+                                            notificationMessage.getPublishTime()
+                                        )
+                                    );
+                                }
+                            }
+                        } else if (o instanceof EventNotificationList) {
+                            EventNotificationList enl = (EventNotificationList) o;
+                            EventFieldList[] eventFieldLists =
+                                requireNonNullElse(enl.getEvents(), new EventFieldList[0]);
+
+                            for (EventFieldList efl : eventFieldLists) {
+                                logger.trace("EventFieldList: clientHandle={}, values={}",
+                                    efl.getClientHandle(), Arrays.toString(efl.getEventFields()));
+
+                                OpcUaMonitoredItem item = items.get(efl.getClientHandle());
+                                if (item != null) item.onEventArrived(efl.getEventFields());
+                            }
+
                             if (!subscription.getNotificationListeners().isEmpty()) {
                                 List<UaMonitoredItem> monitoredItems = new ArrayList<>();
-                                List<DataValue> dataValues = new ArrayList<>();
+                                List<Variant[]> eventFields = new ArrayList<>();
 
-                                for (MonitoredItemNotification n : monitoredItemNotifications) {
+                                for (EventFieldList efl : eventFieldLists) {
                                     UaMonitoredItem item = subscription
-                                        .getItemsByClientHandle().get(n.getClientHandle());
+                                        .getItemsByClientHandle().get(efl.getClientHandle());
 
                                     if (item != null) {
                                         monitoredItems.add(item);
-                                        dataValues.add(n.getValue());
+                                        eventFields.add(efl.getEventFields());
                                     }
                                 }
 
                                 subscription.getNotificationListeners().forEach(
-                                    listener -> listener.onDataChangeNotification(
+                                    listener -> listener.onEventNotification(
                                         subscription,
                                         monitoredItems,
-                                        dataValues,
+                                        eventFields,
                                         notificationMessage.getPublishTime()
                                     )
                                 );
                             }
-                        }
-                    } else if (o instanceof EventNotificationList) {
-                        EventNotificationList enl = (EventNotificationList) o;
-                        List<EventFieldList> eventFieldLists = List.of(enl.getEvents());
+                        } else if (o instanceof StatusChangeNotification) {
+                            StatusChangeNotification scn = (StatusChangeNotification) o;
 
-                        for (EventFieldList efl : eventFieldLists) {
-                            logger.trace("EventFieldList: clientHandle={}, values={}",
-                                efl.getClientHandle(), Arrays.toString(efl.getEventFields()));
+                            logger.debug("StatusChangeNotification: {}", scn.getStatus());
 
-                            OpcUaMonitoredItem item = items.get(efl.getClientHandle());
-                            if (item != null) item.onEventArrived(efl.getEventFields());
-                        }
-
-                        if (!subscription.getNotificationListeners().isEmpty()) {
-                            List<UaMonitoredItem> monitoredItems = new ArrayList<>();
-                            List<Variant[]> eventFields = new ArrayList<>();
-
-                            for (EventFieldList efl : eventFieldLists) {
-                                UaMonitoredItem item = subscription
-                                    .getItemsByClientHandle().get(efl.getClientHandle());
-
-                                if (item != null) {
-                                    monitoredItems.add(item);
-                                    eventFields.add(efl.getEventFields());
-                                }
-                            }
+                            subscriptionListeners.forEach(
+                                listener -> listener.onStatusChanged(subscription, scn.getStatus())
+                            );
 
                             subscription.getNotificationListeners().forEach(
-                                listener -> listener.onEventNotification(
-                                    subscription,
-                                    monitoredItems,
-                                    eventFields,
-                                    notificationMessage.getPublishTime()
-                                )
+                                listener -> listener.onStatusChangedNotification(subscription, scn.getStatus())
                             );
-                        }
-                    } else if (o instanceof StatusChangeNotification) {
-                        StatusChangeNotification scn = (StatusChangeNotification) o;
 
-                        logger.debug("StatusChangeNotification: {}", scn.getStatus());
-
-                        subscriptionListeners.forEach(
-                            listener -> listener.onStatusChanged(subscription, scn.getStatus())
-                        );
-
-                        subscription.getNotificationListeners().forEach(
-                            listener -> listener.onStatusChangedNotification(subscription, scn.getStatus())
-                        );
-
-                        if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
-                            subscriptions.remove(subscription.getSubscriptionId());
+                            if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
+                                subscriptions.remove(subscription.getSubscriptionId());
+                            }
                         }
                     }
                 }

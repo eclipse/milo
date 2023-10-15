@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.4</a>
@@ -42,9 +43,9 @@ public class NetworkAddressUrlDataType extends NetworkAddressDataType implements
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=21200");
 
-    private final String url;
+    private final @Nullable String url;
 
-    public NetworkAddressUrlDataType(String networkInterface, String url) {
+    public NetworkAddressUrlDataType(@Nullable String networkInterface, @Nullable String url) {
         super(networkInterface);
         this.url = url;
     }
@@ -69,7 +70,7 @@ public class NetworkAddressUrlDataType extends NetworkAddressDataType implements
         return JSON_ENCODING_ID;
     }
 
-    public String getUrl() {
+    public @Nullable String getUrl() {
         return url;
     }
 

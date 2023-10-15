@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.2.2</a>
@@ -42,9 +43,9 @@ public class TargetVariablesDataType extends SubscribedDataSetDataType implement
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16310");
 
-    private final FieldTargetDataType[] targetVariables;
+    private final FieldTargetDataType @Nullable [] targetVariables;
 
-    public TargetVariablesDataType(FieldTargetDataType[] targetVariables) {
+    public TargetVariablesDataType(FieldTargetDataType @Nullable [] targetVariables) {
         this.targetVariables = targetVariables;
     }
 
@@ -68,7 +69,7 @@ public class TargetVariablesDataType extends SubscribedDataSetDataType implement
         return JSON_ENCODING_ID;
     }
 
-    public FieldTargetDataType[] getTargetVariables() {
+    public FieldTargetDataType @Nullable [] getTargetVariables() {
         return targetVariables;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.identity;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -19,6 +19,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * An {@link IdentityProvider} that will choose the first available anonymous {@link UserTokenPolicy}.
@@ -30,11 +32,15 @@ public class AnonymousProvider implements IdentityProvider {
     @Override
     public SignedIdentityToken getIdentityToken(
         EndpointDescription endpoint,
-        ByteString serverNonce) throws Exception {
+        ByteString serverNonce
+    ) throws Exception {
 
-        List<UserTokenPolicy> userIdentityTokens = List.of(endpoint.getUserIdentityTokens());
+        UserTokenPolicy[] userIdentityTokens = requireNonNullElse(
+            endpoint.getUserIdentityTokens(),
+            new UserTokenPolicy[0]
+        );
 
-        return userIdentityTokens.stream()
+        return Stream.of(userIdentityTokens)
             .filter(t -> t.getTokenType() == UserTokenType.Anonymous)
             .findFirst()
             .map(policy -> {

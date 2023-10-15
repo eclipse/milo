@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -155,7 +155,7 @@ public class EventContentFilter {
             }
 
             String indexRange = select.getIndexRange();
-            if (indexRange != null) {
+            if (indexRange != null && !indexRange.isEmpty()) {
                 if (relativeNode instanceof VariableNode) {
                     int valueRank = ((VariableNode) relativeNode).getValueRank();
 
@@ -345,7 +345,7 @@ public class EventContentFilter {
     @NotNull
     private static FilterOperand[] decodeOperands(
         EncodingContext context,
-        @Nullable ExtensionObject[] operandXos
+        ExtensionObject @Nullable [] operandXos
     ) {
 
         if (operandXos == null) {

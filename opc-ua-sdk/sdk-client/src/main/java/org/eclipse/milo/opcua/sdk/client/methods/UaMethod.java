@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A callable method belonging to an ObjectNode.
@@ -124,7 +126,7 @@ public class UaMethod {
         );
 
         return client.callAsync(List.of(request))
-            .thenApply(response -> response.getResults()[0])
+            .thenApply(response -> requireNonNull(response.getResults())[0])
             .thenCompose(result -> {
                 StatusCode statusCode = result.getStatusCode();
 

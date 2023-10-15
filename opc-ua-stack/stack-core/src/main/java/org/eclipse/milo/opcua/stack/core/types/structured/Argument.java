@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.1">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.1</a>
@@ -42,18 +43,18 @@ public class Argument extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15081");
 
-    private final String name;
+    private final @Nullable String name;
 
     private final NodeId dataType;
 
     private final Integer valueRank;
 
-    private final UInteger[] arrayDimensions;
+    private final UInteger @Nullable [] arrayDimensions;
 
     private final LocalizedText description;
 
-    public Argument(String name, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
-                    LocalizedText description) {
+    public Argument(@Nullable String name, NodeId dataType, Integer valueRank,
+                    UInteger @Nullable [] arrayDimensions, LocalizedText description) {
         this.name = name;
         this.dataType = dataType;
         this.valueRank = valueRank;
@@ -81,7 +82,7 @@ public class Argument extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -93,7 +94,7 @@ public class Argument extends Structure implements UaStructuredType {
         return valueRank;
     }
 
-    public UInteger[] getArrayDimensions() {
+    public UInteger @Nullable [] getArrayDimensions() {
         return arrayDimensions;
     }
 

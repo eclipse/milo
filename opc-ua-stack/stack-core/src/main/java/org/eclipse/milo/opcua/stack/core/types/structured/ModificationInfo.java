@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.HistoryUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.5.3">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.5.3</a>
@@ -48,10 +49,10 @@ public class ModificationInfo extends Structure implements UaStructuredType {
 
     private final HistoryUpdateType updateType;
 
-    private final String userName;
+    private final @Nullable String userName;
 
     public ModificationInfo(DateTime modificationTime, HistoryUpdateType updateType,
-                            String userName) {
+                            @Nullable String userName) {
         this.modificationTime = modificationTime;
         this.updateType = updateType;
         this.userName = userName;
@@ -85,7 +86,7 @@ public class ModificationInfo extends Structure implements UaStructuredType {
         return updateType;
     }
 
-    public String getUserName() {
+    public @Nullable String getUserName() {
         return userName;
     }
 

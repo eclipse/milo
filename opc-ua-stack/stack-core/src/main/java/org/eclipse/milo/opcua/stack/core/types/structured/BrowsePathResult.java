@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.4/#5.8.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.8.4/#5.8.4.2</a>
@@ -45,9 +46,9 @@ public class BrowsePathResult extends Structure implements UaStructuredType {
 
     private final StatusCode statusCode;
 
-    private final BrowsePathTarget[] targets;
+    private final BrowsePathTarget @Nullable [] targets;
 
-    public BrowsePathResult(StatusCode statusCode, BrowsePathTarget[] targets) {
+    public BrowsePathResult(StatusCode statusCode, BrowsePathTarget @Nullable [] targets) {
         this.statusCode = statusCode;
         this.targets = targets;
     }
@@ -76,7 +77,7 @@ public class BrowsePathResult extends Structure implements UaStructuredType {
         return statusCode;
     }
 
-    public BrowsePathTarget[] getTargets() {
+    public BrowsePathTarget @Nullable [] getTargets() {
         return targets;
     }
 
