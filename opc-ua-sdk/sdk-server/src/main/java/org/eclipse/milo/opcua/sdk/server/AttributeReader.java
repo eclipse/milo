@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
 
 public class AttributeReader {
@@ -87,7 +88,7 @@ public class AttributeReader {
             }
 
             Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(
-                (UByte) node.getAttribute(context, AttributeId.UserAccessLevel)
+                (UByte) requireNonNullElse(node.getAttribute(context, AttributeId.UserAccessLevel), UByte.MIN)
             );
             if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
                 return new DataValue(StatusCodes.Bad_UserAccessDenied);

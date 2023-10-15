@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -589,6 +589,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
                 while (jsonReader.peek() == JsonToken.NAME) {
                     String propertyName = nextName();
+                    if (propertyName == null) continue;
 
                     switch (propertyName) {
                         case "IdType": {
@@ -671,6 +672,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
                 while (jsonReader.peek() == JsonToken.NAME) {
                     String propertyName = nextName();
+                    if (propertyName == null) continue;
 
                     switch (propertyName) {
                         case "IdType": {
@@ -737,7 +739,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
      * Read the {@code id} Object for a {@link NodeId} or {@link ExpandedNodeId}.
      *
      * @param jsonReader the {@link JsonReader} to read from.
-     * @param idType     the expected {@link IdType}.
+     * @param idType the expected {@link IdType}.
      * @return the {@code id} Object read from {@code jsonReader}.
      * @throws IOException if {@code jsonReader} throws while reading the next token.
      */
@@ -807,6 +809,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             while (jsonReader.peek() == JsonToken.NAME) {
                 String nextName = nextName();
+                if (nextName == null) continue;
 
                 switch (nextName) {
                     case "Name": {
@@ -854,6 +857,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             while (jsonReader.peek() == JsonToken.NAME) {
                 String nextName = nextName();
+                if (nextName == null) continue;
 
                 switch (nextName) {
                     case "Locale":
@@ -902,6 +906,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             while (jsonReader.peek() == JsonToken.NAME) {
                 String nextName = nextName();
+                if (nextName == null) continue;
 
                 switch (nextName) {
                     case "TypeId":
@@ -979,6 +984,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             while (jsonReader.peek() == JsonToken.NAME) {
                 String nextName = nextName();
+                if (nextName == null) continue;
 
                 switch (nextName) {
                     case "Value":
@@ -1034,6 +1040,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             while (jsonReader.peek() == JsonToken.NAME) {
                 String nextName = nextName();
+                if (nextName == null) continue;
 
                 switch (nextName) {
                     case "Type":
@@ -1232,6 +1239,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             while (jsonReader.peek() == JsonToken.NAME) {
                 String nextName = nextName();
+                if (nextName == null) continue;
 
                 switch (nextName) {
                     case "SymbolicId":

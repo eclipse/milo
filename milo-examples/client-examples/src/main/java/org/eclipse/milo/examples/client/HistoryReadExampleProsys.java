@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRawModifiedDetails;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -79,7 +80,7 @@ public class HistoryReadExampleProsys implements ClientExample {
                     client.getStaticEncodingContext()
                 );
 
-                List<DataValue> dataValues = List.of(historyData.getDataValues());
+                List<DataValue> dataValues = Lists.ofNullable(historyData.getDataValues());
 
                 dataValues.forEach(v -> System.out.println("value=" + v));
             } else {

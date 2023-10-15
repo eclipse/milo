@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
@@ -175,7 +176,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     private CompletableFuture<BrowseResponse> browse(BrowseRequest request, Session session) {
-        List<BrowseDescription> nodesToBrowse = List.of(request.getNodesToBrowse());
+        List<BrowseDescription> nodesToBrowse = Lists.ofNullable(request.getNodesToBrowse());
 
         if (nodesToBrowse.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -210,7 +211,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     private CompletableFuture<RegisterNodesResponse> registerNodes(RegisterNodesRequest request, Session session) {
-        List<NodeId> nodeIds = List.of(request.getNodesToRegister());
+        List<NodeId> nodeIds = Lists.ofNullable(request.getNodesToRegister());
 
         if (nodeIds.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -232,7 +233,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     private CompletableFuture<UnregisterNodesResponse> unregisterNodes(UnregisterNodesRequest request, Session session) {
-        List<NodeId> nodeIds = List.of(request.getNodesToUnregister());
+        List<NodeId> nodeIds = Lists.ofNullable(request.getNodesToUnregister());
 
         if (nodeIds.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);

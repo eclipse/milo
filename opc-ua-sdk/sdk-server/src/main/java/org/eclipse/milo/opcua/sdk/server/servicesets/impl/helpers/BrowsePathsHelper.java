@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -41,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
@@ -63,7 +64,7 @@ public class BrowsePathsHelper {
         TranslateBrowsePathsToNodeIdsRequest request
     ) {
 
-        List<BrowsePath> browsePaths = List.of(request.getBrowsePaths());
+        List<BrowsePath> browsePaths = Lists.ofNullable(request.getBrowsePaths());
 
         if (browsePaths.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -108,7 +109,7 @@ public class BrowsePathsHelper {
             return future;
         }
 
-        List<RelativePathElement> relativePathElements = List.of(relativePath.getElements());
+        List<RelativePathElement> relativePathElements = Lists.ofNullable(relativePath.getElements());
 
         if (relativePathElements.isEmpty()) {
             future.complete(new BrowsePathResult(

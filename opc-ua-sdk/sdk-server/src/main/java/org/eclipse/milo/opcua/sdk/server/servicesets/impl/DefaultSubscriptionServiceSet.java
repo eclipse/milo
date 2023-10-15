@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -41,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
@@ -203,7 +204,7 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
         Session session
     ) {
 
-        List<UInteger> subscriptionIds = List.of(request.getSubscriptionIds());
+        List<UInteger> subscriptionIds = Lists.ofNullable(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);

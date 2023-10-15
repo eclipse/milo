@@ -152,9 +152,7 @@ public final class QualifiedName {
         if (ss.length > 1) {
             try {
                 namespaceIndex = Short.parseShort(ss[0]);
-            } catch (NumberFormatException ignored) {
-                namespaceIndex = 0;
-            }
+            } catch (NumberFormatException ignored) {}
             name = ss[1];
         }
 

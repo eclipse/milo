@@ -43,6 +43,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
+
 
 public class AttributeWriter {
 
@@ -94,7 +96,7 @@ public class AttributeWriter {
             }
 
             Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(
-                (UByte) node.getAttribute(context, AttributeId.UserAccessLevel)
+                (UByte) requireNonNullElse(node.getAttribute(context, AttributeId.UserAccessLevel), UByte.MIN)
             );
             if (!userAccessLevels.contains(AccessLevel.CurrentWrite)) {
                 return new StatusCode(StatusCodes.Bad_UserAccessDenied);
@@ -118,7 +120,7 @@ public class AttributeWriter {
                 }
 
                 Set<WriteMask> userWriteMasks = WriteMask.fromMask(
-                    (UInteger) node.getAttribute(context, AttributeId.UserWriteMask)
+                    (UInteger) requireNonNullElse(node.getAttribute(context, AttributeId.UserWriteMask), UInteger.MIN)
                 );
                 if (!userWriteMasks.contains(writeMask)) {
                     return new StatusCode(StatusCodes.Bad_UserAccessDenied);

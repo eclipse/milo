@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRes
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcUaSubscription implements UaSubscription {
@@ -96,7 +98,8 @@ public class OpcUaSubscription implements UaSubscription {
     @Override
     public CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(
         TimestampsToReturn timestampsToReturn,
-        List<MonitoredItemCreateRequest> itemsToCreate) {
+        List<MonitoredItemCreateRequest> itemsToCreate
+    ) {
 
         CompletableFuture<CreateMonitoredItemsResponse> future = client.createMonitoredItemsAsync(
             subscriptionId,
@@ -105,13 +108,14 @@ public class OpcUaSubscription implements UaSubscription {
         );
 
         return future.thenApply(response -> {
-            List<MonitoredItemCreateResult> results = List.of(response.getResults());
+            MonitoredItemCreateResult[] results =
+                requireNonNullElse(response.getResults(), new MonitoredItemCreateResult[0]);
 
             List<UaMonitoredItem> createdItems = new ArrayList<>(itemsToCreate.size());
 
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest request = itemsToCreate.get(i);
-                MonitoredItemCreateResult result = results.get(i);
+                MonitoredItemCreateResult result = results[i];
 
                 OpcUaMonitoredItem item = new OpcUaMonitoredItem(
                     client,
@@ -179,11 +183,12 @@ public class OpcUaSubscription implements UaSubscription {
         return future.thenApply(response -> {
             var statusCodes = new ArrayList<StatusCode>();
 
-            List<MonitoredItemModifyResult> results = List.of(response.getResults());
+            MonitoredItemModifyResult[] results =
+                requireNonNullElse(response.getResults(), new MonitoredItemModifyResult[0]);
 
-            for (int i = 0; i < results.size(); i++) {
+            for (int i = 0; i < results.length; i++) {
                 MonitoredItemModifyRequest request = itemsToModify.get(i);
-                MonitoredItemModifyResult result = results.get(i);
+                MonitoredItemModifyResult result = results[i];
                 StatusCode statusCode = result.getStatusCode();
 
                 OpcUaMonitoredItem item = itemsByServerHandle.get(request.getMonitoredItemId());
@@ -213,13 +218,12 @@ public class OpcUaSubscription implements UaSubscription {
 
     @Override
     public CompletableFuture<List<StatusCode>> deleteMonitoredItems(List<UaMonitoredItem> itemsToDelete) {
-
         List<UInteger> monitoredItemIds = itemsToDelete.stream()
             .map(UaMonitoredItem::getMonitoredItemId)
             .collect(Collectors.toList());
 
         return client.deleteMonitoredItemsAsync(subscriptionId, monitoredItemIds).thenApply(response -> {
-            List<StatusCode> results = List.of(response.getResults());
+            List<StatusCode> results = Lists.ofNullable(response.getResults());
 
             for (int i = 0; i < itemsToDelete.size(); i++) {
                 OpcUaMonitoredItem item = (OpcUaMonitoredItem) itemsToDelete.get(i);
@@ -245,7 +249,7 @@ public class OpcUaSubscription implements UaSubscription {
             client.setMonitoringModeAsync(subscriptionId, monitoringMode, monitoredItemIds);
 
         return future.thenApply(response -> {
-            List<StatusCode> results = List.of(response.getResults());
+            List<StatusCode> results = Lists.ofNullable(response.getResults());
 
             for (int i = 0; i < monitoredItemIds.size(); i++) {
                 UInteger id = monitoredItemIds.get(i);
@@ -265,7 +269,7 @@ public class OpcUaSubscription implements UaSubscription {
     public CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled) {
         return client.setPublishingModeAsync(publishingEnabled, List.of(subscriptionId))
             .thenApply(response -> {
-                StatusCode statusCode = List.of(response.getResults()).get(0);
+                StatusCode statusCode = requireNonNull(response.getResults())[0];
 
                 if (statusCode.isGood()) {
                     setPublishingEnabled(publishingEnabled);
@@ -288,7 +292,7 @@ public class OpcUaSubscription implements UaSubscription {
             Collections.emptyList()
         );
 
-        return future.thenApply(r -> Arrays.asList(r.getAddResults()));
+        return future.thenApply(r -> Lists.ofNullable(r.getAddResults()));
     }
 
     @Override
@@ -304,7 +308,7 @@ public class OpcUaSubscription implements UaSubscription {
             linksToRemove
         );
 
-        return future.thenApply(r -> Arrays.asList(r.getRemoveResults()));
+        return future.thenApply(r -> Lists.ofNullable(r.getRemoveResults()));
     }
 
     @Override

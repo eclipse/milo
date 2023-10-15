@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.crypto.Cipher;
 
 import io.netty.buffer.ByteBuf;
@@ -37,6 +38,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
+
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * An {@link IdentityProvider} that chooses a {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
@@ -64,8 +67,8 @@ public class UsernameProvider implements IdentityProvider {
      * Construct a {@link UsernameProvider} that validates the remote certificate using {@code certificateValidator}
      * and selects the first available {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
      *
-     * @param username             the username to authenticate with.
-     * @param password             the password to authenticate with.
+     * @param username the username to authenticate with.
+     * @param password the password to authenticate with.
      * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
      */
     public UsernameProvider(String username, String password, ClientCertificateValidator certificateValidator) {
@@ -78,11 +81,11 @@ public class UsernameProvider implements IdentityProvider {
      * <p>
      * Useful if the server might return more than one {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
      *
-     * @param username             the username to authenticate with.
-     * @param password             the password to authenticate with.
+     * @param username the username to authenticate with.
+     * @param password the password to authenticate with.
      * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
-     * @param policyChooser        a function that selects a {@link UserTokenPolicy} to use. The policy list is
-     *                             guaranteed to be non-null and non-empty.
+     * @param policyChooser a function that selects a {@link UserTokenPolicy} to use. The policy list is
+     *     guaranteed to be non-null and non-empty.
      */
     public UsernameProvider(
         String username,
@@ -100,9 +103,10 @@ public class UsernameProvider implements IdentityProvider {
     public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
                                                 ByteString serverNonce) throws Exception {
 
-        List<UserTokenPolicy> userIdentityTokens = List.of(endpoint.getUserIdentityTokens());
+        UserTokenPolicy[] userIdentityTokens =
+            requireNonNullElse(endpoint.getUserIdentityTokens(), new UserTokenPolicy[0]);
 
-        List<UserTokenPolicy> tokenPolicies = userIdentityTokens.stream()
+        List<UserTokenPolicy> tokenPolicies = Stream.of(userIdentityTokens)
             .filter(t -> t.getTokenType() == UserTokenType.UserName)
             .collect(Collectors.toList());
 

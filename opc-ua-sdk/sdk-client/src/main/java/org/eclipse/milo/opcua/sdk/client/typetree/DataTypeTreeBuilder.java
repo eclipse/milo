@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -50,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
@@ -162,7 +163,7 @@ public final class DataTypeTreeBuilder {
         );
 
         return readFuture.thenApply(ReadResponse.class::cast).thenApply(response -> {
-            DataValue dataValue = response.getResults()[0];
+            DataValue dataValue = requireNonNull(response.getResults())[0];
             String[] namespaceUris = (String[]) dataValue.getValue().getValue();
             NamespaceTable namespaceTable = new NamespaceTable();
             if (namespaceUris != null) {
@@ -314,7 +315,7 @@ public final class DataTypeTreeBuilder {
         return client.getTransport().sendRequestMessage(request)
             .thenApply(ReadResponse.class::cast)
             .thenApply(response -> {
-                DataValue value = response.getResults()[0];
+                DataValue value = requireNonNull(response.getResults())[0];
 
                 if (value.getStatusCode() != null && value.getStatusCode().isGood()) {
                     Object o = value.getValue().getValue();

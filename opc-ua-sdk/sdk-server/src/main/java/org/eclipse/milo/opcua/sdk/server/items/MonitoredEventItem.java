@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -49,6 +50,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
@@ -228,12 +230,19 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
             filterResult = EventContentFilter.validate(filterContext, this.filter);
 
-            boolean selectClauseGood = List.of(filterResult.getSelectClauseResults())
-                .stream()
-                .allMatch(StatusCode::isGood);
+            StatusCode[] selectClauseResults = requireNonNullElse(
+                filterResult.getSelectClauseResults(),
+                new StatusCode[0]
+            );
 
-            boolean whereClauseGood = List.of(filterResult.getWhereClauseResult().getElementResults())
-                .stream()
+            boolean selectClauseGood = Stream.of(selectClauseResults).allMatch(StatusCode::isGood);
+
+            ContentFilterElementResult[] elementResults = requireNonNullElse(
+                filterResult.getWhereClauseResult().getElementResults(),
+                new ContentFilterElementResult[0]
+            );
+
+            boolean whereClauseGood = Stream.of(elementResults)
                 .map(ContentFilterElementResult::getStatusCode)
                 .allMatch(StatusCode::isGood);
 
@@ -244,7 +253,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
         }
     }
-    
+
     @Override
     protected EventFieldList wrapQueueValue(Variant[] value) {
         return new EventFieldList(uint(getClientHandle()), value);

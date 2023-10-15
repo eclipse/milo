@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -67,6 +67,7 @@ import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
@@ -153,11 +154,12 @@ public class OpcWebSocketClientTransport extends AbstractUascClientTransport {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
-                        String endpointUrl = application.getEndpoint().getEndpointUrl();
+                        String endpointUrl = requireNonNullElse(application.getEndpoint().getEndpointUrl(), "");
                         String scheme = EndpointUtil.getScheme(endpointUrl);
 
-                        TransportProfile transportProfile = TransportProfile
-                            .fromUri(application.getEndpoint().getTransportProfileUri());
+                        TransportProfile transportProfile = TransportProfile.fromUri(
+                            requireNonNullElse(application.getEndpoint().getTransportProfileUri(), "")
+                        );
 
                         String subprotocol;
                         if (transportProfile == TransportProfile.WSS_UASC_UABINARY) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -67,6 +68,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -109,7 +112,7 @@ public class AddressSpace {
      *
      * @param nodeId the {@link NodeId} identifying the Node to get.
      * @return a CompletableFuture that completes successfully with the UaNode instance or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<? extends UaNode> getNodeAsync(NodeId nodeId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
@@ -152,7 +155,7 @@ public class AddressSpace {
      * If this type definition is registered with the {@link ObjectTypeManager} a
      * {@link UaObjectNode} of the appropriate subclass will be returned.
      *
-     * @param nodeId           the {@link NodeId} identifying the ObjectNode to get.
+     * @param nodeId the {@link NodeId} identifying the ObjectNode to get.
      * @param typeDefinitionId the {@link NodeId} identifying the type definition.
      * @return a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId}.
      * @throws UaException if an error occurs while creating the ObjectNode.
@@ -177,8 +180,8 @@ public class AddressSpace {
      *
      * @param nodeId the {@link NodeId} identifying the ObjectNode to get.
      * @return a CompletableFuture that completes successfully with a {@link UaObjectNode} instance
-     * for the ObjectNode identified by {@code nodeId} or completes exceptionally if an error
-     * occurs creating the ObjectNode.
+     *     for the ObjectNode identified by {@code nodeId} or completes exceptionally if an error
+     *     occurs creating the ObjectNode.
      */
     public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
@@ -201,11 +204,11 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param nodeId           the {@link NodeId} identifying the ObjectNode to get.
+     * @param nodeId the {@link NodeId} identifying the ObjectNode to get.
      * @param typeDefinitionId the {@link NodeId} identifying the type definition.
      * @return a CompletableFuture that completes successfully with a {@link UaObjectNode} instance
-     * for the ObjectNode identified by {@code nodeId} or completes exceptionally if an error
-     * occurs creating the ObjectNode.
+     *     for the ObjectNode identified by {@code nodeId} or completes exceptionally if an error
+     *     occurs creating the ObjectNode.
      */
     public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
@@ -216,7 +219,7 @@ public class AddressSpace {
             CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.OBJECT_ATTRIBUTES);
 
             return future.thenCompose(response -> {
-                List<DataValue> attributeValues = List.of(response.getResults());
+                DataValue[] attributeValues = requireNonNull(response.getResults());
 
                 try {
                     UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
@@ -258,7 +261,7 @@ public class AddressSpace {
      * If this type definition is registered with the {@link VariableTypeManager} a
      * {@link UaVariableNode} of the appropriate subclass will be returned.
      *
-     * @param nodeId           the {@link NodeId} identifying the VariableNode to get.
+     * @param nodeId the {@link NodeId} identifying the VariableNode to get.
      * @param typeDefinitionId the {@link NodeId} identifying the type definition.
      * @return a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId}.
      * @throws UaException if an error occurs while creating the VariableNode.
@@ -283,8 +286,8 @@ public class AddressSpace {
      *
      * @param nodeId the {@link NodeId} identifying the VariableNode to get.
      * @return a CompletableFuture that completes successfully with a {@link UaVariableNode}
-     * instance for the VariableNode identified by {@code nodeId} or completes exceptionally if an
-     * error occurs while creating the VariableNode.
+     *     instance for the VariableNode identified by {@code nodeId} or completes exceptionally if an
+     *     error occurs while creating the VariableNode.
      */
     public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
@@ -307,11 +310,11 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param nodeId           the {@link NodeId} identifying the VariableNode to get.
+     * @param nodeId the {@link NodeId} identifying the VariableNode to get.
      * @param typeDefinitionId the {@link NodeId} identifying the type definition.
      * @return a CompletableFuture that completes successfully with a {@link UaVariableNode}
-     * instance for the VariableNode identified by {@code nodeId} or completes exceptionally if an
-     * error occurs while creating the VariableNode.
+     *     instance for the VariableNode identified by {@code nodeId} or completes exceptionally if an
+     *     error occurs while creating the VariableNode.
      */
     public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
@@ -322,10 +325,10 @@ public class AddressSpace {
             CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.VARIABLE_ATTRIBUTES);
 
             return future.thenCompose(response -> {
-                List<DataValue> attributeValues = List.of(response.getResults());
+                DataValue[] variableAttributeValues = requireNonNull(response.getResults());
 
                 try {
-                    UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
+                    UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, variableAttributeValues);
 
                     nodeCache.put(node.getNodeId(), node);
 
@@ -355,7 +358,7 @@ public class AddressSpace {
     /**
      * Call the Browse service to get a {@link UaNode}'s references.
      *
-     * @param node          the {@link UaNode} to browse.
+     * @param node the {@link UaNode} to browse.
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a List of {@link ReferenceDescription}s.
      * @throws UaException if a service-level error occurs.
@@ -387,7 +390,7 @@ public class AddressSpace {
     /**
      * Call the Browse service to get a Node's references.
      *
-     * @param nodeId        the {@link NodeId} of the Node to browse.
+     * @param nodeId the {@link NodeId} of the Node to browse.
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a List of {@link ReferenceDescription}s.
      * @throws UaException if a service-level error occurs.
@@ -409,7 +412,7 @@ public class AddressSpace {
      *
      * @param node the {@link UaNode} to browse.
      * @return a CompletableFuture that completes successfully with the List of references or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      * @see #getBrowseOptions()
      * @see #modifyBrowseOptions(Consumer)
      * @see #setBrowseOptions(BrowseOptions)
@@ -423,10 +426,10 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param node          the {@link UaNode} to browse.
+     * @param node the {@link UaNode} to browse.
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a CompletableFuture that completes successfully with the List of references or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<ReferenceDescription>> browseAsync(UaNode node, BrowseOptions browseOptions) {
         return browseAsync(node.getNodeId(), browseOptions);
@@ -440,7 +443,7 @@ public class AddressSpace {
      *
      * @param nodeId the {@link NodeId} of the Node to browse.
      * @return a CompletableFuture that completes successfully with the List of references or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      * @see #getBrowseOptions()
      * @see #modifyBrowseOptions(Consumer)
      * @see #setBrowseOptions(BrowseOptions)
@@ -454,10 +457,10 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param nodeId        the {@link NodeId} of the Node to browse.
+     * @param nodeId the {@link NodeId} of the Node to browse.
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a CompletableFuture that completes successfully with the List of references or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<ReferenceDescription>> browseAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
@@ -477,7 +480,7 @@ public class AddressSpace {
      *
      * @param node the {@link UaNode} to start the browse from.
      * @return a List of {@link UaNode}s referenced by {@code node} given the currently configured
-     * {@link BrowseOptions}.
+     *     {@link BrowseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
      * @see #browseNodes(UaNode, BrowseOptions)
      * @see #getBrowseOptions()
@@ -491,7 +494,7 @@ public class AddressSpace {
     /**
      * Browse from {@code node} using {@code browseOptions}.
      *
-     * @param node          the {@link UaNode} to start the browse from.
+     * @param node the {@link UaNode} to start the browse from.
      * @param browseOptions the {@link BrowseOptions} to use.
      * @return a List of {@link UaNode}s referenced by {@code node} given {@code browseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
@@ -510,7 +513,7 @@ public class AddressSpace {
      *
      * @param nodeId the {@link NodeId} to start the browse from.
      * @return a List of {@link UaNode}s referenced by {@code nodeId} given the currently configured
-     * {@link BrowseOptions}.
+     *     {@link BrowseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
      * @see #browseNodes(UaNode, BrowseOptions)
      * @see #getBrowseOptions()
@@ -524,7 +527,7 @@ public class AddressSpace {
     /**
      * Browse from {@code nodeId} using {@code browseOptions}.
      *
-     * @param nodeId        the {@link NodeId} to start the browse from.
+     * @param nodeId the {@link NodeId} to start the browse from.
      * @param browseOptions the {@link BrowseOptions} to use.
      * @return a List of {@link UaNode}s referenced by {@code nodeId} given {@code browseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
@@ -545,8 +548,8 @@ public class AddressSpace {
      *
      * @param node the {@link UaNode} to start the browse from.
      * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
-     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
-     * exceptionally if a service-level error occurs.
+     *     referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     *     exceptionally if a service-level error occurs.
      * @see #browseNodesAsync(UaNode, BrowseOptions)
      * @see #getBrowseOptions()
      * @see #modifyBrowseOptions(Consumer)
@@ -561,11 +564,11 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param node          the {@link UaNode} to start the browse from.
+     * @param node the {@link UaNode} to start the browse from.
      * @param browseOptions the {@link BrowseOptions} to use.
      * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
-     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
-     * exceptionally if a service-level error occurs.
+     *     referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     *     exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(UaNode node, BrowseOptions browseOptions) {
         return browseNodesAsync(node.getNodeId(), browseOptions);
@@ -578,8 +581,8 @@ public class AddressSpace {
      *
      * @param nodeId the {@link NodeId} to start the browse from.
      * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
-     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
-     * exceptionally if a service-level error occurs.
+     *     referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     *     exceptionally if a service-level error occurs.
      * @see #browseNodesAsync(UaNode, BrowseOptions)
      * @see #getBrowseOptions()
      * @see #modifyBrowseOptions(Consumer)
@@ -594,11 +597,11 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param nodeId        the {@link NodeId} to start the browse from.
+     * @param nodeId the {@link NodeId} to start the browse from.
      * @param browseOptions the {@link BrowseOptions} to use.
      * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
-     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
-     * exceptionally if a service-level error occurs.
+     *     referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     *     exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
@@ -698,7 +701,7 @@ public class AddressSpace {
      *
      * @param xni the {@link ExpandedNodeId} to convert to a {@link NodeId}.
      * @return a {@link NodeId} local to the server, or {@link NodeId#NULL_VALUE} if conversion
-     * could not be completed for any reason.
+     *     could not be completed for any reason.
      */
     public NodeId toNodeId(ExpandedNodeId xni) {
         try {
@@ -716,7 +719,7 @@ public class AddressSpace {
      *
      * @param xni the {@link ExpandedNodeId} to convert to a {@link NodeId}.
      * @return a {@link NodeId} local to the server, or {@link NodeId#NULL_VALUE} if conversion
-     * could not be completed for any reason.
+     *     could not be completed for any reason.
      */
     public CompletableFuture<NodeId> toNodeIdAsync(ExpandedNodeId xni) {
         // TODO should this fail with Bad_NodeIdUnknown instead of returning NodeId.NULL_VALUE?
@@ -800,8 +803,10 @@ public class AddressSpace {
 
         return browseFuture.thenCompose(result -> {
             if (result.getStatusCode().isGood()) {
-                Optional<ExpandedNodeId> typeDefinitionId = List.of(result.getReferences())
-                    .stream()
+                ReferenceDescription[] references =
+                    requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
+
+                Optional<ExpandedNodeId> typeDefinitionId = Stream.of(references)
                     .filter(r -> Objects.equals(NodeIds.HasTypeDefinition, r.getReferenceTypeId()))
                     .map(ReferenceDescription::getNodeId)
                     .findFirst();
@@ -825,7 +830,7 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.BASE_ATTRIBUTES);
 
         return future.thenCompose(response -> {
-            List<DataValue> results = List.of(response.getResults());
+            DataValue[] results = requireNonNull(response.getResults());
 
             return createNodeFromBaseAttributes(nodeId, results);
         });
@@ -833,15 +838,15 @@ public class AddressSpace {
 
     private CompletableFuture<? extends UaNode> createNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
-        StatusCode nodeIdStatusCode = baseAttributeValues.get(0).getStatusCode();
+        StatusCode nodeIdStatusCode = baseAttributeValues[0].getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             return failedUaFuture(nodeIdStatusCode);
         }
 
-        Integer nodeClassValue = (Integer) baseAttributeValues.get(1).getValue().getValue();
+        Integer nodeClassValue = (Integer) baseAttributeValues[1].getValue().getValue();
         if (nodeClassValue == null) {
             return failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
         }
@@ -874,7 +879,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaDataTypeNode> createDataTypeNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -885,8 +890,8 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenCompose(response -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+            DataValue[] dataTypeAttributeValues = requireNonNull(response.getResults());
+            DataValue[] attributeValues = concat(baseAttributeValues, dataTypeAttributeValues);
 
             try {
                 UaDataTypeNode node = newDataTypeNode(nodeId, attributeValues);
@@ -902,7 +907,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaMethodNode> createMethodNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -913,8 +918,8 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenCompose(response -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+            DataValue[] methodAttributeValues = requireNonNull(response.getResults());
+            DataValue[] attributeValues = concat(baseAttributeValues, methodAttributeValues);
 
             try {
                 UaMethodNode node = newMethodNode(nodeId, attributeValues);
@@ -930,7 +935,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaObjectNode> createObjectNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -946,8 +951,8 @@ public class AddressSpace {
                 ReadResponse response = attributesFuture.join();
                 NodeId typeDefinitionId = typeDefinitionFuture.join();
 
-                List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-                Collections.addAll(attributeValues, response.getResults());
+                DataValue[] objectAttributeValues = requireNonNull(response.getResults());
+                DataValue[] attributeValues = concat(baseAttributeValues, objectAttributeValues);
 
                 try {
                     UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
@@ -963,7 +968,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaObjectTypeNode> createObjectTypeNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -974,8 +979,8 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenCompose(response -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+            DataValue[] objectTypeAttributeValues = requireNonNull(response.getResults());
+            DataValue[] attributeValues = concat(baseAttributeValues, objectTypeAttributeValues);
 
             try {
                 UaObjectTypeNode node = newObjectTypeNode(nodeId, attributeValues);
@@ -991,7 +996,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaReferenceTypeNode> createReferenceTypeNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -1002,8 +1007,8 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenCompose(response -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+            DataValue[] referenceTypeAttributeValues = requireNonNull(response.getResults());
+            DataValue[] attributeValues = concat(baseAttributeValues, referenceTypeAttributeValues);
 
             try {
                 UaReferenceTypeNode node = newReferenceTypeNode(nodeId, attributeValues);
@@ -1019,7 +1024,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaVariableNode> createVariableNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -1035,8 +1040,8 @@ public class AddressSpace {
                 ReadResponse response = attributesFuture.join();
                 NodeId typeDefinitionId = typeDefinitionFuture.join();
 
-                List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-                Collections.addAll(attributeValues, response.getResults());
+                DataValue[] variableAttributeValues = requireNonNull(response.getResults());
+                DataValue[] attributeValues = concat(baseAttributeValues, variableAttributeValues);
 
                 try {
                     UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
@@ -1052,7 +1057,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaVariableTypeNode> createVariableTypeNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -1063,8 +1068,8 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenCompose(response -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+            DataValue[] variableTypeAttributeValues = requireNonNull(response.getResults());
+            DataValue[] attributeValues = concat(baseAttributeValues, variableTypeAttributeValues);
 
             try {
                 UaVariableTypeNode node = newVariableTypeNode(nodeId, attributeValues);
@@ -1080,7 +1085,7 @@ public class AddressSpace {
 
     private CompletableFuture<UaViewNode> createViewNodeFromBaseAttributes(
         NodeId nodeId,
-        List<DataValue> baseAttributeValues
+        DataValue[] baseAttributeValues
     ) {
 
         Set<AttributeId> remainingAttributes = Sets.difference(
@@ -1091,8 +1096,8 @@ public class AddressSpace {
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenCompose(response -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+            DataValue[] viewAttributeValues = requireNonNull(response.getResults());
+            DataValue[] attributeValues = concat(baseAttributeValues, viewAttributeValues);
 
             try {
                 UaViewNode node = newViewNode(nodeId, attributeValues);
@@ -1121,46 +1126,48 @@ public class AddressSpace {
         return client.readAsync(0.0, TimestampsToReturn.Neither, readValueIds);
     }
 
-    private UaDataTypeNode newDataTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
-        DataValue nodeIdDataValue = attributeValues.get(0);
+    private UaDataTypeNode newDataTypeNode(NodeId nodeId, DataValue[] attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.DataType,
                 "expected NodeClass.DataType, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
+            Boolean isAbstract = (Boolean) attributeValues[10].getValue().getValue();
             DataTypeDefinition dataTypeDefinition = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(11),
+                attributeValues[11],
                 DataTypeDefinition.class
             );
 
@@ -1185,44 +1192,46 @@ public class AddressSpace {
         }
     }
 
-    private UaMethodNode newMethodNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
-        DataValue nodeIdDataValue = attributeValues.get(0);
+    private UaMethodNode newMethodNode(NodeId nodeId, DataValue[] attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.Method,
                 "expected NodeClass.Method, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            Boolean executable = (Boolean) attributeValues.get(10).getValue().getValue();
-            Boolean userExecutable = (Boolean) attributeValues.get(11).getValue().getValue();
+            Boolean executable = (Boolean) attributeValues[10].getValue().getValue();
+            Boolean userExecutable = (Boolean) attributeValues[11].getValue().getValue();
 
             return new UaMethodNode(
                 client,
@@ -1248,45 +1257,47 @@ public class AddressSpace {
     private UaObjectNode newObjectNode(
         NodeId nodeId,
         NodeId typeDefinitionId,
-        List<DataValue> attributeValues
+        DataValue[] attributeValues
     ) throws UaException {
 
-        DataValue nodeIdDataValue = attributeValues.get(0);
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.Object,
                 "expected NodeClass.Object, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            UByte eventNotifier = (UByte) attributeValues.get(10).getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues[10].getValue().getValue();
 
             ObjectNodeConstructor constructor = client.getObjectTypeManager()
                 .getNodeConstructor(typeDefinitionId)
@@ -1312,43 +1323,45 @@ public class AddressSpace {
         }
     }
 
-    private UaObjectTypeNode newObjectTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
-        DataValue nodeIdDataValue = attributeValues.get(0);
+    private UaObjectTypeNode newObjectTypeNode(NodeId nodeId, DataValue[] attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.ObjectType,
                 "expected NodeClass.ObjectType, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
+            Boolean isAbstract = (Boolean) attributeValues[10].getValue().getValue();
 
             return new UaObjectTypeNode(
                 client,
@@ -1372,47 +1385,49 @@ public class AddressSpace {
 
     private UaReferenceTypeNode newReferenceTypeNode(
         NodeId nodeId,
-        List<DataValue> attributeValues
+        DataValue[] attributeValues
     ) throws UaException {
 
-        DataValue nodeIdDataValue = attributeValues.get(0);
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.ReferenceType,
                 "expected NodeClass.ReferenceType, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
-            Boolean symmetric = (Boolean) attributeValues.get(11).getValue().getValue();
-            LocalizedText inverseName = getAttributeOrNull(attributeValues.get(12), LocalizedText.class);
+            Boolean isAbstract = (Boolean) attributeValues[10].getValue().getValue();
+            Boolean symmetric = (Boolean) attributeValues[11].getValue().getValue();
+            LocalizedText inverseName = getAttributeOrNull(attributeValues[12], LocalizedText.class);
 
             return new UaReferenceTypeNode(
                 client,
@@ -1439,54 +1454,56 @@ public class AddressSpace {
     private UaVariableNode newVariableNode(
         NodeId nodeId,
         NodeId typeDefinitionId,
-        List<DataValue> attributeValues
+        DataValue[] attributeValues
     ) throws UaException {
 
-        DataValue nodeIdDataValue = attributeValues.get(0);
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.Variable,
                 "expected NodeClass.Variable, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            DataValue value = attributeValues.get(10);
-            NodeId dataType = (NodeId) attributeValues.get(11).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(12).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(13), UInteger[].class);
-            UByte accessLevel = (UByte) attributeValues.get(14).getValue().getValue();
-            UByte userAccessLevel = (UByte) attributeValues.get(15).getValue().getValue();
-            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(16), Double.class);
-            Boolean historizing = (Boolean) attributeValues.get(17).getValue().getValue();
+            DataValue value = attributeValues[10];
+            NodeId dataType = (NodeId) attributeValues[11].getValue().getValue();
+            Integer valueRank = (Integer) attributeValues[12].getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues[13], UInteger[].class);
+            UByte accessLevel = (UByte) attributeValues[14].getValue().getValue();
+            UByte userAccessLevel = (UByte) attributeValues[15].getValue().getValue();
+            Double minimumSamplingInterval = getAttributeOrNull(attributeValues[16], Double.class);
+            Boolean historizing = (Boolean) attributeValues[17].getValue().getValue();
             AccessLevelExType accessLevelEx = getAttributeOrNull(
-                attributeValues.get(18),
+                attributeValues[18],
                 AccessLevelExType.class
             );
 
@@ -1522,47 +1539,49 @@ public class AddressSpace {
         }
     }
 
-    private UaVariableTypeNode newVariableTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
-        DataValue nodeIdDataValue = attributeValues.get(0);
+    private UaVariableTypeNode newVariableTypeNode(NodeId nodeId, DataValue[] attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.VariableType,
                 "expected NodeClass.VariableType, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            DataValue value = attributeValues.get(10);
-            NodeId dataType = (NodeId) attributeValues.get(11).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(12).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(13), UInteger[].class);
-            Boolean isAbstract = (Boolean) attributeValues.get(14).getValue().getValue();
+            DataValue value = attributeValues[10];
+            NodeId dataType = (NodeId) attributeValues[11].getValue().getValue();
+            Integer valueRank = (Integer) attributeValues[12].getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues[13], UInteger[].class);
+            Boolean isAbstract = (Boolean) attributeValues[14].getValue().getValue();
 
             return new UaVariableTypeNode(
                 client,
@@ -1588,44 +1607,46 @@ public class AddressSpace {
         }
     }
 
-    private UaViewNode newViewNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
-        DataValue nodeIdDataValue = attributeValues.get(0);
+    private UaViewNode newViewNode(NodeId nodeId, DataValue[] attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues[0];
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from(
+                (Integer) requireNonNullElse(attributeValues[1].getValue().getValue(), 0)
+            );
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.View,
                 "expected NodeClass.View, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues[2].getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues[3].getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues[4], LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues[5], UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues[6], UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(7),
+                attributeValues[7],
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(8),
+                attributeValues[8],
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
                 client.getStaticEncodingContext(),
-                attributeValues.get(9),
+                attributeValues[9],
                 AccessRestrictionType.class
             );
 
-            Boolean containsNoLoops = (Boolean) attributeValues.get(10).getValue().getValue();
-            UByte eventNotifier = (UByte) attributeValues.get(11).getValue().getValue();
+            Boolean containsNoLoops = (Boolean) attributeValues[10].getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues[11].getValue().getValue();
 
             return new UaViewNode(
                 client,
@@ -1709,6 +1730,10 @@ public class AddressSpace {
                 return null;
             }
         }
+    }
+
+    private static DataValue[] concat(DataValue[] left, DataValue[] right) {
+        return Stream.concat(Stream.of(left), Stream.of(right)).toArray(DataValue[]::new);
     }
 
     public static class BrowseOptions {

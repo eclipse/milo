@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Objects.requireNonNullElse;
+
 public class DynamicEnum implements UaEnumeratedType {
 
     private final DataType dataType;
@@ -34,7 +36,9 @@ public class DynamicEnum implements UaEnumeratedType {
         EnumDefinition definition = (EnumDefinition) dataType.getDataTypeDefinition();
         assert definition != null;
 
-        for (EnumField field : definition.getFields()) {
+        EnumField[] fields = requireNonNullElse(definition.getFields(), new EnumField[0]);
+
+        for (EnumField field : fields) {
             if (field.getValue() == value) {
                 this.name = field.getName();
                 this.value = field.getValue().intValue();

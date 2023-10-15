@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -450,8 +451,8 @@ public class OpcUaServer extends AbstractServiceHandler {
             if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
                 if (getEndpointDescriptions().stream()
                     .filter(e -> EndpointUtil.getPath(e.getEndpointUrl()).equals(path))
-                    .filter(e -> e.getTransportProfileUri().equals(context.getTransportProfile().getUri()))
-                    .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))
+                    .filter(e -> Objects.equals(e.getTransportProfileUri(), context.getTransportProfile().getUri()))
+                    .noneMatch(e -> Objects.equals(e.getSecurityPolicyUri(), SecurityPolicy.None.getUri()))
                 ) {
 
                     if (!isDiscoveryService(requestMessage)) {
