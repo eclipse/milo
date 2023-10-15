@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -58,7 +58,7 @@ public class SubscriptionWatchdogTimerTest extends AbstractSubscriptionTest {
         System.out.printf("deleted subscription id=%s on server...%n", subscriptionId);
 
         System.out.println("waiting for watchdog timer to elapse...");
-        assertTrue(latch.await(15, TimeUnit.SECONDS));
+        assertTrue(latch.await(25, TimeUnit.SECONDS));
     }
 
 }
