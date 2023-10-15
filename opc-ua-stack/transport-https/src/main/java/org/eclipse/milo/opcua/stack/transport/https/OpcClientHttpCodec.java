@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -39,6 +39,8 @@ import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
+
 public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaRequestMessageType> {
 
     private static final String UABINARY_CONTENT_TYPE =
@@ -57,7 +59,9 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaRe
         this.application = application;
 
         endpoint = application.getEndpoint();
-        transportProfile = TransportProfile.fromUri(endpoint.getTransportProfileUri());
+        transportProfile = TransportProfile.fromUri(
+            requireNonNullElse(endpoint.getTransportProfileUri(), "")
+        );
     }
 
     @Override

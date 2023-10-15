@@ -345,7 +345,7 @@ public class EventContentFilter {
     @NotNull
     private static FilterOperand[] decodeOperands(
         EncodingContext context,
-        @Nullable ExtensionObject[] operandXos
+        ExtensionObject @Nullable [] operandXos
     ) {
 
         if (operandXos == null) {

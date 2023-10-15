@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -47,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.LoggerFactory;
 
@@ -430,7 +431,7 @@ public class BrowseHelper {
         }
 
         public CompletableFuture<BrowseResult[]> browseNext() {
-            List<ByteString> continuationPoints = List.of(request.getContinuationPoints());
+            List<ByteString> continuationPoints = Lists.ofNullable(request.getContinuationPoints());
 
             if (continuationPoints.isEmpty()) {
                 return failedUaFuture(StatusCodes.Bad_NothingToDo);

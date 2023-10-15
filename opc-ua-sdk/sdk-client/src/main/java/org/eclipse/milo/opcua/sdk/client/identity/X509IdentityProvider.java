@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -31,6 +32,8 @@ import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNullElse;
 
 public class X509IdentityProvider implements IdentityProvider {
 
@@ -58,9 +61,10 @@ public class X509IdentityProvider implements IdentityProvider {
     public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
                                                 ByteString serverNonce) throws Exception {
 
-        List<UserTokenPolicy> userIdentityTokens = List.of(endpoint.getUserIdentityTokens());
+        UserTokenPolicy[] userIdentityTokens =
+            requireNonNullElse(endpoint.getUserIdentityTokens(), new UserTokenPolicy[0]);
 
-        UserTokenPolicy tokenPolicy = userIdentityTokens.stream()
+        UserTokenPolicy tokenPolicy = Stream.of(userIdentityTokens)
             .filter(t -> t.getTokenType() == UserTokenType.Certificate)
             .findFirst().orElseThrow(() -> new Exception("no x509 certificate token policy found"));
 

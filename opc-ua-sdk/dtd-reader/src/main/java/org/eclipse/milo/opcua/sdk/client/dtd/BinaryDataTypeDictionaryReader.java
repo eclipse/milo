@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
@@ -64,12 +63,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
 import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -444,10 +445,10 @@ public class BinaryDataTypeDictionaryReader {
             .exceptionally(ex -> PARTITION_SIZE);
 
         return getPartitionSize.thenCompose(partitionSize -> {
-            List<List<NodeId>> partitions = Lists.partition(nodeIds, partitionSize);
+            Stream<List<NodeId>> partitions = Lists.partition(nodeIds, partitionSize);
 
             CompletableFuture<List<List<DataValue>>> sequence = FutureUtils.sequence(
-                partitions.stream().map(list -> {
+                partitions.map(list -> {
                     List<ReadValueId> readValueIds = list.stream()
                         .map(nodeId ->
                             new ReadValueId(
@@ -539,7 +540,7 @@ public class BinaryDataTypeDictionaryReader {
         return client.getTransport()
             .sendRequestMessage(browseRequest)
             .thenApply(BrowseResponse.class::cast)
-            .thenApply(r -> Objects.requireNonNull(r.getResults())[0])
+            .thenApply(r -> requireNonNull(r.getResults())[0])
             .thenCompose(result -> {
                 List<ReferenceDescription> references =
                     Collections.synchronizedList(new ArrayList<>());
@@ -591,7 +592,7 @@ public class BinaryDataTypeDictionaryReader {
             .sendRequestMessage(request)
             .thenApply(BrowseNextResponse.class::cast)
             .thenCompose(response -> {
-                BrowseResult result = List.of(response.getResults()).get(0);
+                BrowseResult result = requireNonNull(response.getResults())[0];
 
                 return maybeBrowseNext(result, references);
             });
@@ -617,7 +618,7 @@ public class BinaryDataTypeDictionaryReader {
         return client.getTransport()
             .sendRequestMessage(readRequest)
             .thenApply(ReadResponse.class::cast)
-            .thenApply(r -> List.of(r.getResults()));
+            .thenApply(r -> org.eclipse.milo.opcua.stack.core.util.Lists.ofNullable(r.getResults()));
     }
 
     public static class TypeDictionaryInfo {

@@ -59,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
@@ -714,8 +715,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                         if (o instanceof DataChangeNotification) {
                             DataChangeNotification dcn = (DataChangeNotification) o;
-                            List<MonitoredItemNotification> monitoredItemNotifications = List.of(dcn.getMonitoredItems());
-                            int notificationCount = monitoredItemNotifications.size();
+                            MonitoredItemNotification[] monitoredItemNotifications =
+                                requireNonNullElse(dcn.getMonitoredItems(), new MonitoredItemNotification[0]);
+                            int notificationCount = monitoredItemNotifications.length;
 
                             logger.debug("Received {} MonitoredItemNotifications", notificationCount);
 
@@ -764,7 +766,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             }
                         } else if (o instanceof EventNotificationList) {
                             EventNotificationList enl = (EventNotificationList) o;
-                            List<EventFieldList> eventFieldLists = List.of(enl.getEvents());
+                            EventFieldList[] eventFieldLists =
+                                requireNonNullElse(enl.getEvents(), new EventFieldList[0]);
 
                             for (EventFieldList efl : eventFieldLists) {
                                 logger.trace("EventFieldList: clientHandle={}, values={}",

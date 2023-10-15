@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
@@ -50,7 +51,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             return CompletableFuture.failedFuture(e);
         }
 
-        List<CallMethodRequest> methodsToCall = List.of(request.getMethodsToCall());
+        List<CallMethodRequest> methodsToCall = Lists.ofNullable(request.getMethodsToCall());
 
         if (methodsToCall.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
