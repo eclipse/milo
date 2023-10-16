@@ -519,7 +519,7 @@ public class SessionManager {
                         request.getUserTokenSignature()
                     );
 
-                    boolean sameIdentity = Objects.equal(identity, session.getIdentity());
+                    boolean sameIdentity = identity.equalTo(session.getIdentity());
 
                     boolean sameCertificate = Objects.equal(
                         clientCertificateBytes,

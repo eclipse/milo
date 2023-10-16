@@ -40,9 +40,25 @@ public interface Identity {
     void setUserData(@Nullable Object userData);
 
     /**
+     * Check if this {@link Identity} is equal to another, i.e. it represents the same user.
+     *
+     * @param identity the {@link Identity} to compare to.
+     * @return true if the identities are equal.
+     */
+    boolean equalTo(Identity identity);
+
+    /**
      * An {@link Identity} derived from validation of an {@link AnonymousIdentityToken}.
      */
-    interface AnonymousIdentity extends Identity {}
+    interface AnonymousIdentity extends Identity {
+
+        @Override
+        default boolean equalTo(Identity identity) {
+            // any anonymous identity is equal to any other anonymous identity
+            return identity instanceof Identity.AnonymousIdentity;
+        }
+
+    }
 
     /**
      * An {@link Identity} derived from validation of a {@link UserNameIdentityToken}.

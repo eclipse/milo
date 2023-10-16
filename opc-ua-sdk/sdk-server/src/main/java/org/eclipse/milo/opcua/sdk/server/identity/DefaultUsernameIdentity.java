@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.identity;
 
+import java.util.Objects;
+
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 
 public class DefaultUsernameIdentity extends AbstractIdentity implements Identity.UsernameIdentity {
@@ -28,6 +30,17 @@ public class DefaultUsernameIdentity extends AbstractIdentity implements Identit
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean equalTo(Identity identity) {
+        if (identity instanceof Identity.UsernameIdentity) {
+            Identity.UsernameIdentity other = (Identity.UsernameIdentity) identity;
+
+            return Objects.equals(getUsername(), other.getUsername());
+        }
+
+        return false;
     }
 
 }
