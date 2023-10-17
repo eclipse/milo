@@ -17,7 +17,7 @@ import static org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder.LegacySeque
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class LegacySequenceNumberValidatorTest {
+public class ChunkDecoderTest {
 
     @Test
     void validateSequenceNumbers() {
