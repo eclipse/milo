@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerFactory;
 
 import org.slf4j.LoggerFactory;
@@ -25,10 +26,39 @@ public class SecureXmlUtil {
      */
     public static final DocumentBuilderFactory SHARED_DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 
+    static {
+        String FEATURE = null;
+        try {
+            FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+            SHARED_DOCUMENT_BUILDER_FACTORY.setFeature(FEATURE, false);
+
+            FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+            SHARED_DOCUMENT_BUILDER_FACTORY.setFeature(FEATURE, false);
+
+            FEATURE = "http://xml.org/sax/features/external-general-entities";
+            SHARED_DOCUMENT_BUILDER_FACTORY.setFeature(FEATURE, false);
+
+            SHARED_DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(false);
+
+            SHARED_DOCUMENT_BUILDER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("The feature '"
+                + FEATURE + "' is not supported by your XML processor.", e);
+        }
+
+    }
+
     /**
      * A shared {@link TransformerFactory} that has been configured securely to prevent XXE attacks.
      */
     public static final TransformerFactory SHARED_TRANSFORMER_FACTORY = TransformerFactory.newInstance();
+
+    static {
+        SHARED_TRANSFORMER_FACTORY.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        SHARED_TRANSFORMER_FACTORY.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        SHARED_TRANSFORMER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    }
 
     static {
         SHARED_DOCUMENT_BUILDER_FACTORY.setCoalescing(true);

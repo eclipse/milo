@@ -11,6 +11,7 @@
 package org.eclipse.milo.examples.server;
 
 import java.lang.reflect.Array;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -132,7 +133,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     private volatile Thread eventThread;
     private volatile boolean keepPostingEvents = true;
 
-    private final Random random = new Random();
+    private final Random random = new SecureRandom();
 
     private final DataTypeDictionaryManager dictionaryManager;
 
