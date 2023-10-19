@@ -1491,7 +1491,9 @@ public class SubscriptionManager {
         }
 
         @Nullable UByte getAccessLevel() throws UaException {
-            Object value = unwrap(accessLevelValue);
+            checkStatusCode(accessLevelValue);
+
+            Object value = accessLevelValue.getValue().getValue();
 
             if (value instanceof UByte) {
                 return (UByte) value;
@@ -1501,7 +1503,9 @@ public class SubscriptionManager {
         }
 
         @Nullable UByte getUserAccessLevel() throws UaException {
-            Object value = unwrap(userAccessLevelValue);
+            checkStatusCode(userAccessLevelValue);
+
+            Object value = userAccessLevelValue.getValue().getValue();
 
             if (value instanceof UByte) {
                 return (UByte) value;
@@ -1511,7 +1515,9 @@ public class SubscriptionManager {
         }
 
         @Nullable UByte getEventNotifier() throws UaException {
-            Object value = unwrap(eventNotifierValue);
+            checkStatusCode(eventNotifierValue);
+
+            Object value = eventNotifierValue.getValue().getValue();
 
             if (value instanceof UByte) {
                 return (UByte) value;
@@ -1521,7 +1527,9 @@ public class SubscriptionManager {
         }
 
         @Nullable Double getMinimumSamplingInterval() throws UaException {
-            Object value = unwrap(minimumSamplingIntervalValue);
+            checkStatusCode(minimumSamplingIntervalValue);
+
+            Object value = minimumSamplingIntervalValue.getValue().getValue();
 
             if (value instanceof Double) {
                 return (Double) value;
@@ -1531,7 +1539,9 @@ public class SubscriptionManager {
         }
 
         @Nullable NodeId getDataType() throws UaException {
-            Object value = unwrap(dataType);
+            checkStatusCode(dataType);
+
+            Object value = dataType.getValue().getValue();
 
             if (value instanceof NodeId) {
                 return (NodeId) value;
@@ -1540,35 +1550,48 @@ public class SubscriptionManager {
             }
         }
 
-        @Nullable RolePermissionType[] getRolePermissions() throws UaException {
-            Object value = unwrap(rolePermissions);
+        @Nullable RolePermissionType[] getRolePermissions() {
+            StatusCode statusCode = rolePermissions.getStatusCode();
 
-            if (value instanceof RolePermissionType[]) {
-                return (RolePermissionType[]) value;
-            } else {
+            if (statusCode != null && statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
                 return null;
+            } else {
+                Object value = rolePermissions.getValue().getValue();
+
+                if (value instanceof RolePermissionType[]) {
+                    return (RolePermissionType[]) value;
+                } else {
+                    return null;
+                }
             }
         }
 
-        @Nullable RolePermissionType[] getUserRolePermissions() throws UaException {
-            Object value = unwrap(userRolePermissions);
+        @Nullable RolePermissionType[] getUserRolePermissions() {
+            StatusCode statusCode = userRolePermissions.getStatusCode();
 
-            if (value instanceof RolePermissionType[]) {
-                return (RolePermissionType[]) value;
-            } else {
+            if (statusCode != null && statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
                 return null;
+            } else {
+                Object value = userRolePermissions.getValue().getValue();
+
+                if (value instanceof RolePermissionType[]) {
+                    return (RolePermissionType[]) value;
+                } else {
+                    return null;
+                }
             }
         }
 
-        private Object unwrap(DataValue dataValue) throws UaException {
+        private static void checkStatusCode(DataValue dataValue) throws UaException {
             StatusCode statusCode = dataValue.getStatusCode();
-
-            if (statusCode != null && statusCode.isGood()) {
-                return dataValue.getValue().getValue();
-            } else {
-                return null;
+            if (statusCode == null) {
+                throw new UaException(StatusCode.BAD);
+            }
+            if (statusCode.isBad()) {
+                throw new UaException(statusCode);
             }
         }
+
     }
 
 }
