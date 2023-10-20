@@ -18,8 +18,29 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface RoleManager {
 
+    /**
+     * Grant roles to a Client based on {@link Identity}.
+     *
+     * @param identity the {@link Identity} of the Client.
+     * @return the {@link NodeId}s of the roles granted to the Client.
+     */
     List<NodeId> getRoleIds(Identity identity);
 
+    /**
+     * Grant roles to a Client.
+     * <p>
+     * The standard mapping rules allow roles to be granted based on:
+     * <ul>
+     *     <li>user identity</li>
+     *     <li>application identity</li>
+     *     <li>endpoint</li>
+     * </ul>
+     *
+     * @param identity the {@link Identity} of the Client.
+     * @param applicationUri the applicationUri of the Client.
+     * @param endpoint the endpoint the Client is connected to.
+     * @return the {@link NodeId}s of the roles granted to the Client.
+     */
     default List<NodeId> getRoleIds(Identity identity, String applicationUri, EndpointDescription endpoint) {
         return getRoleIds(identity);
     }
