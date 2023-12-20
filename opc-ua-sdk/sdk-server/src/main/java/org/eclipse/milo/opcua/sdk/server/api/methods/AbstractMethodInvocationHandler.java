@@ -64,8 +64,11 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
             Variant[] inputArgumentValues = request.getInputArguments();
             if (inputArgumentValues == null) inputArgumentValues = new Variant[0];
 
-            if (inputArgumentValues.length != getInputArguments().length) {
+            if (inputArgumentValues.length < getInputArguments().length) {
                 throw new UaException(StatusCodes.Bad_ArgumentsMissing);
+            }
+            if (inputArgumentValues.length > getInputArguments().length) {
+                throw new UaException(StatusCodes.Bad_TooManyArguments);
             }
 
             StatusCode[] inputDataTypeCheckResults = new StatusCode[inputArgumentValues.length];
@@ -250,7 +253,8 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
      * @param inputArgumentValues the input values provided by the client for the current method call.
      * @throws InvalidArgumentException if one or more input argument values are invalid.
      */
-    protected void validateInputArgumentValues(Variant[] inputArgumentValues) throws InvalidArgumentException {}
+    protected void validateInputArgumentValues(Variant[] inputArgumentValues) throws InvalidArgumentException {
+    }
 
     /**
      * Extends {@link AccessContext} to provide additional context to implementations of

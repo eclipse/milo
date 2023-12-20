@@ -64,4 +64,29 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
         }
     }
 
+    @Test
+    void wrongNumberOfArguments() throws ExecutionException, InterruptedException {
+        // too few arguments
+        {
+            CallMethodResult result = client.call(new CallMethodRequest(
+                Identifiers.ObjectsFolder,
+                NodeId.parse("ns=2;s=onlyAcceptsPositiveInputs()"),
+                new Variant[]{}
+            )).get();
+
+            assertEquals(StatusCodes.Bad_ArgumentsMissing, result.getStatusCode().getValue());
+        }
+
+        // too many arguments
+        {
+            CallMethodResult result = client.call(new CallMethodRequest(
+                Identifiers.ObjectsFolder,
+                NodeId.parse("ns=2;s=onlyAcceptsPositiveInputs()"),
+                new Variant[]{new Variant(1), new Variant(2)}
+            )).get();
+
+            assertEquals(StatusCodes.Bad_TooManyArguments, result.getStatusCode().getValue());
+        }
+    }
+
 }
