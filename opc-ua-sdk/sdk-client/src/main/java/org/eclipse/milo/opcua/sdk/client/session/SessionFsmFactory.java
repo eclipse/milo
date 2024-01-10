@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,7 @@ import com.digitalpetri.strictmachine.dsl.FsmBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
+import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
@@ -651,6 +652,18 @@ public class SessionFsmFactory {
                             );
 
                             ctx.fireEvent(new Event.KeepAliveFailure());
+
+                            // Close the underlying channel to force a reconnect.
+                            // This is useful if the server has gone offline in an "unclean"
+                            // manner to avoid having to wait for the underlying TCP stack's keep
+                            // alive to kick in.
+                            UaTransport transport = client.getStackClient().getTransport();
+                            if (transport instanceof OpcTcpTransport) {
+                                Channel channel = ((OpcTcpTransport) transport).channel().getNow(null);
+                                if (channel != null) {
+                                    channel.close();
+                                }
+                            }
                         } else {
                             LOGGER.debug(
                                 "[{}] Keep Alive failureCount={}",
