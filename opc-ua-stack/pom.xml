@@ -23,7 +23,7 @@
 
     <properties>
         <bouncycastle.version>1.75</bouncycastle.version>
-        <guava.version>31.0.1-jre</guava.version>
+        <guava.version>32.1.3-jre</guava.version>
         <javassist.version>3.23.1-GA</javassist.version>
         <annotations.version>22.0.0</annotations.version>
         <netty.version>4.1.97.Final</netty.version>
