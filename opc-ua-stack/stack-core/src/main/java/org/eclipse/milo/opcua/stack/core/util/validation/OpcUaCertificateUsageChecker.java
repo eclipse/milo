@@ -125,33 +125,6 @@ class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
                     );
                 }
             }
-        } else {
-            try {
-                CertificateValidationUtil.checkIssuerKeyUsage((X509Certificate) cert);
-
-                LOGGER.debug(
-                    "validated KeyUsage for issuer: {}",
-                    ((X509Certificate) cert).getSubjectX500Principal().getName()
-                );
-            } catch (UaException e) {
-                if (validationChecks.contains(ValidationCheck.KEY_USAGE_ISSUER) ||
-                    criticalExtensions.contains(KEY_USAGE_OID)
-                ) {
-
-                    throw new CertPathValidatorException(
-                        e.getMessage(),
-                        e,
-                        certPath,
-                        certPath.getCertificates().indexOf(cert),
-                        PKIXReason.INVALID_KEY_USAGE
-                    );
-                } else {
-                    LOGGER.warn(
-                        "check suppressed: certificate failed issuer usage check: {}",
-                        ((X509Certificate) cert).getSubjectX500Principal().getName()
-                    );
-                }
-            }
         }
 
         if (unresolvedCritExts != null && !unresolvedCritExts.isEmpty()) {
