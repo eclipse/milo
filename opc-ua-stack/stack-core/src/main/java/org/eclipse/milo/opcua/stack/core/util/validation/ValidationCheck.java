@@ -44,13 +44,6 @@ public enum ValidationCheck {
     EXTENDED_KEY_USAGE_END_ENTITY,
 
     /**
-     * The KeyUsage extension must be present and checked for CA certificates.
-     * <p>
-     * This check does not apply to self-signed end-entity certificates.
-     */
-    KEY_USAGE_ISSUER,
-
-    /**
      * Revocation checking must happen.
      */
     REVOCATION,

@@ -348,19 +348,6 @@ public class CertificateValidationUtil {
                     );
                 }
             }
-        } else {
-            try {
-                checkIssuerKeyUsage(anchorCert);
-            } catch (UaException e) {
-                if (validationChecks.contains(ValidationCheck.KEY_USAGE_ISSUER)) {
-                    throw e;
-                } else {
-                    LOGGER.warn(
-                        "check suppressed: certificate failed issuer KeyUsage check: {}",
-                        anchorCert.getSubjectX500Principal().getName()
-                    );
-                }
-            }
         }
     }
 
@@ -610,42 +597,6 @@ public class CertificateValidationUtil {
             }
         } catch (CertificateParsingException e) {
             throw new UaException(StatusCodes.Bad_CertificateUseNotAllowed);
-        }
-    }
-
-    public static void checkIssuerKeyUsage(X509Certificate certificate) throws UaException {
-        boolean[] keyUsage = certificate.getKeyUsage();
-
-        if (keyUsage == null) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "KeyUsage extension not found"
-            );
-        }
-
-        boolean digitalSignature = keyUsage[0];
-        boolean keyCertSign = keyUsage[5];
-        boolean crlSign = keyUsage[6];
-
-        if (!digitalSignature) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "required KeyUsage 'digitalSignature' not found"
-            );
-        }
-
-        if (!keyCertSign) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "required KeyUsage 'keyCertSign' not found"
-            );
-        }
-
-        if (!crlSign) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "required KeyUsage 'cRLSign' not found"
-            );
         }
     }
 
