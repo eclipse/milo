@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.identity;
 
+import java.util.Objects;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 
@@ -31,4 +33,14 @@ public class DefaultIssuedIdentity extends AbstractIdentity implements Identity.
         return tokenData;
     }
 
+    @Override
+    public boolean equalTo(Identity identity) {
+        if (identity instanceof Identity.IssuedIdentity) {
+            Identity.IssuedIdentity other = (Identity.IssuedIdentity) identity;
+
+            return Objects.equals(getTokenData(), other.getTokenData());
+        }
+
+        return false;
+    }
 }

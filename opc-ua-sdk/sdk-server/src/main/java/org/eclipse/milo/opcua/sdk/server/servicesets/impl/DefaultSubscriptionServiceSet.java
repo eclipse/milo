@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.servicesets.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -279,7 +280,9 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     private static boolean sessionsHaveSameUser(Session s1, Session s2) {
-        return Objects.equals(s1.getIdentity(), s2.getIdentity());
+        Identity i1 = s1.getIdentity();
+        Identity i2 = s2.getIdentity();
+        return i1 != null && i2 != null && i1.equalTo(i2);
     }
 
 }

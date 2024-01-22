@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.security.cert.X509Certificate;
 
+import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 
 public class DefaultX509UserIdentity extends AbstractIdentity implements Identity.X509UserIdentity {
@@ -30,6 +31,17 @@ public class DefaultX509UserIdentity extends AbstractIdentity implements Identit
     @Override
     public X509Certificate getCertificate() {
         return certificate;
+    }
+
+    @Override
+    public boolean equalTo(Identity identity) {
+        if (identity instanceof Identity.X509UserIdentity) {
+            Identity.X509UserIdentity other = (Identity.X509UserIdentity) identity;
+
+            return Objects.equal(getCertificate(), other.getCertificate());
+        }
+
+        return false;
     }
 
 }
