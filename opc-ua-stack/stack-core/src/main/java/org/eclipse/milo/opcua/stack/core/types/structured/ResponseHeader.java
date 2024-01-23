@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -106,6 +107,18 @@ public class ResponseHeader extends Structure implements UaStructuredType {
 
     public ExtensionObject getAdditionalHeader() {
         return additionalHeader;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getTimestamp());
+        hcb.append(getRequestHandle());
+        hcb.append(getServiceResult());
+        hcb.append(getServiceDiagnostics());
+        hcb.append(getStringTable());
+        hcb.append(getAdditionalHeader());
+        return hcb.build();
     }
 
     @Override

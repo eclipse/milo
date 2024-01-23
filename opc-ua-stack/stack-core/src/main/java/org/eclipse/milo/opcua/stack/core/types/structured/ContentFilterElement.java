@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -78,6 +76,14 @@ public class ContentFilterElement extends Structure implements UaStructuredType 
 
     public ExtensionObject @Nullable [] getFilterOperands() {
         return filterOperands;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getFilterOperator());
+        hcb.append(getFilterOperands());
+        return hcb.build();
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.6">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.6</a>
@@ -78,6 +79,15 @@ public class EnumValueType extends Structure implements UaStructuredType {
 
     public LocalizedText getDescription() {
         return description;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getValue());
+        hcb.append(getDisplayName());
+        hcb.append(getDescription());
+        return hcb.build();
     }
 
     @Override

@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -90,6 +88,16 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
 
     public String @Nullable [] getProfileUris() {
         return profileUris;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getEndpointUrl());
+        hcb.append(getLocaleIds());
+        hcb.append(getProfileUris());
+        return hcb.build();
     }
 
     @Override

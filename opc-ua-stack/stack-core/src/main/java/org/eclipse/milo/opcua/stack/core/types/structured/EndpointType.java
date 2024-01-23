@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -88,6 +89,16 @@ public class EndpointType extends Structure implements UaStructuredType {
 
     public @Nullable String getTransportProfileUri() {
         return transportProfileUri;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEndpointUrl());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getTransportProfileUri());
+        return hcb.build();
     }
 
     @Override

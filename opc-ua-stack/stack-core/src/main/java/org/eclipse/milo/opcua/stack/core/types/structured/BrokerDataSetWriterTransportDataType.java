@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrokerTransportQualityOfService;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -108,6 +109,18 @@ public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransport
 
     public Double getMetaDataUpdateTime() {
         return metaDataUpdateTime;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getQueueName());
+        hcb.append(getResourceUri());
+        hcb.append(getAuthenticationProfileUri());
+        hcb.append(getRequestedDeliveryGuarantee());
+        hcb.append(getMetaDataQueueName());
+        hcb.append(getMetaDataUpdateTime());
+        return hcb.build();
     }
 
     @Override

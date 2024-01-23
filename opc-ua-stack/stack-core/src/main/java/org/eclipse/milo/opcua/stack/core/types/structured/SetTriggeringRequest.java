@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -98,6 +96,17 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessageT
 
     public UInteger @Nullable [] getLinksToRemove() {
         return linksToRemove;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getSubscriptionId());
+        hcb.append(getTriggeringItemId());
+        hcb.append(getLinksToAdd());
+        hcb.append(getLinksToRemove());
+        return hcb.build();
     }
 
     @Override

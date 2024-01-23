@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.9">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.9</a>
@@ -74,6 +72,14 @@ public class RolePermissionType extends Structure implements UaStructuredType {
 
     public PermissionType getPermissions() {
         return permissions;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRoleId());
+        hcb.append(getPermissions());
+        return hcb.build();
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -87,6 +88,16 @@ public class BrowseRequest extends Structure implements UaRequestMessageType {
 
     public BrowseDescription @Nullable [] getNodesToBrowse() {
         return nodesToBrowse;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getView());
+        hcb.append(getRequestedMaxReferencesPerNode());
+        hcb.append(getNodesToBrowse());
+        return hcb.build();
     }
 
     @Override

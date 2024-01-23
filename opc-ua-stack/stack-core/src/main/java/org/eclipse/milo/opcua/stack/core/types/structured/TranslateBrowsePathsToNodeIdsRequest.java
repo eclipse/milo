@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -76,6 +77,14 @@ public class TranslateBrowsePathsToNodeIdsRequest extends Structure implements U
 
     public BrowsePath @Nullable [] getBrowsePaths() {
         return browsePaths;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getBrowsePaths());
+        return hcb.build();
     }
 
     @Override

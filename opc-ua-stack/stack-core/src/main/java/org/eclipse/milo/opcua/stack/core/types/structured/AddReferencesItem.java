@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -106,6 +103,18 @@ public class AddReferencesItem extends Structure implements UaStructuredType {
 
     public NodeClass getTargetNodeClass() {
         return targetNodeClass;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSourceNodeId());
+        hcb.append(getReferenceTypeId());
+        hcb.append(getIsForward());
+        hcb.append(getTargetServerUri());
+        hcb.append(getTargetNodeId());
+        hcb.append(getTargetNodeClass());
+        return hcb.build();
     }
 
     @Override

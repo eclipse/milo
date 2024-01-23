@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -21,6 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -87,6 +86,16 @@ public abstract class DataTypeSchemaHeader extends Structure implements UaStruct
 
     public SimpleTypeDescription @Nullable [] getSimpleDataTypes() {
         return simpleDataTypes;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNamespaces());
+        hcb.append(getStructureDataTypes());
+        hcb.append(getEnumDataTypes());
+        hcb.append(getSimpleDataTypes());
+        return hcb.build();
     }
 
     @Override

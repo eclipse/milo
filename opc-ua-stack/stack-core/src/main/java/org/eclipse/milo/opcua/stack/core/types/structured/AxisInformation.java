@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -95,6 +96,17 @@ public class AxisInformation extends Structure implements UaStructuredType {
 
     public Double @Nullable [] getAxisSteps() {
         return axisSteps;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEngineeringUnits());
+        hcb.append(getEuRange());
+        hcb.append(getTitle());
+        hcb.append(getAxisScaleType());
+        hcb.append(getAxisSteps());
+        return hcb.build();
     }
 
     @Override

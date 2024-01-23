@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -130,6 +127,21 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
 
     public DataSetWriterMessageDataType getMessageSettings() {
         return messageSettings;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getDataSetWriterId());
+        hcb.append(getDataSetFieldContentMask());
+        hcb.append(getKeyFrameCount());
+        hcb.append(getDataSetName());
+        hcb.append(getDataSetWriterProperties());
+        hcb.append(getTransportSettings());
+        hcb.append(getMessageSettings());
+        return hcb.build();
     }
 
     @Override

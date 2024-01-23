@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -86,6 +87,15 @@ public class ContentFilterElementResult extends Structure implements UaStructure
 
     public DiagnosticInfo @Nullable [] getOperandDiagnosticInfos() {
         return operandDiagnosticInfos;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStatusCode());
+        hcb.append(getOperandStatusCodes());
+        hcb.append(getOperandDiagnosticInfos());
+        return hcb.build();
     }
 
     @Override

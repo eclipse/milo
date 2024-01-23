@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.4.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.4.3</a>
@@ -75,6 +76,14 @@ public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
 
     public JsonDataSetMessageContentMask getDataSetMessageContentMask() {
         return dataSetMessageContentMask;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNetworkMessageContentMask());
+        hcb.append(getDataSetMessageContentMask());
+        return hcb.build();
     }
 
     @Override

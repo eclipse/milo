@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part23/5.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part23/5.5.2</a>
@@ -83,6 +84,15 @@ public class ReferenceListEntryDataType extends Structure implements UaStructure
 
     public ExpandedNodeId getTargetNode() {
         return targetNode;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getReferenceType());
+        hcb.append(getIsForward());
+        hcb.append(getTargetNode());
+        return hcb.build();
     }
 
     @Override

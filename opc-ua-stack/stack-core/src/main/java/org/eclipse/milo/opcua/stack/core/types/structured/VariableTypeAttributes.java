@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -103,6 +104,18 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
 
     public Boolean getIsAbstract() {
         return isAbstract;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getValue());
+        hcb.append(getDataType());
+        hcb.append(getValueRank());
+        hcb.append(getArrayDimensions());
+        hcb.append(getIsAbstract());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

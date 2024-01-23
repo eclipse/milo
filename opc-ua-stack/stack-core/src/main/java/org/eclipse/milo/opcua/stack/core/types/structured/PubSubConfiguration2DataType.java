@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -27,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -119,6 +116,20 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
 
     public KeyValuePair @Nullable [] getConfigurationProperties() {
         return configurationProperties;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSubscribedDataSets());
+        hcb.append(getDataSetClasses());
+        hcb.append(getDefaultSecurityKeyServices());
+        hcb.append(getSecurityGroups());
+        hcb.append(getPubSubKeyPushTargets());
+        hcb.append(getConfigurationVersion());
+        hcb.append(getConfigurationProperties());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

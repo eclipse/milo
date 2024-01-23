@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrokerTransportQualityOfService;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -92,6 +93,16 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
 
     public BrokerTransportQualityOfService getRequestedDeliveryGuarantee() {
         return requestedDeliveryGuarantee;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getQueueName());
+        hcb.append(getResourceUri());
+        hcb.append(getAuthenticationProfileUri());
+        hcb.append(getRequestedDeliveryGuarantee());
+        return hcb.build();
     }
 
     @Override

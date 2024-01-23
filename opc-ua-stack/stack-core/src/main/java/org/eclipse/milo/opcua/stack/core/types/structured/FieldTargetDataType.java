@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -29,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.OverrideValueHandling;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.2.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.2.3</a>
@@ -114,6 +112,19 @@ public class FieldTargetDataType extends Structure implements UaStructuredType {
 
     public Variant getOverrideValue() {
         return overrideValue;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getDataSetFieldId());
+        hcb.append(getReceiverIndexRange());
+        hcb.append(getTargetNodeId());
+        hcb.append(getAttributeId());
+        hcb.append(getWriteIndexRange());
+        hcb.append(getOverrideValueHandling());
+        hcb.append(getOverrideValue());
+        return hcb.build();
     }
 
     @Override

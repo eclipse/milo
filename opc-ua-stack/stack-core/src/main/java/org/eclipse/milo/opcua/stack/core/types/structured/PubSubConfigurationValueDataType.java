@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -84,6 +85,15 @@ public class PubSubConfigurationValueDataType extends Structure implements UaStr
 
     public Variant getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getConfigurationElement());
+        hcb.append(getName());
+        hcb.append(getIdentifier());
+        return hcb.build();
     }
 
     @Override

@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Double;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -130,6 +127,21 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
 
     public String @Nullable [] getSecurityGroups() {
         return securityGroups;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getApplicationUri());
+        hcb.append(getPushTargetFolder());
+        hcb.append(getEndpointUrl());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getUserTokenType());
+        hcb.append(getRequestedKeyCount());
+        hcb.append(getRetryInterval());
+        hcb.append(getPushTargetProperties());
+        hcb.append(getSecurityGroups());
+        return hcb.build();
     }
 
     @Override

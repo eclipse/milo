@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.4">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.4</a>
@@ -98,6 +99,17 @@ public class AggregateConfiguration extends Structure implements UaStructuredTyp
 
     public Boolean getUseSlopedExtrapolation() {
         return useSlopedExtrapolation;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getUseServerCapabilitiesDefaults());
+        hcb.append(getTreatUncertainAsBad());
+        hcb.append(getPercentDataBad());
+        hcb.append(getPercentDataGood());
+        hcb.append(getUseSlopedExtrapolation());
+        return hcb.build();
     }
 
     @Override

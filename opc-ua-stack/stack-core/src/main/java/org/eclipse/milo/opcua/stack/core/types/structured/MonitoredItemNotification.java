@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.25.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.25.2</a>
@@ -75,6 +76,14 @@ public class MonitoredItemNotification extends Structure implements UaStructured
 
     public DataValue getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getClientHandle());
+        hcb.append(getValue());
+        return hcb.build();
     }
 
     @Override

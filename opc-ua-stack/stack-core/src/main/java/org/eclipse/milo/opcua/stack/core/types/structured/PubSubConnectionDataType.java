@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -130,6 +131,21 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
 
     public ReaderGroupDataType @Nullable [] getReaderGroups() {
         return readerGroups;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getPublisherId());
+        hcb.append(getTransportProfileUri());
+        hcb.append(getAddress());
+        hcb.append(getConnectionProperties());
+        hcb.append(getTransportSettings());
+        hcb.append(getWriterGroups());
+        hcb.append(getReaderGroups());
+        return hcb.build();
     }
 
     @Override

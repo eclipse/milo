@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -68,6 +69,13 @@ public class EndpointUrlListDataType extends Structure implements UaStructuredTy
 
     public String @Nullable [] getEndpointUrlList() {
         return endpointUrlList;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEndpointUrlList());
+        return hcb.build();
     }
 
     @Override

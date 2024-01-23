@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.21">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.21</a>
@@ -73,6 +74,14 @@ public class KeyValuePair extends Structure implements UaStructuredType {
 
     public Variant getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getKey());
+        hcb.append(getValue());
+        return hcb.build();
     }
 
     @Override

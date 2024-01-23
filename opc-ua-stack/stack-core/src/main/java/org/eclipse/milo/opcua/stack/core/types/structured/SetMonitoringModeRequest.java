@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -91,6 +92,16 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
 
     public UInteger @Nullable [] getMonitoredItemIds() {
         return monitoredItemIds;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getSubscriptionId());
+        hcb.append(getMonitoringMode());
+        hcb.append(getMonitoredItemIds());
+        return hcb.build();
     }
 
     @Override

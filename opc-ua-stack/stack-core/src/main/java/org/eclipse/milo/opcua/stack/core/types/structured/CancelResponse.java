@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.5/#5.6.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.5/#5.6.5.2</a>
@@ -71,6 +72,14 @@ public class CancelResponse extends Structure implements UaResponseMessageType {
 
     public UInteger getCancelCount() {
         return cancelCount;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        hcb.append(getCancelCount());
+        return hcb.build();
     }
 
     @Override

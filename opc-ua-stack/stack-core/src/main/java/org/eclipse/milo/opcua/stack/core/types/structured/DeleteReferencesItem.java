@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -27,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.7">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.7</a>
@@ -97,6 +94,17 @@ public class DeleteReferencesItem extends Structure implements UaStructuredType 
 
     public Boolean getDeleteBidirectional() {
         return deleteBidirectional;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSourceNodeId());
+        hcb.append(getReferenceTypeId());
+        hcb.append(getIsForward());
+        hcb.append(getTargetNodeId());
+        hcb.append(getDeleteBidirectional());
+        return hcb.build();
     }
 
     @Override

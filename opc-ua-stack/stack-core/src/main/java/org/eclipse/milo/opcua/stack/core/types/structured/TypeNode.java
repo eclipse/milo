@@ -66,6 +66,11 @@ public class TypeNode extends Node implements UaStructuredType {
     }
 
     @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
     public String toString() {
         var joiner = new StringJoiner(", ", TypeNode.class.getSimpleName() + "[", "]");
         return joiner.toString();

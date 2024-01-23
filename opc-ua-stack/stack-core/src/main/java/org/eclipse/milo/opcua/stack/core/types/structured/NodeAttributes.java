@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.1">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.1</a>
@@ -93,6 +94,17 @@ public class NodeAttributes extends Structure implements UaStructuredType {
 
     public UInteger getUserWriteMask() {
         return userWriteMask;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSpecifiedAttributes());
+        hcb.append(getDisplayName());
+        hcb.append(getDescription());
+        hcb.append(getWriteMask());
+        hcb.append(getUserWriteMask());
+        return hcb.build();
     }
 
     @Override

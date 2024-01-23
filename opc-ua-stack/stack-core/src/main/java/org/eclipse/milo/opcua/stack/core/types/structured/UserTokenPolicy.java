@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -96,6 +97,17 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
 
     public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getPolicyId());
+        hcb.append(getTokenType());
+        hcb.append(getIssuedTokenType());
+        hcb.append(getIssuerEndpointUrl());
+        hcb.append(getSecurityPolicyUri());
+        return hcb.build();
     }
 
     @Override

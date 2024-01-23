@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Double;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -129,6 +126,21 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
 
     public UInteger getMaxResponseMessageSize() {
         return maxResponseMessageSize;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getClientDescription());
+        hcb.append(getServerUri());
+        hcb.append(getEndpointUrl());
+        hcb.append(getSessionName());
+        hcb.append(getClientNonce());
+        hcb.append(getClientCertificate());
+        hcb.append(getRequestedSessionTimeout());
+        hcb.append(getMaxResponseMessageSize());
+        return hcb.build();
     }
 
     @Override

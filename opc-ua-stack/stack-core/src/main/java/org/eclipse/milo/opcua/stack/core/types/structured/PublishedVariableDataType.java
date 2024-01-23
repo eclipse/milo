@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -122,6 +123,20 @@ public class PublishedVariableDataType extends Structure implements UaStructured
 
     public QualifiedName @Nullable [] getMetaDataProperties() {
         return metaDataProperties;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getPublishedVariable());
+        hcb.append(getAttributeId());
+        hcb.append(getSamplingIntervalHint());
+        hcb.append(getDeadbandType());
+        hcb.append(getDeadbandValue());
+        hcb.append(getIndexRange());
+        hcb.append(getSubstituteValue());
+        hcb.append(getMetaDataProperties());
+        return hcb.build();
     }
 
     @Override

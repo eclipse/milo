@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -87,6 +88,16 @@ public class EUInformation extends Structure implements UaStructuredType {
 
     public LocalizedText getDescription() {
         return description;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNamespaceUri());
+        hcb.append(getUnitId());
+        hcb.append(getDisplayName());
+        hcb.append(getDescription());
+        return hcb.build();
     }
 
     @Override

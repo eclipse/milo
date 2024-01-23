@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.5/#6.8.5.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.5/#6.8.5.1</a>
@@ -85,6 +86,16 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails implements Ua
 
     public DateTime getEndTime() {
         return endTime;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getIsDeleteModified());
+        hcb.append(getStartTime());
+        hcb.append(getEndTime());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

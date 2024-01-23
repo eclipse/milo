@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -73,6 +74,14 @@ public class PublishRequest extends Structure implements UaRequestMessageType {
 
     public SubscriptionAcknowledgement @Nullable [] getSubscriptionAcknowledgements() {
         return subscriptionAcknowledgements;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getSubscriptionAcknowledgements());
+        return hcb.build();
     }
 
     @Override

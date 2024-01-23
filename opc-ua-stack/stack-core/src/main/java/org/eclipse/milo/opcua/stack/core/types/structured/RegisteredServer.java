@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -118,6 +119,20 @@ public class RegisteredServer extends Structure implements UaStructuredType {
 
     public Boolean getIsOnline() {
         return isOnline;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getServerUri());
+        hcb.append(getProductUri());
+        hcb.append(getServerNames());
+        hcb.append(getServerType());
+        hcb.append(getGatewayServerUri());
+        hcb.append(getDiscoveryUrls());
+        hcb.append(getSemaphoreFilePath());
+        hcb.append(getIsOnline());
+        return hcb.build();
     }
 
     @Override

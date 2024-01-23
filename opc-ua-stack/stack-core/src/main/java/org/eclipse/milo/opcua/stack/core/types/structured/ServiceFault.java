@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.35">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.35</a>
@@ -64,6 +65,13 @@ public class ServiceFault extends Structure implements UaResponseMessageType {
 
     public ResponseHeader getResponseHeader() {
         return responseHeader;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        return hcb.build();
     }
 
     @Override

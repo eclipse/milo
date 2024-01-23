@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Double;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -387,6 +384,55 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     public ServiceCounterDataType getUnregisterNodesCount() {
         return unregisterNodesCount;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSessionId());
+        hcb.append(getSessionName());
+        hcb.append(getClientDescription());
+        hcb.append(getServerUri());
+        hcb.append(getEndpointUrl());
+        hcb.append(getLocaleIds());
+        hcb.append(getActualSessionTimeout());
+        hcb.append(getMaxResponseMessageSize());
+        hcb.append(getClientConnectionTime());
+        hcb.append(getClientLastContactTime());
+        hcb.append(getCurrentSubscriptionsCount());
+        hcb.append(getCurrentMonitoredItemsCount());
+        hcb.append(getCurrentPublishRequestsInQueue());
+        hcb.append(getTotalRequestCount());
+        hcb.append(getUnauthorizedRequestCount());
+        hcb.append(getReadCount());
+        hcb.append(getHistoryReadCount());
+        hcb.append(getWriteCount());
+        hcb.append(getHistoryUpdateCount());
+        hcb.append(getCallCount());
+        hcb.append(getCreateMonitoredItemsCount());
+        hcb.append(getModifyMonitoredItemsCount());
+        hcb.append(getSetMonitoringModeCount());
+        hcb.append(getSetTriggeringCount());
+        hcb.append(getDeleteMonitoredItemsCount());
+        hcb.append(getCreateSubscriptionCount());
+        hcb.append(getModifySubscriptionCount());
+        hcb.append(getSetPublishingModeCount());
+        hcb.append(getPublishCount());
+        hcb.append(getRepublishCount());
+        hcb.append(getTransferSubscriptionsCount());
+        hcb.append(getDeleteSubscriptionsCount());
+        hcb.append(getAddNodesCount());
+        hcb.append(getAddReferencesCount());
+        hcb.append(getDeleteNodesCount());
+        hcb.append(getDeleteReferencesCount());
+        hcb.append(getBrowseCount());
+        hcb.append(getBrowseNextCount());
+        hcb.append(getTranslateBrowsePathsToNodeIdsCount());
+        hcb.append(getQueryFirstCount());
+        hcb.append(getQueryNextCount());
+        hcb.append(getRegisterNodesCount());
+        hcb.append(getUnregisterNodesCount());
+        return hcb.build();
     }
 
     @Override

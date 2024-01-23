@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.34">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.34</a>
@@ -75,6 +76,15 @@ public class EnumDescription extends DataTypeDescription implements UaStructured
 
     public UByte getBuiltInType() {
         return builtInType;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEnumDefinition());
+        hcb.append(getBuiltInType());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

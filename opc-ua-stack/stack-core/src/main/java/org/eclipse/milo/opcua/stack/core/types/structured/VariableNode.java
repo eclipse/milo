@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class VariableNode extends InstanceNode implements UaStructuredType {
@@ -130,6 +131,22 @@ public class VariableNode extends InstanceNode implements UaStructuredType {
 
     public UInteger getAccessLevelEx() {
         return accessLevelEx;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getValue());
+        hcb.append(getDataType());
+        hcb.append(getValueRank());
+        hcb.append(getArrayDimensions());
+        hcb.append(getAccessLevel());
+        hcb.append(getUserAccessLevel());
+        hcb.append(getMinimumSamplingInterval());
+        hcb.append(getHistorizing());
+        hcb.append(getAccessLevelEx());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

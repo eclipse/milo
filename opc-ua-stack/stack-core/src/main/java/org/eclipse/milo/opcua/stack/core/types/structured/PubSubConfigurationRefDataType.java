@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.7.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.7.3</a>
@@ -90,6 +91,16 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
 
     public UShort getGroupIndex() {
         return groupIndex;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getConfigurationMask());
+        hcb.append(getElementIndex());
+        hcb.append(getConnectionIndex());
+        hcb.append(getGroupIndex());
+        return hcb.build();
     }
 
     @Override

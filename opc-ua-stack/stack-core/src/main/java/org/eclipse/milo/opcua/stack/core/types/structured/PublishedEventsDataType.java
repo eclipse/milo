@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -83,6 +84,15 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
 
     public ContentFilter getFilter() {
         return filter;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEventNotifier());
+        hcb.append(getSelectedFields());
+        hcb.append(getFilter());
+        return hcb.build();
     }
 
     @Override

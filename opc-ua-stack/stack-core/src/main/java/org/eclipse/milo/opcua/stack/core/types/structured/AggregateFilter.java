@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.4">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.4</a>
@@ -87,6 +88,16 @@ public class AggregateFilter extends MonitoringFilter implements UaStructuredTyp
 
     public AggregateConfiguration getAggregateConfiguration() {
         return aggregateConfiguration;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStartTime());
+        hcb.append(getAggregateType());
+        hcb.append(getProcessingInterval());
+        hcb.append(getAggregateConfiguration());
+        return hcb.build();
     }
 
     @Override

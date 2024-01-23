@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class ProgramDiagnosticDataType extends Structure implements UaStructuredType {
@@ -133,6 +134,22 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
 
     public StatusResult getLastMethodReturnStatus() {
         return lastMethodReturnStatus;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getCreateSessionId());
+        hcb.append(getCreateClientName());
+        hcb.append(getInvocationCreationTime());
+        hcb.append(getLastTransitionTime());
+        hcb.append(getLastMethodCall());
+        hcb.append(getLastMethodSessionId());
+        hcb.append(getLastMethodInputArguments());
+        hcb.append(getLastMethodOutputArguments());
+        hcb.append(getLastMethodCallTime());
+        hcb.append(getLastMethodReturnStatus());
+        return hcb.build();
     }
 
     @Override

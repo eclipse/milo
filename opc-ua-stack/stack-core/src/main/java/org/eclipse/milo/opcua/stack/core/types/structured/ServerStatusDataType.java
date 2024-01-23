@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.10</a>
@@ -105,6 +103,18 @@ public class ServerStatusDataType extends Structure implements UaStructuredType 
 
     public LocalizedText getShutdownReason() {
         return shutdownReason;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStartTime());
+        hcb.append(getCurrentTime());
+        hcb.append(getState());
+        hcb.append(getBuildInfo());
+        hcb.append(getSecondsTillShutdown());
+        hcb.append(getShutdownReason());
+        return hcb.build();
     }
 
     @Override

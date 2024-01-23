@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.8">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.8</a>
@@ -90,6 +91,16 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
 
     public UInteger getDisabledMonitoredItemCount() {
         return disabledMonitoredItemCount;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSamplingInterval());
+        hcb.append(getMonitoredItemCount());
+        hcb.append(getMaxMonitoredItemCount());
+        hcb.append(getDisabledMonitoredItemCount());
+        return hcb.build();
     }
 
     @Override

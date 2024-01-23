@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.13">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.13</a>
@@ -75,6 +76,14 @@ public class SignedSoftwareCertificate extends Structure implements UaStructured
 
     public ByteString getSignature() {
         return signature;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getCertificateData());
+        hcb.append(getSignature());
+        return hcb.build();
     }
 
     @Override

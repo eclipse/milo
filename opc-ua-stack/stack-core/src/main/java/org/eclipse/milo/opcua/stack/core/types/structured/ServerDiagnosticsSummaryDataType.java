@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.9">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.9</a>
@@ -149,6 +150,24 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
 
     public UInteger getRejectedRequestsCount() {
         return rejectedRequestsCount;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getServerViewCount());
+        hcb.append(getCurrentSessionCount());
+        hcb.append(getCumulatedSessionCount());
+        hcb.append(getSecurityRejectedSessionCount());
+        hcb.append(getRejectedSessionCount());
+        hcb.append(getSessionTimeoutCount());
+        hcb.append(getSessionAbortCount());
+        hcb.append(getCurrentSubscriptionCount());
+        hcb.append(getCumulatedSubscriptionCount());
+        hcb.append(getPublishingIntervalCount());
+        hcb.append(getSecurityRejectedRequestsCount());
+        hcb.append(getRejectedRequestsCount());
+        return hcb.build();
     }
 
     @Override

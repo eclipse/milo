@@ -10,11 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Integer;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 public class EndpointConfiguration extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=331");
@@ -125,6 +121,21 @@ public class EndpointConfiguration extends Structure implements UaStructuredType
 
     public Integer getSecurityTokenLifetime() {
         return securityTokenLifetime;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getOperationTimeout());
+        hcb.append(getUseBinaryEncoding());
+        hcb.append(getMaxStringLength());
+        hcb.append(getMaxByteStringLength());
+        hcb.append(getMaxArrayLength());
+        hcb.append(getMaxMessageSize());
+        hcb.append(getMaxBufferSize());
+        hcb.append(getChannelLifetime());
+        hcb.append(getSecurityTokenLifetime());
+        return hcb.build();
     }
 
     @Override

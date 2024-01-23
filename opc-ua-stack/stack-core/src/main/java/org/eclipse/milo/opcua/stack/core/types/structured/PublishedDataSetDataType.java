@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -98,6 +99,17 @@ public class PublishedDataSetDataType extends Structure implements UaStructuredT
 
     public PublishedDataSetSourceDataType getDataSetSource() {
         return dataSetSource;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getDataSetFolder());
+        hcb.append(getDataSetMetaData());
+        hcb.append(getExtensionFields());
+        hcb.append(getDataSetSource());
+        return hcb.build();
     }
 
     @Override

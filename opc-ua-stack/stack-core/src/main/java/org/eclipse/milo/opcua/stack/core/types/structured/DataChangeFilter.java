@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.2</a>
@@ -79,6 +80,15 @@ public class DataChangeFilter extends MonitoringFilter implements UaStructuredTy
 
     public Double getDeadbandValue() {
         return deadbandValue;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getTrigger());
+        hcb.append(getDeadbandType());
+        hcb.append(getDeadbandValue());
+        return hcb.build();
     }
 
     @Override

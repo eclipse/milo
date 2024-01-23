@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.7">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.7</a>
@@ -85,6 +86,16 @@ public class ReferenceTypeAttributes extends NodeAttributes implements UaStructu
 
     public LocalizedText getInverseName() {
         return inverseName;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getIsAbstract());
+        hcb.append(getSymmetric());
+        hcb.append(getInverseName());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

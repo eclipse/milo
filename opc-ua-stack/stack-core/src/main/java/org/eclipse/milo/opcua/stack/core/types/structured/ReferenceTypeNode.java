@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -30,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class ReferenceTypeNode extends TypeNode implements UaStructuredType {
@@ -89,6 +86,16 @@ public class ReferenceTypeNode extends TypeNode implements UaStructuredType {
 
     public LocalizedText getInverseName() {
         return inverseName;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getIsAbstract());
+        hcb.append(getSymmetric());
+        hcb.append(getInverseName());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

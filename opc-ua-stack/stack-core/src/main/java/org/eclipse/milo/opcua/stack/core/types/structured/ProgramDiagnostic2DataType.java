@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -153,6 +154,24 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
 
     public StatusCode getLastMethodReturnStatus() {
         return lastMethodReturnStatus;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getCreateSessionId());
+        hcb.append(getCreateClientName());
+        hcb.append(getInvocationCreationTime());
+        hcb.append(getLastTransitionTime());
+        hcb.append(getLastMethodCall());
+        hcb.append(getLastMethodSessionId());
+        hcb.append(getLastMethodInputArguments());
+        hcb.append(getLastMethodOutputArguments());
+        hcb.append(getLastMethodInputValues());
+        hcb.append(getLastMethodOutputValues());
+        hcb.append(getLastMethodCallTime());
+        hcb.append(getLastMethodReturnStatus());
+        return hcb.build();
     }
 
     @Override

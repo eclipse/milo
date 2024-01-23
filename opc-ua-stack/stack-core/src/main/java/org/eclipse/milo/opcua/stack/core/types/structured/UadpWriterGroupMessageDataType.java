@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataSetOrderingType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -100,6 +101,17 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
 
     public Double @Nullable [] getPublishingOffset() {
         return publishingOffset;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getGroupVersion());
+        hcb.append(getDataSetOrdering());
+        hcb.append(getNetworkMessageContentMask());
+        hcb.append(getSamplingOffset());
+        hcb.append(getPublishingOffset());
+        return hcb.build();
     }
 
     @Override

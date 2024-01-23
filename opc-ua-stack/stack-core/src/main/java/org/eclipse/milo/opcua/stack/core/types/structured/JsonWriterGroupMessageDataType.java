@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.1.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.1.2</a>
@@ -67,6 +68,13 @@ public class JsonWriterGroupMessageDataType extends WriterGroupMessageDataType i
 
     public JsonNetworkMessageContentMask getNetworkMessageContentMask() {
         return networkMessageContentMask;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNetworkMessageContentMask());
+        return hcb.build();
     }
 
     @Override

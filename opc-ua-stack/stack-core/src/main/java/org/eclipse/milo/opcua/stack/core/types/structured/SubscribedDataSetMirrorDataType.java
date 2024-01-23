@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -76,6 +77,14 @@ public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType i
 
     public RolePermissionType @Nullable [] getRolePermissions() {
         return rolePermissions;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getParentNodeName());
+        hcb.append(getRolePermissions());
+        return hcb.build();
     }
 
     @Override

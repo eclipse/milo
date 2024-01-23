@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class ViewNode extends InstanceNode implements UaStructuredType {
@@ -78,6 +79,15 @@ public class ViewNode extends InstanceNode implements UaStructuredType {
 
     public UByte getEventNotifier() {
         return eventNotifier;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getContainsNoLoops());
+        hcb.append(getEventNotifier());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -102,6 +103,18 @@ public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTr
 
     public @Nullable String getTopic() {
         return topic;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getAddress());
+        hcb.append(getQosCategory());
+        hcb.append(getDatagramQos());
+        hcb.append(getDiscoveryAnnounceRate());
+        hcb.append(getTopic());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

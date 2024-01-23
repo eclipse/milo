@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.1</a>
@@ -111,6 +112,19 @@ public class AddNodesItem extends Structure implements UaStructuredType {
 
     public ExpandedNodeId getTypeDefinition() {
         return typeDefinition;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getParentNodeId());
+        hcb.append(getReferenceTypeId());
+        hcb.append(getRequestedNewNodeId());
+        hcb.append(getBrowseName());
+        hcb.append(getNodeClass());
+        hcb.append(getNodeAttributes());
+        hcb.append(getTypeDefinition());
+        return hcb.build();
     }
 
     @Override

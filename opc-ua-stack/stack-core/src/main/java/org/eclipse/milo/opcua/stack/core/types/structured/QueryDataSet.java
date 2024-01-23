@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -81,6 +82,15 @@ public class QueryDataSet extends Structure implements UaStructuredType {
 
     public Variant @Nullable [] getValues() {
         return values;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNodeId());
+        hcb.append(getTypeDefinitionNode());
+        hcb.append(getValues());
+        return hcb.build();
     }
 
     @Override

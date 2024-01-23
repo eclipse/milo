@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -114,6 +115,19 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
 
     public String @Nullable [] getDiscoveryUrls() {
         return discoveryUrls;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getApplicationUri());
+        hcb.append(getProductUri());
+        hcb.append(getApplicationName());
+        hcb.append(getApplicationType());
+        hcb.append(getGatewayServerUri());
+        hcb.append(getDiscoveryProfileUri());
+        hcb.append(getDiscoveryUrls());
+        return hcb.build();
     }
 
     @Override

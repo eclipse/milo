@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.14">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.14</a>
@@ -73,6 +74,14 @@ public class StatusResult extends Structure implements UaStructuredType {
 
     public DiagnosticInfo getDiagnosticInfo() {
         return diagnosticInfo;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStatusCode());
+        hcb.append(getDiagnosticInfo());
+        return hcb.build();
     }
 
     @Override

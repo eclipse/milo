@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -29,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -123,6 +121,20 @@ public class EndpointDescription extends Structure implements UaStructuredType {
 
     public UByte getSecurityLevel() {
         return securityLevel;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEndpointUrl());
+        hcb.append(getServer());
+        hcb.append(getServerCertificate());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getUserIdentityTokens());
+        hcb.append(getTransportProfileUri());
+        hcb.append(getSecurityLevel());
+        return hcb.build();
     }
 
     @Override

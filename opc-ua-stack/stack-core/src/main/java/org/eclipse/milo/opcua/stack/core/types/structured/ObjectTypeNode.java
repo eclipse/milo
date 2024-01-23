@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class ObjectTypeNode extends TypeNode implements UaStructuredType {
@@ -70,6 +71,14 @@ public class ObjectTypeNode extends TypeNode implements UaStructuredType {
 
     public Boolean getIsAbstract() {
         return isAbstract;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getIsAbstract());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

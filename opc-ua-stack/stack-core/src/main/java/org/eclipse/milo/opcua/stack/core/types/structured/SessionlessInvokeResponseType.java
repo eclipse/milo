@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -83,6 +84,15 @@ public class SessionlessInvokeResponseType extends Structure implements UaStruct
 
     public UInteger getServiceId() {
         return serviceId;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNamespaceUris());
+        hcb.append(getServerUris());
+        hcb.append(getServiceId());
+        return hcb.build();
     }
 
     @Override

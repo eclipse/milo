@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Double;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -27,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -128,6 +125,21 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
 
     public KeyValuePair @Nullable [] getGroupProperties() {
         return groupProperties;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getSecurityGroupFolder());
+        hcb.append(getKeyLifetime());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getMaxFutureKeyCount());
+        hcb.append(getMaxPastKeyCount());
+        hcb.append(getSecurityGroupId());
+        hcb.append(getRolePermissions());
+        hcb.append(getGroupProperties());
+        return hcb.build();
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.17">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.17</a>
@@ -74,6 +75,14 @@ public class SemanticChangeStructureDataType extends Structure implements UaStru
 
     public NodeId getAffectedType() {
         return affectedType;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getAffected());
+        hcb.append(getAffectedType());
+        return hcb.build();
     }
 
     @Override

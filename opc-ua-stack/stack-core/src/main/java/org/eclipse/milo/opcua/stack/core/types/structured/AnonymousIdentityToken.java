@@ -65,6 +65,11 @@ public class AnonymousIdentityToken extends UserIdentityToken implements UaStruc
     }
 
     @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
     public String toString() {
         var joiner = new StringJoiner(", ", AnonymousIdentityToken.class.getSimpleName() + "[", "]");
         return joiner.toString();

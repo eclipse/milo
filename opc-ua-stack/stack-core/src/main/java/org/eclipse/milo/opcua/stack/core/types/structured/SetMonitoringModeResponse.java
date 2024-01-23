@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -85,6 +86,15 @@ public class SetMonitoringModeResponse extends Structure implements UaResponseMe
 
     public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        hcb.append(getResults());
+        hcb.append(getDiagnosticInfos());
+        return hcb.build();
     }
 
     @Override

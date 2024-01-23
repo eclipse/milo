@@ -10,12 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Double;
-import java.lang.Integer;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -31,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -126,6 +121,21 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     public Boolean getHistorizing() {
         return historizing;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getValue());
+        hcb.append(getDataType());
+        hcb.append(getValueRank());
+        hcb.append(getArrayDimensions());
+        hcb.append(getAccessLevel());
+        hcb.append(getUserAccessLevel());
+        hcb.append(getMinimumSamplingInterval());
+        hcb.append(getHistorizing());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

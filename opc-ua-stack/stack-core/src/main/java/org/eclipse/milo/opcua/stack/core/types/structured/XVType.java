@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.8">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.8</a>
@@ -71,6 +72,14 @@ public class XVType extends Structure implements UaStructuredType {
 
     public Float getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getX());
+        hcb.append(getValue());
+        return hcb.build();
     }
 
     @Override

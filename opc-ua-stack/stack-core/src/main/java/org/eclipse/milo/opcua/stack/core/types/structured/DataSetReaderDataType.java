@@ -10,11 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Double;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -31,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -192,6 +188,29 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getPublisherId());
+        hcb.append(getWriterGroupId());
+        hcb.append(getDataSetWriterId());
+        hcb.append(getDataSetMetaData());
+        hcb.append(getDataSetFieldContentMask());
+        hcb.append(getMessageReceiveTimeout());
+        hcb.append(getKeyFrameCount());
+        hcb.append(getHeaderLayoutUri());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityGroupId());
+        hcb.append(getSecurityKeyServices());
+        hcb.append(getDataSetReaderProperties());
+        hcb.append(getTransportSettings());
+        hcb.append(getMessageSettings());
+        hcb.append(getSubscribedDataSet());
+        return hcb.build();
     }
 
     @Override

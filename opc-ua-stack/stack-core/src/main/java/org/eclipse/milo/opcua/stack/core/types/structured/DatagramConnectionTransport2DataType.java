@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -92,6 +93,17 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
 
     public QosDataType @Nullable [] getDatagramQos() {
         return datagramQos;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getDiscoveryAnnounceRate());
+        hcb.append(getDiscoveryMaxMessageSize());
+        hcb.append(getQosCategory());
+        hcb.append(getDatagramQos());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

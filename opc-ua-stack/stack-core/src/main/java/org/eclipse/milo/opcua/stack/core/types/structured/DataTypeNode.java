@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class DataTypeNode extends TypeNode implements UaStructuredType {
@@ -79,6 +80,15 @@ public class DataTypeNode extends TypeNode implements UaStructuredType {
 
     public ExtensionObject getDataTypeDefinition() {
         return dataTypeDefinition;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getIsAbstract());
+        hcb.append(getDataTypeDefinition());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

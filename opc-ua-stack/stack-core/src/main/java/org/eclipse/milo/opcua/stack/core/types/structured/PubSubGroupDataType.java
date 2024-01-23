@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -23,6 +20,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -110,6 +108,19 @@ public abstract class PubSubGroupDataType extends Structure implements UaStructu
 
     public KeyValuePair @Nullable [] getGroupProperties() {
         return groupProperties;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityGroupId());
+        hcb.append(getSecurityKeyServices());
+        hcb.append(getMaxNetworkMessageSize());
+        hcb.append(getGroupProperties());
+        return hcb.build();
     }
 
     @Override

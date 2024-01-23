@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.6/#5.13.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.6/#5.13.6.2</a>
@@ -82,6 +80,15 @@ public class RepublishRequest extends Structure implements UaRequestMessageType 
 
     public UInteger getRetransmitSequenceNumber() {
         return retransmitSequenceNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getSubscriptionId());
+        hcb.append(getRetransmitSequenceNumber());
+        return hcb.build();
     }
 
     @Override

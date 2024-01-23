@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.3.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.3.3</a>
@@ -76,6 +77,14 @@ public class DatagramWriterGroupTransportDataType extends WriterGroupTransportDa
 
     public Double getMessageRepeatDelay() {
         return messageRepeatDelay;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getMessageRepeatCount());
+        hcb.append(getMessageRepeatDelay());
+        return hcb.build();
     }
 
     @Override

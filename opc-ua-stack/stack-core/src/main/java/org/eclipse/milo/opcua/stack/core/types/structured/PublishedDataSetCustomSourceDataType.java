@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.9.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.9.2</a>
@@ -68,6 +69,13 @@ public class PublishedDataSetCustomSourceDataType extends PublishedDataSetSource
 
     public Boolean getCyclicDataSet() {
         return cyclicDataSet;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getCyclicDataSet());
+        return hcb.build();
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -91,6 +92,16 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getDataSetFolder());
+        hcb.append(getDataSetMetaData());
+        hcb.append(getSubscribedDataSet());
+        return hcb.build();
     }
 
     @Override

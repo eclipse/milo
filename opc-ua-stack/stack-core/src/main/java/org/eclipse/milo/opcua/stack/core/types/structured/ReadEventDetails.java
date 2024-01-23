@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.2/#6.4.2.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.2/#6.4.2.1</a>
@@ -87,6 +88,16 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructured
 
     public EventFilter getFilter() {
         return filter;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNumValuesPerNode());
+        hcb.append(getStartTime());
+        hcb.append(getEndTime());
+        hcb.append(getFilter());
+        return hcb.build();
     }
 
     @Override

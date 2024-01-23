@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.3.6">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.3.6</a>
@@ -90,6 +91,16 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
 
     public UShort getDataSetOffset() {
         return dataSetOffset;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getDataSetMessageContentMask());
+        hcb.append(getConfiguredSize());
+        hcb.append(getNetworkMessageNumber());
+        hcb.append(getDataSetOffset());
+        return hcb.build();
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.3/#6.4.3.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.3/#6.4.3.1</a>
@@ -98,6 +99,17 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
 
     public Boolean getReturnBounds() {
         return returnBounds;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getIsReadModified());
+        hcb.append(getStartTime());
+        hcb.append(getEndTime());
+        hcb.append(getNumValuesPerNode());
+        hcb.append(getReturnBounds());
+        return hcb.build();
     }
 
     @Override

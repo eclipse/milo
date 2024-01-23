@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.2</a>
@@ -71,6 +72,14 @@ public class Range extends Structure implements UaStructuredType {
 
     public Double getHigh() {
         return high;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getLow());
+        hcb.append(getHigh());
+        return hcb.build();
     }
 
     @Override

@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -91,6 +92,16 @@ public class PriorityMappingEntryType extends Structure implements UaStructuredT
 
     public UInteger getPriorityValueDscp() {
         return priorityValueDscp;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getMappingUri());
+        hcb.append(getPriorityLabel());
+        hcb.append(getPriorityValuePcp());
+        hcb.append(getPriorityValueDscp());
+        return hcb.build();
     }
 
     @Override

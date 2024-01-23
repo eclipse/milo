@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -142,6 +143,23 @@ public class Node extends Structure implements UaStructuredType {
 
     public ReferenceNode @Nullable [] getReferences() {
         return references;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNodeId());
+        hcb.append(getNodeClass());
+        hcb.append(getBrowseName());
+        hcb.append(getDisplayName());
+        hcb.append(getDescription());
+        hcb.append(getWriteMask());
+        hcb.append(getUserWriteMask());
+        hcb.append(getRolePermissions());
+        hcb.append(getUserRolePermissions());
+        hcb.append(getAccessRestrictions());
+        hcb.append(getReferences());
+        return hcb.build();
     }
 
     @Override

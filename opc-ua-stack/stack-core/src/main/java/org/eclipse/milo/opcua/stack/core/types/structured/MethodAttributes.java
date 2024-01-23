@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.4">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.4</a>
@@ -74,6 +75,15 @@ public class MethodAttributes extends NodeAttributes implements UaStructuredType
 
     public Boolean getUserExecutable() {
         return userExecutable;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getExecutable());
+        hcb.append(getUserExecutable());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override

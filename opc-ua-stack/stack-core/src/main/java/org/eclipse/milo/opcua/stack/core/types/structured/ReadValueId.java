@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.29">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.29</a>
@@ -87,6 +88,16 @@ public class ReadValueId extends Structure implements UaStructuredType {
 
     public QualifiedName getDataEncoding() {
         return dataEncoding;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNodeId());
+        hcb.append(getAttributeId());
+        hcb.append(getIndexRange());
+        hcb.append(getDataEncoding());
+        return hcb.build();
     }
 
     @Override

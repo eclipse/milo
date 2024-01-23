@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.30">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.30</a>
@@ -72,6 +73,14 @@ public class ThreeDFrame extends Frame implements UaStructuredType {
 
     public ThreeDOrientation getOrientation() {
         return orientation;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getCartesianCoordinates());
+        hcb.append(getOrientation());
+        return hcb.build();
     }
 
     @Override

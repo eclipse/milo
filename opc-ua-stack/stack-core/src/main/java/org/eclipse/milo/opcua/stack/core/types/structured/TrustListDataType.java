@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -27,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class TrustListDataType extends Structure implements UaStructuredType {
@@ -96,6 +94,17 @@ public class TrustListDataType extends Structure implements UaStructuredType {
 
     public ByteString @Nullable [] getIssuerCrls() {
         return issuerCrls;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSpecifiedLists());
+        hcb.append(getTrustedCertificates());
+        hcb.append(getTrustedCrls());
+        hcb.append(getIssuerCertificates());
+        hcb.append(getIssuerCrls());
+        return hcb.build();
     }
 
     @Override

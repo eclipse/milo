@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.15">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.15</a>
@@ -292,6 +293,43 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
 
     public UInteger getEventQueueOverFlowCount() {
         return eventQueueOverFlowCount;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSessionId());
+        hcb.append(getSubscriptionId());
+        hcb.append(getPriority());
+        hcb.append(getPublishingInterval());
+        hcb.append(getMaxKeepAliveCount());
+        hcb.append(getMaxLifetimeCount());
+        hcb.append(getMaxNotificationsPerPublish());
+        hcb.append(getPublishingEnabled());
+        hcb.append(getModifyCount());
+        hcb.append(getEnableCount());
+        hcb.append(getDisableCount());
+        hcb.append(getRepublishRequestCount());
+        hcb.append(getRepublishMessageRequestCount());
+        hcb.append(getRepublishMessageCount());
+        hcb.append(getTransferRequestCount());
+        hcb.append(getTransferredToAltClientCount());
+        hcb.append(getTransferredToSameClientCount());
+        hcb.append(getPublishRequestCount());
+        hcb.append(getDataChangeNotificationsCount());
+        hcb.append(getEventNotificationsCount());
+        hcb.append(getNotificationsCount());
+        hcb.append(getLatePublishRequestCount());
+        hcb.append(getCurrentKeepAliveCount());
+        hcb.append(getCurrentLifetimeCount());
+        hcb.append(getUnacknowledgedMessageCount());
+        hcb.append(getDiscardedMessageCount());
+        hcb.append(getMonitoredItemCount());
+        hcb.append(getDisabledMonitoredItemCount());
+        hcb.append(getMonitoringQueueOverflowCount());
+        hcb.append(getNextSequenceNumber());
+        hcb.append(getEventQueueOverFlowCount());
+        return hcb.build();
     }
 
     @Override

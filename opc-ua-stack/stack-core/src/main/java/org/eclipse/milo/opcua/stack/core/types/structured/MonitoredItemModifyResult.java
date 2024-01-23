@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.3/#5.12.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.3/#5.12.3.2</a>
@@ -92,6 +93,16 @@ public class MonitoredItemModifyResult extends Structure implements UaStructured
 
     public ExtensionObject getFilterResult() {
         return filterResult;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStatusCode());
+        hcb.append(getRevisedSamplingInterval());
+        hcb.append(getRevisedQueueSize());
+        hcb.append(getFilterResult());
+        return hcb.build();
     }
 
     @Override

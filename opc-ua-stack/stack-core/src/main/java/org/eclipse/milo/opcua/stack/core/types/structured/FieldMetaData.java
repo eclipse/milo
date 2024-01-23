@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -133,6 +134,22 @@ public class FieldMetaData extends Structure implements UaStructuredType {
 
     public KeyValuePair @Nullable [] getProperties() {
         return properties;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getDescription());
+        hcb.append(getFieldFlags());
+        hcb.append(getBuiltInType());
+        hcb.append(getDataType());
+        hcb.append(getValueRank());
+        hcb.append(getArrayDimensions());
+        hcb.append(getMaxStringLength());
+        hcb.append(getDataSetFieldId());
+        hcb.append(getProperties());
+        return hcb.build();
     }
 
     @Override

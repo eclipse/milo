@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.45">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.45</a>
@@ -79,6 +80,15 @@ public class ViewDescription extends Structure implements UaStructuredType {
 
     public UInteger getViewVersion() {
         return viewVersion;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getViewId());
+        hcb.append(getTimestamp());
+        hcb.append(getViewVersion());
+        return hcb.build();
     }
 
     @Override

@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -27,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -103,6 +101,18 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
 
     public ConfigurationVersionDataType getConfigurationVersion() {
         return configurationVersion;
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getDescription());
+        hcb.append(getFields());
+        hcb.append(getDataSetClassId());
+        hcb.append(getConfigurationVersion());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
     }
 
     @Override
