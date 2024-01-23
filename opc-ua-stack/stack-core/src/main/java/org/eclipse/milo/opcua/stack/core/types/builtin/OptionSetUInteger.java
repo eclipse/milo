@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
@@ -114,7 +113,7 @@ public abstract class OptionSetUInteger<F extends Enum<F> & OptionSetUInteger.Bi
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return value.hashCode();
     }
 
     /**
