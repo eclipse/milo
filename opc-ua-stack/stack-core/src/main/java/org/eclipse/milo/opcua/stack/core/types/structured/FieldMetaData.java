@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -36,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class FieldMetaData extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14524");
 
@@ -140,6 +139,22 @@ public class FieldMetaData extends Structure implements UaStructuredType {
 
     public KeyValuePair @Nullable [] getProperties() {
         return properties;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", FieldMetaData.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("description=" + getDescription());
+        joiner.add("fieldFlags=" + getFieldFlags());
+        joiner.add("builtInType=" + getBuiltInType());
+        joiner.add("dataType=" + getDataType());
+        joiner.add("valueRank=" + getValueRank());
+        joiner.add("arrayDimensions=" + java.util.Arrays.toString(getArrayDimensions()));
+        joiner.add("maxStringLength=" + getMaxStringLength());
+        joiner.add("dataSetFieldId=" + getDataSetFieldId());
+        joiner.add("properties=" + java.util.Arrays.toString(getProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,13 +10,16 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -25,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 @EqualsAndHashCode(
     callSuper = true
 )
-@ToString
 public class JsonNetworkMessageContentMask extends OptionSetUI32<JsonNetworkMessageContentMask.Field> {
     public JsonNetworkMessageContentMask(UInteger value) {
         super(value);
@@ -61,13 +63,25 @@ public class JsonNetworkMessageContentMask extends OptionSetUI32<JsonNetworkMess
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<JsonNetworkMessageContentMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static JsonNetworkMessageContentMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", JsonNetworkMessageContentMask.class.getSimpleName() + "[", "]");
+        joiner.add("networkMessageHeader=" + getNetworkMessageHeader());
+        joiner.add("dataSetMessageHeader=" + getDataSetMessageHeader());
+        joiner.add("singleDataSetMessage=" + getSingleDataSetMessage());
+        joiner.add("publisherId=" + getPublisherId());
+        joiner.add("dataSetClassId=" + getDataSetClassId());
+        joiner.add("replyTo=" + getReplyTo());
+        return joiner.toString();
+    }
+
+    public static JsonNetworkMessageContentMask of(JsonNetworkMessageContentMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -77,7 +91,7 @@ public class JsonNetworkMessageContentMask extends OptionSetUI32<JsonNetworkMess
         return new JsonNetworkMessageContentMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         NetworkMessageHeader(0),
 
         DataSetMessageHeader(1),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class ReadAnnotationDataDetails extends HistoryReadDetails implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23497");
 
@@ -72,6 +72,13 @@ public class ReadAnnotationDataDetails extends HistoryReadDetails implements UaS
 
     public DateTime @Nullable [] getReqTimes() {
         return reqTimes;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ReadAnnotationDataDetails.class.getSimpleName() + "[", "]");
+        joiner.add("reqTimes=" + java.util.Arrays.toString(getReqTimes()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

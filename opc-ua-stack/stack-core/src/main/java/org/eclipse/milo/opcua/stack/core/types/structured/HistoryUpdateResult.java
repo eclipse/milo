@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -35,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class HistoryUpdateResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=695");
 
@@ -88,6 +91,15 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
 
     public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", HistoryUpdateResult.class.getSimpleName() + "[", "]");
+        joiner.add("statusCode=" + getStatusCode());
+        joiner.add("operationResults=" + java.util.Arrays.toString(getOperationResults()));
+        joiner.add("diagnosticInfos=" + java.util.Arrays.toString(getDiagnosticInfos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

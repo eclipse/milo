@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23600");
 
@@ -94,6 +94,16 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", StandaloneSubscribedDataSetDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("dataSetFolder=" + java.util.Arrays.toString(getDataSetFolder()));
+        joiner.add("dataSetMetaData=" + getDataSetMetaData());
+        joiner.add("subscribedDataSet=" + getSubscribedDataSet());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

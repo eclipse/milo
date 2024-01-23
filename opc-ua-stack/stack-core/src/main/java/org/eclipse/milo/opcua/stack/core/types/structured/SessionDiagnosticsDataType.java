@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class SessionDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=865");
 
@@ -389,6 +389,55 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     public ServiceCounterDataType getUnregisterNodesCount() {
         return unregisterNodesCount;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SessionDiagnosticsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("sessionName='" + getSessionName() + "'");
+        joiner.add("clientDescription=" + getClientDescription());
+        joiner.add("serverUri='" + getServerUri() + "'");
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("actualSessionTimeout=" + getActualSessionTimeout());
+        joiner.add("maxResponseMessageSize=" + getMaxResponseMessageSize());
+        joiner.add("clientConnectionTime=" + getClientConnectionTime());
+        joiner.add("clientLastContactTime=" + getClientLastContactTime());
+        joiner.add("currentSubscriptionsCount=" + getCurrentSubscriptionsCount());
+        joiner.add("currentMonitoredItemsCount=" + getCurrentMonitoredItemsCount());
+        joiner.add("currentPublishRequestsInQueue=" + getCurrentPublishRequestsInQueue());
+        joiner.add("totalRequestCount=" + getTotalRequestCount());
+        joiner.add("unauthorizedRequestCount=" + getUnauthorizedRequestCount());
+        joiner.add("readCount=" + getReadCount());
+        joiner.add("historyReadCount=" + getHistoryReadCount());
+        joiner.add("writeCount=" + getWriteCount());
+        joiner.add("historyUpdateCount=" + getHistoryUpdateCount());
+        joiner.add("callCount=" + getCallCount());
+        joiner.add("createMonitoredItemsCount=" + getCreateMonitoredItemsCount());
+        joiner.add("modifyMonitoredItemsCount=" + getModifyMonitoredItemsCount());
+        joiner.add("setMonitoringModeCount=" + getSetMonitoringModeCount());
+        joiner.add("setTriggeringCount=" + getSetTriggeringCount());
+        joiner.add("deleteMonitoredItemsCount=" + getDeleteMonitoredItemsCount());
+        joiner.add("createSubscriptionCount=" + getCreateSubscriptionCount());
+        joiner.add("modifySubscriptionCount=" + getModifySubscriptionCount());
+        joiner.add("setPublishingModeCount=" + getSetPublishingModeCount());
+        joiner.add("publishCount=" + getPublishCount());
+        joiner.add("republishCount=" + getRepublishCount());
+        joiner.add("transferSubscriptionsCount=" + getTransferSubscriptionsCount());
+        joiner.add("deleteSubscriptionsCount=" + getDeleteSubscriptionsCount());
+        joiner.add("addNodesCount=" + getAddNodesCount());
+        joiner.add("addReferencesCount=" + getAddReferencesCount());
+        joiner.add("deleteNodesCount=" + getDeleteNodesCount());
+        joiner.add("deleteReferencesCount=" + getDeleteReferencesCount());
+        joiner.add("browseCount=" + getBrowseCount());
+        joiner.add("browseNextCount=" + getBrowseNextCount());
+        joiner.add("translateBrowsePathsToNodeIdsCount=" + getTranslateBrowsePathsToNodeIdsCount());
+        joiner.add("queryFirstCount=" + getQueryFirstCount());
+        joiner.add("queryNextCount=" + getQueryNextCount());
+        joiner.add("registerNodesCount=" + getRegisterNodesCount());
+        joiner.add("unregisterNodesCount=" + getUnregisterNodesCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

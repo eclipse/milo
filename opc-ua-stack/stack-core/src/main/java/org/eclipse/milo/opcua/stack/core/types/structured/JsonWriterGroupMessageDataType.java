@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -32,7 +36,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class JsonWriterGroupMessageDataType extends WriterGroupMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15657");
 
@@ -70,6 +73,13 @@ public class JsonWriterGroupMessageDataType extends WriterGroupMessageDataType i
 
     public JsonNetworkMessageContentMask getNetworkMessageContentMask() {
         return networkMessageContentMask;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", JsonWriterGroupMessageDataType.class.getSimpleName() + "[", "]");
+        joiner.add("networkMessageContentMask=" + getNetworkMessageContentMask());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

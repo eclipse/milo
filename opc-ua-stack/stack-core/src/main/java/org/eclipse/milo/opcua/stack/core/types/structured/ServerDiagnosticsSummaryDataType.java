@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -32,7 +33,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class ServerDiagnosticsSummaryDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=859");
 
@@ -152,6 +152,24 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
 
     public UInteger getRejectedRequestsCount() {
         return rejectedRequestsCount;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ServerDiagnosticsSummaryDataType.class.getSimpleName() + "[", "]");
+        joiner.add("serverViewCount=" + getServerViewCount());
+        joiner.add("currentSessionCount=" + getCurrentSessionCount());
+        joiner.add("cumulatedSessionCount=" + getCumulatedSessionCount());
+        joiner.add("securityRejectedSessionCount=" + getSecurityRejectedSessionCount());
+        joiner.add("rejectedSessionCount=" + getRejectedSessionCount());
+        joiner.add("sessionTimeoutCount=" + getSessionTimeoutCount());
+        joiner.add("sessionAbortCount=" + getSessionAbortCount());
+        joiner.add("currentSubscriptionCount=" + getCurrentSubscriptionCount());
+        joiner.add("cumulatedSubscriptionCount=" + getCumulatedSubscriptionCount());
+        joiner.add("publishingIntervalCount=" + getPublishingIntervalCount());
+        joiner.add("securityRejectedRequestsCount=" + getSecurityRejectedRequestsCount());
+        joiner.add("rejectedRequestsCount=" + getRejectedRequestsCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

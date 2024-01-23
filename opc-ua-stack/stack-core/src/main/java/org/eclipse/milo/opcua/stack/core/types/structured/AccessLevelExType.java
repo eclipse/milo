@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,13 +10,16 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
@@ -25,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 @EqualsAndHashCode(
     callSuper = true
 )
-@ToString
 public class AccessLevelExType extends OptionSetUI32<AccessLevelExType.Field> {
     public AccessLevelExType(UInteger value) {
         super(value);
@@ -89,13 +91,32 @@ public class AccessLevelExType extends OptionSetUI32<AccessLevelExType.Field> {
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<AccessLevelExType.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static AccessLevelExType of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AccessLevelExType.class.getSimpleName() + "[", "]");
+        joiner.add("currentRead=" + getCurrentRead());
+        joiner.add("currentWrite=" + getCurrentWrite());
+        joiner.add("historyRead=" + getHistoryRead());
+        joiner.add("historyWrite=" + getHistoryWrite());
+        joiner.add("semanticChange=" + getSemanticChange());
+        joiner.add("statusWrite=" + getStatusWrite());
+        joiner.add("timestampWrite=" + getTimestampWrite());
+        joiner.add("nonatomicRead=" + getNonatomicRead());
+        joiner.add("nonatomicWrite=" + getNonatomicWrite());
+        joiner.add("writeFullArrayOnly=" + getWriteFullArrayOnly());
+        joiner.add("noSubDataTypes=" + getNoSubDataTypes());
+        joiner.add("nonVolatile=" + getNonVolatile());
+        joiner.add("constant=" + getConstant());
+        return joiner.toString();
+    }
+
+    public static AccessLevelExType of(AccessLevelExType.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -105,7 +126,7 @@ public class AccessLevelExType extends OptionSetUI32<AccessLevelExType.Field> {
         return new AccessLevelExType(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         CurrentRead(0),
 
         CurrentWrite(1),

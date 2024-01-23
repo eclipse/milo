@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class TranslateBrowsePathsToNodeIdsRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=552");
 
@@ -79,6 +79,14 @@ public class TranslateBrowsePathsToNodeIdsRequest extends Structure implements U
 
     public BrowsePath @Nullable [] getBrowsePaths() {
         return browsePaths;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", TranslateBrowsePathsToNodeIdsRequest.class.getSimpleName() + "[", "]");
+        joiner.add("requestHeader=" + getRequestHeader());
+        joiner.add("browsePaths=" + java.util.Arrays.toString(getBrowsePaths()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -36,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class FieldTargetDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14744");
 
@@ -118,6 +120,19 @@ public class FieldTargetDataType extends Structure implements UaStructuredType {
 
     public Variant getOverrideValue() {
         return overrideValue;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", FieldTargetDataType.class.getSimpleName() + "[", "]");
+        joiner.add("dataSetFieldId=" + getDataSetFieldId());
+        joiner.add("receiverIndexRange='" + getReceiverIndexRange() + "'");
+        joiner.add("targetNodeId=" + getTargetNodeId());
+        joiner.add("attributeId=" + getAttributeId());
+        joiner.add("writeIndexRange='" + getWriteIndexRange() + "'");
+        joiner.add("overrideValueHandling=" + getOverrideValueHandling());
+        joiner.add("overrideValue=" + getOverrideValue());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

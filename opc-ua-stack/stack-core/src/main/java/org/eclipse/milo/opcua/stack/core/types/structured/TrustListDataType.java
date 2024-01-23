@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -31,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class TrustListDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12554");
 
@@ -99,6 +102,17 @@ public class TrustListDataType extends Structure implements UaStructuredType {
 
     public ByteString @Nullable [] getIssuerCrls() {
         return issuerCrls;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", TrustListDataType.class.getSimpleName() + "[", "]");
+        joiner.add("specifiedLists=" + getSpecifiedLists());
+        joiner.add("trustedCertificates=" + java.util.Arrays.toString(getTrustedCertificates()));
+        joiner.add("trustedCrls=" + java.util.Arrays.toString(getTrustedCrls()));
+        joiner.add("issuerCertificates=" + java.util.Arrays.toString(getIssuerCertificates()));
+        joiner.add("issuerCrls=" + java.util.Arrays.toString(getIssuerCrls()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

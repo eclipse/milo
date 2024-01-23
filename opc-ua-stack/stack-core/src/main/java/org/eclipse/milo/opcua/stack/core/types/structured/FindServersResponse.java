@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class FindServersResponse extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=423");
 
@@ -79,6 +82,14 @@ public class FindServersResponse extends Structure implements UaResponseMessageT
 
     public ApplicationDescription @Nullable [] getServers() {
         return servers;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", FindServersResponse.class.getSimpleName() + "[", "]");
+        joiner.add("responseHeader=" + getResponseHeader());
+        joiner.add("servers=" + java.util.Arrays.toString(getServers()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -29,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public abstract class NetworkAddressDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15502");
 
@@ -67,6 +67,13 @@ public abstract class NetworkAddressDataType extends Structure implements UaStru
 
     public @Nullable String getNetworkInterface() {
         return networkInterface;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", NetworkAddressDataType.class.getSimpleName() + "[", "]");
+        joiner.add("networkInterface='" + getNetworkInterface() + "'");
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

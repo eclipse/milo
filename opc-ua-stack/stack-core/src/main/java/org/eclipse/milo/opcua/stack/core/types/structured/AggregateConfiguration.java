@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +38,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class AggregateConfiguration extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=948");
 
@@ -100,6 +104,17 @@ public class AggregateConfiguration extends Structure implements UaStructuredTyp
 
     public Boolean getUseSlopedExtrapolation() {
         return useSlopedExtrapolation;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AggregateConfiguration.class.getSimpleName() + "[", "]");
+        joiner.add("useServerCapabilitiesDefaults=" + getUseServerCapabilitiesDefaults());
+        joiner.add("treatUncertainAsBad=" + getTreatUncertainAsBad());
+        joiner.add("percentDataBad=" + getPercentDataBad());
+        joiner.add("percentDataGood=" + getPercentDataGood());
+        joiner.add("useSlopedExtrapolation=" + getUseSlopedExtrapolation());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

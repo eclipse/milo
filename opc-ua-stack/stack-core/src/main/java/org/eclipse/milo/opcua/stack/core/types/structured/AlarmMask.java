@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,11 +12,12 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
@@ -25,7 +26,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 @EqualsAndHashCode(
     callSuper = true
 )
-@ToString
 public class AlarmMask extends OptionSetUI16<AlarmMask.Field> {
     public AlarmMask(UShort value) {
         super(value);
@@ -49,13 +49,22 @@ public class AlarmMask extends OptionSetUI16<AlarmMask.Field> {
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<AlarmMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static AlarmMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AlarmMask.class.getSimpleName() + "[", "]");
+        joiner.add("active=" + getActive());
+        joiner.add("unacknowledged=" + getUnacknowledged());
+        joiner.add("unconfirmed=" + getUnconfirmed());
+        return joiner.toString();
+    }
+
+    public static AlarmMask of(AlarmMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -65,7 +74,7 @@ public class AlarmMask extends OptionSetUI16<AlarmMask.Field> {
         return new AlarmMask(UShort.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         Active(0),
 
         Unacknowledged(1),

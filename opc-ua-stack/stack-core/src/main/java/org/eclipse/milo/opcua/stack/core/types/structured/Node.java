@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -36,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class Node extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=258");
 
@@ -148,6 +148,23 @@ public class Node extends Structure implements UaStructuredType {
 
     public ReferenceNode @Nullable [] getReferences() {
         return references;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", Node.class.getSimpleName() + "[", "]");
+        joiner.add("nodeId=" + getNodeId());
+        joiner.add("nodeClass=" + getNodeClass());
+        joiner.add("browseName=" + getBrowseName());
+        joiner.add("displayName=" + getDisplayName());
+        joiner.add("description=" + getDescription());
+        joiner.add("writeMask=" + getWriteMask());
+        joiner.add("userWriteMask=" + getUserWriteMask());
+        joiner.add("rolePermissions=" + java.util.Arrays.toString(getRolePermissions()));
+        joiner.add("userRolePermissions=" + java.util.Arrays.toString(getUserRolePermissions()));
+        joiner.add("accessRestrictions=" + getAccessRestrictions());
+        joiner.add("references=" + java.util.Arrays.toString(getReferences()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

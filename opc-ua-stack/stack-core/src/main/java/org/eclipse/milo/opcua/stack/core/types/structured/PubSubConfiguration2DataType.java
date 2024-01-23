@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class PubSubConfiguration2DataType extends PubSubConfigurationDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23602");
 
@@ -121,6 +121,19 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
 
     public KeyValuePair @Nullable [] getConfigurationProperties() {
         return configurationProperties;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubConfiguration2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("subscribedDataSets=" + java.util.Arrays.toString(getSubscribedDataSets()));
+        joiner.add("dataSetClasses=" + java.util.Arrays.toString(getDataSetClasses()));
+        joiner.add("defaultSecurityKeyServices=" + java.util.Arrays.toString(getDefaultSecurityKeyServices()));
+        joiner.add("securityGroups=" + java.util.Arrays.toString(getSecurityGroups()));
+        joiner.add("pubSubKeyPushTargets=" + java.util.Arrays.toString(getPubSubKeyPushTargets()));
+        joiner.add("configurationVersion=" + getConfigurationVersion());
+        joiner.add("configurationProperties=" + java.util.Arrays.toString(getConfigurationProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

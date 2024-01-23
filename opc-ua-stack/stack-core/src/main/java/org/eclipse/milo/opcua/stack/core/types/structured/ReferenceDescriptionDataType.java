@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -32,7 +33,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class ReferenceDescriptionDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=32659");
 
@@ -92,6 +92,16 @@ public class ReferenceDescriptionDataType extends Structure implements UaStructu
 
     public ExpandedNodeId getTargetNode() {
         return targetNode;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ReferenceDescriptionDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sourceNode=" + getSourceNode());
+        joiner.add("referenceType=" + getReferenceType());
+        joiner.add("isForward=" + getIsForward());
+        joiner.add("targetNode=" + getTargetNode());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class SessionlessInvokeRequestType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15901");
 
@@ -100,6 +100,17 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
 
     public UInteger getServiceId() {
         return serviceId;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SessionlessInvokeRequestType.class.getSimpleName() + "[", "]");
+        joiner.add("urisVersion=" + getUrisVersion());
+        joiner.add("namespaceUris=" + java.util.Arrays.toString(getNamespaceUris()));
+        joiner.add("serverUris=" + java.util.Arrays.toString(getServerUris()));
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("serviceId=" + getServiceId());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

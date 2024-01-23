@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class SubscriptionDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=874");
 
@@ -293,6 +298,43 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
 
     public UInteger getEventQueueOverFlowCount() {
         return eventQueueOverFlowCount;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SubscriptionDiagnosticsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("subscriptionId=" + getSubscriptionId());
+        joiner.add("priority=" + getPriority());
+        joiner.add("publishingInterval=" + getPublishingInterval());
+        joiner.add("maxKeepAliveCount=" + getMaxKeepAliveCount());
+        joiner.add("maxLifetimeCount=" + getMaxLifetimeCount());
+        joiner.add("maxNotificationsPerPublish=" + getMaxNotificationsPerPublish());
+        joiner.add("publishingEnabled=" + getPublishingEnabled());
+        joiner.add("modifyCount=" + getModifyCount());
+        joiner.add("enableCount=" + getEnableCount());
+        joiner.add("disableCount=" + getDisableCount());
+        joiner.add("republishRequestCount=" + getRepublishRequestCount());
+        joiner.add("republishMessageRequestCount=" + getRepublishMessageRequestCount());
+        joiner.add("republishMessageCount=" + getRepublishMessageCount());
+        joiner.add("transferRequestCount=" + getTransferRequestCount());
+        joiner.add("transferredToAltClientCount=" + getTransferredToAltClientCount());
+        joiner.add("transferredToSameClientCount=" + getTransferredToSameClientCount());
+        joiner.add("publishRequestCount=" + getPublishRequestCount());
+        joiner.add("dataChangeNotificationsCount=" + getDataChangeNotificationsCount());
+        joiner.add("eventNotificationsCount=" + getEventNotificationsCount());
+        joiner.add("notificationsCount=" + getNotificationsCount());
+        joiner.add("latePublishRequestCount=" + getLatePublishRequestCount());
+        joiner.add("currentKeepAliveCount=" + getCurrentKeepAliveCount());
+        joiner.add("currentLifetimeCount=" + getCurrentLifetimeCount());
+        joiner.add("unacknowledgedMessageCount=" + getUnacknowledgedMessageCount());
+        joiner.add("discardedMessageCount=" + getDiscardedMessageCount());
+        joiner.add("monitoredItemCount=" + getMonitoredItemCount());
+        joiner.add("disabledMonitoredItemCount=" + getDisabledMonitoredItemCount());
+        joiner.add("monitoringQueueOverflowCount=" + getMonitoringQueueOverflowCount());
+        joiner.add("nextSequenceNumber=" + getNextSequenceNumber());
+        joiner.add("eventQueueOverFlowCount=" + getEventQueueOverFlowCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

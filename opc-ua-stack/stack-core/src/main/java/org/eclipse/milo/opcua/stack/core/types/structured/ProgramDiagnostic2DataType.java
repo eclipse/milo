@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -36,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class ProgramDiagnostic2DataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24033");
 
@@ -156,6 +156,24 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
 
     public StatusCode getLastMethodReturnStatus() {
         return lastMethodReturnStatus;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ProgramDiagnostic2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("createSessionId=" + getCreateSessionId());
+        joiner.add("createClientName='" + getCreateClientName() + "'");
+        joiner.add("invocationCreationTime=" + getInvocationCreationTime());
+        joiner.add("lastTransitionTime=" + getLastTransitionTime());
+        joiner.add("lastMethodCall='" + getLastMethodCall() + "'");
+        joiner.add("lastMethodSessionId=" + getLastMethodSessionId());
+        joiner.add("lastMethodInputArguments=" + java.util.Arrays.toString(getLastMethodInputArguments()));
+        joiner.add("lastMethodOutputArguments=" + java.util.Arrays.toString(getLastMethodOutputArguments()));
+        joiner.add("lastMethodInputValues=" + java.util.Arrays.toString(getLastMethodInputValues()));
+        joiner.add("lastMethodOutputValues=" + java.util.Arrays.toString(getLastMethodOutputValues()));
+        joiner.add("lastMethodCallTime=" + getLastMethodCallTime());
+        joiner.add("lastMethodReturnStatus=" + getLastMethodReturnStatus());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

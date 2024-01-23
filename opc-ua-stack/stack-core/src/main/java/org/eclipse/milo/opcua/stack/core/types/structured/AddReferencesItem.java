@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -34,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class AddReferencesItem extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=379");
 
@@ -108,6 +112,18 @@ public class AddReferencesItem extends Structure implements UaStructuredType {
 
     public NodeClass getTargetNodeClass() {
         return targetNodeClass;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AddReferencesItem.class.getSimpleName() + "[", "]");
+        joiner.add("sourceNodeId=" + getSourceNodeId());
+        joiner.add("referenceTypeId=" + getReferenceTypeId());
+        joiner.add("isForward=" + getIsForward());
+        joiner.add("targetServerUri='" + getTargetServerUri() + "'");
+        joiner.add("targetNodeId=" + getTargetNodeId());
+        joiner.add("targetNodeClass=" + getTargetNodeClass());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

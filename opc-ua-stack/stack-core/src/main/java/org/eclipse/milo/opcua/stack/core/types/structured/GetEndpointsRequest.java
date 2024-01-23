@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class GetEndpointsRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=426");
 
@@ -93,6 +96,16 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
 
     public String @Nullable [] getProfileUris() {
         return profileUris;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", GetEndpointsRequest.class.getSimpleName() + "[", "]");
+        joiner.add("requestHeader=" + getRequestHeader());
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("profileUris=" + java.util.Arrays.toString(getProfileUris()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

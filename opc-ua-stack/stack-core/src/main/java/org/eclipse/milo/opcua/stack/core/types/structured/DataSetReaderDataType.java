@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -36,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class DataSetReaderDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15623");
 
@@ -193,6 +193,29 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataSetReaderDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("enabled=" + getEnabled());
+        joiner.add("publisherId=" + getPublisherId());
+        joiner.add("writerGroupId=" + getWriterGroupId());
+        joiner.add("dataSetWriterId=" + getDataSetWriterId());
+        joiner.add("dataSetMetaData=" + getDataSetMetaData());
+        joiner.add("dataSetFieldContentMask=" + getDataSetFieldContentMask());
+        joiner.add("messageReceiveTimeout=" + getMessageReceiveTimeout());
+        joiner.add("keyFrameCount=" + getKeyFrameCount());
+        joiner.add("headerLayoutUri='" + getHeaderLayoutUri() + "'");
+        joiner.add("securityMode=" + getSecurityMode());
+        joiner.add("securityGroupId='" + getSecurityGroupId() + "'");
+        joiner.add("securityKeyServices=" + java.util.Arrays.toString(getSecurityKeyServices()));
+        joiner.add("dataSetReaderProperties=" + java.util.Arrays.toString(getDataSetReaderProperties()));
+        joiner.add("transportSettings=" + getTransportSettings());
+        joiner.add("messageSettings=" + getMessageSettings());
+        joiner.add("subscribedDataSet=" + getSubscribedDataSet());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

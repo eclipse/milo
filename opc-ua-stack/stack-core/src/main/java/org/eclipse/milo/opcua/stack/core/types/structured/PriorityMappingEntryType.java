@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class PriorityMappingEntryType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=25220");
 
@@ -94,6 +94,16 @@ public class PriorityMappingEntryType extends Structure implements UaStructuredT
 
     public UInteger getPriorityValueDscp() {
         return priorityValueDscp;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PriorityMappingEntryType.class.getSimpleName() + "[", "]");
+        joiner.add("mappingUri='" + getMappingUri() + "'");
+        joiner.add("priorityLabel='" + getPriorityLabel() + "'");
+        joiner.add("priorityValuePcp=" + getPriorityValuePcp());
+        joiner.add("priorityValueDscp=" + getPriorityValueDscp());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

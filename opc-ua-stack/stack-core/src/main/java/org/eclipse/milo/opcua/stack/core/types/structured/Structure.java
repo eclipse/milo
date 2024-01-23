@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -21,7 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
  */
 @EqualsAndHashCode
 @SuperBuilder
-@ToString
 public abstract class Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=22");
 
@@ -31,5 +31,11 @@ public abstract class Structure implements UaStructuredType {
     @Override
     public ExpandedNodeId getTypeId() {
         return TYPE_ID;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", Structure.class.getSimpleName() + "[", "]");
+        return joiner.toString();
     }
 }

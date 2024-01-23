@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -36,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class WriterGroupDataType extends PubSubGroupDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15480");
 
@@ -138,6 +138,21 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
 
     public DataSetWriterDataType @Nullable [] getDataSetWriters() {
         return dataSetWriters;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", WriterGroupDataType.class.getSimpleName() + "[", "]");
+        joiner.add("writerGroupId=" + getWriterGroupId());
+        joiner.add("publishingInterval=" + getPublishingInterval());
+        joiner.add("keepAliveTime=" + getKeepAliveTime());
+        joiner.add("priority=" + getPriority());
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("headerLayoutUri='" + getHeaderLayoutUri() + "'");
+        joiner.add("transportSettings=" + getTransportSettings());
+        joiner.add("messageSettings=" + getMessageSettings());
+        joiner.add("dataSetWriters=" + java.util.Arrays.toString(getDataSetWriters()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

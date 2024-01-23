@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -35,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class SessionSecurityDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=868");
 
@@ -133,6 +133,21 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
 
     public ByteString getClientCertificate() {
         return clientCertificate;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SessionSecurityDiagnosticsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("clientUserIdOfSession='" + getClientUserIdOfSession() + "'");
+        joiner.add("clientUserIdHistory=" + java.util.Arrays.toString(getClientUserIdHistory()));
+        joiner.add("authenticationMechanism='" + getAuthenticationMechanism() + "'");
+        joiner.add("encoding='" + getEncoding() + "'");
+        joiner.add("transportProtocol='" + getTransportProtocol() + "'");
+        joiner.add("securityMode=" + getSecurityMode());
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        joiner.add("clientCertificate=" + getClientCertificate());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

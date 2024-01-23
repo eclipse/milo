@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -35,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14523");
 
@@ -107,6 +109,17 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
 
     public ConfigurationVersionDataType getConfigurationVersion() {
         return configurationVersion;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataSetMetaDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("description=" + getDescription());
+        joiner.add("fields=" + java.util.Arrays.toString(getFields()));
+        joiner.add("dataSetClassId=" + getDataSetClassId());
+        joiner.add("configurationVersion=" + getConfigurationVersion());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

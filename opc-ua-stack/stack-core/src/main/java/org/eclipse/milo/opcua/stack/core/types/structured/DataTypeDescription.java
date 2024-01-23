@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -29,7 +32,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public abstract class DataTypeDescription extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14525");
 
@@ -74,6 +76,14 @@ public abstract class DataTypeDescription extends Structure implements UaStructu
 
     public QualifiedName getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataTypeDescription.class.getSimpleName() + "[", "]");
+        joiner.add("dataTypeId=" + getDataTypeId());
+        joiner.add("name=" + getName());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

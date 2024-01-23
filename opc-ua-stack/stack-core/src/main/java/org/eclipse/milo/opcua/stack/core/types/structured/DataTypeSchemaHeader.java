@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -29,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public abstract class DataTypeSchemaHeader extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15534");
 
@@ -91,6 +91,16 @@ public abstract class DataTypeSchemaHeader extends Structure implements UaStruct
 
     public SimpleTypeDescription @Nullable [] getSimpleDataTypes() {
         return simpleDataTypes;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataTypeSchemaHeader.class.getSimpleName() + "[", "]");
+        joiner.add("namespaces=" + java.util.Arrays.toString(getNamespaces()));
+        joiner.add("structureDataTypes=" + java.util.Arrays.toString(getStructureDataTypes()));
+        joiner.add("enumDataTypes=" + java.util.Arrays.toString(getEnumDataTypes()));
+        joiner.add("simpleDataTypes=" + java.util.Arrays.toString(getSimpleDataTypes()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

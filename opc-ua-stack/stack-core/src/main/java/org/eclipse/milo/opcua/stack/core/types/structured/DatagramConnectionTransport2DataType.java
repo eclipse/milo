@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = true
 )
 @SuperBuilder
-@ToString
 public class DatagramConnectionTransport2DataType extends DatagramConnectionTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23612");
 
@@ -95,6 +95,16 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
 
     public QosDataType @Nullable [] getDatagramQos() {
         return datagramQos;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DatagramConnectionTransport2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("discoveryAnnounceRate=" + getDiscoveryAnnounceRate());
+        joiner.add("discoveryMaxMessageSize=" + getDiscoveryMaxMessageSize());
+        joiner.add("qosCategory='" + getQosCategory() + "'");
+        joiner.add("datagramQos=" + java.util.Arrays.toString(getDatagramQos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class CreateSessionRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=459");
 
@@ -131,6 +131,21 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
 
     public UInteger getMaxResponseMessageSize() {
         return maxResponseMessageSize;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", CreateSessionRequest.class.getSimpleName() + "[", "]");
+        joiner.add("requestHeader=" + getRequestHeader());
+        joiner.add("clientDescription=" + getClientDescription());
+        joiner.add("serverUri='" + getServerUri() + "'");
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("sessionName='" + getSessionName() + "'");
+        joiner.add("clientNonce=" + getClientNonce());
+        joiner.add("clientCertificate=" + getClientCertificate());
+        joiner.add("requestedSessionTimeout=" + getRequestedSessionTimeout());
+        joiner.add("maxResponseMessageSize=" + getMaxResponseMessageSize());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

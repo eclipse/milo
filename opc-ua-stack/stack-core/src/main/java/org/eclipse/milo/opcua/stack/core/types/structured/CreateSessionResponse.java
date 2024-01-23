@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class CreateSessionResponse extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=462");
 
@@ -139,6 +139,22 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
 
     public UInteger getMaxRequestMessageSize() {
         return maxRequestMessageSize;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", CreateSessionResponse.class.getSimpleName() + "[", "]");
+        joiner.add("responseHeader=" + getResponseHeader());
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("authenticationToken=" + getAuthenticationToken());
+        joiner.add("revisedSessionTimeout=" + getRevisedSessionTimeout());
+        joiner.add("serverNonce=" + getServerNonce());
+        joiner.add("serverCertificate=" + getServerCertificate());
+        joiner.add("serverEndpoints=" + java.util.Arrays.toString(getServerEndpoints()));
+        joiner.add("serverSoftwareCertificates=" + java.util.Arrays.toString(getServerSoftwareCertificates()));
+        joiner.add("serverSignature=" + getServerSignature());
+        joiner.add("maxRequestMessageSize=" + getMaxRequestMessageSize());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

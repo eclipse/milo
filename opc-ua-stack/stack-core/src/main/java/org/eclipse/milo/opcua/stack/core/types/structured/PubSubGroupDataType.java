@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -30,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public abstract class PubSubGroupDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15609");
 
@@ -113,6 +116,19 @@ public abstract class PubSubGroupDataType extends Structure implements UaStructu
 
     public KeyValuePair @Nullable [] getGroupProperties() {
         return groupProperties;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubGroupDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("enabled=" + getEnabled());
+        joiner.add("securityMode=" + getSecurityMode());
+        joiner.add("securityGroupId='" + getSecurityGroupId() + "'");
+        joiner.add("securityKeyServices=" + java.util.Arrays.toString(getSecurityKeyServices()));
+        joiner.add("maxNetworkMessageSize=" + getMaxNetworkMessageSize());
+        joiner.add("groupProperties=" + java.util.Arrays.toString(getGroupProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

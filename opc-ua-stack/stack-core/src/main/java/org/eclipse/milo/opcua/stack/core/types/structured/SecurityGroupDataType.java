@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
+
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
     callSuper = false
 )
 @SuperBuilder
-@ToString
 public class SecurityGroupDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23601");
 
@@ -130,6 +130,21 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
 
     public KeyValuePair @Nullable [] getGroupProperties() {
         return groupProperties;
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SecurityGroupDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("securityGroupFolder=" + java.util.Arrays.toString(getSecurityGroupFolder()));
+        joiner.add("keyLifetime=" + getKeyLifetime());
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        joiner.add("maxFutureKeyCount=" + getMaxFutureKeyCount());
+        joiner.add("maxPastKeyCount=" + getMaxPastKeyCount());
+        joiner.add("securityGroupId='" + getSecurityGroupId() + "'");
+        joiner.add("rolePermissions=" + java.util.Arrays.toString(getRolePermissions()));
+        joiner.add("groupProperties=" + java.util.Arrays.toString(getGroupProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {
