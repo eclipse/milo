@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.StringJoiner;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -28,9 +27,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.4/#7.7.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.4/#7.7.4.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class ElementOperand extends FilterOperand implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=592");
 

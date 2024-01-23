@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -25,9 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.3">https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class UserConfigurationMask extends OptionSetUI32<UserConfigurationMask.Field> {
     public UserConfigurationMask(UInteger value) {
         super(value);

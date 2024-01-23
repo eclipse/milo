@@ -10,9 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -30,9 +32,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.6.6">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.6.6</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class BrokerDataSetReaderTransportDataType extends DataSetReaderTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15670");
 

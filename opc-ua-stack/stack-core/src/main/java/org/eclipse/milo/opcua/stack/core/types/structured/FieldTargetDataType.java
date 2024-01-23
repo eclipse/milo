@@ -10,10 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -31,9 +33,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.2.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.2.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
 public class FieldTargetDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14744");
 

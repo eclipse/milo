@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI8;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -23,9 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/8.59">https://reference.opcfoundation.org/v105/Core/docs/Part3/8.59</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class EventNotifierType extends OptionSetUI8<EventNotifierType.Field> {
     public EventNotifierType(UByte value) {
         super(value);

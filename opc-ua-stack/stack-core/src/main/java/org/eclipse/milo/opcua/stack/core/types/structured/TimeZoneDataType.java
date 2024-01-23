@@ -17,7 +17,6 @@ import java.lang.Short;
 import java.lang.String;
 import java.util.StringJoiner;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -33,9 +32,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.11">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.11</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
 public class TimeZoneDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=8912");
 

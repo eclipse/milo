@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -23,9 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/8.3">https://reference.opcfoundation.org/v105/Core/docs/Part9/8.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class AlarmMask extends OptionSetUI16<AlarmMask.Field> {
     public AlarmMask(UShort value) {
         super(value);

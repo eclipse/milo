@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -25,9 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.3.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class JsonDataSetMessageContentMask extends OptionSetUI32<JsonDataSetMessageContentMask.Field> {
     public JsonDataSetMessageContentMask(UInteger value) {
         super(value);

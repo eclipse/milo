@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -30,9 +33,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.4/#6.4.4.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.4/#6.4.4.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class ReadProcessedDetails extends HistoryReadDetails implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=650");
 

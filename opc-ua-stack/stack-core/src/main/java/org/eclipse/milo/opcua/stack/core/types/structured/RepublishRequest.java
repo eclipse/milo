@@ -15,7 +15,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -31,9 +30,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.6/#5.13.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.6/#5.13.6.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
 public class RepublishRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=830");
 

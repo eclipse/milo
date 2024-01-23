@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -23,9 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.8">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.8</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class TrustListValidationOptions extends OptionSetUI32<TrustListValidationOptions.Field> {
     public TrustListValidationOptions(UInteger value) {
         super(value);

@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -23,9 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.2.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.2.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class DataSetFieldFlags extends OptionSetUI16<DataSetFieldFlags.Field> {
     public DataSetFieldFlags(UShort value) {
         super(value);

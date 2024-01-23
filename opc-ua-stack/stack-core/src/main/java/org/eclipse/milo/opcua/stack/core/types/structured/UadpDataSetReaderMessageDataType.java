@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -30,9 +33,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.4.10">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.4.10</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15653");
 

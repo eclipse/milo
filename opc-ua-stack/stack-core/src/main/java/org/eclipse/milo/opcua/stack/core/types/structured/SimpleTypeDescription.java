@@ -15,7 +15,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
 
-import lombok.EqualsAndHashCode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -33,9 +32,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.35">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.35</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
 public class SimpleTypeDescription extends DataTypeDescription implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15005");
 
