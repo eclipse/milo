@@ -10,13 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -33,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder
 public abstract class PubSubGroupDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15609");
 

@@ -18,7 +18,6 @@ import java.lang.String;
 import java.util.StringJoiner;
 
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -39,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode(
     callSuper = true
 )
-@SuperBuilder
 public class VariableTypeNode extends TypeNode implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=270");
 

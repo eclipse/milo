@@ -288,13 +288,13 @@ class OpcTcpTransportTest extends SecurityFixture {
 
         var request = new CreateSessionRequest(
             header,
-            ApplicationDescription.builder()
-                .applicationName(LocalizedText.NULL_VALUE)
-                .applicationUri("")
-                .applicationType(ApplicationType.Client)
-                .productUri("")
-                .applicationUri("")
-                .build(),
+            new ApplicationDescription(
+                "",
+                "",
+                LocalizedText.NULL_VALUE,
+                ApplicationType.Client,
+                null, null, null
+            ),
             null,
             "opc.tcp://localhost:12685",
             "sessionName",
