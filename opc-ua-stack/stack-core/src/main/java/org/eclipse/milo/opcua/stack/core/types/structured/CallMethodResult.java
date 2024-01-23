@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,6 +93,22 @@ public class CallMethodResult extends Structure implements UaStructuredType {
 
     public Variant @Nullable [] getOutputArguments() {
         return outputArguments;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CallMethodResult that = (CallMethodResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getInputArgumentResults(), that.getInputArgumentResults());
+        eqb.append(getInputArgumentDiagnosticInfos(), that.getInputArgumentDiagnosticInfos());
+        eqb.append(getOutputArguments(), that.getOutputArguments());
+        return eqb.build();
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -143,6 +144,29 @@ public class Node extends Structure implements UaStructuredType {
 
     public ReferenceNode @Nullable [] getReferences() {
         return references;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Node that = (Node) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getNodeClass(), that.getNodeClass());
+        eqb.append(getBrowseName(), that.getBrowseName());
+        eqb.append(getDisplayName(), that.getDisplayName());
+        eqb.append(getDescription(), that.getDescription());
+        eqb.append(getWriteMask(), that.getWriteMask());
+        eqb.append(getUserWriteMask(), that.getUserWriteMask());
+        eqb.append(getRolePermissions(), that.getRolePermissions());
+        eqb.append(getUserRolePermissions(), that.getUserRolePermissions());
+        eqb.append(getAccessRestrictions(), that.getAccessRestrictions());
+        eqb.append(getReferences(), that.getReferences());
+        return eqb.build();
     }
 
     @Override

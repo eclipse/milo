@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Boolean;
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -99,6 +101,23 @@ public class AggregateConfiguration extends Structure implements UaStructuredTyp
 
     public Boolean getUseSlopedExtrapolation() {
         return useSlopedExtrapolation;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        AggregateConfiguration that = (AggregateConfiguration) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getUseServerCapabilitiesDefaults(), that.getUseServerCapabilitiesDefaults());
+        eqb.append(getTreatUncertainAsBad(), that.getTreatUncertainAsBad());
+        eqb.append(getPercentDataBad(), that.getPercentDataBad());
+        eqb.append(getPercentDataGood(), that.getPercentDataGood());
+        eqb.append(getUseSlopedExtrapolation(), that.getUseSlopedExtrapolation());
+        return eqb.build();
     }
 
     @Override

@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -27,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -91,6 +93,22 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
 
     public UShort getGroupIndex() {
         return groupIndex;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PubSubConfigurationRefDataType that = (PubSubConfigurationRefDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getConfigurationMask(), that.getConfigurationMask());
+        eqb.append(getElementIndex(), that.getElementIndex());
+        eqb.append(getConnectionIndex(), that.getConnectionIndex());
+        eqb.append(getGroupIndex(), that.getGroupIndex());
+        return eqb.build();
     }
 
     @Override

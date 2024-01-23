@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -72,6 +73,20 @@ public class BrowsePathTarget extends Structure implements UaStructuredType {
 
     public UInteger getRemainingPathIndex() {
         return remainingPathIndex;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        BrowsePathTarget that = (BrowsePathTarget) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getTargetId(), that.getTargetId());
+        eqb.append(getRemainingPathIndex(), that.getRemainingPathIndex());
+        return eqb.build();
     }
 
     @Override

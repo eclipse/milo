@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,6 +73,20 @@ public class ObjectNode extends InstanceNode implements UaStructuredType {
 
     public UByte getEventNotifier() {
         return eventNotifier;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ObjectNode that = (ObjectNode) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEventNotifier(), that.getEventNotifier());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,6 +89,22 @@ public class CurrencyUnitType extends Structure implements UaStructuredType {
 
     public LocalizedText getCurrency() {
         return currency;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CurrencyUnitType that = (CurrencyUnitType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNumericCode(), that.getNumericCode());
+        eqb.append(getExponent(), that.getExponent());
+        eqb.append(getAlphabeticCode(), that.getAlphabeticCode());
+        eqb.append(getCurrency(), that.getCurrency());
+        return eqb.build();
     }
 
     @Override

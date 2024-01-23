@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +67,19 @@ public class EnumDefinition extends DataTypeDefinition implements UaStructuredTy
 
     public EnumField @Nullable [] getFields() {
         return fields;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EnumDefinition that = (EnumDefinition) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getFields(), that.getFields());
+        return eqb.build();
     }
 
     @Override

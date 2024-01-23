@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -29,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -93,6 +95,22 @@ public class MonitoredItemModifyResult extends Structure implements UaStructured
 
     public ExtensionObject getFilterResult() {
         return filterResult;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        MonitoredItemModifyResult that = (MonitoredItemModifyResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getRevisedSamplingInterval(), that.getRevisedSamplingInterval());
+        eqb.append(getRevisedQueueSize(), that.getRevisedQueueSize());
+        eqb.append(getFilterResult(), that.getFilterResult());
+        return eqb.build();
     }
 
     @Override

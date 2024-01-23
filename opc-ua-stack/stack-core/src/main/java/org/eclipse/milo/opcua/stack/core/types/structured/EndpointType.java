@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,6 +90,22 @@ public class EndpointType extends Structure implements UaStructuredType {
 
     public @Nullable String getTransportProfileUri() {
         return transportProfileUri;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EndpointType that = (EndpointType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getTransportProfileUri(), that.getTransportProfileUri());
+        return eqb.build();
     }
 
     @Override

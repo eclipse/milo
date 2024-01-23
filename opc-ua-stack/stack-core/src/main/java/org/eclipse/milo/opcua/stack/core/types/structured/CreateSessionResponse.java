@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -24,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,6 +140,28 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
 
     public UInteger getMaxRequestMessageSize() {
         return maxRequestMessageSize;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CreateSessionResponse that = (CreateSessionResponse) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getAuthenticationToken(), that.getAuthenticationToken());
+        eqb.append(getRevisedSessionTimeout(), that.getRevisedSessionTimeout());
+        eqb.append(getServerNonce(), that.getServerNonce());
+        eqb.append(getServerCertificate(), that.getServerCertificate());
+        eqb.append(getServerEndpoints(), that.getServerEndpoints());
+        eqb.append(getServerSoftwareCertificates(), that.getServerSoftwareCertificates());
+        eqb.append(getServerSignature(), that.getServerSignature());
+        eqb.append(getMaxRequestMessageSize(), that.getMaxRequestMessageSize());
+        return eqb.build();
     }
 
     @Override

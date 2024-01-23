@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -24,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,6 +99,23 @@ public class TrustListDataType extends Structure implements UaStructuredType {
 
     public ByteString @Nullable [] getIssuerCrls() {
         return issuerCrls;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        TrustListDataType that = (TrustListDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSpecifiedLists(), that.getSpecifiedLists());
+        eqb.append(getTrustedCertificates(), that.getTrustedCertificates());
+        eqb.append(getTrustedCrls(), that.getTrustedCrls());
+        eqb.append(getIssuerCertificates(), that.getIssuerCertificates());
+        eqb.append(getIssuerCrls(), that.getIssuerCrls());
+        return eqb.build();
     }
 
     @Override

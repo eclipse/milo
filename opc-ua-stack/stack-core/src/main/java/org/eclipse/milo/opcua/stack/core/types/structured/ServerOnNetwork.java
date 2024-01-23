@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,6 +89,22 @@ public class ServerOnNetwork extends Structure implements UaStructuredType {
 
     public String @Nullable [] getServerCapabilities() {
         return serverCapabilities;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ServerOnNetwork that = (ServerOnNetwork) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRecordId(), that.getRecordId());
+        eqb.append(getServerName(), that.getServerName());
+        eqb.append(getDiscoveryUrl(), that.getDiscoveryUrl());
+        eqb.append(getServerCapabilities(), that.getServerCapabilities());
+        return eqb.build();
     }
 
     @Override

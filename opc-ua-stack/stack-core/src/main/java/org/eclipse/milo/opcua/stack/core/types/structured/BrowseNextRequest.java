@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -24,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,6 +88,21 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
 
     public ByteString @Nullable [] getContinuationPoints() {
         return continuationPoints;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        BrowseNextRequest that = (BrowseNextRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getReleaseContinuationPoints(), that.getReleaseContinuationPoints());
+        eqb.append(getContinuationPoints(), that.getContinuationPoints());
+        return eqb.build();
     }
 
     @Override

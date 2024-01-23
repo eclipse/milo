@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -75,6 +76,21 @@ public class MethodAttributes extends NodeAttributes implements UaStructuredType
 
     public Boolean getUserExecutable() {
         return userExecutable;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        MethodAttributes that = (MethodAttributes) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getExecutable(), that.getExecutable());
+        eqb.append(getUserExecutable(), that.getUserExecutable());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

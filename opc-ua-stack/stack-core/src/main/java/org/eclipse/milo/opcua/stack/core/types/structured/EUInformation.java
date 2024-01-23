@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,6 +89,22 @@ public class EUInformation extends Structure implements UaStructuredType {
 
     public LocalizedText getDescription() {
         return description;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EUInformation that = (EUInformation) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNamespaceUri(), that.getNamespaceUri());
+        eqb.append(getUnitId(), that.getUnitId());
+        eqb.append(getDisplayName(), that.getDisplayName());
+        eqb.append(getDescription(), that.getDescription());
+        return eqb.build();
     }
 
     @Override

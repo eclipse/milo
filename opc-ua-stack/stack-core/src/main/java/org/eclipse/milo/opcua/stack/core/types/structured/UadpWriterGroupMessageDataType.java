@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataSetOrderingType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,6 +103,23 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
 
     public Double @Nullable [] getPublishingOffset() {
         return publishingOffset;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        UadpWriterGroupMessageDataType that = (UadpWriterGroupMessageDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getGroupVersion(), that.getGroupVersion());
+        eqb.append(getDataSetOrdering(), that.getDataSetOrdering());
+        eqb.append(getNetworkMessageContentMask(), that.getNetworkMessageContentMask());
+        eqb.append(getSamplingOffset(), that.getSamplingOffset());
+        eqb.append(getPublishingOffset(), that.getPublishingOffset());
+        return eqb.build();
     }
 
     @Override

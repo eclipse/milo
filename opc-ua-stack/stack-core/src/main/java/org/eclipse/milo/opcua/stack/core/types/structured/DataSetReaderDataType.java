@@ -10,6 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -188,6 +195,35 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DataSetReaderDataType that = (DataSetReaderDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getEnabled(), that.getEnabled());
+        eqb.append(getPublisherId(), that.getPublisherId());
+        eqb.append(getWriterGroupId(), that.getWriterGroupId());
+        eqb.append(getDataSetWriterId(), that.getDataSetWriterId());
+        eqb.append(getDataSetMetaData(), that.getDataSetMetaData());
+        eqb.append(getDataSetFieldContentMask(), that.getDataSetFieldContentMask());
+        eqb.append(getMessageReceiveTimeout(), that.getMessageReceiveTimeout());
+        eqb.append(getKeyFrameCount(), that.getKeyFrameCount());
+        eqb.append(getHeaderLayoutUri(), that.getHeaderLayoutUri());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityGroupId(), that.getSecurityGroupId());
+        eqb.append(getSecurityKeyServices(), that.getSecurityKeyServices());
+        eqb.append(getDataSetReaderProperties(), that.getDataSetReaderProperties());
+        eqb.append(getTransportSettings(), that.getTransportSettings());
+        eqb.append(getMessageSettings(), that.getMessageSettings());
+        eqb.append(getSubscribedDataSet(), that.getSubscribedDataSet());
+        return eqb.build();
     }
 
     @Override

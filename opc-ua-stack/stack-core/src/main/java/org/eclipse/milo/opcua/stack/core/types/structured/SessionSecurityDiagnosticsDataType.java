@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,6 +133,27 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
 
     public ByteString getClientCertificate() {
         return clientCertificate;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SessionSecurityDiagnosticsDataType that = (SessionSecurityDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getClientUserIdOfSession(), that.getClientUserIdOfSession());
+        eqb.append(getClientUserIdHistory(), that.getClientUserIdHistory());
+        eqb.append(getAuthenticationMechanism(), that.getAuthenticationMechanism());
+        eqb.append(getEncoding(), that.getEncoding());
+        eqb.append(getTransportProtocol(), that.getTransportProtocol());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getClientCertificate(), that.getClientCertificate());
+        return eqb.build();
     }
 
     @Override

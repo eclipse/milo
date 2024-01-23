@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -29,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -131,6 +133,27 @@ public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
 
     public Double getProcessingOffset() {
         return processingOffset;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        UadpDataSetReaderMessageDataType that = (UadpDataSetReaderMessageDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getGroupVersion(), that.getGroupVersion());
+        eqb.append(getNetworkMessageNumber(), that.getNetworkMessageNumber());
+        eqb.append(getDataSetOffset(), that.getDataSetOffset());
+        eqb.append(getDataSetClassId(), that.getDataSetClassId());
+        eqb.append(getNetworkMessageContentMask(), that.getNetworkMessageContentMask());
+        eqb.append(getDataSetMessageContentMask(), that.getDataSetMessageContentMask());
+        eqb.append(getPublishingInterval(), that.getPublishingInterval());
+        eqb.append(getReceiveOffset(), that.getReceiveOffset());
+        eqb.append(getProcessingOffset(), that.getProcessingOffset());
+        return eqb.build();
     }
 
     @Override

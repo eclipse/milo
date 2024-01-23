@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -76,6 +77,21 @@ public class ViewAttributes extends NodeAttributes implements UaStructuredType {
 
     public UByte getEventNotifier() {
         return eventNotifier;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ViewAttributes that = (ViewAttributes) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getContainsNoLoops(), that.getContainsNoLoops());
+        eqb.append(getEventNotifier(), that.getEventNotifier());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

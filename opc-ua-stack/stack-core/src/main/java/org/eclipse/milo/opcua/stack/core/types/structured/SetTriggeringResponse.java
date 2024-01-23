@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,6 +103,23 @@ public class SetTriggeringResponse extends Structure implements UaResponseMessag
 
     public DiagnosticInfo @Nullable [] getRemoveDiagnosticInfos() {
         return removeDiagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SetTriggeringResponse that = (SetTriggeringResponse) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getAddResults(), that.getAddResults());
+        eqb.append(getAddDiagnosticInfos(), that.getAddDiagnosticInfos());
+        eqb.append(getRemoveResults(), that.getRemoveResults());
+        eqb.append(getRemoveDiagnosticInfos(), that.getRemoveDiagnosticInfos());
+        return eqb.build();
     }
 
     @Override

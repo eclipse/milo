@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -29,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -108,6 +110,24 @@ public class OpenSecureChannelRequest extends Structure implements UaRequestMess
 
     public UInteger getRequestedLifetime() {
         return requestedLifetime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        OpenSecureChannelRequest that = (OpenSecureChannelRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getClientProtocolVersion(), that.getClientProtocolVersion());
+        eqb.append(getRequestType(), that.getRequestType());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getClientNonce(), that.getClientNonce());
+        eqb.append(getRequestedLifetime(), that.getRequestedLifetime());
+        return eqb.build();
     }
 
     @Override

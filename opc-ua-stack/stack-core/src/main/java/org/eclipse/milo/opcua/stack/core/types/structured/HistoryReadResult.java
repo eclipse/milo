@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -83,6 +88,21 @@ public class HistoryReadResult extends Structure implements UaStructuredType {
 
     public ExtensionObject getHistoryData() {
         return historyData;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        HistoryReadResult that = (HistoryReadResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getContinuationPoint(), that.getContinuationPoint());
+        eqb.append(getHistoryData(), that.getHistoryData());
+        return eqb.build();
     }
 
     @Override

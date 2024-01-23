@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -25,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -111,6 +117,25 @@ public class ReferenceDescription extends Structure implements UaStructuredType 
 
     public ExpandedNodeId getTypeDefinition() {
         return typeDefinition;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ReferenceDescription that = (ReferenceDescription) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getReferenceTypeId(), that.getReferenceTypeId());
+        eqb.append(getIsForward(), that.getIsForward());
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getBrowseName(), that.getBrowseName());
+        eqb.append(getDisplayName(), that.getDisplayName());
+        eqb.append(getNodeClass(), that.getNodeClass());
+        eqb.append(getTypeDefinition(), that.getTypeDefinition());
+        return eqb.build();
     }
 
     @Override

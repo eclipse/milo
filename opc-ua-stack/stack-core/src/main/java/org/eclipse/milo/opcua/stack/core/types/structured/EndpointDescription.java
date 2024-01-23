@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,6 +126,26 @@ public class EndpointDescription extends Structure implements UaStructuredType {
 
     public UByte getSecurityLevel() {
         return securityLevel;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EndpointDescription that = (EndpointDescription) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getServer(), that.getServer());
+        eqb.append(getServerCertificate(), that.getServerCertificate());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getUserIdentityTokens(), that.getUserIdentityTokens());
+        eqb.append(getTransportProfileUri(), that.getTransportProfileUri());
+        eqb.append(getSecurityLevel(), that.getSecurityLevel());
+        return eqb.build();
     }
 
     @Override

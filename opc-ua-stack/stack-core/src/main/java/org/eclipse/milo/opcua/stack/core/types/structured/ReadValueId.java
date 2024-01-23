@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -88,6 +89,22 @@ public class ReadValueId extends Structure implements UaStructuredType {
 
     public QualifiedName getDataEncoding() {
         return dataEncoding;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ReadValueId that = (ReadValueId) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getAttributeId(), that.getAttributeId());
+        eqb.append(getIndexRange(), that.getIndexRange());
+        eqb.append(getDataEncoding(), that.getDataEncoding());
+        return eqb.build();
     }
 
     @Override

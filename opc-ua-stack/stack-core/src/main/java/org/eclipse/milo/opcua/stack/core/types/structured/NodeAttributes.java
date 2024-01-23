@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -94,6 +95,23 @@ public class NodeAttributes extends Structure implements UaStructuredType {
 
     public UInteger getUserWriteMask() {
         return userWriteMask;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        NodeAttributes that = (NodeAttributes) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSpecifiedAttributes(), that.getSpecifiedAttributes());
+        eqb.append(getDisplayName(), that.getDisplayName());
+        eqb.append(getDescription(), that.getDescription());
+        eqb.append(getWriteMask(), that.getWriteMask());
+        eqb.append(getUserWriteMask(), that.getUserWriteMask());
+        return eqb.build();
     }
 
     @Override

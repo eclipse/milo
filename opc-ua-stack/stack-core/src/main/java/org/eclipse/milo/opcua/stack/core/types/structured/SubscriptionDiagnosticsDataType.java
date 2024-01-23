@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import java.lang.Boolean;
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -29,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -293,6 +295,49 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
 
     public UInteger getEventQueueOverFlowCount() {
         return eventQueueOverFlowCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SubscriptionDiagnosticsDataType that = (SubscriptionDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getSubscriptionId(), that.getSubscriptionId());
+        eqb.append(getPriority(), that.getPriority());
+        eqb.append(getPublishingInterval(), that.getPublishingInterval());
+        eqb.append(getMaxKeepAliveCount(), that.getMaxKeepAliveCount());
+        eqb.append(getMaxLifetimeCount(), that.getMaxLifetimeCount());
+        eqb.append(getMaxNotificationsPerPublish(), that.getMaxNotificationsPerPublish());
+        eqb.append(getPublishingEnabled(), that.getPublishingEnabled());
+        eqb.append(getModifyCount(), that.getModifyCount());
+        eqb.append(getEnableCount(), that.getEnableCount());
+        eqb.append(getDisableCount(), that.getDisableCount());
+        eqb.append(getRepublishRequestCount(), that.getRepublishRequestCount());
+        eqb.append(getRepublishMessageRequestCount(), that.getRepublishMessageRequestCount());
+        eqb.append(getRepublishMessageCount(), that.getRepublishMessageCount());
+        eqb.append(getTransferRequestCount(), that.getTransferRequestCount());
+        eqb.append(getTransferredToAltClientCount(), that.getTransferredToAltClientCount());
+        eqb.append(getTransferredToSameClientCount(), that.getTransferredToSameClientCount());
+        eqb.append(getPublishRequestCount(), that.getPublishRequestCount());
+        eqb.append(getDataChangeNotificationsCount(), that.getDataChangeNotificationsCount());
+        eqb.append(getEventNotificationsCount(), that.getEventNotificationsCount());
+        eqb.append(getNotificationsCount(), that.getNotificationsCount());
+        eqb.append(getLatePublishRequestCount(), that.getLatePublishRequestCount());
+        eqb.append(getCurrentKeepAliveCount(), that.getCurrentKeepAliveCount());
+        eqb.append(getCurrentLifetimeCount(), that.getCurrentLifetimeCount());
+        eqb.append(getUnacknowledgedMessageCount(), that.getUnacknowledgedMessageCount());
+        eqb.append(getDiscardedMessageCount(), that.getDiscardedMessageCount());
+        eqb.append(getMonitoredItemCount(), that.getMonitoredItemCount());
+        eqb.append(getDisabledMonitoredItemCount(), that.getDisabledMonitoredItemCount());
+        eqb.append(getMonitoringQueueOverflowCount(), that.getMonitoringQueueOverflowCount());
+        eqb.append(getNextSequenceNumber(), that.getNextSequenceNumber());
+        eqb.append(getEventQueueOverFlowCount(), that.getEventQueueOverFlowCount());
+        return eqb.build();
     }
 
     @Override

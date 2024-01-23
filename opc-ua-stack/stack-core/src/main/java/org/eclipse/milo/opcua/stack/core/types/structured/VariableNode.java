@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,6 +132,28 @@ public class VariableNode extends InstanceNode implements UaStructuredType {
 
     public UInteger getAccessLevelEx() {
         return accessLevelEx;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        VariableNode that = (VariableNode) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getValue(), that.getValue());
+        eqb.append(getDataType(), that.getDataType());
+        eqb.append(getValueRank(), that.getValueRank());
+        eqb.append(getArrayDimensions(), that.getArrayDimensions());
+        eqb.append(getAccessLevel(), that.getAccessLevel());
+        eqb.append(getUserAccessLevel(), that.getUserAccessLevel());
+        eqb.append(getMinimumSamplingInterval(), that.getMinimumSamplingInterval());
+        eqb.append(getHistorizing(), that.getHistorizing());
+        eqb.append(getAccessLevelEx(), that.getAccessLevelEx());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

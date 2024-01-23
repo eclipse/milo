@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,6 +82,21 @@ public class Annotation extends Structure implements UaStructuredType {
 
     public DateTime getAnnotationTime() {
         return annotationTime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Annotation that = (Annotation) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getMessage(), that.getMessage());
+        eqb.append(getUserName(), that.getUserName());
+        eqb.append(getAnnotationTime(), that.getAnnotationTime());
+        return eqb.build();
     }
 
     @Override

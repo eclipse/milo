@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -76,6 +77,21 @@ public class EnumDescription extends DataTypeDescription implements UaStructured
 
     public UByte getBuiltInType() {
         return builtInType;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EnumDescription that = (EnumDescription) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEnumDefinition(), that.getEnumDefinition());
+        eqb.append(getBuiltInType(), that.getBuiltInType());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

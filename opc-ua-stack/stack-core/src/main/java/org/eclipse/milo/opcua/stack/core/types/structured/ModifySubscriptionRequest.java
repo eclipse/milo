@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -114,6 +116,25 @@ public class ModifySubscriptionRequest extends Structure implements UaRequestMes
 
     public UByte getPriority() {
         return priority;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ModifySubscriptionRequest that = (ModifySubscriptionRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getSubscriptionId(), that.getSubscriptionId());
+        eqb.append(getRequestedPublishingInterval(), that.getRequestedPublishingInterval());
+        eqb.append(getRequestedLifetimeCount(), that.getRequestedLifetimeCount());
+        eqb.append(getRequestedMaxKeepAliveCount(), that.getRequestedMaxKeepAliveCount());
+        eqb.append(getMaxNotificationsPerPublish(), that.getMaxNotificationsPerPublish());
+        eqb.append(getPriority(), that.getPriority());
+        return eqb.build();
     }
 
     @Override

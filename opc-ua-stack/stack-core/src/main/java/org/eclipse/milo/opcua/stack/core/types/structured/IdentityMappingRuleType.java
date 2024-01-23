@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -22,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdentityCriteriaType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,6 +74,20 @@ public abstract class IdentityMappingRuleType extends Structure implements UaStr
 
     public @Nullable String getCriteria() {
         return criteria;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        IdentityMappingRuleType that = (IdentityMappingRuleType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getCriteriaType(), that.getCriteriaType());
+        eqb.append(getCriteria(), that.getCriteria());
+        return eqb.build();
     }
 
     @Override

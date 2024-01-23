@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -27,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,6 +136,28 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
 
     public StatusResult getLastMethodReturnStatus() {
         return lastMethodReturnStatus;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ProgramDiagnosticDataType that = (ProgramDiagnosticDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getCreateSessionId(), that.getCreateSessionId());
+        eqb.append(getCreateClientName(), that.getCreateClientName());
+        eqb.append(getInvocationCreationTime(), that.getInvocationCreationTime());
+        eqb.append(getLastTransitionTime(), that.getLastTransitionTime());
+        eqb.append(getLastMethodCall(), that.getLastMethodCall());
+        eqb.append(getLastMethodSessionId(), that.getLastMethodSessionId());
+        eqb.append(getLastMethodInputArguments(), that.getLastMethodInputArguments());
+        eqb.append(getLastMethodOutputArguments(), that.getLastMethodOutputArguments());
+        eqb.append(getLastMethodCallTime(), that.getLastMethodCallTime());
+        eqb.append(getLastMethodReturnStatus(), that.getLastMethodReturnStatus());
+        return eqb.build();
     }
 
     @Override

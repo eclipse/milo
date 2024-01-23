@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 public class DecimalDataType extends Structure implements UaStructuredType {
@@ -70,6 +71,20 @@ public class DecimalDataType extends Structure implements UaStructuredType {
 
     public ByteString getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DecimalDataType that = (DecimalDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getScale(), that.getScale());
+        eqb.append(getValue(), that.getValue());
+        return eqb.build();
     }
 
     @Override

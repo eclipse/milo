@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -73,6 +74,20 @@ public class ThreeDFrame extends Frame implements UaStructuredType {
 
     public ThreeDOrientation getOrientation() {
         return orientation;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ThreeDFrame that = (ThreeDFrame) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getCartesianCoordinates(), that.getCartesianCoordinates());
+        eqb.append(getOrientation(), that.getOrientation());
+        return eqb.build();
     }
 
     @Override

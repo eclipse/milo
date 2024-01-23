@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util.codegen;
 
 /**
- * A utility to assist code-generated classes in computing hashCode values.
+ * A utility to assist code-generated classes in implementing hashCode() methods.
  */
 public class HashCodeBuilder {
 

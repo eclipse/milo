@@ -10,6 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.Short;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -23,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -72,6 +79,20 @@ public class TimeZoneDataType extends Structure implements UaStructuredType {
 
     public Boolean getDaylightSavingInOffset() {
         return daylightSavingInOffset;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        TimeZoneDataType that = (TimeZoneDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getOffset(), that.getOffset());
+        eqb.append(getDaylightSavingInOffset(), that.getDaylightSavingInOffset());
+        return eqb.build();
     }
 
     @Override

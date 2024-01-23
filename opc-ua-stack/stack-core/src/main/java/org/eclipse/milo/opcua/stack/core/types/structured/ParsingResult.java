@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,6 +84,21 @@ public class ParsingResult extends Structure implements UaStructuredType {
 
     public DiagnosticInfo @Nullable [] getDataDiagnosticInfos() {
         return dataDiagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ParsingResult that = (ParsingResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getDataStatusCodes(), that.getDataStatusCodes());
+        eqb.append(getDataDiagnosticInfos(), that.getDataDiagnosticInfos());
+        return eqb.build();
     }
 
     @Override

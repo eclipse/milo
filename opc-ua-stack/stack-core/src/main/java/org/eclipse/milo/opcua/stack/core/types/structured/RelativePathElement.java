@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -24,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -88,6 +94,22 @@ public class RelativePathElement extends Structure implements UaStructuredType {
 
     public QualifiedName getTargetName() {
         return targetName;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        RelativePathElement that = (RelativePathElement) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getReferenceTypeId(), that.getReferenceTypeId());
+        eqb.append(getIsInverse(), that.getIsInverse());
+        eqb.append(getIncludeSubtypes(), that.getIncludeSubtypes());
+        eqb.append(getTargetName(), that.getTargetName());
+        return eqb.build();
     }
 
     @Override

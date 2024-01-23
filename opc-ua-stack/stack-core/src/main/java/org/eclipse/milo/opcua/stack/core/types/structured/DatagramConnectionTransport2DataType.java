@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -26,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,6 +95,23 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
 
     public QosDataType @Nullable [] getDatagramQos() {
         return datagramQos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DatagramConnectionTransport2DataType that = (DatagramConnectionTransport2DataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getDiscoveryAnnounceRate(), that.getDiscoveryAnnounceRate());
+        eqb.append(getDiscoveryMaxMessageSize(), that.getDiscoveryMaxMessageSize());
+        eqb.append(getQosCategory(), that.getQosCategory());
+        eqb.append(getDatagramQos(), that.getDatagramQos());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

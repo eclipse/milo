@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,6 +108,24 @@ public class ResponseHeader extends Structure implements UaStructuredType {
 
     public ExtensionObject getAdditionalHeader() {
         return additionalHeader;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ResponseHeader that = (ResponseHeader) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getTimestamp(), that.getTimestamp());
+        eqb.append(getRequestHandle(), that.getRequestHandle());
+        eqb.append(getServiceResult(), that.getServiceResult());
+        eqb.append(getServiceDiagnostics(), that.getServiceDiagnostics());
+        eqb.append(getStringTable(), that.getStringTable());
+        eqb.append(getAdditionalHeader(), that.getAdditionalHeader());
+        return eqb.build();
     }
 
     @Override

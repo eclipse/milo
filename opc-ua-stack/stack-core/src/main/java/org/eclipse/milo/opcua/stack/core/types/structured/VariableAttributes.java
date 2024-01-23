@@ -10,6 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -25,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,6 +129,27 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     public Boolean getHistorizing() {
         return historizing;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        VariableAttributes that = (VariableAttributes) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getValue(), that.getValue());
+        eqb.append(getDataType(), that.getDataType());
+        eqb.append(getValueRank(), that.getValueRank());
+        eqb.append(getArrayDimensions(), that.getArrayDimensions());
+        eqb.append(getAccessLevel(), that.getAccessLevel());
+        eqb.append(getUserAccessLevel(), that.getUserAccessLevel());
+        eqb.append(getMinimumSamplingInterval(), that.getMinimumSamplingInterval());
+        eqb.append(getHistorizing(), that.getHistorizing());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

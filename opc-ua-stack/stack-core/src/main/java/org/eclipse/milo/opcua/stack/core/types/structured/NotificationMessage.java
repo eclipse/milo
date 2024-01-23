@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -25,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,6 +88,21 @@ public class NotificationMessage extends Structure implements UaStructuredType {
 
     public ExtensionObject @Nullable [] getNotificationData() {
         return notificationData;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        NotificationMessage that = (NotificationMessage) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSequenceNumber(), that.getSequenceNumber());
+        eqb.append(getPublishTime(), that.getPublishTime());
+        eqb.append(getNotificationData(), that.getNotificationData());
+        return eqb.build();
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,6 +135,28 @@ public class FieldMetaData extends Structure implements UaStructuredType {
 
     public KeyValuePair @Nullable [] getProperties() {
         return properties;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        FieldMetaData that = (FieldMetaData) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getDescription(), that.getDescription());
+        eqb.append(getFieldFlags(), that.getFieldFlags());
+        eqb.append(getBuiltInType(), that.getBuiltInType());
+        eqb.append(getDataType(), that.getDataType());
+        eqb.append(getValueRank(), that.getValueRank());
+        eqb.append(getArrayDimensions(), that.getArrayDimensions());
+        eqb.append(getMaxStringLength(), that.getMaxStringLength());
+        eqb.append(getDataSetFieldId(), that.getDataSetFieldId());
+        eqb.append(getProperties(), that.getProperties());
+        return eqb.build();
     }
 
     @Override

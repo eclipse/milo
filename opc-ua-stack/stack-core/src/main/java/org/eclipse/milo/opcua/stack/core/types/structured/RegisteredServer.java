@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,6 +120,26 @@ public class RegisteredServer extends Structure implements UaStructuredType {
 
     public Boolean getIsOnline() {
         return isOnline;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        RegisteredServer that = (RegisteredServer) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getServerUri(), that.getServerUri());
+        eqb.append(getProductUri(), that.getProductUri());
+        eqb.append(getServerNames(), that.getServerNames());
+        eqb.append(getServerType(), that.getServerType());
+        eqb.append(getGatewayServerUri(), that.getGatewayServerUri());
+        eqb.append(getDiscoveryUrls(), that.getDiscoveryUrls());
+        eqb.append(getSemaphoreFilePath(), that.getSemaphoreFilePath());
+        eqb.append(getIsOnline(), that.getIsOnline());
+        return eqb.build();
     }
 
     @Override

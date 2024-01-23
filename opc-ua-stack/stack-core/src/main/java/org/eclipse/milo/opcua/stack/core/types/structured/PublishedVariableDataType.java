@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -29,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,6 +125,26 @@ public class PublishedVariableDataType extends Structure implements UaStructured
 
     public QualifiedName @Nullable [] getMetaDataProperties() {
         return metaDataProperties;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PublishedVariableDataType that = (PublishedVariableDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getPublishedVariable(), that.getPublishedVariable());
+        eqb.append(getAttributeId(), that.getAttributeId());
+        eqb.append(getSamplingIntervalHint(), that.getSamplingIntervalHint());
+        eqb.append(getDeadbandType(), that.getDeadbandType());
+        eqb.append(getDeadbandValue(), that.getDeadbandValue());
+        eqb.append(getIndexRange(), that.getIndexRange());
+        eqb.append(getSubstituteValue(), that.getSubstituteValue());
+        eqb.append(getMetaDataProperties(), that.getMetaDataProperties());
+        return eqb.build();
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class InstanceNode extends Node implements UaStructuredType {
@@ -63,6 +64,19 @@ public class InstanceNode extends Node implements UaStructuredType {
     @Override
     public ExpandedNodeId getJsonEncodingId() {
         return JSON_ENCODING_ID;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        InstanceNode that = (InstanceNode) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

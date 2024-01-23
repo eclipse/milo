@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -112,6 +113,25 @@ public class AddNodesItem extends Structure implements UaStructuredType {
 
     public ExpandedNodeId getTypeDefinition() {
         return typeDefinition;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        AddNodesItem that = (AddNodesItem) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getParentNodeId(), that.getParentNodeId());
+        eqb.append(getReferenceTypeId(), that.getReferenceTypeId());
+        eqb.append(getRequestedNewNodeId(), that.getRequestedNewNodeId());
+        eqb.append(getBrowseName(), that.getBrowseName());
+        eqb.append(getNodeClass(), that.getNodeClass());
+        eqb.append(getNodeAttributes(), that.getNodeAttributes());
+        eqb.append(getTypeDefinition(), that.getTypeDefinition());
+        return eqb.build();
     }
 
     @Override

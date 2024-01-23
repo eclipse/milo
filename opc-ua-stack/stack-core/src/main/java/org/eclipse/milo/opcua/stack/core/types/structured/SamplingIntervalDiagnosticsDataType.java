@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
 import java.lang.Double;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -27,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -91,6 +93,22 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
 
     public UInteger getDisabledMonitoredItemCount() {
         return disabledMonitoredItemCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SamplingIntervalDiagnosticsDataType that = (SamplingIntervalDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSamplingInterval(), that.getSamplingInterval());
+        eqb.append(getMonitoredItemCount(), that.getMonitoredItemCount());
+        eqb.append(getMaxMonitoredItemCount(), that.getMaxMonitoredItemCount());
+        eqb.append(getDisabledMonitoredItemCount(), that.getDisabledMonitoredItemCount());
+        return eqb.build();
     }
 
     @Override

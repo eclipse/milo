@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,6 +105,24 @@ public class BuildInfo extends Structure implements UaStructuredType {
 
     public DateTime getBuildDate() {
         return buildDate;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        BuildInfo that = (BuildInfo) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getProductUri(), that.getProductUri());
+        eqb.append(getManufacturerName(), that.getManufacturerName());
+        eqb.append(getProductName(), that.getProductName());
+        eqb.append(getSoftwareVersion(), that.getSoftwareVersion());
+        eqb.append(getBuildNumber(), that.getBuildNumber());
+        eqb.append(getBuildDate(), that.getBuildDate());
+        return eqb.build();
     }
 
     @Override

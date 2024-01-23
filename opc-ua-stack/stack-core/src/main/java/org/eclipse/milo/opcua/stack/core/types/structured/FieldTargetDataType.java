@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -26,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.OverrideValueHandling;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -112,6 +117,25 @@ public class FieldTargetDataType extends Structure implements UaStructuredType {
 
     public Variant getOverrideValue() {
         return overrideValue;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        FieldTargetDataType that = (FieldTargetDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getDataSetFieldId(), that.getDataSetFieldId());
+        eqb.append(getReceiverIndexRange(), that.getReceiverIndexRange());
+        eqb.append(getTargetNodeId(), that.getTargetNodeId());
+        eqb.append(getAttributeId(), that.getAttributeId());
+        eqb.append(getWriteIndexRange(), that.getWriteIndexRange());
+        eqb.append(getOverrideValueHandling(), that.getOverrideValueHandling());
+        eqb.append(getOverrideValue(), that.getOverrideValue());
+        return eqb.build();
     }
 
     @Override

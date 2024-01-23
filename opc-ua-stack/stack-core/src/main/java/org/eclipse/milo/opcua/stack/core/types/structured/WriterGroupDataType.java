@@ -10,6 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -26,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -133,6 +140,28 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
 
     public DataSetWriterDataType @Nullable [] getDataSetWriters() {
         return dataSetWriters;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        WriterGroupDataType that = (WriterGroupDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getWriterGroupId(), that.getWriterGroupId());
+        eqb.append(getPublishingInterval(), that.getPublishingInterval());
+        eqb.append(getKeepAliveTime(), that.getKeepAliveTime());
+        eqb.append(getPriority(), that.getPriority());
+        eqb.append(getLocaleIds(), that.getLocaleIds());
+        eqb.append(getHeaderLayoutUri(), that.getHeaderLayoutUri());
+        eqb.append(getTransportSettings(), that.getTransportSettings());
+        eqb.append(getMessageSettings(), that.getMessageSettings());
+        eqb.append(getDataSetWriters(), that.getDataSetWriters());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

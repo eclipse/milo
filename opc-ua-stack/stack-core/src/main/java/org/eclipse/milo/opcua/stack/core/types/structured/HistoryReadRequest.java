@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -25,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +104,23 @@ public class HistoryReadRequest extends Structure implements UaRequestMessageTyp
 
     public HistoryReadValueId @Nullable [] getNodesToRead() {
         return nodesToRead;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        HistoryReadRequest that = (HistoryReadRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getHistoryReadDetails(), that.getHistoryReadDetails());
+        eqb.append(getTimestampsToReturn(), that.getTimestampsToReturn());
+        eqb.append(getReleaseContinuationPoints(), that.getReleaseContinuationPoints());
+        eqb.append(getNodesToRead(), that.getNodesToRead());
+        return eqb.build();
     }
 
     @Override

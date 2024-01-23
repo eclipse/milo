@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.lang.Class;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -26,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -150,6 +152,30 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
 
     public UInteger getRejectedRequestsCount() {
         return rejectedRequestsCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ServerDiagnosticsSummaryDataType that = (ServerDiagnosticsSummaryDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getServerViewCount(), that.getServerViewCount());
+        eqb.append(getCurrentSessionCount(), that.getCurrentSessionCount());
+        eqb.append(getCumulatedSessionCount(), that.getCumulatedSessionCount());
+        eqb.append(getSecurityRejectedSessionCount(), that.getSecurityRejectedSessionCount());
+        eqb.append(getRejectedSessionCount(), that.getRejectedSessionCount());
+        eqb.append(getSessionTimeoutCount(), that.getSessionTimeoutCount());
+        eqb.append(getSessionAbortCount(), that.getSessionAbortCount());
+        eqb.append(getCurrentSubscriptionCount(), that.getCurrentSubscriptionCount());
+        eqb.append(getCumulatedSubscriptionCount(), that.getCumulatedSubscriptionCount());
+        eqb.append(getPublishingIntervalCount(), that.getPublishingIntervalCount());
+        eqb.append(getSecurityRejectedRequestsCount(), that.getSecurityRejectedRequestsCount());
+        eqb.append(getRejectedRequestsCount(), that.getRejectedRequestsCount());
+        return eqb.build();
     }
 
     @Override

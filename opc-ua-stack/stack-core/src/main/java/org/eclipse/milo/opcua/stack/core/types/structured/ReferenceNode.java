@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 public class ReferenceNode extends Structure implements UaStructuredType {
@@ -76,6 +77,21 @@ public class ReferenceNode extends Structure implements UaStructuredType {
 
     public ExpandedNodeId getTargetId() {
         return targetId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ReferenceNode that = (ReferenceNode) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getReferenceTypeId(), that.getReferenceTypeId());
+        eqb.append(getIsInverse(), that.getIsInverse());
+        eqb.append(getTargetId(), that.getTargetId());
+        return eqb.build();
     }
 
     @Override

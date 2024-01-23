@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import java.lang.Boolean;
 import java.lang.Class;
 import java.lang.Integer;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.util.StringJoiner;
@@ -29,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,6 +106,24 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
 
     public Boolean getIsAbstract() {
         return isAbstract;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        VariableTypeAttributes that = (VariableTypeAttributes) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getValue(), that.getValue());
+        eqb.append(getDataType(), that.getDataType());
+        eqb.append(getValueRank(), that.getValueRank());
+        eqb.append(getArrayDimensions(), that.getArrayDimensions());
+        eqb.append(getIsAbstract(), that.getIsAbstract());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

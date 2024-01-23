@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,6 +81,21 @@ public class DataTypeNode extends TypeNode implements UaStructuredType {
 
     public ExtensionObject getDataTypeDefinition() {
         return dataTypeDefinition;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DataTypeNode that = (DataTypeNode) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getIsAbstract(), that.getIsAbstract());
+        eqb.append(getDataTypeDefinition(), that.getDataTypeDefinition());
+        eqb.appendSuper(super.equals(object));
+        return eqb.build();
     }
 
     @Override

@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -19,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,6 +90,22 @@ public abstract class DataTypeSchemaHeader extends Structure implements UaStruct
 
     public SimpleTypeDescription @Nullable [] getSimpleDataTypes() {
         return simpleDataTypes;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DataTypeSchemaHeader that = (DataTypeSchemaHeader) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNamespaces(), that.getNamespaces());
+        eqb.append(getStructureDataTypes(), that.getStructureDataTypes());
+        eqb.append(getEnumDataTypes(), that.getEnumDataTypes());
+        eqb.append(getSimpleDataTypes(), that.getSimpleDataTypes());
+        return eqb.build();
     }
 
     @Override

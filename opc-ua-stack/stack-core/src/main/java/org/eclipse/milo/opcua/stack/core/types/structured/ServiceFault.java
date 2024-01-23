@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -65,6 +66,19 @@ public class ServiceFault extends Structure implements UaResponseMessageType {
 
     public ResponseHeader getResponseHeader() {
         return responseHeader;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ServiceFault that = (ServiceFault) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        return eqb.build();
     }
 
     @Override

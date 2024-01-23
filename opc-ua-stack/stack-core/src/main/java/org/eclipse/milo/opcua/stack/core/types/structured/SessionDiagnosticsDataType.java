@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -24,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -384,6 +390,61 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     public ServiceCounterDataType getUnregisterNodesCount() {
         return unregisterNodesCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SessionDiagnosticsDataType that = (SessionDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getSessionName(), that.getSessionName());
+        eqb.append(getClientDescription(), that.getClientDescription());
+        eqb.append(getServerUri(), that.getServerUri());
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getLocaleIds(), that.getLocaleIds());
+        eqb.append(getActualSessionTimeout(), that.getActualSessionTimeout());
+        eqb.append(getMaxResponseMessageSize(), that.getMaxResponseMessageSize());
+        eqb.append(getClientConnectionTime(), that.getClientConnectionTime());
+        eqb.append(getClientLastContactTime(), that.getClientLastContactTime());
+        eqb.append(getCurrentSubscriptionsCount(), that.getCurrentSubscriptionsCount());
+        eqb.append(getCurrentMonitoredItemsCount(), that.getCurrentMonitoredItemsCount());
+        eqb.append(getCurrentPublishRequestsInQueue(), that.getCurrentPublishRequestsInQueue());
+        eqb.append(getTotalRequestCount(), that.getTotalRequestCount());
+        eqb.append(getUnauthorizedRequestCount(), that.getUnauthorizedRequestCount());
+        eqb.append(getReadCount(), that.getReadCount());
+        eqb.append(getHistoryReadCount(), that.getHistoryReadCount());
+        eqb.append(getWriteCount(), that.getWriteCount());
+        eqb.append(getHistoryUpdateCount(), that.getHistoryUpdateCount());
+        eqb.append(getCallCount(), that.getCallCount());
+        eqb.append(getCreateMonitoredItemsCount(), that.getCreateMonitoredItemsCount());
+        eqb.append(getModifyMonitoredItemsCount(), that.getModifyMonitoredItemsCount());
+        eqb.append(getSetMonitoringModeCount(), that.getSetMonitoringModeCount());
+        eqb.append(getSetTriggeringCount(), that.getSetTriggeringCount());
+        eqb.append(getDeleteMonitoredItemsCount(), that.getDeleteMonitoredItemsCount());
+        eqb.append(getCreateSubscriptionCount(), that.getCreateSubscriptionCount());
+        eqb.append(getModifySubscriptionCount(), that.getModifySubscriptionCount());
+        eqb.append(getSetPublishingModeCount(), that.getSetPublishingModeCount());
+        eqb.append(getPublishCount(), that.getPublishCount());
+        eqb.append(getRepublishCount(), that.getRepublishCount());
+        eqb.append(getTransferSubscriptionsCount(), that.getTransferSubscriptionsCount());
+        eqb.append(getDeleteSubscriptionsCount(), that.getDeleteSubscriptionsCount());
+        eqb.append(getAddNodesCount(), that.getAddNodesCount());
+        eqb.append(getAddReferencesCount(), that.getAddReferencesCount());
+        eqb.append(getDeleteNodesCount(), that.getDeleteNodesCount());
+        eqb.append(getDeleteReferencesCount(), that.getDeleteReferencesCount());
+        eqb.append(getBrowseCount(), that.getBrowseCount());
+        eqb.append(getBrowseNextCount(), that.getBrowseNextCount());
+        eqb.append(getTranslateBrowsePathsToNodeIdsCount(), that.getTranslateBrowsePathsToNodeIdsCount());
+        eqb.append(getQueryFirstCount(), that.getQueryFirstCount());
+        eqb.append(getQueryNextCount(), that.getQueryNextCount());
+        eqb.append(getRegisterNodesCount(), that.getRegisterNodesCount());
+        eqb.append(getUnregisterNodesCount(), that.getUnregisterNodesCount());
+        return eqb.build();
     }
 
     @Override

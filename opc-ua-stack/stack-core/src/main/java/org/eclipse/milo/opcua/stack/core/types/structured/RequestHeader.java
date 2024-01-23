@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -112,6 +113,25 @@ public class RequestHeader extends Structure implements UaStructuredType {
 
     public ExtensionObject getAdditionalHeader() {
         return additionalHeader;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        RequestHeader that = (RequestHeader) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getAuthenticationToken(), that.getAuthenticationToken());
+        eqb.append(getTimestamp(), that.getTimestamp());
+        eqb.append(getRequestHandle(), that.getRequestHandle());
+        eqb.append(getReturnDiagnostics(), that.getReturnDiagnostics());
+        eqb.append(getAuditEntryId(), that.getAuditEntryId());
+        eqb.append(getTimeoutHint(), that.getTimeoutHint());
+        eqb.append(getAdditionalHeader(), that.getAdditionalHeader());
+        return eqb.build();
     }
 
     @Override

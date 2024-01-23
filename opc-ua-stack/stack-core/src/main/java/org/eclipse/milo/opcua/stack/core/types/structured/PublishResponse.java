@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,6 +114,25 @@ public class PublishResponse extends Structure implements UaResponseMessageType 
 
     public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PublishResponse that = (PublishResponse) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getSubscriptionId(), that.getSubscriptionId());
+        eqb.append(getAvailableSequenceNumbers(), that.getAvailableSequenceNumbers());
+        eqb.append(getMoreNotifications(), that.getMoreNotifications());
+        eqb.append(getNotificationMessage(), that.getNotificationMessage());
+        eqb.append(getResults(), that.getResults());
+        eqb.append(getDiagnosticInfos(), that.getDiagnosticInfos());
+        return eqb.build();
     }
 
     @Override

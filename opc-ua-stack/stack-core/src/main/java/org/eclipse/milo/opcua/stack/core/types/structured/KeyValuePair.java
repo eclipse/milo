@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -74,6 +75,20 @@ public class KeyValuePair extends Structure implements UaStructuredType {
 
     public Variant getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        KeyValuePair that = (KeyValuePair) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getKey(), that.getKey());
+        eqb.append(getValue(), that.getValue());
+        return eqb.build();
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
@@ -87,6 +88,22 @@ public class WriteValue extends Structure implements UaStructuredType {
 
     public DataValue getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        WriteValue that = (WriteValue) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getAttributeId(), that.getAttributeId());
+        eqb.append(getIndexRange(), that.getIndexRange());
+        eqb.append(getValue(), that.getValue());
+        return eqb.build();
     }
 
     @Override

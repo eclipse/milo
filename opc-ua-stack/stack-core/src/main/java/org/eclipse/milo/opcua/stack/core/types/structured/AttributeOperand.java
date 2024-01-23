@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,6 +96,23 @@ public class AttributeOperand extends FilterOperand implements UaStructuredType 
 
     public String getIndexRange() {
         return indexRange;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        AttributeOperand that = (AttributeOperand) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getAlias(), that.getAlias());
+        eqb.append(getBrowsePath(), that.getBrowsePath());
+        eqb.append(getAttributeId(), that.getAttributeId());
+        eqb.append(getIndexRange(), that.getIndexRange());
+        return eqb.build();
     }
 
     @Override
