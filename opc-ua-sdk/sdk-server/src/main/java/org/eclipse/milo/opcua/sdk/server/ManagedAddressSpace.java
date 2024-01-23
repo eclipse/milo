@@ -11,9 +11,11 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.methods.MethodInvocationHandler;
@@ -36,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -99,11 +102,15 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     @Override
     public void browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
         if (nodeManager.containsNode(nodeId)) {
-            List<Reference> references = nodeManager.getReferences(nodeId);
+            if (!checkBrowsePermission(context, nodeId)) {
+                context.failure(StatusCodes.Bad_UserAccessDenied);
+            } else {
+                List<Reference> references = nodeManager.getReferences(nodeId);
 
-            logger.debug("Browsed {} references for {}", references.size(), nodeId);
+                logger.debug("Browsed {} references for {}", references.size(), nodeId);
 
-            context.success(references);
+                context.success(references);
+            }
         } else {
             context.failure(StatusCodes.Bad_NodeIdUnknown);
         }
@@ -111,11 +118,62 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
     @Override
     public void getReferences(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
-        List<Reference> references = nodeManager.getReferences(nodeId);
+        if (checkBrowsePermission(context, nodeId)) {
+            List<Reference> references = nodeManager.getReferences(nodeId);
 
-        logger.debug("Got {} references for {}", references.size(), nodeId);
+            logger.debug("Got {} references for {}", references.size(), nodeId);
 
-        context.success(references);
+            context.success(references);
+        } else {
+            context.success(Collections.emptyList());
+        }
+    }
+
+    /**
+     * Check if the current Session has Browse permission for the given {@code nodeId}.
+     *
+     * @param context the {@link BrowseContext}.
+     * @param nodeId the {@link NodeId} to check Browse permission for.
+     * @return {@code true} if the current Session has Browse permission for {@code nodeId}.
+     */
+    private boolean checkBrowsePermission(BrowseContext context, NodeId nodeId) {
+        List<NodeId> roleIds = context.getSession().flatMap(Session::getRoleIds).orElse(null);
+
+        if (roleIds != null) {
+            // If non-null, there is a Session and Server has been configured with a
+            // RoleManager that provides Identity to RoleId mappings, so we can proceed with
+            // checking the RolePermissions and UserRolePermissions attributes.
+
+            UaNode node = nodeManager.get(nodeId);
+
+            if (node != null) {
+                RolePermissionType[] rolePermissions = node.getRolePermissions();
+
+                if (rolePermissions != null) {
+                    boolean hasBrowsePermission = Stream.of(rolePermissions)
+                        .anyMatch(rp -> rp.getPermissions().getBrowse());
+
+                    if (!hasBrowsePermission) {
+                        return false;
+                    }
+                }
+
+                RolePermissionType[] userRolePermissions = (RolePermissionType[]) node.getAttribute(
+                    context,
+                    AttributeId.UserRolePermissions
+                );
+
+                if (userRolePermissions != null) {
+                    return Arrays.stream(userRolePermissions)
+                        .filter(rp -> roleIds.contains(rp.getRoleId()))
+                        .anyMatch(rp -> rp.getPermissions().getBrowse());
+                }
+            }
+        }
+
+        // Node not found or no RolePermissions/UserRolePermissions attribute, so we can't make a
+        // decision.
+        return true;
     }
 
     @Override

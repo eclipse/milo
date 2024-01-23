@@ -11,7 +11,9 @@
 package org.eclipse.milo.opcua.sdk.server.methods;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
@@ -33,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -58,6 +61,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
     public final CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request) {
         try {
             checkExecutableAttributes(accessContext);
+            checkCallPermission(accessContext);
 
             Variant[] inputArgumentValues = request.getInputArguments();
             if (inputArgumentValues == null) inputArgumentValues = new Variant[0];
@@ -189,6 +193,46 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
 
         if (userExecutable == null || !userExecutable) {
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
+        }
+    }
+
+    /**
+     * Check that the current {@link Session} has permission to call this method.
+     * <p>
+     * The check is skipped if the Session does not have any roles because a RoleManager has not
+     * been configured, or if the method does not have any RolePermissions or UserRolePermissions
+     * defined.
+     *
+     * @param accessContext the {@link AccessContext}.
+     * @throws UaException if the current {@link Session} does not have permission to call this
+     *     method.
+     */
+    protected void checkCallPermission(AccessContext accessContext) throws UaException {
+        // TODO the description for PermissionType.Call states the bit needs to be set on both the
+        //  Method and the Object or ObjectType passed in the Call request; this is either the
+        //  wrong place to enforce the Call permission or we need the "parent" Node as well.
+
+        List<NodeId> roleIds = accessContext.getSession().flatMap(Session::getRoleIds).orElse(null);
+
+        if (roleIds != null) {
+            RolePermissionType[] rolePermissions = node.getRolePermissions();
+
+            if (rolePermissions != null) {
+                if (Stream.of(rolePermissions).noneMatch(rp -> rp.getPermissions().getCall())) {
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
+            }
+
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) node.getAttribute(
+                accessContext,
+                AttributeId.UserRolePermissions
+            );
+
+            if (userRolePermissions != null) {
+                if (Stream.of(userRolePermissions).noneMatch(rp -> rp.getPermissions().getCall())) {
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
+            }
         }
     }
 
