@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.42">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.42</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class UserTokenPolicy extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=304");
 
@@ -43,18 +40,19 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15098");
 
-    private final String policyId;
+    private final @Nullable String policyId;
 
     private final UserTokenType tokenType;
 
-    private final String issuedTokenType;
+    private final @Nullable String issuedTokenType;
 
-    private final String issuerEndpointUrl;
+    private final @Nullable String issuerEndpointUrl;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
-    public UserTokenPolicy(String policyId, UserTokenType tokenType, String issuedTokenType,
-                           String issuerEndpointUrl, String securityPolicyUri) {
+    public UserTokenPolicy(@Nullable String policyId, UserTokenType tokenType,
+                           @Nullable String issuedTokenType, @Nullable String issuerEndpointUrl,
+                           @Nullable String securityPolicyUri) {
         this.policyId = policyId;
         this.tokenType = tokenType;
         this.issuedTokenType = issuedTokenType;
@@ -82,7 +80,7 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getPolicyId() {
+    public @Nullable String getPolicyId() {
         return policyId;
     }
 
@@ -90,16 +88,55 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
         return tokenType;
     }
 
-    public String getIssuedTokenType() {
+    public @Nullable String getIssuedTokenType() {
         return issuedTokenType;
     }
 
-    public String getIssuerEndpointUrl() {
+    public @Nullable String getIssuerEndpointUrl() {
         return issuerEndpointUrl;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        UserTokenPolicy that = (UserTokenPolicy) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getPolicyId(), that.getPolicyId());
+        eqb.append(getTokenType(), that.getTokenType());
+        eqb.append(getIssuedTokenType(), that.getIssuedTokenType());
+        eqb.append(getIssuerEndpointUrl(), that.getIssuerEndpointUrl());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getPolicyId());
+        hcb.append(getTokenType());
+        hcb.append(getIssuedTokenType());
+        hcb.append(getIssuerEndpointUrl());
+        hcb.append(getSecurityPolicyUri());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", UserTokenPolicy.class.getSimpleName() + "[", "]");
+        joiner.add("policyId='" + getPolicyId() + "'");
+        joiner.add("tokenType=" + getTokenType());
+        joiner.add("issuedTokenType='" + getIssuedTokenType() + "'");
+        joiner.add("issuerEndpointUrl='" + getIssuerEndpointUrl() + "'");
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

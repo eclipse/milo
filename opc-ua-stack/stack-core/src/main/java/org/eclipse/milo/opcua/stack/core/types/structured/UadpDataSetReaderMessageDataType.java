@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,11 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
 import java.util.UUID;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,15 +30,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.4.10">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.4.10</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15653");
 
@@ -133,6 +133,57 @@ public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
 
     public Double getProcessingOffset() {
         return processingOffset;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        UadpDataSetReaderMessageDataType that = (UadpDataSetReaderMessageDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getGroupVersion(), that.getGroupVersion());
+        eqb.append(getNetworkMessageNumber(), that.getNetworkMessageNumber());
+        eqb.append(getDataSetOffset(), that.getDataSetOffset());
+        eqb.append(getDataSetClassId(), that.getDataSetClassId());
+        eqb.append(getNetworkMessageContentMask(), that.getNetworkMessageContentMask());
+        eqb.append(getDataSetMessageContentMask(), that.getDataSetMessageContentMask());
+        eqb.append(getPublishingInterval(), that.getPublishingInterval());
+        eqb.append(getReceiveOffset(), that.getReceiveOffset());
+        eqb.append(getProcessingOffset(), that.getProcessingOffset());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getGroupVersion());
+        hcb.append(getNetworkMessageNumber());
+        hcb.append(getDataSetOffset());
+        hcb.append(getDataSetClassId());
+        hcb.append(getNetworkMessageContentMask());
+        hcb.append(getDataSetMessageContentMask());
+        hcb.append(getPublishingInterval());
+        hcb.append(getReceiveOffset());
+        hcb.append(getProcessingOffset());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", UadpDataSetReaderMessageDataType.class.getSimpleName() + "[", "]");
+        joiner.add("groupVersion=" + getGroupVersion());
+        joiner.add("networkMessageNumber=" + getNetworkMessageNumber());
+        joiner.add("dataSetOffset=" + getDataSetOffset());
+        joiner.add("dataSetClassId=" + getDataSetClassId());
+        joiner.add("networkMessageContentMask=" + getNetworkMessageContentMask());
+        joiner.add("dataSetMessageContentMask=" + getDataSetMessageContentMask());
+        joiner.add("publishingInterval=" + getPublishingInterval());
+        joiner.add("receiveOffset=" + getReceiveOffset());
+        joiner.add("processingOffset=" + getProcessingOffset());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

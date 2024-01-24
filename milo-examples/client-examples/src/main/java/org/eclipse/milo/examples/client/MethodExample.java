@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 
 public class MethodExample implements ClientExample {
 
@@ -60,16 +63,18 @@ public class MethodExample implements ClientExample {
 
         CompletableFuture<CallMethodResult> future =
             client.callAsync(List.of(request))
-                .thenApply(r -> r.getResults()[0]);
+                .thenApply(r -> requireNonNull(r.getResults())[0]);
 
         return future.thenCompose(result -> {
             StatusCode statusCode = result.getStatusCode();
 
             if (statusCode.isGood()) {
-                Double value = (Double) result.getOutputArguments()[0].getValue();
+                Double value = (Double) requireNonNull(result.getOutputArguments())[0].getValue();
                 return CompletableFuture.completedFuture(value);
             } else {
-                StatusCode[] inputArgumentResults = result.getInputArgumentResults();
+                StatusCode[] inputArgumentResults =
+                    requireNonNullElse(result.getInputArgumentResults(), new StatusCode[0]);
+
                 for (int i = 0; i < inputArgumentResults.length; i++) {
                     logger.error("inputArgumentResults[{}]={}", i, inputArgumentResults[i]);
                 }

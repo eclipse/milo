@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.dtd.BinaryDataTypeDictionaryManager;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
@@ -415,8 +416,14 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
 
         node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
-            if ("admin".equals(identity)) {
-                return AccessLevel.READ_WRITE;
+            if (identity instanceof Identity.UsernameIdentity) {
+                Identity.UsernameIdentity usernameIdentity = (Identity.UsernameIdentity) identity;
+
+                if (usernameIdentity.getUsername().equals("admin")) {
+                    return AccessLevel.READ_WRITE;
+                } else {
+                    return AccessLevel.NONE;
+                }
             } else {
                 return AccessLevel.NONE;
             }
@@ -450,10 +457,16 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         node.setValue(new DataValue(new Variant("admin was here")));
 
         node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
-            if ("admin".equals(identity)) {
-                return AccessLevel.READ_WRITE;
+            if (identity instanceof Identity.UsernameIdentity) {
+                Identity.UsernameIdentity usernameIdentity = (Identity.UsernameIdentity) identity;
+
+                if (usernameIdentity.getUsername().equals("admin")) {
+                    return AccessLevel.READ_WRITE;
+                } else {
+                    return AccessLevel.NONE;
+                }
             } else {
-                return AccessLevel.READ_ONLY;
+                return AccessLevel.NONE;
             }
         }));
 

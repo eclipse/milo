@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.2/#5.10.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.2/#5.10.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class ReadRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=629");
 
@@ -49,10 +46,10 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
 
     private final TimestampsToReturn timestampsToReturn;
 
-    private final ReadValueId[] nodesToRead;
+    private final ReadValueId @Nullable [] nodesToRead;
 
     public ReadRequest(RequestHeader requestHeader, Double maxAge,
-                       TimestampsToReturn timestampsToReturn, ReadValueId[] nodesToRead) {
+                       TimestampsToReturn timestampsToReturn, ReadValueId @Nullable [] nodesToRead) {
         this.requestHeader = requestHeader;
         this.maxAge = maxAge;
         this.timestampsToReturn = timestampsToReturn;
@@ -91,8 +88,44 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
         return timestampsToReturn;
     }
 
-    public ReadValueId[] getNodesToRead() {
+    public ReadValueId @Nullable [] getNodesToRead() {
         return nodesToRead;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ReadRequest that = (ReadRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getMaxAge(), that.getMaxAge());
+        eqb.append(getTimestampsToReturn(), that.getTimestampsToReturn());
+        eqb.append(getNodesToRead(), that.getNodesToRead());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getMaxAge());
+        hcb.append(getTimestampsToReturn());
+        hcb.append(getNodesToRead());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ReadRequest.class.getSimpleName() + "[", "]");
+        joiner.add("requestHeader=" + getRequestHeader());
+        joiner.add("maxAge=" + getMaxAge());
+        joiner.add("timestampsToReturn=" + getTimestampsToReturn());
+        joiner.add("nodesToRead=" + java.util.Arrays.toString(getNodesToRead()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,15 +30,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.14">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.14</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class EndpointDescription extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=312");
 
@@ -45,7 +46,7 @@ public class EndpointDescription extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15099");
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
     private final ApplicationDescription server;
 
@@ -53,17 +54,18 @@ public class EndpointDescription extends Structure implements UaStructuredType {
 
     private final MessageSecurityMode securityMode;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
-    private final UserTokenPolicy[] userIdentityTokens;
+    private final UserTokenPolicy @Nullable [] userIdentityTokens;
 
-    private final String transportProfileUri;
+    private final @Nullable String transportProfileUri;
 
     private final UByte securityLevel;
 
-    public EndpointDescription(String endpointUrl, ApplicationDescription server,
-                               ByteString serverCertificate, MessageSecurityMode securityMode, String securityPolicyUri,
-                               UserTokenPolicy[] userIdentityTokens, String transportProfileUri, UByte securityLevel) {
+    public EndpointDescription(@Nullable String endpointUrl, ApplicationDescription server,
+                               ByteString serverCertificate, MessageSecurityMode securityMode,
+                               @Nullable String securityPolicyUri, UserTokenPolicy @Nullable [] userIdentityTokens,
+                               @Nullable String transportProfileUri, UByte securityLevel) {
         this.endpointUrl = endpointUrl;
         this.server = server;
         this.serverCertificate = serverCertificate;
@@ -94,7 +96,7 @@ public class EndpointDescription extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
@@ -110,20 +112,68 @@ public class EndpointDescription extends Structure implements UaStructuredType {
         return securityMode;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 
-    public UserTokenPolicy[] getUserIdentityTokens() {
+    public UserTokenPolicy @Nullable [] getUserIdentityTokens() {
         return userIdentityTokens;
     }
 
-    public String getTransportProfileUri() {
+    public @Nullable String getTransportProfileUri() {
         return transportProfileUri;
     }
 
     public UByte getSecurityLevel() {
         return securityLevel;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EndpointDescription that = (EndpointDescription) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getServer(), that.getServer());
+        eqb.append(getServerCertificate(), that.getServerCertificate());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getUserIdentityTokens(), that.getUserIdentityTokens());
+        eqb.append(getTransportProfileUri(), that.getTransportProfileUri());
+        eqb.append(getSecurityLevel(), that.getSecurityLevel());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEndpointUrl());
+        hcb.append(getServer());
+        hcb.append(getServerCertificate());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getUserIdentityTokens());
+        hcb.append(getTransportProfileUri());
+        hcb.append(getSecurityLevel());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", EndpointDescription.class.getSimpleName() + "[", "]");
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("server=" + getServer());
+        joiner.add("serverCertificate=" + getServerCertificate());
+        joiner.add("securityMode=" + getSecurityMode());
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        joiner.add("userIdentityTokens=" + java.util.Arrays.toString(getUserIdentityTokens()));
+        joiner.add("transportProfileUri='" + getTransportProfileUri() + "'");
+        joiner.add("securityLevel=" + getSecurityLevel());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.4.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.4.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15665");
 
@@ -78,6 +78,36 @@ public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
 
     public JsonDataSetMessageContentMask getDataSetMessageContentMask() {
         return dataSetMessageContentMask;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        JsonDataSetReaderMessageDataType that = (JsonDataSetReaderMessageDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNetworkMessageContentMask(), that.getNetworkMessageContentMask());
+        eqb.append(getDataSetMessageContentMask(), that.getDataSetMessageContentMask());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNetworkMessageContentMask());
+        hcb.append(getDataSetMessageContentMask());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", JsonDataSetReaderMessageDataType.class.getSimpleName() + "[", "]");
+        joiner.add("networkMessageContentMask=" + getNetworkMessageContentMask());
+        joiner.add("dataSetMessageContentMask=" + getDataSetMessageContentMask());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -18,6 +18,10 @@ import java.security.cert.X509Certificate;
 import javax.crypto.Cipher;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.AnonymousIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.IssuedIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.UsernameIdentity;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity.X509UserIdentity;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
@@ -34,41 +38,42 @@ import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 
-public abstract class AbstractIdentityValidator<T> implements IdentityValidator<T> {
+public abstract class AbstractIdentityValidator implements IdentityValidator {
 
     @Override
-    public T validateIdentityToken(
+    public Identity validateIdentityToken(
         Session session,
         UserIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
+        UserTokenPolicy policy,
+        SignatureData signature
+    ) throws UaException {
 
-        switch (tokenPolicy.getTokenType()) {
+        switch (policy.getTokenType()) {
             case Anonymous: {
                 if (token instanceof AnonymousIdentityToken) {
                     return validateAnonymousToken(
-                        session, (AnonymousIdentityToken) token, tokenPolicy, tokenSignature);
+                        session, (AnonymousIdentityToken) token, policy, signature);
                 }
                 break;
             }
             case UserName: {
                 if (token instanceof UserNameIdentityToken) {
                     return validateUsernameToken(
-                        session, (UserNameIdentityToken) token, tokenPolicy, tokenSignature);
+                        session, (UserNameIdentityToken) token, policy, signature);
                 }
                 break;
             }
             case Certificate: {
                 if (token instanceof X509IdentityToken) {
                     return validateX509Token(
-                        session, (X509IdentityToken) token, tokenPolicy, tokenSignature);
+                        session, (X509IdentityToken) token, policy, signature);
                 }
                 break;
             }
             case IssuedToken: {
                 if (token instanceof IssuedIdentityToken) {
                     return validateIssuedIdentityToken(
-                        session, (IssuedIdentityToken) token, tokenPolicy, tokenSignature);
+                        session, (IssuedIdentityToken) token, policy, signature);
                 }
                 break;
             }
@@ -80,106 +85,117 @@ public abstract class AbstractIdentityValidator<T> implements IdentityValidator<
     }
 
     /**
-     * Validate an {@link AnonymousIdentityToken} and return an identity Object that represents the user.
+     * Validate an {@link AnonymousIdentityToken} and return an {@link AnonymousIdentity} that
+     * represents the user.
      * <p>
-     * This Object should implement equality in such a way that a subsequent identity validation for the same user
-     * yields a comparable Object.
+     * This Identity should implement equality in such a way that different instances representing
+     * the same user are comparable.
      *
-     * @param session        the {@link Session} the request is arriving on.
-     * @param token          the {@link AnonymousIdentityToken}.
-     * @param tokenPolicy    the {@link UserTokenPolicy} specified by the policyId in {@code token}.
-     * @param tokenSignature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an identity Object that represents the user.
+     * @param session the {@link Session} making the request.
+     * @param token the {@link AnonymousIdentityToken}.
+     * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
+     * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
+     * @return an {@link AnonymousIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected T validateAnonymousToken(
+    protected AnonymousIdentity validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
+        UserTokenPolicy policy,
+        SignatureData signature
+    ) throws UaException {
 
         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
     }
 
     /**
-     * Validate a {@link UserNameIdentityToken} and return an identity Object that represents the user.
+     * Validate an {@link UserNameIdentityToken} and return a {@link UsernameIdentity} that
+     * represents the user.
      * <p>
-     * This Object should implement equality in such a way that a subsequent identity validation for the same user
-     * yields a comparable Object.
+     * This Identity should implement equality in such a way that different instances representing
+     * the same user are comparable.
      *
-     * @param session        the {@link Session} the request is arriving on.
-     * @param token          the {@link UserNameIdentityToken}.
-     * @param tokenPolicy    the {@link UserTokenPolicy} specified by the policyId in {@code token}.
-     * @param tokenSignature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an identity Object that represents the user.
+     * @param session the {@link Session} making the request.
+     * @param token the {@link UserNameIdentityToken}.
+     * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
+     * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
+     * @return a {@link UsernameIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected T validateUsernameToken(
+    protected UsernameIdentity validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
+        UserTokenPolicy policy,
+        SignatureData signature
+    ) throws UaException {
 
         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
     }
 
     /**
-     * Validate an {@link X509IdentityToken} and return an identity Object that represents the user.
+     * Validate an {@link X509IdentityToken} and return an {@link X509UserIdentity} that
+     * represents the user.
      * <p>
-     * This Object should implement equality in such a way that a subsequent identity validation for the same user
-     * yields a comparable Object.
+     * This Identity should implement equality in such a way that different instances representing
+     * the same user are comparable.
      *
-     * @param session        the {@link Session} the request is arriving on.
-     * @param token          the {@link X509IdentityToken}.
-     * @param tokenPolicy    the {@link UserTokenPolicy} specified by the policyId in {@code token}.
-     * @param tokenSignature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an identity Object that represents the user.
+     * @param session the {@link Session} making the request.
+     * @param token the {@link X509IdentityToken}.
+     * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
+     * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
+     * @return an {@link X509UserIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected T validateX509Token(
+    protected X509UserIdentity validateX509Token(
         Session session,
         X509IdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
+        UserTokenPolicy policy,
+        SignatureData signature
+    ) throws UaException {
 
         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
     }
 
     /**
-     * Validate an {@link IssuedIdentityToken} and return an identity Object that represents the user.
+     * Validate an {@link IssuedIdentityToken} and return an {@link IssuedIdentity} that
+     * represents the user.
      * <p>
-     * This Object should implement equality in such a way that a subsequent identity validation for the same user
-     * yields a comparable Object.
+     * This Identity should implement equality in such a way that different instances representing
+     * the same user are comparable.
      *
-     * @param session        the {@link Session} the request is arriving on.
-     * @param token          the {@link IssuedIdentityToken}.
-     * @param tokenPolicy    the {@link UserTokenPolicy} specified by the policyId in {@code token}.
-     * @param tokenSignature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
-     * @return an identity Object that represents the user.
+     * @param session the {@link Session} making the request.
+     * @param token the {@link IssuedIdentityToken}.
+     * @param policy the {@link UserTokenPolicy} specified by the policyId in {@code token}.
+     * @param signature the {@link SignatureData} sent in the {@link ActivateSessionRequest}.
+     * @return an {@link IssuedIdentity} that represents the user identity.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected T validateIssuedIdentityToken(
+    protected IssuedIdentity validateIssuedIdentityToken(
         Session session,
         IssuedIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
+        UserTokenPolicy policy,
+        SignatureData signature
+    ) throws UaException {
 
         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
     }
 
     /**
-     * Decrypt the data contained in a {@link UserNameIdentityToken} or {@link IssuedIdentityToken}.
-     * <p>
-     * See {@link UserNameIdentityToken#getPassword()} and {@link IssuedIdentityToken#getTokenData()}.
+     * Decrypt the data contained in a {@link UserNameIdentityToken} or
+     * {@link IssuedIdentityToken}.
      *
-     * @param session   the current {@link Session}.
+     * @param session the current {@link Session}.
      * @param dataBytes the encrypted data.
      * @return the decrypted data.
      * @throws UaException if decryption fails.
+     * @see IssuedIdentityToken#getTokenData()
+     * @see UserNameIdentityToken#getPassword()
      */
-    protected byte[] decryptTokenData(Session session,
-                                      SecurityAlgorithm algorithm,
-                                      byte[] dataBytes) throws UaException {
+    protected byte[] decryptTokenData(
+        Session session,
+        SecurityAlgorithm algorithm,
+        byte[] dataBytes
+    ) throws UaException {
 
         X509Certificate certificate = CertificateUtil.decodeCertificate(
             session.getEndpoint()

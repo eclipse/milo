@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +28,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.6/#6.8.6.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.8.6/#6.8.6.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=689");
 
@@ -43,9 +44,9 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15284");
 
-    private final DateTime[] reqTimes;
+    private final DateTime @Nullable [] reqTimes;
 
-    public DeleteAtTimeDetails(NodeId nodeId, DateTime[] reqTimes) {
+    public DeleteAtTimeDetails(NodeId nodeId, DateTime @Nullable [] reqTimes) {
         super(nodeId);
         this.reqTimes = reqTimes;
     }
@@ -70,8 +71,37 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
         return JSON_ENCODING_ID;
     }
 
-    public DateTime[] getReqTimes() {
+    public DateTime @Nullable [] getReqTimes() {
         return reqTimes;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DeleteAtTimeDetails that = (DeleteAtTimeDetails) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getReqTimes(), that.getReqTimes());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getReqTimes());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DeleteAtTimeDetails.class.getSimpleName() + "[", "]");
+        joiner.add("reqTimes=" + java.util.Arrays.toString(getReqTimes()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

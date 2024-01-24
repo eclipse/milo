@@ -10,12 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.AttributeWriter;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -26,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -34,6 +37,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.mockito.Mockito.when;
 
 public class AttributeWriterTest {
 
@@ -76,18 +80,21 @@ public class AttributeWriterTest {
     private void testWriteConversion(
         Variant value,
         NodeId dataType,
-        Consumer<UaVariableNode> nodeCustomizer) throws UaException {
+        Consumer<UaVariableNode> nodeCustomizer
+    ) throws UaException {
 
         testWriteConversion(new DataValue(value), dataType, nodeCustomizer);
-
     }
 
     private void testWriteConversion(
         DataValue value,
         NodeId dataType,
-        Consumer<UaVariableNode> nodeCustomizer) throws UaException {
+        Consumer<UaVariableNode> nodeCustomizer
+    ) throws UaException {
 
-        final UaVariableNode varNode = createMockNode("test", node -> {
+        OpcUaServer server = Mockito.mock(OpcUaServer.class);
+
+        final UaVariableNode varNode = createMockNode(server, "test", node -> {
             UByte accessLevel = AccessLevel.toValue(AccessLevel.READ_WRITE);
             node.setAccessLevel(accessLevel);
             node.setUserAccessLevel(accessLevel);
@@ -100,28 +107,35 @@ public class AttributeWriterTest {
             varNode.setDataType(dataType);
         }
 
-        OpcUaServer server = Mockito.mock(OpcUaServer.class);
-
-        AttributeWriter.writeAttribute(
-            new AttributeContext(server, null),
+        StatusCode result = AttributeWriter.writeAttribute(
+            Optional::empty,
             varNode,
             AttributeId.Value,
             value,
             null
         );
+
+        if (!result.isGood()) {
+            throw new UaException(result);
+        }
     }
 
     private UaVariableNode createMockNode(
+        OpcUaServer server,
         String id,
-        Consumer<UaVariableNode> nodeCustomizer) {
+        Consumer<UaVariableNode> nodeCustomizer
+    ) {
 
         final NodeId nodeId = new NodeId(0, id);
 
         final QualifiedName browseName = new QualifiedName(0, id);
         final LocalizedText displayName = LocalizedText.english(id);
 
+        var context = Mockito.mock(UaNodeContext.class);
+        when(context.getServer()).thenReturn(server);
+
         final UaVariableNode node = new UaVariableNode(
-            null,
+            context,
             nodeId,
             browseName,
             displayName,

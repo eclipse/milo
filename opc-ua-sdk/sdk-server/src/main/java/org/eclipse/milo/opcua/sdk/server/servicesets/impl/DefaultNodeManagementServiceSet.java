@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
@@ -129,7 +130,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     }
 
     private CompletableFuture<AddNodesResponse> addNodes(AddNodesRequest request, Session session) {
-        List<AddNodesItem> nodesToAdd = List.of(request.getNodesToAdd());
+        List<AddNodesItem> nodesToAdd = Lists.ofNullable(request.getNodesToAdd());
 
         if (nodesToAdd.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -162,7 +163,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     }
 
     private CompletableFuture<DeleteNodesResponse> deleteNodes(DeleteNodesRequest request, Session session) {
-        List<DeleteNodesItem> nodesToDelete = List.of(request.getNodesToDelete());
+        List<DeleteNodesItem> nodesToDelete = Lists.ofNullable(request.getNodesToDelete());
 
         if (nodesToDelete.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -195,7 +196,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     }
 
     private CompletableFuture<AddReferencesResponse> addReferences(AddReferencesRequest request, Session session) {
-        List<AddReferencesItem> referencesToAdd = List.of(request.getReferencesToAdd());
+        List<AddReferencesItem> referencesToAdd = Lists.ofNullable(request.getReferencesToAdd());
 
         if (referencesToAdd.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -232,7 +233,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
         Session session
     ) {
 
-        List<DeleteReferencesItem> referencesToDelete = List.of(request.getReferencesToDelete());
+        List<DeleteReferencesItem> referencesToDelete = Lists.ofNullable(request.getReferencesToDelete());
 
         if (referencesToDelete.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);

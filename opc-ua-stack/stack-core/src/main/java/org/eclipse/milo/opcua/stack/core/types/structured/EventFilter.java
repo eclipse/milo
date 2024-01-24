@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +23,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class EventFilter extends MonitoringFilter implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=725");
 
@@ -42,11 +39,11 @@ public class EventFilter extends MonitoringFilter implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15295");
 
-    private final SimpleAttributeOperand[] selectClauses;
+    private final SimpleAttributeOperand @Nullable [] selectClauses;
 
     private final ContentFilter whereClause;
 
-    public EventFilter(SimpleAttributeOperand[] selectClauses, ContentFilter whereClause) {
+    public EventFilter(SimpleAttributeOperand @Nullable [] selectClauses, ContentFilter whereClause) {
         this.selectClauses = selectClauses;
         this.whereClause = whereClause;
     }
@@ -71,12 +68,42 @@ public class EventFilter extends MonitoringFilter implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public SimpleAttributeOperand[] getSelectClauses() {
+    public SimpleAttributeOperand @Nullable [] getSelectClauses() {
         return selectClauses;
     }
 
     public ContentFilter getWhereClause() {
         return whereClause;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EventFilter that = (EventFilter) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSelectClauses(), that.getSelectClauses());
+        eqb.append(getWhereClause(), that.getWhereClause());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSelectClauses());
+        hcb.append(getWhereClause());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", EventFilter.class.getSimpleName() + "[", "]");
+        joiner.add("selectClauses=" + java.util.Arrays.toString(getSelectClauses()));
+        joiner.add("whereClause=" + getWhereClause());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

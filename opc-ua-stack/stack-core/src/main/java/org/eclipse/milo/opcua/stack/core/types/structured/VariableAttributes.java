@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,15 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Integer;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +32,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.24.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class VariableAttributes extends NodeAttributes implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=355");
 
@@ -50,7 +54,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     private final Integer valueRank;
 
-    private final UInteger[] arrayDimensions;
+    private final UInteger @Nullable [] arrayDimensions;
 
     private final UByte accessLevel;
 
@@ -62,7 +66,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     public VariableAttributes(UInteger specifiedAttributes, LocalizedText displayName,
                               LocalizedText description, UInteger writeMask, UInteger userWriteMask, Variant value,
-                              NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel,
+                              NodeId dataType, Integer valueRank, UInteger @Nullable [] arrayDimensions, UByte accessLevel,
                               UByte userAccessLevel, Double minimumSamplingInterval, Boolean historizing) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.value = value;
@@ -107,7 +111,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
         return valueRank;
     }
 
-    public UInteger[] getArrayDimensions() {
+    public UInteger @Nullable [] getArrayDimensions() {
         return arrayDimensions;
     }
 
@@ -125,6 +129,56 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
 
     public Boolean getHistorizing() {
         return historizing;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        VariableAttributes that = (VariableAttributes) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getValue(), that.getValue());
+        eqb.append(getDataType(), that.getDataType());
+        eqb.append(getValueRank(), that.getValueRank());
+        eqb.append(getArrayDimensions(), that.getArrayDimensions());
+        eqb.append(getAccessLevel(), that.getAccessLevel());
+        eqb.append(getUserAccessLevel(), that.getUserAccessLevel());
+        eqb.append(getMinimumSamplingInterval(), that.getMinimumSamplingInterval());
+        eqb.append(getHistorizing(), that.getHistorizing());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getValue());
+        hcb.append(getDataType());
+        hcb.append(getValueRank());
+        hcb.append(getArrayDimensions());
+        hcb.append(getAccessLevel());
+        hcb.append(getUserAccessLevel());
+        hcb.append(getMinimumSamplingInterval());
+        hcb.append(getHistorizing());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", VariableAttributes.class.getSimpleName() + "[", "]");
+        joiner.add("value=" + getValue());
+        joiner.add("dataType=" + getDataType());
+        joiner.add("valueRank=" + getValueRank());
+        joiner.add("arrayDimensions=" + java.util.Arrays.toString(getArrayDimensions()));
+        joiner.add("accessLevel=" + getAccessLevel());
+        joiner.add("userAccessLevel=" + getUserAccessLevel());
+        joiner.add("minimumSamplingInterval=" + getMinimumSamplingInterval());
+        joiner.add("historizing=" + getHistorizing());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.11.2/#5.11.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class CallResponse extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=713");
 
@@ -45,12 +42,12 @@ public class CallResponse extends Structure implements UaResponseMessageType {
 
     private final ResponseHeader responseHeader;
 
-    private final CallMethodResult[] results;
+    private final CallMethodResult @Nullable [] results;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
-    public CallResponse(ResponseHeader responseHeader, CallMethodResult[] results,
-                        DiagnosticInfo[] diagnosticInfos) {
+    public CallResponse(ResponseHeader responseHeader, CallMethodResult @Nullable [] results,
+                        DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.results = results;
         this.diagnosticInfos = diagnosticInfos;
@@ -80,12 +77,45 @@ public class CallResponse extends Structure implements UaResponseMessageType {
         return responseHeader;
     }
 
-    public CallMethodResult[] getResults() {
+    public CallMethodResult @Nullable [] getResults() {
         return results;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CallResponse that = (CallResponse) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getResults(), that.getResults());
+        eqb.append(getDiagnosticInfos(), that.getDiagnosticInfos());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        hcb.append(getResults());
+        hcb.append(getDiagnosticInfos());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", CallResponse.class.getSimpleName() + "[", "]");
+        joiner.add("responseHeader=" + getResponseHeader());
+        joiner.add("results=" + java.util.Arrays.toString(getResults()));
+        joiner.add("diagnosticInfos=" + java.util.Arrays.toString(getDiagnosticInfos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

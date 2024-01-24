@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.3.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.3.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15635");
 
@@ -42,12 +43,12 @@ public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType i
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16311");
 
-    private final String parentNodeName;
+    private final @Nullable String parentNodeName;
 
-    private final RolePermissionType[] rolePermissions;
+    private final RolePermissionType @Nullable [] rolePermissions;
 
-    public SubscribedDataSetMirrorDataType(String parentNodeName,
-                                           RolePermissionType[] rolePermissions) {
+    public SubscribedDataSetMirrorDataType(@Nullable String parentNodeName,
+                                           RolePermissionType @Nullable [] rolePermissions) {
         this.parentNodeName = parentNodeName;
         this.rolePermissions = rolePermissions;
     }
@@ -72,12 +73,42 @@ public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType i
         return JSON_ENCODING_ID;
     }
 
-    public String getParentNodeName() {
+    public @Nullable String getParentNodeName() {
         return parentNodeName;
     }
 
-    public RolePermissionType[] getRolePermissions() {
+    public RolePermissionType @Nullable [] getRolePermissions() {
         return rolePermissions;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SubscribedDataSetMirrorDataType that = (SubscribedDataSetMirrorDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getParentNodeName(), that.getParentNodeName());
+        eqb.append(getRolePermissions(), that.getRolePermissions());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getParentNodeName());
+        hcb.append(getRolePermissions());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SubscribedDataSetMirrorDataType.class.getSimpleName() + "[", "]");
+        joiner.add("parentNodeName='" + getParentNodeName() + "'");
+        joiner.add("rolePermissions=" + java.util.Arrays.toString(getRolePermissions()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

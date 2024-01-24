@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,15 +30,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part10/5.2.8">https://reference.opcfoundation.org/v105/Core/docs/Part10/5.2.8</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class ProgramDiagnostic2DataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24033");
 
@@ -47,33 +48,33 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
 
     private final NodeId createSessionId;
 
-    private final String createClientName;
+    private final @Nullable String createClientName;
 
     private final DateTime invocationCreationTime;
 
     private final DateTime lastTransitionTime;
 
-    private final String lastMethodCall;
+    private final @Nullable String lastMethodCall;
 
     private final NodeId lastMethodSessionId;
 
-    private final Argument[] lastMethodInputArguments;
+    private final Argument @Nullable [] lastMethodInputArguments;
 
-    private final Argument[] lastMethodOutputArguments;
+    private final Argument @Nullable [] lastMethodOutputArguments;
 
-    private final Variant[] lastMethodInputValues;
+    private final Variant @Nullable [] lastMethodInputValues;
 
-    private final Variant[] lastMethodOutputValues;
+    private final Variant @Nullable [] lastMethodOutputValues;
 
     private final DateTime lastMethodCallTime;
 
     private final StatusCode lastMethodReturnStatus;
 
-    public ProgramDiagnostic2DataType(NodeId createSessionId, String createClientName,
-                                      DateTime invocationCreationTime, DateTime lastTransitionTime, String lastMethodCall,
-                                      NodeId lastMethodSessionId, Argument[] lastMethodInputArguments,
-                                      Argument[] lastMethodOutputArguments, Variant[] lastMethodInputValues,
-                                      Variant[] lastMethodOutputValues, DateTime lastMethodCallTime,
+    public ProgramDiagnostic2DataType(NodeId createSessionId, @Nullable String createClientName,
+                                      DateTime invocationCreationTime, DateTime lastTransitionTime, @Nullable String lastMethodCall,
+                                      NodeId lastMethodSessionId, Argument @Nullable [] lastMethodInputArguments,
+                                      Argument @Nullable [] lastMethodOutputArguments, Variant @Nullable [] lastMethodInputValues,
+                                      Variant @Nullable [] lastMethodOutputValues, DateTime lastMethodCallTime,
                                       StatusCode lastMethodReturnStatus) {
         this.createSessionId = createSessionId;
         this.createClientName = createClientName;
@@ -113,7 +114,7 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
         return createSessionId;
     }
 
-    public String getCreateClientName() {
+    public @Nullable String getCreateClientName() {
         return createClientName;
     }
 
@@ -125,7 +126,7 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
         return lastTransitionTime;
     }
 
-    public String getLastMethodCall() {
+    public @Nullable String getLastMethodCall() {
         return lastMethodCall;
     }
 
@@ -133,19 +134,19 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
         return lastMethodSessionId;
     }
 
-    public Argument[] getLastMethodInputArguments() {
+    public Argument @Nullable [] getLastMethodInputArguments() {
         return lastMethodInputArguments;
     }
 
-    public Argument[] getLastMethodOutputArguments() {
+    public Argument @Nullable [] getLastMethodOutputArguments() {
         return lastMethodOutputArguments;
     }
 
-    public Variant[] getLastMethodInputValues() {
+    public Variant @Nullable [] getLastMethodInputValues() {
         return lastMethodInputValues;
     }
 
-    public Variant[] getLastMethodOutputValues() {
+    public Variant @Nullable [] getLastMethodOutputValues() {
         return lastMethodOutputValues;
     }
 
@@ -155,6 +156,66 @@ public class ProgramDiagnostic2DataType extends Structure implements UaStructure
 
     public StatusCode getLastMethodReturnStatus() {
         return lastMethodReturnStatus;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ProgramDiagnostic2DataType that = (ProgramDiagnostic2DataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getCreateSessionId(), that.getCreateSessionId());
+        eqb.append(getCreateClientName(), that.getCreateClientName());
+        eqb.append(getInvocationCreationTime(), that.getInvocationCreationTime());
+        eqb.append(getLastTransitionTime(), that.getLastTransitionTime());
+        eqb.append(getLastMethodCall(), that.getLastMethodCall());
+        eqb.append(getLastMethodSessionId(), that.getLastMethodSessionId());
+        eqb.append(getLastMethodInputArguments(), that.getLastMethodInputArguments());
+        eqb.append(getLastMethodOutputArguments(), that.getLastMethodOutputArguments());
+        eqb.append(getLastMethodInputValues(), that.getLastMethodInputValues());
+        eqb.append(getLastMethodOutputValues(), that.getLastMethodOutputValues());
+        eqb.append(getLastMethodCallTime(), that.getLastMethodCallTime());
+        eqb.append(getLastMethodReturnStatus(), that.getLastMethodReturnStatus());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getCreateSessionId());
+        hcb.append(getCreateClientName());
+        hcb.append(getInvocationCreationTime());
+        hcb.append(getLastTransitionTime());
+        hcb.append(getLastMethodCall());
+        hcb.append(getLastMethodSessionId());
+        hcb.append(getLastMethodInputArguments());
+        hcb.append(getLastMethodOutputArguments());
+        hcb.append(getLastMethodInputValues());
+        hcb.append(getLastMethodOutputValues());
+        hcb.append(getLastMethodCallTime());
+        hcb.append(getLastMethodReturnStatus());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ProgramDiagnostic2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("createSessionId=" + getCreateSessionId());
+        joiner.add("createClientName='" + getCreateClientName() + "'");
+        joiner.add("invocationCreationTime=" + getInvocationCreationTime());
+        joiner.add("lastTransitionTime=" + getLastTransitionTime());
+        joiner.add("lastMethodCall='" + getLastMethodCall() + "'");
+        joiner.add("lastMethodSessionId=" + getLastMethodSessionId());
+        joiner.add("lastMethodInputArguments=" + java.util.Arrays.toString(getLastMethodInputArguments()));
+        joiner.add("lastMethodOutputArguments=" + java.util.Arrays.toString(getLastMethodOutputArguments()));
+        joiner.add("lastMethodInputValues=" + java.util.Arrays.toString(getLastMethodInputValues()));
+        joiner.add("lastMethodOutputValues=" + java.util.Arrays.toString(getLastMethodOutputValues()));
+        joiner.add("lastMethodCallTime=" + getLastMethodCallTime());
+        joiner.add("lastMethodReturnStatus=" + getLastMethodReturnStatus());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

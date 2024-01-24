@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.5">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.12/#12.2.12.5</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class StructureDefinition extends DataTypeDefinition implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=99");
 
@@ -48,10 +49,10 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
 
     private final StructureType structureType;
 
-    private final StructureField[] fields;
+    private final StructureField @Nullable [] fields;
 
     public StructureDefinition(NodeId defaultEncodingId, NodeId baseDataType,
-                               StructureType structureType, StructureField[] fields) {
+                               StructureType structureType, StructureField @Nullable [] fields) {
         this.defaultEncodingId = defaultEncodingId;
         this.baseDataType = baseDataType;
         this.structureType = structureType;
@@ -90,8 +91,44 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         return structureType;
     }
 
-    public StructureField[] getFields() {
+    public StructureField @Nullable [] getFields() {
         return fields;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        StructureDefinition that = (StructureDefinition) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getDefaultEncodingId(), that.getDefaultEncodingId());
+        eqb.append(getBaseDataType(), that.getBaseDataType());
+        eqb.append(getStructureType(), that.getStructureType());
+        eqb.append(getFields(), that.getFields());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getDefaultEncodingId());
+        hcb.append(getBaseDataType());
+        hcb.append(getStructureType());
+        hcb.append(getFields());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", StructureDefinition.class.getSimpleName() + "[", "]");
+        joiner.add("defaultEncodingId=" + getDefaultEncodingId());
+        joiner.add("baseDataType=" + getBaseDataType());
+        joiner.add("structureType=" + getStructureType());
+        joiner.add("fields=" + java.util.Arrays.toString(getFields()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

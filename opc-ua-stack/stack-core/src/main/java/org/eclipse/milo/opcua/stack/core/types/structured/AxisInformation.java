@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.6">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.6</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class AxisInformation extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12079");
 
@@ -51,10 +48,10 @@ public class AxisInformation extends Structure implements UaStructuredType {
 
     private final AxisScaleEnumeration axisScaleType;
 
-    private final Double[] axisSteps;
+    private final Double @Nullable [] axisSteps;
 
     public AxisInformation(EUInformation engineeringUnits, Range euRange, LocalizedText title,
-                           AxisScaleEnumeration axisScaleType, Double[] axisSteps) {
+                           AxisScaleEnumeration axisScaleType, Double @Nullable [] axisSteps) {
         this.engineeringUnits = engineeringUnits;
         this.euRange = euRange;
         this.title = title;
@@ -98,8 +95,47 @@ public class AxisInformation extends Structure implements UaStructuredType {
         return axisScaleType;
     }
 
-    public Double[] getAxisSteps() {
+    public Double @Nullable [] getAxisSteps() {
         return axisSteps;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        AxisInformation that = (AxisInformation) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEngineeringUnits(), that.getEngineeringUnits());
+        eqb.append(getEuRange(), that.getEuRange());
+        eqb.append(getTitle(), that.getTitle());
+        eqb.append(getAxisScaleType(), that.getAxisScaleType());
+        eqb.append(getAxisSteps(), that.getAxisSteps());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEngineeringUnits());
+        hcb.append(getEuRange());
+        hcb.append(getTitle());
+        hcb.append(getAxisScaleType());
+        hcb.append(getAxisSteps());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AxisInformation.class.getSimpleName() + "[", "]");
+        joiner.add("engineeringUnits=" + getEngineeringUnits());
+        joiner.add("euRange=" + getEuRange());
+        joiner.add("title=" + getTitle());
+        joiner.add("axisScaleType=" + getAxisScaleType());
+        joiner.add("axisSteps=" + java.util.Arrays.toString(getAxisSteps()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

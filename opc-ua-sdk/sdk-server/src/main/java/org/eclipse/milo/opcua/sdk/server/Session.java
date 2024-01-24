@@ -20,10 +20,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -47,6 +49,9 @@ public class Session {
 
     private static final int IDENTITY_HISTORY_MAX_SIZE = 10;
 
+    private static final int CONCURRENT_CALL_LIMIT =
+        Integer.getInteger("milo.session.concurrentCallLimit", 64);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<LifecycleListener> listeners = new CopyOnWriteArrayList<>();
@@ -57,8 +62,10 @@ public class Session {
 
     private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = new ConcurrentHashMap<>();
 
-    private volatile Object identityObject;
+    private final Semaphore callSemaphore = new Semaphore(CONCURRENT_CALL_LIMIT, true);
+
     private volatile UserIdentityToken identityToken;
+    private volatile Identity identity;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
 
@@ -133,9 +140,8 @@ public class Session {
         return endpoint;
     }
 
-    @Nullable
-    public Object getIdentityObject() {
-        return identityObject;
+    public @Nullable Identity getIdentity() {
+        return identity;
     }
 
     @Nullable
@@ -173,7 +179,7 @@ public class Session {
 
     /**
      * @return a list containing the (possibly abbreviated) history of client user ids. This list may contain null
-     * entries.
+     *     entries.
      * @see #getClientUserId()
      */
     public List<String> getClientUserIdHistory() {
@@ -190,8 +196,8 @@ public class Session {
         this.secureChannelId = secureChannelId;
     }
 
-    public void setIdentityObject(Object identityObject, UserIdentityToken identityToken) {
-        this.identityObject = identityObject;
+    public void setIdentity(Identity identity, UserIdentityToken identityToken) {
+        this.identity = identity;
         this.identityToken = identityToken;
 
         synchronized (clientUserIdHistory) {
@@ -313,6 +319,10 @@ public class Session {
 
     public SubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
+    }
+
+    public Semaphore getCallSemaphore() {
+        return callSemaphore;
     }
 
     void close(boolean deleteSubscriptions) {

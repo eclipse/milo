@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -23,10 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.1.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.1.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class UadpNetworkMessageContentMask extends OptionSetUI32<UadpNetworkMessageContentMask.Field> {
     public UadpNetworkMessageContentMask(UInteger value) {
         super(value);
@@ -86,6 +83,23 @@ public class UadpNetworkMessageContentMask extends OptionSetUI32<UadpNetworkMess
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", UadpNetworkMessageContentMask.class.getSimpleName() + "[", "]");
+        joiner.add("publisherId=" + getPublisherId());
+        joiner.add("groupHeader=" + getGroupHeader());
+        joiner.add("writerGroupId=" + getWriterGroupId());
+        joiner.add("groupVersion=" + getGroupVersion());
+        joiner.add("networkMessageNumber=" + getNetworkMessageNumber());
+        joiner.add("sequenceNumber=" + getSequenceNumber());
+        joiner.add("payloadHeader=" + getPayloadHeader());
+        joiner.add("timestamp=" + getTimestamp());
+        joiner.add("picoSeconds=" + getPicoSeconds());
+        joiner.add("dataSetClassId=" + getDataSetClassId());
+        joiner.add("promotedFields=" + getPromotedFields());
+        return joiner.toString();
     }
 
     public static UadpNetworkMessageContentMask of(UadpNetworkMessageContentMask.Field... fields) {

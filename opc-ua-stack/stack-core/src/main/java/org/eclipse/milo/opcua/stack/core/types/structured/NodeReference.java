@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,12 +23,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class NodeReference extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=580");
 
@@ -45,10 +42,10 @@ public class NodeReference extends Structure implements UaStructuredType {
 
     private final Boolean isForward;
 
-    private final NodeId[] referencedNodeIds;
+    private final NodeId @Nullable [] referencedNodeIds;
 
     public NodeReference(NodeId nodeId, NodeId referenceTypeId, Boolean isForward,
-                         NodeId[] referencedNodeIds) {
+                         NodeId @Nullable [] referencedNodeIds) {
         this.nodeId = nodeId;
         this.referenceTypeId = referenceTypeId;
         this.isForward = isForward;
@@ -87,8 +84,44 @@ public class NodeReference extends Structure implements UaStructuredType {
         return isForward;
     }
 
-    public NodeId[] getReferencedNodeIds() {
+    public NodeId @Nullable [] getReferencedNodeIds() {
         return referencedNodeIds;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        NodeReference that = (NodeReference) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getReferenceTypeId(), that.getReferenceTypeId());
+        eqb.append(getIsForward(), that.getIsForward());
+        eqb.append(getReferencedNodeIds(), that.getReferencedNodeIds());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNodeId());
+        hcb.append(getReferenceTypeId());
+        hcb.append(getIsForward());
+        hcb.append(getReferencedNodeIds());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", NodeReference.class.getSimpleName() + "[", "]");
+        joiner.add("nodeId=" + getNodeId());
+        joiner.add("referenceTypeId=" + getReferenceTypeId());
+        joiner.add("isForward=" + getIsForward());
+        joiner.add("referencedNodeIds=" + java.util.Arrays.toString(getReferencedNodeIds()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

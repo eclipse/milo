@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>> implements AccessContext {
+public class ServiceOperationContext<T> implements AccessContext {
 
     private final Session session;
     private final DiagnosticsContext<T> diagnosticsContext;
@@ -30,24 +29,17 @@ public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>
 
     private final ExtensionObject additionalHeader;
 
-    public ServiceOperationContext(
-        OpcUaServer server,
-        @Nullable Session session
-    ) {
-
-        this(server, session, new DiagnosticsContext<>(), "", uint(0), null);
+    public ServiceOperationContext(@Nullable Session session) {
+        this(session, new DiagnosticsContext<>(), "", uint(0), null);
     }
 
     public ServiceOperationContext(
-        OpcUaServer server,
         @Nullable Session session,
         DiagnosticsContext<T> diagnosticsContext,
         @Nullable String auditEntryId,
         UInteger timeoutHint,
         ExtensionObject additionalHeader
     ) {
-
-        super(server);
 
         this.session = session;
         this.diagnosticsContext = diagnosticsContext;

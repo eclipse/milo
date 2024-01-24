@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.5">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.10/#6.2.10.5</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23600");
 
@@ -42,16 +43,17 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23988");
 
-    private final String name;
+    private final @Nullable String name;
 
-    private final String[] dataSetFolder;
+    private final String @Nullable [] dataSetFolder;
 
     private final DataSetMetaDataType dataSetMetaData;
 
     private final SubscribedDataSetDataType subscribedDataSet;
 
-    public StandaloneSubscribedDataSetDataType(String name, String[] dataSetFolder,
-                                               DataSetMetaDataType dataSetMetaData, SubscribedDataSetDataType subscribedDataSet) {
+    public StandaloneSubscribedDataSetDataType(@Nullable String name,
+                                               String @Nullable [] dataSetFolder, DataSetMetaDataType dataSetMetaData,
+                                               SubscribedDataSetDataType subscribedDataSet) {
         this.name = name;
         this.dataSetFolder = dataSetFolder;
         this.dataSetMetaData = dataSetMetaData;
@@ -78,11 +80,11 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
-    public String[] getDataSetFolder() {
+    public String @Nullable [] getDataSetFolder() {
         return dataSetFolder;
     }
 
@@ -92,6 +94,42 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        StandaloneSubscribedDataSetDataType that = (StandaloneSubscribedDataSetDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getDataSetFolder(), that.getDataSetFolder());
+        eqb.append(getDataSetMetaData(), that.getDataSetMetaData());
+        eqb.append(getSubscribedDataSet(), that.getSubscribedDataSet());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getDataSetFolder());
+        hcb.append(getDataSetMetaData());
+        hcb.append(getSubscribedDataSet());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", StandaloneSubscribedDataSetDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("dataSetFolder=" + java.util.Arrays.toString(getDataSetFolder()));
+        joiner.add("dataSetMetaData=" + getDataSetMetaData());
+        joiner.add("subscribedDataSet=" + getSubscribedDataSet());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

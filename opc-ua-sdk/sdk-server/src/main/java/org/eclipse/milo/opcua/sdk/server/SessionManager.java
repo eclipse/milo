@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,11 +28,13 @@ import java.util.stream.Stream;
 import com.google.common.base.Objects;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.security.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -58,6 +60,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -97,7 +100,7 @@ public class SessionManager {
     /**
      * Kill the session identified by {@code nodeId} and optionally delete all its subscriptions.
      *
-     * @param nodeId              the {@link NodeId} identifying the session to kill.
+     * @param nodeId the {@link NodeId} identifying the session to kill.
      * @param deleteSubscriptions {@code true} if all its subscriptions should be deleted as well.
      */
     public void killSession(NodeId nodeId, boolean deleteSubscriptions) {
@@ -203,7 +206,10 @@ public class SessionManager {
         EndpointDescription[] serverEndpoints = server.getApplicationContext()
             .getEndpointDescriptions()
             .stream()
-            .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+            .filter(ed -> {
+                String endpointUrl = ed.getEndpointUrl();
+                return endpointUrl == null || !endpointUrl.endsWith("/discovery");
+            })
             .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
             .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
             .map(SessionManager::stripNonEssentialFields)
@@ -216,7 +222,10 @@ public class SessionManager {
             serverEndpoints = server.getApplicationContext()
                 .getEndpointDescriptions()
                 .stream()
-                .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+                .filter(ed -> {
+                    String endpointUrl = ed.getEndpointUrl();
+                    return endpointUrl == null || !endpointUrl.endsWith("/discovery");
+                })
                 .filter(ed -> Objects.equal(transportProfileUri, ed.getTransportProfileUri()))
                 .map(SessionManager::stripNonEssentialFields)
                 .toArray(EndpointDescription[]::new);
@@ -272,7 +281,26 @@ public class SessionManager {
                 );
             }
 
-            server.getConfig().getCertificateValidator().validateCertificateChain(
+            X509Certificate serverCertificate =
+                securityConfiguration.getServerCertificate();
+
+            if (serverCertificate == null) {
+                throw new UaException(
+                    StatusCodes.Bad_InternalError,
+                    "server certificate must be non-null"
+                );
+            }
+
+            CertificateGroup certificateGroup = server.getConfig()
+                .getCertificateManager()
+                .getCertificateGroup(CertificateUtil.thumbprint(serverCertificate))
+                .orElseThrow(() ->
+                    new UaException(
+                        StatusCodes.Bad_ConfigurationError,
+                        "no certificate group for server certificate")
+                );
+
+            certificateGroup.getCertificateValidator().validateCertificateChain(
                 clientCertificateChain,
                 clientDescription.getApplicationUri()
             );
@@ -377,7 +405,7 @@ public class SessionManager {
     }
 
     /**
-     * @param endpoint             an {@link EndpointDescription}.
+     * @param endpoint an {@link EndpointDescription}.
      * @param requestedEndpointUrl an endpoint URL.
      * @return {@code true} if the host in {@code endpoint} matches the host in {@code requestedEndpointUrl}.
      */
@@ -428,7 +456,8 @@ public class SessionManager {
     public ActivateSessionResponse activateSession(ServiceRequestContext context, ActivateSessionRequest request) throws UaException {
         long secureChannelId = context.getSecureChannel().getChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
-        List<SignedSoftwareCertificate> clientSoftwareCertificates = List.of(request.getClientSoftwareCertificates());
+        SignedSoftwareCertificate[] clientSoftwareCertificates =
+            requireNonNullElse(request.getClientSoftwareCertificates(), new SignedSoftwareCertificate[0]);
 
         Session session = createdSessions.get(authToken);
 
@@ -451,19 +480,19 @@ public class SessionManager {
                         session.getEndpoint().getUserIdentityTokens()
                     );
 
-                    Object identityObject = validateIdentityToken(
+                    Identity identity = validateIdentityToken(
                         session,
                         identityToken,
                         request.getUserTokenSignature()
                     );
 
-                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
                     Arrays.fill(results, StatusCode.GOOD);
 
                     ByteString serverNonce = NonceUtil.generateNonce(32);
 
                     session.setClientAddress(context.clientAddress());
-                    session.setIdentityObject(identityObject, identityToken);
+                    session.setIdentity(identity, identityToken);
                     session.setLastNonce(serverNonce);
                     session.setLocaleIds(request.getLocaleIds());
 
@@ -484,16 +513,13 @@ public class SessionManager {
                         session.getEndpoint().getUserIdentityTokens()
                     );
 
-                    Object identityObject = validateIdentityToken(
+                    Identity identity = validateIdentityToken(
                         session,
                         identityToken,
                         request.getUserTokenSignature()
                     );
 
-                    boolean sameIdentity = Objects.equal(
-                        identityObject,
-                        session.getIdentityObject()
-                    );
+                    boolean sameIdentity = identity.equalTo(session.getIdentity());
 
                     boolean sameCertificate = Objects.equal(
                         clientCertificateBytes,
@@ -514,7 +540,7 @@ public class SessionManager {
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);
 
-                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
                         Arrays.fill(results, StatusCode.GOOD);
 
                         ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -546,7 +572,7 @@ public class SessionManager {
                 session.getEndpoint().getUserIdentityTokens()
             );
 
-            Object identityObject = validateIdentityToken(
+            Identity identity = validateIdentityToken(
                 session,
                 identityToken,
                 request.getUserTokenSignature()
@@ -555,13 +581,13 @@ public class SessionManager {
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
 
-            StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
+            StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
             Arrays.fill(results, StatusCode.GOOD);
 
             ByteString serverNonce = NonceUtil.generateNonce(32);
 
             session.setClientAddress(context.clientAddress());
-            session.setIdentityObject(identityObject, identityToken);
+            session.setIdentity(identity, identityToken);
             session.setLocaleIds(request.getLocaleIds());
             session.setLastNonce(serverNonce);
 
@@ -674,7 +700,7 @@ public class SessionManager {
      * Null or empty tokens are interpreted as {@link AnonymousIdentityToken}, as per the spec.
      *
      * @param identityTokenXo the {@link ExtensionObject} to decode.
-     * @param tokenPolicies   the {@link UserTokenPolicy}s from the Session's Endpoint.
+     * @param tokenPolicies the {@link UserTokenPolicy}s from the Session's Endpoint.
      * @return a {@link UserIdentityToken} object.
      */
     @NotNull
@@ -702,10 +728,11 @@ public class SessionManager {
         return new AnonymousIdentityToken(policyId);
     }
 
-    private Object validateIdentityToken(
+    private Identity validateIdentityToken(
         Session session,
         Object tokenObject,
-        SignatureData tokenSignature) throws UaException {
+        SignatureData tokenSignature
+    ) throws UaException {
 
         IdentityValidator identityValidator = server.getConfig().getIdentityValidator();
         UserTokenPolicy tokenPolicy = validatePolicyId(session, tokenObject);
@@ -726,7 +753,7 @@ public class SessionManager {
      * Validates the policyId on a {@link UserIdentityToken} Object is a policyId that exists on the Endpoint that
      * {@code session} is connected to.
      *
-     * @param session     the current {@link Session}
+     * @param session the current {@link Session}
      * @param tokenObject the {@link UserIdentityToken} Object from the client.
      * @return the first {@link UserTokenPolicy} on the Endpoint matching the policyId.
      * @throws UaException if the token object is invalid or no matching policy is found.
@@ -736,11 +763,10 @@ public class SessionManager {
             UserIdentityToken token = (UserIdentityToken) tokenObject;
             String policyId = token.getPolicyId();
 
-            List<UserTokenPolicy> userIdentityTokens =
-                List.of(session.getEndpoint().getUserIdentityTokens());
+            UserTokenPolicy[] userIdentityTokens =
+                requireNonNullElse(session.getEndpoint().getUserIdentityTokens(), new UserTokenPolicy[0]);
 
-            Optional<UserTokenPolicy> policy = userIdentityTokens
-                .stream()
+            Optional<UserTokenPolicy> policy = Stream.of(userIdentityTokens)
                 .filter(t -> Objects.equal(policyId, t.getPolicyId()))
                 .findFirst();
 

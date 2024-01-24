@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 
 public interface TrustListManager {
 
@@ -45,13 +46,6 @@ public interface TrustListManager {
      * @return the list of Trusted {@link X509Certificate}s.
      */
     List<X509Certificate> getTrustedCertificates();
-
-    /**
-     * Get the list of Rejected Certificates.
-     *
-     * @return the list of Rejected {@link X509Certificate}s.
-     */
-    List<X509Certificate> getRejectedCertificates();
 
     /**
      * Set a new list of Issuer CRLs. This replaces any existing Issuer CRLs.
@@ -96,13 +90,6 @@ public interface TrustListManager {
     void addTrustedCertificate(X509Certificate certificate);
 
     /**
-     * Add {@code certificate} to the Rejected Certificates list.
-     *
-     * @param certificate the {@link X509Certificate} to add to the Rejected Certificates list.
-     */
-    void addRejectedCertificate(X509Certificate certificate);
-
-    /**
      * Remove the certificate identified by {@code thumbprint} from the Issuer Certificates list.
      *
      * @param thumbprint the certificate thumbprint.
@@ -119,11 +106,10 @@ public interface TrustListManager {
     boolean removeTrustedCertificate(ByteString thumbprint);
 
     /**
-     * Remove the certificate identified by {@code thumbprint} from the Rejected Certificates list.
+     * Get the last time the Trust List was updated.
      *
-     * @param thumbprint the certificate thumbprint.
-     * @return {@code true} if a certificate with a matching thumbprint was found.
+     * @return the last time the Trust List was updated.
      */
-    boolean removeRejectedCertificate(ByteString thumbprint);
+    DateTime getLastUpdateTime();
 
 }

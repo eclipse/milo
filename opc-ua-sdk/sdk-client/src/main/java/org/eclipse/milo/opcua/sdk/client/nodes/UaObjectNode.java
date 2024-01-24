@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
@@ -179,10 +180,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * as the input argument values.
      *
      * @param methodName the name of the method to call.
-     * @param inputs     the input argument values.
+     * @param inputs the input argument values.
      * @return the method's output argument values if the call was successful.
      * @throws UaException if an operation- or service-level error occurs or if a method named
-     *                     {@code methodName} could not be found.
+     *     {@code methodName} could not be found.
      */
     public Variant[] callMethod(String methodName, Variant[] inputs) throws UaException {
         return getMethod(methodName).call(inputs);
@@ -193,10 +194,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * as the input argument values.
      *
      * @param methodName the name of the method to call.
-     * @param inputs     the input argument values.
+     * @param inputs the input argument values.
      * @return the method's output argument values if the call was successful.
      * @throws UaException if an operation- or service-level error occurs or if a method named
-     *                     {@code methodName} could not be found.
+     *     {@code methodName} could not be found.
      */
     public Variant[] callMethod(QualifiedName methodName, Variant[] inputs) throws UaException {
         return getMethod(methodName).call(inputs);
@@ -209,10 +210,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * This call completes asynchronously.
      *
      * @param methodName the name of the method to call.
-     * @param inputs     the input argument values.
+     * @param inputs the input argument values.
      * @return a {@link CompletableFuture} that completes successfully with the method's output
-     * argument values if the call was successful, or completes exceptionally if an operation- or
-     * service-level error occurs or if a method named {@code methodName} could not be found.
+     *     argument values if the call was successful, or completes exceptionally if an operation- or
+     *     service-level error occurs or if a method named {@code methodName} could not be found.
      */
     public CompletableFuture<Variant[]> callMethodAsync(String methodName, Variant[] inputs) {
         return getMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
@@ -225,10 +226,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * This call completes asynchronously.
      *
      * @param methodName the name of the method to call.
-     * @param inputs     the input argument values.
+     * @param inputs the input argument values.
      * @return a {@link CompletableFuture} that completes successfully with the method's output
-     * argument values if the call was successful, or completes exceptionally if an operation- or
-     * service-level error occurs or if a method named {@code methodName} could not be found.
+     *     argument values if the call was successful, or completes exceptionally if an operation- or
+     *     service-level error occurs or if a method named {@code methodName} could not be found.
      */
     public CompletableFuture<Variant[]> callMethodAsync(QualifiedName methodName, Variant[] inputs) {
         return getMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
@@ -240,7 +241,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @param methodName the name of the method.
      * @return a {@link UaMethod} for the method named {@code methodName}.
      * @throws UaException if an operation- or service-level error occurs or a method named
-     *                     {@code methodName} could not be found.
+     *     {@code methodName} could not be found.
      */
     public UaMethod getMethod(String methodName) throws UaException {
         UShort namespaceIndex = getNodeId().getNamespaceIndex();
@@ -254,7 +255,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @param methodName the name of the method.
      * @return a {@link UaMethod} for the method named {@code methodName}.
      * @throws UaException if an operation- or service-level error occurs or a method named
-     *                     {@code methodName} could not be found.
+     *     {@code methodName} could not be found.
      */
     public UaMethod getMethod(QualifiedName methodName) throws UaException {
         try {
@@ -272,8 +273,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      *
      * @param methodName the name of the method.
      * @return a {@link CompletableFuture} that completes successfully with a {@link UaMethod} or
-     * completes exceptionally if an operation- or service-level error occurs or if a method named
-     * {@code methodName} could not be found.
+     *     completes exceptionally if an operation- or service-level error occurs or if a method named
+     *     {@code methodName} could not be found.
      */
     public CompletableFuture<UaMethod> getMethodAsync(String methodName) {
         UShort namespaceIndex = getNodeId().getNamespaceIndex();
@@ -288,8 +289,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      *
      * @param methodName the name of the method.
      * @return a {@link CompletableFuture} that completes successfully with a {@link UaMethod} or
-     * completes exceptionally if an operation- or service-level error occurs or if a method named
-     * {@code methodName} could not be found.
+     *     completes exceptionally if an operation- or service-level error occurs or if a method named
+     *     {@code methodName} could not be found.
      */
     public CompletableFuture<UaMethod> getMethodAsync(QualifiedName methodName) {
         UInteger nodeClassMask = uint(NodeClass.Method.getValue());
@@ -310,8 +311,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             StatusCode statusCode = result.getStatusCode();
 
             if (statusCode != null && statusCode.isGood()) {
-                Optional<ExpandedNodeId> methodNodeId = List.of(result.getReferences())
-                    .stream()
+                ReferenceDescription[] references =
+                    requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
+
+                Optional<ExpandedNodeId> methodNodeId = Stream.of(references)
                     .filter(rd -> Objects.equals(methodName, rd.getBrowseName()))
                     .findFirst()
                     .map(ReferenceDescription::getNodeId);
@@ -354,7 +357,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @param name the browse name of the {@link UaObjectNode} component.
      * @return the {@link UaObjectNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaObjectNode getObjectComponent(String name) throws UaException {
         try {
@@ -370,10 +373,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * of {@code name}, if it exists.
      *
      * @param namespaceUri the namespace URI the browse name belongs to.
-     * @param name         the browse name of the {@link UaObjectNode} component.
+     * @param name the browse name of the {@link UaObjectNode} component.
      * @return the {@link UaObjectNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaObjectNode getObjectComponent(String namespaceUri, String name) throws UaException {
         try {
@@ -391,7 +394,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @param browseName the browse name of the {@link UaObjectNode} component.
      * @return the {@link UaObjectNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaObjectNode getObjectComponent(QualifiedName browseName) throws UaException {
         try {
@@ -427,7 +430,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @param name the browse name of the {@link UaVariableNode} component.
      * @return the {@link UaVariableNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaVariableNode getVariableComponent(String name) throws UaException {
         try {
@@ -443,10 +446,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * of {@code name}, if it exists.
      *
      * @param namespaceUri the namespace URI the browse name belongs to.
-     * @param name         the browse name of the {@link UaVariableNode} component.
+     * @param name the browse name of the {@link UaVariableNode} component.
      * @return the {@link UaVariableNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaVariableNode getVariableComponent(String namespaceUri, String name) throws UaException {
         try {
@@ -464,7 +467,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @param browseName the browse name of the {@link UaVariableNode} component.
      * @return the {@link UaVariableNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaVariableNode getVariableComponent(QualifiedName browseName) throws UaException {
         try {
@@ -518,9 +521,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = List.of(result.getReferences());
+            ReferenceDescription[] references =
+                requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
 
-            Optional<CompletableFuture<UaObjectTypeNode>> node = references.stream()
+            Optional<CompletableFuture<UaObjectTypeNode>> node = Stream.of(references)
                 .flatMap(r -> {
                     Optional<CompletableFuture<UaObjectTypeNode>> opt = r.getNodeId()
                         .toNodeId(client.getNamespaceTable())

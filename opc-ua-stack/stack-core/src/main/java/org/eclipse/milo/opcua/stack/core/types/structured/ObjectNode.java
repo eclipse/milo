@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -28,12 +27,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class ObjectNode extends InstanceNode implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=261");
 
@@ -47,9 +44,9 @@ public class ObjectNode extends InstanceNode implements UaStructuredType {
 
     public ObjectNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                      UInteger userWriteMask, RolePermissionType[] rolePermissions,
-                      RolePermissionType[] userRolePermissions, UShort accessRestrictions,
-                      ReferenceNode[] references, UByte eventNotifier) {
+                      UInteger userWriteMask, RolePermissionType @Nullable [] rolePermissions,
+                      RolePermissionType @Nullable [] userRolePermissions, UShort accessRestrictions,
+                      ReferenceNode @Nullable [] references, UByte eventNotifier) {
         super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         this.eventNotifier = eventNotifier;
     }
@@ -76,6 +73,35 @@ public class ObjectNode extends InstanceNode implements UaStructuredType {
 
     public UByte getEventNotifier() {
         return eventNotifier;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ObjectNode that = (ObjectNode) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getEventNotifier(), that.getEventNotifier());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEventNotifier());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ObjectNode.class.getSimpleName() + "[", "]");
+        joiner.add("eventNotifier=" + getEventNotifier());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

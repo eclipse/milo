@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.4/#5.4.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.4/#5.4.4.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class GetEndpointsRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=426");
 
@@ -44,14 +45,14 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
 
     private final RequestHeader requestHeader;
 
-    private final String endpointUrl;
+    private final @Nullable String endpointUrl;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
-    private final String[] profileUris;
+    private final String @Nullable [] profileUris;
 
-    public GetEndpointsRequest(RequestHeader requestHeader, String endpointUrl, String[] localeIds,
-                               String[] profileUris) {
+    public GetEndpointsRequest(RequestHeader requestHeader, @Nullable String endpointUrl,
+                               String @Nullable [] localeIds, String @Nullable [] profileUris) {
         this.requestHeader = requestHeader;
         this.endpointUrl = endpointUrl;
         this.localeIds = localeIds;
@@ -82,16 +83,52 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
         return requestHeader;
     }
 
-    public String getEndpointUrl() {
+    public @Nullable String getEndpointUrl() {
         return endpointUrl;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 
-    public String[] getProfileUris() {
+    public String @Nullable [] getProfileUris() {
         return profileUris;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        GetEndpointsRequest that = (GetEndpointsRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getLocaleIds(), that.getLocaleIds());
+        eqb.append(getProfileUris(), that.getProfileUris());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getEndpointUrl());
+        hcb.append(getLocaleIds());
+        hcb.append(getProfileUris());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", GetEndpointsRequest.class.getSimpleName() + "[", "]");
+        joiner.add("requestHeader=" + getRequestHeader());
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("profileUris=" + java.util.Arrays.toString(getProfileUris()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

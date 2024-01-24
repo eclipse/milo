@@ -73,7 +73,7 @@ public class UaVariableNodeTest extends AbstractClientServerTest {
 
             serverNode.getFilterChain().addLast(new AttributeFilter() {
                 @Override
-                public Object getAttribute(AttributeFilterContext.GetAttributeContext ctx, AttributeId attributeId) {
+                public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
                     if (attributeId == AttributeId.MinimumSamplingInterval) {
                         // intentionally return the wrong datatype
                         return uint(100);

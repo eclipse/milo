@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class ContentFilterElementResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=604");
 
@@ -46,12 +47,13 @@ public class ContentFilterElementResult extends Structure implements UaStructure
 
     private final StatusCode statusCode;
 
-    private final StatusCode[] operandStatusCodes;
+    private final StatusCode @Nullable [] operandStatusCodes;
 
-    private final DiagnosticInfo[] operandDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] operandDiagnosticInfos;
 
-    public ContentFilterElementResult(StatusCode statusCode, StatusCode[] operandStatusCodes,
-                                      DiagnosticInfo[] operandDiagnosticInfos) {
+    public ContentFilterElementResult(StatusCode statusCode,
+                                      StatusCode @Nullable [] operandStatusCodes,
+                                      DiagnosticInfo @Nullable [] operandDiagnosticInfos) {
         this.statusCode = statusCode;
         this.operandStatusCodes = operandStatusCodes;
         this.operandDiagnosticInfos = operandDiagnosticInfos;
@@ -81,12 +83,45 @@ public class ContentFilterElementResult extends Structure implements UaStructure
         return statusCode;
     }
 
-    public StatusCode[] getOperandStatusCodes() {
+    public StatusCode @Nullable [] getOperandStatusCodes() {
         return operandStatusCodes;
     }
 
-    public DiagnosticInfo[] getOperandDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getOperandDiagnosticInfos() {
         return operandDiagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ContentFilterElementResult that = (ContentFilterElementResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getOperandStatusCodes(), that.getOperandStatusCodes());
+        eqb.append(getOperandDiagnosticInfos(), that.getOperandDiagnosticInfos());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStatusCode());
+        hcb.append(getOperandStatusCodes());
+        hcb.append(getOperandDiagnosticInfos());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ContentFilterElementResult.class.getSimpleName() + "[", "]");
+        joiner.add("statusCode=" + getStatusCode());
+        joiner.add("operandStatusCodes=" + java.util.Arrays.toString(getOperandStatusCodes()));
+        joiner.add("operandDiagnosticInfos=" + java.util.Arrays.toString(getOperandDiagnosticInfos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

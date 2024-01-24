@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,9 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -23,10 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/8.3">https://reference.opcfoundation.org/v105/Core/docs/Part9/8.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class AlarmMask extends OptionSetUI16<AlarmMask.Field> {
     public AlarmMask(UShort value) {
         super(value);
@@ -54,6 +49,15 @@ public class AlarmMask extends OptionSetUI16<AlarmMask.Field> {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AlarmMask.class.getSimpleName() + "[", "]");
+        joiner.add("active=" + getActive());
+        joiner.add("unacknowledged=" + getUnacknowledged());
+        joiner.add("unconfirmed=" + getUnconfirmed());
+        return joiner.toString();
     }
 
     public static AlarmMask of(AlarmMask.Field... fields) {

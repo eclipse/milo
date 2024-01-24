@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,15 +32,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.6/#6.2.6.7.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.6/#6.2.6.7.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class WriterGroupDataType extends PubSubGroupDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15480");
 
@@ -53,22 +56,24 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
 
     private final UByte priority;
 
-    private final String[] localeIds;
+    private final String @Nullable [] localeIds;
 
-    private final String headerLayoutUri;
+    private final @Nullable String headerLayoutUri;
 
     private final WriterGroupTransportDataType transportSettings;
 
     private final WriterGroupMessageDataType messageSettings;
 
-    private final DataSetWriterDataType[] dataSetWriters;
+    private final DataSetWriterDataType @Nullable [] dataSetWriters;
 
-    public WriterGroupDataType(String name, Boolean enabled, MessageSecurityMode securityMode,
-                               String securityGroupId, EndpointDescription[] securityKeyServices,
-                               UInteger maxNetworkMessageSize, KeyValuePair[] groupProperties, UShort writerGroupId,
-                               Double publishingInterval, Double keepAliveTime, UByte priority, String[] localeIds,
-                               String headerLayoutUri, WriterGroupTransportDataType transportSettings,
-                               WriterGroupMessageDataType messageSettings, DataSetWriterDataType[] dataSetWriters) {
+    public WriterGroupDataType(@Nullable String name, Boolean enabled,
+                               MessageSecurityMode securityMode, @Nullable String securityGroupId,
+                               EndpointDescription @Nullable [] securityKeyServices, UInteger maxNetworkMessageSize,
+                               KeyValuePair @Nullable [] groupProperties, UShort writerGroupId, Double publishingInterval,
+                               Double keepAliveTime, UByte priority, String @Nullable [] localeIds,
+                               @Nullable String headerLayoutUri, WriterGroupTransportDataType transportSettings,
+                               WriterGroupMessageDataType messageSettings,
+                               DataSetWriterDataType @Nullable [] dataSetWriters) {
         super(name, enabled, securityMode, securityGroupId, securityKeyServices, maxNetworkMessageSize, groupProperties);
         this.writerGroupId = writerGroupId;
         this.publishingInterval = publishingInterval;
@@ -117,11 +122,11 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         return priority;
     }
 
-    public String[] getLocaleIds() {
+    public String @Nullable [] getLocaleIds() {
         return localeIds;
     }
 
-    public String getHeaderLayoutUri() {
+    public @Nullable String getHeaderLayoutUri() {
         return headerLayoutUri;
     }
 
@@ -133,8 +138,61 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         return messageSettings;
     }
 
-    public DataSetWriterDataType[] getDataSetWriters() {
+    public DataSetWriterDataType @Nullable [] getDataSetWriters() {
         return dataSetWriters;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        WriterGroupDataType that = (WriterGroupDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getWriterGroupId(), that.getWriterGroupId());
+        eqb.append(getPublishingInterval(), that.getPublishingInterval());
+        eqb.append(getKeepAliveTime(), that.getKeepAliveTime());
+        eqb.append(getPriority(), that.getPriority());
+        eqb.append(getLocaleIds(), that.getLocaleIds());
+        eqb.append(getHeaderLayoutUri(), that.getHeaderLayoutUri());
+        eqb.append(getTransportSettings(), that.getTransportSettings());
+        eqb.append(getMessageSettings(), that.getMessageSettings());
+        eqb.append(getDataSetWriters(), that.getDataSetWriters());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getWriterGroupId());
+        hcb.append(getPublishingInterval());
+        hcb.append(getKeepAliveTime());
+        hcb.append(getPriority());
+        hcb.append(getLocaleIds());
+        hcb.append(getHeaderLayoutUri());
+        hcb.append(getTransportSettings());
+        hcb.append(getMessageSettings());
+        hcb.append(getDataSetWriters());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", WriterGroupDataType.class.getSimpleName() + "[", "]");
+        joiner.add("writerGroupId=" + getWriterGroupId());
+        joiner.add("publishingInterval=" + getPublishingInterval());
+        joiner.add("keepAliveTime=" + getKeepAliveTime());
+        joiner.add("priority=" + getPriority());
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("headerLayoutUri='" + getHeaderLayoutUri() + "'");
+        joiner.add("transportSettings=" + getTransportSettings());
+        joiner.add("messageSettings=" + getMessageSettings());
+        joiner.add("dataSetWriters=" + java.util.Arrays.toString(getDataSetWriters()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

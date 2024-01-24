@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.32">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.32</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class RegisteredServer extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=432");
 
@@ -43,25 +40,26 @@ public class RegisteredServer extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15102");
 
-    private final String serverUri;
+    private final @Nullable String serverUri;
 
-    private final String productUri;
+    private final @Nullable String productUri;
 
-    private final LocalizedText[] serverNames;
+    private final LocalizedText @Nullable [] serverNames;
 
     private final ApplicationType serverType;
 
-    private final String gatewayServerUri;
+    private final @Nullable String gatewayServerUri;
 
-    private final String[] discoveryUrls;
+    private final String @Nullable [] discoveryUrls;
 
-    private final String semaphoreFilePath;
+    private final @Nullable String semaphoreFilePath;
 
     private final Boolean isOnline;
 
-    public RegisteredServer(String serverUri, String productUri, LocalizedText[] serverNames,
-                            ApplicationType serverType, String gatewayServerUri, String[] discoveryUrls,
-                            String semaphoreFilePath, Boolean isOnline) {
+    public RegisteredServer(@Nullable String serverUri, @Nullable String productUri,
+                            LocalizedText @Nullable [] serverNames, ApplicationType serverType,
+                            @Nullable String gatewayServerUri, String @Nullable [] discoveryUrls,
+                            @Nullable String semaphoreFilePath, Boolean isOnline) {
         this.serverUri = serverUri;
         this.productUri = productUri;
         this.serverNames = serverNames;
@@ -92,15 +90,15 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getServerUri() {
+    public @Nullable String getServerUri() {
         return serverUri;
     }
 
-    public String getProductUri() {
+    public @Nullable String getProductUri() {
         return productUri;
     }
 
-    public LocalizedText[] getServerNames() {
+    public LocalizedText @Nullable [] getServerNames() {
         return serverNames;
     }
 
@@ -108,20 +106,68 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         return serverType;
     }
 
-    public String getGatewayServerUri() {
+    public @Nullable String getGatewayServerUri() {
         return gatewayServerUri;
     }
 
-    public String[] getDiscoveryUrls() {
+    public String @Nullable [] getDiscoveryUrls() {
         return discoveryUrls;
     }
 
-    public String getSemaphoreFilePath() {
+    public @Nullable String getSemaphoreFilePath() {
         return semaphoreFilePath;
     }
 
     public Boolean getIsOnline() {
         return isOnline;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        RegisteredServer that = (RegisteredServer) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getServerUri(), that.getServerUri());
+        eqb.append(getProductUri(), that.getProductUri());
+        eqb.append(getServerNames(), that.getServerNames());
+        eqb.append(getServerType(), that.getServerType());
+        eqb.append(getGatewayServerUri(), that.getGatewayServerUri());
+        eqb.append(getDiscoveryUrls(), that.getDiscoveryUrls());
+        eqb.append(getSemaphoreFilePath(), that.getSemaphoreFilePath());
+        eqb.append(getIsOnline(), that.getIsOnline());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getServerUri());
+        hcb.append(getProductUri());
+        hcb.append(getServerNames());
+        hcb.append(getServerType());
+        hcb.append(getGatewayServerUri());
+        hcb.append(getDiscoveryUrls());
+        hcb.append(getSemaphoreFilePath());
+        hcb.append(getIsOnline());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", RegisteredServer.class.getSimpleName() + "[", "]");
+        joiner.add("serverUri='" + getServerUri() + "'");
+        joiner.add("productUri='" + getProductUri() + "'");
+        joiner.add("serverNames=" + java.util.Arrays.toString(getServerNames()));
+        joiner.add("serverType=" + getServerType());
+        joiner.add("gatewayServerUri='" + getGatewayServerUri() + "'");
+        joiner.add("discoveryUrls=" + java.util.Arrays.toString(getDiscoveryUrls()));
+        joiner.add("semaphoreFilePath='" + getSemaphoreFilePath() + "'");
+        joiner.add("isOnline=" + getIsOnline());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

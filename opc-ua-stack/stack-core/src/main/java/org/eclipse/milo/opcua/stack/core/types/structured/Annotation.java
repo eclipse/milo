@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.5">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.5</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class Annotation extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=891");
 
@@ -43,13 +40,13 @@ public class Annotation extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15382");
 
-    private final String message;
+    private final @Nullable String message;
 
-    private final String userName;
+    private final @Nullable String userName;
 
     private final DateTime annotationTime;
 
-    public Annotation(String message, String userName, DateTime annotationTime) {
+    public Annotation(@Nullable String message, @Nullable String userName, DateTime annotationTime) {
         this.message = message;
         this.userName = userName;
         this.annotationTime = annotationTime;
@@ -75,16 +72,49 @@ public class Annotation extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return message;
     }
 
-    public String getUserName() {
+    public @Nullable String getUserName() {
         return userName;
     }
 
     public DateTime getAnnotationTime() {
         return annotationTime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Annotation that = (Annotation) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getMessage(), that.getMessage());
+        eqb.append(getUserName(), that.getUserName());
+        eqb.append(getAnnotationTime(), that.getAnnotationTime());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getMessage());
+        hcb.append(getUserName());
+        hcb.append(getAnnotationTime());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", Annotation.class.getSimpleName() + "[", "]");
+        joiner.add("message='" + getMessage() + "'");
+        joiner.add("userName='" + getUserName() + "'");
+        joiner.add("annotationTime=" + getAnnotationTime());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

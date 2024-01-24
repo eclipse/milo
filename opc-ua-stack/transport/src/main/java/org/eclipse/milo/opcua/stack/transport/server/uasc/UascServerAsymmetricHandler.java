@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.security.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -240,12 +241,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 secureChannel.setSecurityPolicy(securityPolicy);
 
                 if (securityPolicy != SecurityPolicy.None) {
-                    secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
-
-                    CertificateValidator certificateValidator = application.getCertificateValidator();
-
-                    certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
-
                     CertificateManager certificateManager = application.getCertificateManager();
 
                     Optional<X509Certificate[]> localCertificateChain = certificateManager
@@ -255,6 +250,20 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         .getKeyPair(header.getReceiverThumbprint());
 
                     if (localCertificateChain.isPresent() && keyPair.isPresent()) {
+                        secureChannel.setRemoteCertificate(header.getSenderCertificate().bytesOrEmpty());
+
+                        CertificateGroup certificateGroup = application.getCertificateManager()
+                            .getCertificateGroup(header.getReceiverThumbprint())
+                            .orElseThrow(() ->
+                                new UaException(
+                                    StatusCodes.Bad_SecurityChecksFailed,
+                                    "no certificate group for provided thumbprint")
+                            );
+
+                        CertificateValidator certificateValidator = certificateGroup.getCertificateValidator();
+
+                        certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
+
                         X509Certificate[] chain = localCertificateChain.get();
 
                         secureChannel.setLocalCertificate(chain[0]);
@@ -319,6 +328,14 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         "Received OpenSecureChannelRequest ({}, id={}).",
                         request.getRequestType(), secureChannelId
                     );
+
+                    if (request.getRequestType() == SecurityTokenRequestType.Renew) {
+                        if (secureChannelId == 0L) {
+                            throw new UaException(
+                                StatusCodes.Bad_SecurityChecksFailed,
+                                "secure channel renewal for secureChannelId=0");
+                        }
+                    }
 
                     sendOpenSecureChannelResponse(ctx, requestId, request);
                 } catch (Throwable t) {
@@ -453,13 +470,12 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 });
 
             ctx.channel().attr(ENDPOINT_KEY).set(endpoint);
-        }
-
-        if (requestType == SecurityTokenRequestType.Renew &&
-            secureChannel.getMessageSecurityMode() != request.getSecurityMode()) {
-
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
-                "secure channel renewal requested a different MessageSecurityMode.");
+        } else if (requestType == SecurityTokenRequestType.Renew) {
+            if (secureChannel.getMessageSecurityMode() != request.getSecurityMode()) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    "secure channel renewal requested a different MessageSecurityMode.");
+            }
         }
 
         long channelLifetime = request.getRequestedLifetime().longValue();

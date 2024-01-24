@@ -14,6 +14,8 @@ import java.util.Optional;
 
 public interface AccessContext {
 
+    AccessContext INTERNAL = Optional::empty;
+
     /**
      * Get the {@link Session} associated with this operation, if present.
      * <p>

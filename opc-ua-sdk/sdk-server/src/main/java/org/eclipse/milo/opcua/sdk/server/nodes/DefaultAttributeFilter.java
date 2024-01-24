@@ -11,27 +11,36 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An {@link AttributeFilter} that gets or sets the actual attribute value from the backing field of a {@link UaNode}.
+ * An {@link AttributeFilter} that gets or sets the actual attribute value from the backing field
+ * of a {@link UaNode}.
  * <p>
  * {@link DefaultAttributeFilter} does not invoke further attribute filters in the chain.
  */
 public final class DefaultAttributeFilter implements AttributeFilter {
 
-    @Nullable
     @Override
-    public Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
+    public @Nullable Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
         return ctx.getNode().getAttribute(attributeId);
     }
 
     @Override
-    public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, @Nullable Object value) {
+    public void setAttribute(AttributeFilterContext ctx, AttributeId attributeId, @Nullable Object value) {
         ctx.getNode().setAttribute(attributeId, value);
+    }
+
+    @Override
+    public Object readAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
+        return getAttribute(ctx, attributeId);
+    }
+
+    @Override
+    public void writeAttribute(AttributeFilterContext ctx, AttributeId attributeId, Object value) {
+        setAttribute(ctx, attributeId, value);
     }
 
 }

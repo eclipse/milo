@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * An example that shows reading the value of a node whose DataType is a custom structure type.
@@ -103,7 +105,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         DynamicOptionSet value = (DynamicOptionSet) readValue(client, nodeId);
         logger.info("CarExtras: {}", value);
 
-        byte b = value.getValue().bytes()[0];
+        byte b = requireNonNull(value.getValue().bytes())[0];
         value.setValue(ByteString.of(new byte[]{(byte) ~b}));
 
         StatusCode status = writeValue(client, nodeId, value);

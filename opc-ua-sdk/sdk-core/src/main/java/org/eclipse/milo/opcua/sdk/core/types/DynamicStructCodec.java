@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -49,6 +49,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 import org.jetbrains.annotations.NotNull;
 
+import static java.util.Objects.requireNonNullElse;
+
 public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
     private final Map<StructureField, Object> fieldHints = new ConcurrentHashMap<>();
@@ -64,7 +66,9 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
         assert definition != null;
 
-        for (StructureField field : definition.getFields()) {
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
+
+        for (StructureField field : fields) {
             NodeId dataTypeId = field.getDataType();
 
             Object hint;
@@ -130,7 +134,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     private @NotNull DynamicStruct decodeStruct(UaDecoder decoder) {
-        StructureField[] fields = definition.getFields();
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
         LinkedHashMap<String, Object> members = new LinkedHashMap<>();
 
@@ -155,7 +159,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     private @NotNull DynamicUnion decodeUnion(UaDecoder decoder) {
         int switchField = decoder.decodeUInt32("SwitchField").intValue();
 
-        StructureField[] fields = definition.getFields();
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
         if (switchField == 0) {
             return DynamicUnion.ofNull(dataType);
@@ -173,7 +177,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     private void encodeStruct(UaEncoder encoder, DynamicStruct struct) {
-        StructureField[] fields = definition.getFields();
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
         long switchField = 0xFFFFFFFFL;
         if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
@@ -201,7 +205,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     private void encodeUnion(UaEncoder encoder, DynamicStruct struct) {
-        StructureField[] fields = definition.getFields();
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
         if (struct.getMembers().isEmpty()) {
             encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));

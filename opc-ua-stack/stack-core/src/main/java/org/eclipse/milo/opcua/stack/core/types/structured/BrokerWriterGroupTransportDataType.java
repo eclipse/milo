@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +28,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrokerTransportQualityOfService;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.3.5">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.2/#6.4.2.3.5</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class BrokerWriterGroupTransportDataType extends WriterGroupTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15667");
 
@@ -43,16 +44,17 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16524");
 
-    private final String queueName;
+    private final @Nullable String queueName;
 
-    private final String resourceUri;
+    private final @Nullable String resourceUri;
 
-    private final String authenticationProfileUri;
+    private final @Nullable String authenticationProfileUri;
 
     private final BrokerTransportQualityOfService requestedDeliveryGuarantee;
 
-    public BrokerWriterGroupTransportDataType(String queueName, String resourceUri,
-                                              String authenticationProfileUri, BrokerTransportQualityOfService requestedDeliveryGuarantee) {
+    public BrokerWriterGroupTransportDataType(@Nullable String queueName,
+                                              @Nullable String resourceUri, @Nullable String authenticationProfileUri,
+                                              BrokerTransportQualityOfService requestedDeliveryGuarantee) {
         this.queueName = queueName;
         this.resourceUri = resourceUri;
         this.authenticationProfileUri = authenticationProfileUri;
@@ -79,20 +81,56 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
         return JSON_ENCODING_ID;
     }
 
-    public String getQueueName() {
+    public @Nullable String getQueueName() {
         return queueName;
     }
 
-    public String getResourceUri() {
+    public @Nullable String getResourceUri() {
         return resourceUri;
     }
 
-    public String getAuthenticationProfileUri() {
+    public @Nullable String getAuthenticationProfileUri() {
         return authenticationProfileUri;
     }
 
     public BrokerTransportQualityOfService getRequestedDeliveryGuarantee() {
         return requestedDeliveryGuarantee;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        BrokerWriterGroupTransportDataType that = (BrokerWriterGroupTransportDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getQueueName(), that.getQueueName());
+        eqb.append(getResourceUri(), that.getResourceUri());
+        eqb.append(getAuthenticationProfileUri(), that.getAuthenticationProfileUri());
+        eqb.append(getRequestedDeliveryGuarantee(), that.getRequestedDeliveryGuarantee());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getQueueName());
+        hcb.append(getResourceUri());
+        hcb.append(getAuthenticationProfileUri());
+        hcb.append(getRequestedDeliveryGuarantee());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", BrokerWriterGroupTransportDataType.class.getSimpleName() + "[", "]");
+        joiner.add("queueName='" + getQueueName() + "'");
+        joiner.add("resourceUri='" + getResourceUri() + "'");
+        joiner.add("authenticationProfileUri='" + getAuthenticationProfileUri() + "'");
+        joiner.add("requestedDeliveryGuarantee=" + getRequestedDeliveryGuarantee());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,8 +22,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.RelativePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 public class TranslateBrowsePathExample implements ClientExample {
 
@@ -63,11 +66,12 @@ public class TranslateBrowsePathExample implements ClientExample {
             })
         )));
 
-        BrowsePathResult result = List.of(response.getResults()).get(0);
+        BrowsePathResult result = requireNonNull(response.getResults())[0];
         StatusCode statusCode = result.getStatusCode();
         logger.info("Status={}", statusCode);
 
-        List.of(result.getTargets()).forEach(target -> logger.info("TargetId={}", target.getTargetId()));
+        Lists.ofNullable(result.getTargets())
+            .forEach(target -> logger.info("TargetId={}", target.getTargetId()));
 
         future.complete(client);
     }

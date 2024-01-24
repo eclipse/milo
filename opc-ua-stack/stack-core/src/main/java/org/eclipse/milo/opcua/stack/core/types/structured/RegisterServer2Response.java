@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.6/#5.4.6.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.4.6/#5.4.6.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class RegisterServer2Response extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12194");
 
@@ -46,12 +47,12 @@ public class RegisterServer2Response extends Structure implements UaResponseMess
 
     private final ResponseHeader responseHeader;
 
-    private final StatusCode[] configurationResults;
+    private final StatusCode @Nullable [] configurationResults;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
-    public RegisterServer2Response(ResponseHeader responseHeader, StatusCode[] configurationResults,
-                                   DiagnosticInfo[] diagnosticInfos) {
+    public RegisterServer2Response(ResponseHeader responseHeader,
+                                   StatusCode @Nullable [] configurationResults, DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.configurationResults = configurationResults;
         this.diagnosticInfos = diagnosticInfos;
@@ -81,12 +82,45 @@ public class RegisterServer2Response extends Structure implements UaResponseMess
         return responseHeader;
     }
 
-    public StatusCode[] getConfigurationResults() {
+    public StatusCode @Nullable [] getConfigurationResults() {
         return configurationResults;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        RegisterServer2Response that = (RegisterServer2Response) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getConfigurationResults(), that.getConfigurationResults());
+        eqb.append(getDiagnosticInfos(), that.getDiagnosticInfos());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        hcb.append(getConfigurationResults());
+        hcb.append(getDiagnosticInfos());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", RegisterServer2Response.class.getSimpleName() + "[", "]");
+        joiner.add("responseHeader=" + getResponseHeader());
+        joiner.add("configurationResults=" + java.util.Arrays.toString(getConfigurationResults()));
+        joiner.add("diagnosticInfos=" + java.util.Arrays.toString(getDiagnosticInfos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.5/#5.10.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.5/#5.10.5.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class HistoryUpdateResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=695");
 
@@ -46,12 +47,12 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
 
     private final StatusCode statusCode;
 
-    private final StatusCode[] operationResults;
+    private final StatusCode @Nullable [] operationResults;
 
-    private final DiagnosticInfo[] diagnosticInfos;
+    private final DiagnosticInfo @Nullable [] diagnosticInfos;
 
-    public HistoryUpdateResult(StatusCode statusCode, StatusCode[] operationResults,
-                               DiagnosticInfo[] diagnosticInfos) {
+    public HistoryUpdateResult(StatusCode statusCode, StatusCode @Nullable [] operationResults,
+                               DiagnosticInfo @Nullable [] diagnosticInfos) {
         this.statusCode = statusCode;
         this.operationResults = operationResults;
         this.diagnosticInfos = diagnosticInfos;
@@ -81,12 +82,45 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
         return statusCode;
     }
 
-    public StatusCode[] getOperationResults() {
+    public StatusCode @Nullable [] getOperationResults() {
         return operationResults;
     }
 
-    public DiagnosticInfo[] getDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        HistoryUpdateResult that = (HistoryUpdateResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getOperationResults(), that.getOperationResults());
+        eqb.append(getDiagnosticInfos(), that.getDiagnosticInfos());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStatusCode());
+        hcb.append(getOperationResults());
+        hcb.append(getDiagnosticInfos());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", HistoryUpdateResult.class.getSimpleName() + "[", "]");
+        joiner.add("statusCode=" + getStatusCode());
+        joiner.add("operationResults=" + java.util.Arrays.toString(getOperationResults()));
+        joiner.add("diagnosticInfos=" + java.util.Arrays.toString(getDiagnosticInfos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

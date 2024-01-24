@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
@@ -137,11 +137,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
@@ -154,6 +156,7 @@ import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransportCo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -201,7 +204,7 @@ public class OpcUaClient {
         // select the first EndpointDescription with no security and anonymous authentication
         Predicate<EndpointDescription> predicate = e ->
             SecurityPolicy.None.getUri().equals(e.getSecurityPolicyUri()) &&
-                Arrays.stream(e.getUserIdentityTokens())
+                Stream.of(requireNonNullElse(e.getUserIdentityTokens(), new UserTokenPolicy[0]))
                     .anyMatch(p -> p.getTokenType() == UserTokenType.Anonymous);
 
         return create(
@@ -953,7 +956,8 @@ public class OpcUaClient {
             .map(nodeId -> new ReadValueId(nodeId, AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE))
             .collect(Collectors.toList());
 
-        return readAsync(maxAge, timestampsToReturn, readValueIds).thenApply(r -> List.of(r.getResults()));
+        return readAsync(maxAge, timestampsToReturn, readValueIds)
+            .thenApply(r -> Lists.ofNullable(r.getResults()));
     }
 
     /**
@@ -1038,7 +1042,7 @@ public class OpcUaClient {
         }
 
         return writeAsync(writeValues)
-            .thenApply(response -> List.of(response.getResults()));
+            .thenApply(response -> Lists.ofNullable(response.getResults()));
     }
 
     /**
@@ -2411,7 +2415,7 @@ public class OpcUaClient {
         var viewDescription = new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0));
 
         return browseAsync(viewDescription, uint(0), nodesToBrowse)
-            .thenApply(r -> List.of(r.getResults()));
+            .thenApply(r -> Lists.ofNullable(r.getResults()));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -23,10 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.2/#6.3.2.3.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class JsonDataSetMessageContentMask extends OptionSetUI32<JsonDataSetMessageContentMask.Field> {
     public JsonDataSetMessageContentMask(UInteger value) {
         super(value);
@@ -74,6 +71,20 @@ public class JsonDataSetMessageContentMask extends OptionSetUI32<JsonDataSetMess
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", JsonDataSetMessageContentMask.class.getSimpleName() + "[", "]");
+        joiner.add("dataSetWriterId=" + getDataSetWriterId());
+        joiner.add("metaDataVersion=" + getMetaDataVersion());
+        joiner.add("sequenceNumber=" + getSequenceNumber());
+        joiner.add("timestamp=" + getTimestamp());
+        joiner.add("status=" + getStatus());
+        joiner.add("messageType=" + getMessageType());
+        joiner.add("dataSetWriterName=" + getDataSetWriterName());
+        joiner.add("reversibleFieldEncoding=" + getReversibleFieldEncoding());
+        return joiner.toString();
     }
 
     public static JsonDataSetMessageContentMask of(JsonDataSetMessageContentMask.Field... fields) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.4">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class BuildInfo extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=338");
 
@@ -43,20 +40,21 @@ public class BuildInfo extends Structure implements UaStructuredType {
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15361");
 
-    private final String productUri;
+    private final @Nullable String productUri;
 
-    private final String manufacturerName;
+    private final @Nullable String manufacturerName;
 
-    private final String productName;
+    private final @Nullable String productName;
 
-    private final String softwareVersion;
+    private final @Nullable String softwareVersion;
 
-    private final String buildNumber;
+    private final @Nullable String buildNumber;
 
     private final DateTime buildDate;
 
-    public BuildInfo(String productUri, String manufacturerName, String productName,
-                     String softwareVersion, String buildNumber, DateTime buildDate) {
+    public BuildInfo(@Nullable String productUri, @Nullable String manufacturerName,
+                     @Nullable String productName, @Nullable String softwareVersion, @Nullable String buildNumber,
+                     DateTime buildDate) {
         this.productUri = productUri;
         this.manufacturerName = manufacturerName;
         this.productName = productName;
@@ -85,28 +83,70 @@ public class BuildInfo extends Structure implements UaStructuredType {
         return JSON_ENCODING_ID;
     }
 
-    public String getProductUri() {
+    public @Nullable String getProductUri() {
         return productUri;
     }
 
-    public String getManufacturerName() {
+    public @Nullable String getManufacturerName() {
         return manufacturerName;
     }
 
-    public String getProductName() {
+    public @Nullable String getProductName() {
         return productName;
     }
 
-    public String getSoftwareVersion() {
+    public @Nullable String getSoftwareVersion() {
         return softwareVersion;
     }
 
-    public String getBuildNumber() {
+    public @Nullable String getBuildNumber() {
         return buildNumber;
     }
 
     public DateTime getBuildDate() {
         return buildDate;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        BuildInfo that = (BuildInfo) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getProductUri(), that.getProductUri());
+        eqb.append(getManufacturerName(), that.getManufacturerName());
+        eqb.append(getProductName(), that.getProductName());
+        eqb.append(getSoftwareVersion(), that.getSoftwareVersion());
+        eqb.append(getBuildNumber(), that.getBuildNumber());
+        eqb.append(getBuildDate(), that.getBuildDate());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getProductUri());
+        hcb.append(getManufacturerName());
+        hcb.append(getProductName());
+        hcb.append(getSoftwareVersion());
+        hcb.append(getBuildNumber());
+        hcb.append(getBuildDate());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", BuildInfo.class.getSimpleName() + "[", "]");
+        joiner.add("productUri='" + getProductUri() + "'");
+        joiner.add("manufacturerName='" + getManufacturerName() + "'");
+        joiner.add("productName='" + getProductName() + "'");
+        joiner.add("softwareVersion='" + getSoftwareVersion() + "'");
+        joiner.add("buildNumber='" + getBuildNumber() + "'");
+        joiner.add("buildDate=" + getBuildDate());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

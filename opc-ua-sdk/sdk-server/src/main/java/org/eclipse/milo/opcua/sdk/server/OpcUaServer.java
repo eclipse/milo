@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +63,6 @@ import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
@@ -78,6 +79,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
+import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransport;
 import org.eclipse.milo.opcua.stack.transport.server.OpcServerTransportFactory;
@@ -129,7 +131,13 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
-    private final AtomicLong secureChannelIds = new AtomicLong();
+    /**
+     * SecureChannel id sequence, starting at a random value in [1..{@link Integer#MAX_VALUE}],
+     * and wrapping back to 1 after {@link UInteger#MAX_VALUE}.
+     */
+    private final LongSequence secureChannelIds =
+        new LongSequence(1L, UInteger.MAX_VALUE, new Random().nextInt(Integer.MAX_VALUE - 1) + 1);
+
     private final AtomicLong secureChannelTokenIds = new AtomicLong();
 
     private final Map<TransportProfile, OpcServerTransport> transports = new ConcurrentHashMap<>();
@@ -333,7 +341,7 @@ public class OpcUaServer extends AbstractServiceHandler {
      * This EventBus is not intended for use by user implementations.
      *
      * @return an internal EventBus used to decouple communication between internal components of
-     * the Server implementation.
+     *     the Server implementation.
      */
     public EventBus getInternalEventBus() {
         return eventBus;
@@ -423,11 +431,6 @@ public class OpcUaServer extends AbstractServiceHandler {
         }
 
         @Override
-        public CertificateValidator getCertificateValidator() {
-            return config.getCertificateValidator();
-        }
-
-        @Override
         public Long getNextSecureChannelId() {
             return secureChannelIds.getAndIncrement();
         }
@@ -448,8 +451,8 @@ public class OpcUaServer extends AbstractServiceHandler {
             if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
                 if (getEndpointDescriptions().stream()
                     .filter(e -> EndpointUtil.getPath(e.getEndpointUrl()).equals(path))
-                    .filter(e -> e.getTransportProfileUri().equals(context.getTransportProfile().getUri()))
-                    .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))
+                    .filter(e -> Objects.equals(e.getTransportProfileUri(), context.getTransportProfile().getUri()))
+                    .noneMatch(e -> Objects.equals(e.getSecurityPolicyUri(), SecurityPolicy.None.getUri()))
                 ) {
 
                     if (!isDiscoveryService(requestMessage)) {
@@ -472,7 +475,25 @@ public class OpcUaServer extends AbstractServiceHandler {
             ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
 
             if (serviceHandler != null) {
-                return serviceHandler.handle(context, requestMessage);
+                logger.trace(
+                    "Service request received: path={} handle={} service={} remote={}",
+                    path,
+                    requestMessage.getRequestHeader().getRequestHandle(),
+                    service,
+                    context.getChannel().remoteAddress()
+                );
+
+                return serviceHandler.handle(context, requestMessage).whenComplete(
+                    (r, ex) ->
+                        logger.trace(
+                            "Service request completed: path={} handle={} service={} remote={}",
+                            path,
+                            requestMessage.getRequestHeader().getRequestHandle(),
+                            service,
+                            context.getChannel().remoteAddress(),
+                            ex
+                        )
+                );
             } else {
                 logger.warn("No ServiceHandler registered for path={} service={}", path, service);
 

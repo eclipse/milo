@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI16;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -23,10 +24,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.9/#12.2.9.13">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.9/#12.2.9.13</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class AccessRestrictionType extends OptionSetUI16<AccessRestrictionType.Field> {
     public AccessRestrictionType(UShort value) {
         super(value);
@@ -58,6 +55,16 @@ public class AccessRestrictionType extends OptionSetUI16<AccessRestrictionType.F
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AccessRestrictionType.class.getSimpleName() + "[", "]");
+        joiner.add("signingRequired=" + getSigningRequired());
+        joiner.add("encryptionRequired=" + getEncryptionRequired());
+        joiner.add("sessionRequired=" + getSessionRequired());
+        joiner.add("applyRestrictionsToBrowse=" + getApplyRestrictionsToBrowse());
+        return joiner.toString();
     }
 
     public static AccessRestrictionType of(AccessRestrictionType.Field... fields) {

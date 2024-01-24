@@ -13,10 +13,10 @@ package org.eclipse.milo.opcua.sdk.server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.methods.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -142,19 +142,21 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             UaServerNode node = nodeManager.get(readValueId.getNodeId());
 
             if (node != null) {
-                DataValue value = node.readAttribute(
-                    new AttributeContext(context),
+                DataValue value = AttributeReader.readAttribute(
+                    context,
+                    node,
                     readValueId.getAttributeId(),
                     timestamps,
                     readValueId.getIndexRange(),
                     readValueId.getDataEncoding()
                 );
 
-                logger.debug("Read value {} from attribute {} of {}",
-                    value.getValue().getValue(),
+                logger.debug(
+                    "read: nodeId={}, attributeId={}, value={}",
+                    node.getNodeId(),
                     AttributeId.from(readValueId.getAttributeId())
                         .map(Object::toString).orElse("unknown"),
-                    node.getNodeId()
+                    value
                 );
 
                 results.add(value);
@@ -178,27 +180,24 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             UaServerNode node = nodeManager.get(writeValue.getNodeId());
 
             if (node != null) {
-                try {
-                    node.writeAttribute(
-                        new AttributeContext(context),
-                        writeValue.getAttributeId(),
-                        writeValue.getValue(),
-                        writeValue.getIndexRange()
-                    );
+                StatusCode result = AttributeWriter.writeAttribute(
+                    context,
+                    node,
+                    writeValue.getAttributeId(),
+                    writeValue.getValue(),
+                    writeValue.getIndexRange()
+                );
 
-                    results.add(StatusCode.GOOD);
+                results.add(result);
 
-                    logger.debug(
-                        "Wrote value {} to {} attribute of {}",
-                        writeValue.getValue().getValue(),
-                        AttributeId.from(writeValue.getAttributeId())
-                            .map(Object::toString).orElse("unknown"),
-                        node.getNodeId()
-                    );
-                } catch (UaException e) {
-                    logger.error("Unable to write value={}", writeValue.getValue(), e);
-                    results.add(e.getStatusCode());
-                }
+                logger.debug(
+                    "write: nodeId={}, attributeId={}, value={}, result={}",
+                    node.getNodeId(),
+                    AttributeId.from(writeValue.getAttributeId())
+                        .map(Object::toString).orElse("unknown"),
+                    writeValue.getValue().getValue(),
+                    result
+                );
             } else {
                 results.add(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
             }
@@ -210,37 +209,56 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     /**
      * Invoke one or more methods belonging to this {@link AddressSpace}.
      *
-     * @param context  the {@link CallContext}.
+     * @param context the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
      */
     @Override
     public void call(CallContext context, List<CallMethodRequest> requests) {
         var results = new ArrayList<CallMethodResult>(requests.size());
 
+        Semaphore semaphore = context.getSession()
+            .map(Session::getCallSemaphore)
+            .orElse(null);
+
         for (CallMethodRequest request : requests) {
-            try {
-                MethodInvocationHandler handler = getInvocationHandler(
-                    request.getObjectId(),
-                    request.getMethodId()
-                );
+            if (semaphore == null || semaphore.tryAcquire()) {
+                try {
+                    MethodInvocationHandler handler = getInvocationHandler(
+                        request.getObjectId(),
+                        request.getMethodId()
+                    );
 
-                results.add(handler.invoke(context, request));
-            } catch (UaException e) {
+                    results.add(handler.invoke(context, request));
+                } catch (UaException e) {
+                    results.add(
+                        new CallMethodResult(
+                            e.getStatusCode(),
+                            new StatusCode[0],
+                            new DiagnosticInfo[0],
+                            new Variant[0]
+                        )
+                    );
+                } catch (Throwable t) {
+                    LoggerFactory.getLogger(getClass())
+                        .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
+
+                    results.add(
+                        new CallMethodResult(
+                            new StatusCode(StatusCodes.Bad_InternalError),
+                            new StatusCode[0],
+                            new DiagnosticInfo[0],
+                            new Variant[0]
+                        )
+                    );
+                } finally {
+                    if (semaphore != null) {
+                        semaphore.release();
+                    }
+                }
+            } else {
                 results.add(
                     new CallMethodResult(
-                        e.getStatusCode(),
-                        new StatusCode[0],
-                        new DiagnosticInfo[0],
-                        new Variant[0]
-                    )
-                );
-            } catch (Throwable t) {
-                LoggerFactory.getLogger(getClass())
-                    .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
-
-                results.add(
-                    new CallMethodResult(
-                        new StatusCode(StatusCodes.Bad_InternalError),
+                        new StatusCode(StatusCodes.Bad_ResourceUnavailable),
                         new StatusCode[0],
                         new DiagnosticInfo[0],
                         new Variant[0]
@@ -259,7 +277,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
      * @param methodId the {@link NodeId} identifying the method.
      * @return the {@link MethodInvocationHandler} for {@code methodId}.
      * @throws UaException a {@link UaException} containing the appropriate operation result if
-     *                     either the object or method can't be found.
+     *     either the object or method can't be found.
      */
     protected MethodInvocationHandler getInvocationHandler(NodeId objectId, NodeId methodId) throws UaException {
         UaNode node = nodeManager.getNode(objectId)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
@@ -46,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
@@ -251,8 +252,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @see #readAccessLevelEx()
      */
     @Override
-    @Nullable
-    public synchronized AccessLevelExType getAccessLevelEx() {
+    public synchronized @Nullable AccessLevelExType getAccessLevelEx() {
         return accessLevelEx;
     }
 
@@ -515,7 +515,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * {@link StatusCodes#Bad_AttributeIdInvalid} a {@code null} value is returned instead.
      *
      * @return the {@link Double} read from the server, or {@code null} if the attribute does not
-     * exist.
+     *     exist.
      * @throws UaException if a service- or operation-level error occurs.
      */
     @Nullable
@@ -762,7 +762,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @param name the browse name of the {@link UaVariableNode} component.
      * @return the {@link UaVariableNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaVariableNode getVariableComponent(String name) throws UaException {
         try {
@@ -778,10 +778,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * of {@code name}, if it exists.
      *
      * @param namespaceUri the namespace URI the browse name belongs to.
-     * @param name         the browse name of the {@link UaVariableNode} component.
+     * @param name the browse name of the {@link UaVariableNode} component.
      * @return the {@link UaVariableNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaVariableNode getVariableComponent(String namespaceUri, String name) throws UaException {
         try {
@@ -799,7 +799,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @param browseName the browse name of the {@link UaVariableNode} component.
      * @return the {@link UaVariableNode} component, if it exists.
      * @throws UaException if the node could not be found or an operation- or service-level error
-     *                     occurs.
+     *     occurs.
      */
     public UaVariableNode getVariableComponent(QualifiedName browseName) throws UaException {
         try {
@@ -853,9 +853,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = List.of(result.getReferences());
+            ReferenceDescription[] references =
+                requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
 
-            Optional<CompletableFuture<UaVariableTypeNode>> node = references.stream()
+            Optional<CompletableFuture<UaVariableTypeNode>> node = Stream.of(references)
                 .flatMap(r -> {
                     Optional<CompletableFuture<UaVariableTypeNode>> opt = r.getNodeId()
                         .toNodeId(client.getNamespaceTable())

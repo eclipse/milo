@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.servicesets.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -41,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
@@ -203,7 +205,7 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
         Session session
     ) {
 
-        List<UInteger> subscriptionIds = List.of(request.getSubscriptionIds());
+        List<UInteger> subscriptionIds = Lists.ofNullable(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -278,10 +280,9 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     private static boolean sessionsHaveSameUser(Session s1, Session s2) {
-        Object identity1 = s1.getIdentityObject();
-        Object identity2 = s2.getIdentityObject();
-
-        return Objects.equals(identity1, identity2);
+        Identity i1 = s1.getIdentity();
+        Identity i2 = s2.getIdentity();
+        return i1 != null && i2 != null && i1.equalTo(i2);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,15 +32,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.9/#6.2.9.13.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.9/#6.2.9.13.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class DataSetReaderDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15623");
 
@@ -45,7 +48,7 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16286");
 
-    private final String name;
+    private final @Nullable String name;
 
     private final Boolean enabled;
 
@@ -63,15 +66,15 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     private final UInteger keyFrameCount;
 
-    private final String headerLayoutUri;
+    private final @Nullable String headerLayoutUri;
 
     private final MessageSecurityMode securityMode;
 
-    private final String securityGroupId;
+    private final @Nullable String securityGroupId;
 
-    private final EndpointDescription[] securityKeyServices;
+    private final EndpointDescription @Nullable [] securityKeyServices;
 
-    private final KeyValuePair[] dataSetReaderProperties;
+    private final KeyValuePair @Nullable [] dataSetReaderProperties;
 
     private final DataSetReaderTransportDataType transportSettings;
 
@@ -79,12 +82,13 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     private final SubscribedDataSetDataType subscribedDataSet;
 
-    public DataSetReaderDataType(String name, Boolean enabled, Variant publisherId,
+    public DataSetReaderDataType(@Nullable String name, Boolean enabled, Variant publisherId,
                                  UShort writerGroupId, UShort dataSetWriterId, DataSetMetaDataType dataSetMetaData,
                                  DataSetFieldContentMask dataSetFieldContentMask, Double messageReceiveTimeout,
-                                 UInteger keyFrameCount, String headerLayoutUri, MessageSecurityMode securityMode,
-                                 String securityGroupId, EndpointDescription[] securityKeyServices,
-                                 KeyValuePair[] dataSetReaderProperties, DataSetReaderTransportDataType transportSettings,
+                                 UInteger keyFrameCount, @Nullable String headerLayoutUri, MessageSecurityMode securityMode,
+                                 @Nullable String securityGroupId, EndpointDescription @Nullable [] securityKeyServices,
+                                 KeyValuePair @Nullable [] dataSetReaderProperties,
+                                 DataSetReaderTransportDataType transportSettings,
                                  DataSetReaderMessageDataType messageSettings, SubscribedDataSetDataType subscribedDataSet) {
         this.name = name;
         this.enabled = enabled;
@@ -125,7 +129,7 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
         return JSON_ENCODING_ID;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -161,7 +165,7 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
         return keyFrameCount;
     }
 
-    public String getHeaderLayoutUri() {
+    public @Nullable String getHeaderLayoutUri() {
         return headerLayoutUri;
     }
 
@@ -169,15 +173,15 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
         return securityMode;
     }
 
-    public String getSecurityGroupId() {
+    public @Nullable String getSecurityGroupId() {
         return securityGroupId;
     }
 
-    public EndpointDescription[] getSecurityKeyServices() {
+    public EndpointDescription @Nullable [] getSecurityKeyServices() {
         return securityKeyServices;
     }
 
-    public KeyValuePair[] getDataSetReaderProperties() {
+    public KeyValuePair @Nullable [] getDataSetReaderProperties() {
         return dataSetReaderProperties;
     }
 
@@ -191,6 +195,81 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
     public SubscribedDataSetDataType getSubscribedDataSet() {
         return subscribedDataSet;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DataSetReaderDataType that = (DataSetReaderDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getEnabled(), that.getEnabled());
+        eqb.append(getPublisherId(), that.getPublisherId());
+        eqb.append(getWriterGroupId(), that.getWriterGroupId());
+        eqb.append(getDataSetWriterId(), that.getDataSetWriterId());
+        eqb.append(getDataSetMetaData(), that.getDataSetMetaData());
+        eqb.append(getDataSetFieldContentMask(), that.getDataSetFieldContentMask());
+        eqb.append(getMessageReceiveTimeout(), that.getMessageReceiveTimeout());
+        eqb.append(getKeyFrameCount(), that.getKeyFrameCount());
+        eqb.append(getHeaderLayoutUri(), that.getHeaderLayoutUri());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityGroupId(), that.getSecurityGroupId());
+        eqb.append(getSecurityKeyServices(), that.getSecurityKeyServices());
+        eqb.append(getDataSetReaderProperties(), that.getDataSetReaderProperties());
+        eqb.append(getTransportSettings(), that.getTransportSettings());
+        eqb.append(getMessageSettings(), that.getMessageSettings());
+        eqb.append(getSubscribedDataSet(), that.getSubscribedDataSet());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getPublisherId());
+        hcb.append(getWriterGroupId());
+        hcb.append(getDataSetWriterId());
+        hcb.append(getDataSetMetaData());
+        hcb.append(getDataSetFieldContentMask());
+        hcb.append(getMessageReceiveTimeout());
+        hcb.append(getKeyFrameCount());
+        hcb.append(getHeaderLayoutUri());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityGroupId());
+        hcb.append(getSecurityKeyServices());
+        hcb.append(getDataSetReaderProperties());
+        hcb.append(getTransportSettings());
+        hcb.append(getMessageSettings());
+        hcb.append(getSubscribedDataSet());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataSetReaderDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("enabled=" + getEnabled());
+        joiner.add("publisherId=" + getPublisherId());
+        joiner.add("writerGroupId=" + getWriterGroupId());
+        joiner.add("dataSetWriterId=" + getDataSetWriterId());
+        joiner.add("dataSetMetaData=" + getDataSetMetaData());
+        joiner.add("dataSetFieldContentMask=" + getDataSetFieldContentMask());
+        joiner.add("messageReceiveTimeout=" + getMessageReceiveTimeout());
+        joiner.add("keyFrameCount=" + getKeyFrameCount());
+        joiner.add("headerLayoutUri='" + getHeaderLayoutUri() + "'");
+        joiner.add("securityMode=" + getSecurityMode());
+        joiner.add("securityGroupId='" + getSecurityGroupId() + "'");
+        joiner.add("securityKeyServices=" + java.util.Arrays.toString(getSecurityKeyServices()));
+        joiner.add("dataSetReaderProperties=" + java.util.Arrays.toString(getDataSetReaderProperties()));
+        joiner.add("transportSettings=" + getTransportSettings());
+        joiner.add("messageSettings=" + getMessageSettings());
+        joiner.add("subscribedDataSet=" + getSubscribedDataSet());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

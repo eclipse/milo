@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.util;
+package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.Optional;
 import java.util.Set;
@@ -19,8 +19,8 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNode;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -32,45 +32,74 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserWriteMasks;
-import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getWriteMasks;
+import static java.util.Objects.requireNonNullElse;
+
 
 public class AttributeWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AttributeWriter.class);
 
-    public static void writeAttribute(AttributeContext context,
-                                      UaServerNode node,
-                                      AttributeId attributeId,
-                                      DataValue value,
-                                      @Nullable String indexRange) throws UaException {
+    public static StatusCode writeAttribute(
+        AccessContext context,
+        UaServerNode node,
+        UInteger attributeId,
+        DataValue value,
+        @Nullable String indexRange
+    ) {
 
-        AttributeContext internalContext = new AttributeContext(context.getServer());
+        Optional<AttributeId> aid = AttributeId.from(attributeId);
 
-        NodeClass nodeClass = node.getNodeClass();
+        if (aid.isPresent()) {
+            return writeAttribute(context, node, aid.get(), value, indexRange);
+        } else {
+            return new StatusCode(StatusCodes.Bad_AttributeIdInvalid);
+        }
+    }
 
-        if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
-            Set<AccessLevel> accessLevels = getAccessLevels(node, internalContext);
-            if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
-                throw new UaException(StatusCodes.Bad_NotWritable);
+    public static StatusCode writeAttribute(
+        AccessContext context,
+        UaServerNode node,
+        AttributeId attributeId,
+        DataValue value,
+        @Nullable String indexRange
+    ) {
+
+        if (!AttributeId.getAttributes(node.getNodeClass()).contains(attributeId)) {
+            return new StatusCode(StatusCodes.Bad_AttributeIdInvalid);
+        }
+
+        if (attributeId == AttributeId.Value && node instanceof VariableNode) {
+            VariableNode variableNode = (VariableNode) node;
+
+            AccessLevelExType accessLevelEx = variableNode.getAccessLevelEx();
+
+            if (accessLevelEx != null) {
+                if (!accessLevelEx.getCurrentWrite()) {
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
+                }
+            } else {
+                Set<AccessLevel> accessLevels = AccessLevel.fromValue(variableNode.getAccessLevel());
+                if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
+                }
             }
 
-            Set<AccessLevel> userAccessLevels = getUserAccessLevels(node, context);
+            Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(
+                (UByte) requireNonNullElse(node.getAttribute(context, AttributeId.UserAccessLevel), UByte.MIN)
+            );
             if (!userAccessLevels.contains(AccessLevel.CurrentWrite)) {
-                throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                return new StatusCode(StatusCodes.Bad_UserAccessDenied);
             }
         } else {
             if (attributeId == AttributeId.UserRolePermissions) {
@@ -81,41 +110,45 @@ public class AttributeWriter {
                 // standard Role model defined in 4.8.
                 //
                 // This Attribute shall not be writeable.
-                throw new UaException(StatusCodes.Bad_NotWritable);
+                return new StatusCode(StatusCodes.Bad_NotWritable);
             } else {
                 WriteMask writeMask = writeMaskForAttribute(attributeId);
 
-                Set<WriteMask> writeMasks = getWriteMasks(node, internalContext);
+                Set<WriteMask> writeMasks = WriteMask.fromMask(node.getWriteMask());
                 if (!writeMasks.contains(writeMask)) {
-                    throw new UaException(StatusCodes.Bad_NotWritable);
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
                 }
 
-                Set<WriteMask> userWriteMasks = getUserWriteMasks(node, context);
+                Set<WriteMask> userWriteMasks = WriteMask.fromMask(
+                    (UInteger) requireNonNullElse(node.getAttribute(context, AttributeId.UserWriteMask), UInteger.MIN)
+                );
                 if (!userWriteMasks.contains(writeMask)) {
-                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                    return new StatusCode(StatusCodes.Bad_UserAccessDenied);
                 }
             }
         }
 
         Variant updateVariant = value.getValue();
 
-        if (indexRange != null) {
-            NumericRange range = NumericRange.parse(indexRange);
+        if (indexRange != null && !indexRange.isEmpty()) {
+            try {
+                NumericRange range = NumericRange.parse(indexRange);
 
-            DataValue current = node.getAttribute(
-                internalContext,
-                attributeId
-            );
+                Object current = node.getAttribute(
+                    AccessContext.INTERNAL,
+                    attributeId
+                );
 
-            Variant currentVariant = current.getValue();
+                Object valueAtRange = NumericRange.writeToValueAtRange(
+                    Variant.of(current),
+                    updateVariant,
+                    range
+                );
 
-            Object valueAtRange = NumericRange.writeToValueAtRange(
-                currentVariant,
-                updateVariant,
-                range
-            );
-
-            updateVariant = new Variant(valueAtRange);
+                updateVariant = new Variant(valueAtRange);
+            } catch (UaException e) {
+                return e.getStatusCode();
+            }
         }
 
         DateTime sourceTime = value.getSourceTime();
@@ -129,36 +162,47 @@ public class AttributeWriter {
         );
 
         if (attributeId == AttributeId.Value) {
-            NodeId dataType = extract(
-                node.getAttribute(
-                    internalContext,
-                    AttributeId.DataType)
-            );
+            try {
+                NodeId dataTypeId;
+                if (node instanceof VariableNode) {
+                    dataTypeId = ((VariableNode) node).getDataType();
+                } else if (node instanceof VariableTypeNode) {
+                    dataTypeId = ((VariableTypeNode) node).getDataType();
+                } else {
+                    dataTypeId = null;
+                }
 
-            if (dataType != null) {
-                value = validateDataType(context.getServer(), dataType, value);
-            }
+                if (dataTypeId != null) {
+                    value = validateDataType(node.getNodeContext().getServer(), dataTypeId, value);
+                }
 
-            Integer valueRank = extract(
-                node.getAttribute(
-                    internalContext,
-                    AttributeId.ValueRank)
-            );
+                Integer valueRank;
+                UInteger[] arrayDimensions;
+                if (node instanceof VariableNode) {
+                    valueRank = ((VariableNode) node).getValueRank();
+                    arrayDimensions = ((VariableNode) node).getArrayDimensions();
+                } else if (node instanceof VariableTypeNode) {
+                    valueRank = ((VariableTypeNode) node).getValueRank();
+                    arrayDimensions = ((VariableTypeNode) node).getArrayDimensions();
+                } else {
+                    valueRank = 0;
+                    arrayDimensions = null;
+                }
 
-            if (valueRank == null) valueRank = 0;
-
-            if (valueRank > 0) {
-                UInteger[] arrayDimensions = extract(
-                    node.getAttribute(
-                        context,
-                        AttributeId.ArrayDimensions)
-                );
-
-                validateArrayType(valueRank, arrayDimensions, value);
+                if (valueRank > 0) {
+                    validateArrayType(valueRank, arrayDimensions, value);
+                }
+            } catch (UaException e) {
+                return e.getStatusCode();
             }
         }
 
-        node.setAttribute(context, attributeId, value);
+        try {
+            node.writeAttribute(context, attributeId, value);
+            return StatusCode.GOOD;
+        } catch (UaException e) {
+            return e.getStatusCode();
+        }
     }
 
     private static WriteMask writeMaskForAttribute(AttributeId attributeId) {

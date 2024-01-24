@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -33,29 +33,40 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
     private final TrustListManager trustListManager;
     private final Set<ValidationCheck> validationChecks;
+    private final CertificateQuarantine certificateQuarantine;
 
     /**
-     * Create a {@link DefaultServerCertificateValidator} that performs no optional validation checks.
+     * Create a {@link DefaultServerCertificateValidator} that performs no optional validation
+     * checks.
      *
      * @param trustListManager the configured {@link TrustListManager}.
-     */
-    public DefaultServerCertificateValidator(TrustListManager trustListManager) {
-        this(trustListManager, ValidationCheck.NO_OPTIONAL_CHECKS);
-    }
-
-    /**
-     * Create a {@link DefaultServerCertificateValidator} that performs a given set of optional validation checks.
-     *
-     * @param trustListManager the configured {@link TrustListManager}.
-     * @param validationChecks the set of optional {@link ValidationCheck}s to perform.
+     * @param certificateQuarantine the {@link CertificateQuarantine} to use.
      */
     public DefaultServerCertificateValidator(
         TrustListManager trustListManager,
-        Set<ValidationCheck> validationChecks
+        CertificateQuarantine certificateQuarantine
+    ) {
+
+        this(trustListManager, ValidationCheck.NO_OPTIONAL_CHECKS, certificateQuarantine);
+    }
+
+    /**
+     * Create a {@link DefaultServerCertificateValidator} that performs a given set of optional
+     * validation checks.
+     *
+     * @param trustListManager the configured {@link TrustListManager}.
+     * @param validationChecks the set of optional {@link ValidationCheck}s to perform.
+     * @param certificateQuarantine the {@link CertificateQuarantine} to use.
+     */
+    public DefaultServerCertificateValidator(
+        TrustListManager trustListManager,
+        Set<ValidationCheck> validationChecks,
+        CertificateQuarantine certificateQuarantine
     ) {
 
         this.trustListManager = trustListManager;
         this.validationChecks = Set.copyOf(validationChecks);
+        this.certificateQuarantine = certificateQuarantine;
     }
 
     @Override
@@ -69,7 +80,7 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
                 trustListManager.getIssuerCertificates()
             );
         } catch (UaException e) {
-            certificateChain.forEach(trustListManager::addRejectedCertificate);
+            certificateChain.forEach(certificateQuarantine::addRejectedCertificate);
 
             long statusCode = e.getStatusCode().getValue();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +28,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class PubSubConfiguration2DataType extends PubSubConfigurationDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23602");
 
@@ -42,26 +44,28 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=23990");
 
-    private final StandaloneSubscribedDataSetDataType[] subscribedDataSets;
+    private final StandaloneSubscribedDataSetDataType @Nullable [] subscribedDataSets;
 
-    private final DataSetMetaDataType[] dataSetClasses;
+    private final DataSetMetaDataType @Nullable [] dataSetClasses;
 
-    private final EndpointDescription[] defaultSecurityKeyServices;
+    private final EndpointDescription @Nullable [] defaultSecurityKeyServices;
 
-    private final SecurityGroupDataType[] securityGroups;
+    private final SecurityGroupDataType @Nullable [] securityGroups;
 
-    private final PubSubKeyPushTargetDataType[] pubSubKeyPushTargets;
+    private final PubSubKeyPushTargetDataType @Nullable [] pubSubKeyPushTargets;
 
     private final UInteger configurationVersion;
 
-    private final KeyValuePair[] configurationProperties;
+    private final KeyValuePair @Nullable [] configurationProperties;
 
-    public PubSubConfiguration2DataType(PublishedDataSetDataType[] publishedDataSets,
-                                        PubSubConnectionDataType[] connections, Boolean enabled,
-                                        StandaloneSubscribedDataSetDataType[] subscribedDataSets,
-                                        DataSetMetaDataType[] dataSetClasses, EndpointDescription[] defaultSecurityKeyServices,
-                                        SecurityGroupDataType[] securityGroups, PubSubKeyPushTargetDataType[] pubSubKeyPushTargets,
-                                        UInteger configurationVersion, KeyValuePair[] configurationProperties) {
+    public PubSubConfiguration2DataType(PublishedDataSetDataType @Nullable [] publishedDataSets,
+                                        PubSubConnectionDataType @Nullable [] connections, Boolean enabled,
+                                        StandaloneSubscribedDataSetDataType @Nullable [] subscribedDataSets,
+                                        DataSetMetaDataType @Nullable [] dataSetClasses,
+                                        EndpointDescription @Nullable [] defaultSecurityKeyServices,
+                                        SecurityGroupDataType @Nullable [] securityGroups,
+                                        PubSubKeyPushTargetDataType @Nullable [] pubSubKeyPushTargets, UInteger configurationVersion,
+                                        KeyValuePair @Nullable [] configurationProperties) {
         super(publishedDataSets, connections, enabled);
         this.subscribedDataSets = subscribedDataSets;
         this.dataSetClasses = dataSetClasses;
@@ -92,23 +96,23 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         return JSON_ENCODING_ID;
     }
 
-    public StandaloneSubscribedDataSetDataType[] getSubscribedDataSets() {
+    public StandaloneSubscribedDataSetDataType @Nullable [] getSubscribedDataSets() {
         return subscribedDataSets;
     }
 
-    public DataSetMetaDataType[] getDataSetClasses() {
+    public DataSetMetaDataType @Nullable [] getDataSetClasses() {
         return dataSetClasses;
     }
 
-    public EndpointDescription[] getDefaultSecurityKeyServices() {
+    public EndpointDescription @Nullable [] getDefaultSecurityKeyServices() {
         return defaultSecurityKeyServices;
     }
 
-    public SecurityGroupDataType[] getSecurityGroups() {
+    public SecurityGroupDataType @Nullable [] getSecurityGroups() {
         return securityGroups;
     }
 
-    public PubSubKeyPushTargetDataType[] getPubSubKeyPushTargets() {
+    public PubSubKeyPushTargetDataType @Nullable [] getPubSubKeyPushTargets() {
         return pubSubKeyPushTargets;
     }
 
@@ -116,8 +120,55 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         return configurationVersion;
     }
 
-    public KeyValuePair[] getConfigurationProperties() {
+    public KeyValuePair @Nullable [] getConfigurationProperties() {
         return configurationProperties;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PubSubConfiguration2DataType that = (PubSubConfiguration2DataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getSubscribedDataSets(), that.getSubscribedDataSets());
+        eqb.append(getDataSetClasses(), that.getDataSetClasses());
+        eqb.append(getDefaultSecurityKeyServices(), that.getDefaultSecurityKeyServices());
+        eqb.append(getSecurityGroups(), that.getSecurityGroups());
+        eqb.append(getPubSubKeyPushTargets(), that.getPubSubKeyPushTargets());
+        eqb.append(getConfigurationVersion(), that.getConfigurationVersion());
+        eqb.append(getConfigurationProperties(), that.getConfigurationProperties());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSubscribedDataSets());
+        hcb.append(getDataSetClasses());
+        hcb.append(getDefaultSecurityKeyServices());
+        hcb.append(getSecurityGroups());
+        hcb.append(getPubSubKeyPushTargets());
+        hcb.append(getConfigurationVersion());
+        hcb.append(getConfigurationProperties());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubConfiguration2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("subscribedDataSets=" + java.util.Arrays.toString(getSubscribedDataSets()));
+        joiner.add("dataSetClasses=" + java.util.Arrays.toString(getDataSetClasses()));
+        joiner.add("defaultSecurityKeyServices=" + java.util.Arrays.toString(getDefaultSecurityKeyServices()));
+        joiner.add("securityGroups=" + java.util.Arrays.toString(getSecurityGroups()));
+        joiner.add("pubSubKeyPushTargets=" + java.util.Arrays.toString(getPubSubKeyPushTargets()));
+        joiner.add("configurationVersion=" + getConfigurationVersion());
+        joiner.add("configurationProperties=" + java.util.Arrays.toString(getConfigurationProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

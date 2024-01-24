@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,15 +26,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/4.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part3/4.3.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class Node extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=258");
 
@@ -59,19 +56,19 @@ public class Node extends Structure implements UaStructuredType {
 
     private final UInteger userWriteMask;
 
-    private final RolePermissionType[] rolePermissions;
+    private final RolePermissionType @Nullable [] rolePermissions;
 
-    private final RolePermissionType[] userRolePermissions;
+    private final RolePermissionType @Nullable [] userRolePermissions;
 
     private final UShort accessRestrictions;
 
-    private final ReferenceNode[] references;
+    private final ReferenceNode @Nullable [] references;
 
     public Node(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                UInteger userWriteMask, RolePermissionType[] rolePermissions,
-                RolePermissionType[] userRolePermissions, UShort accessRestrictions,
-                ReferenceNode[] references) {
+                UInteger userWriteMask, RolePermissionType @Nullable [] rolePermissions,
+                RolePermissionType @Nullable [] userRolePermissions, UShort accessRestrictions,
+                ReferenceNode @Nullable [] references) {
         this.nodeId = nodeId;
         this.nodeClass = nodeClass;
         this.browseName = browseName;
@@ -133,11 +130,11 @@ public class Node extends Structure implements UaStructuredType {
         return userWriteMask;
     }
 
-    public RolePermissionType[] getRolePermissions() {
+    public RolePermissionType @Nullable [] getRolePermissions() {
         return rolePermissions;
     }
 
-    public RolePermissionType[] getUserRolePermissions() {
+    public RolePermissionType @Nullable [] getUserRolePermissions() {
         return userRolePermissions;
     }
 
@@ -145,8 +142,65 @@ public class Node extends Structure implements UaStructuredType {
         return accessRestrictions;
     }
 
-    public ReferenceNode[] getReferences() {
+    public ReferenceNode @Nullable [] getReferences() {
         return references;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Node that = (Node) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getNodeId(), that.getNodeId());
+        eqb.append(getNodeClass(), that.getNodeClass());
+        eqb.append(getBrowseName(), that.getBrowseName());
+        eqb.append(getDisplayName(), that.getDisplayName());
+        eqb.append(getDescription(), that.getDescription());
+        eqb.append(getWriteMask(), that.getWriteMask());
+        eqb.append(getUserWriteMask(), that.getUserWriteMask());
+        eqb.append(getRolePermissions(), that.getRolePermissions());
+        eqb.append(getUserRolePermissions(), that.getUserRolePermissions());
+        eqb.append(getAccessRestrictions(), that.getAccessRestrictions());
+        eqb.append(getReferences(), that.getReferences());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getNodeId());
+        hcb.append(getNodeClass());
+        hcb.append(getBrowseName());
+        hcb.append(getDisplayName());
+        hcb.append(getDescription());
+        hcb.append(getWriteMask());
+        hcb.append(getUserWriteMask());
+        hcb.append(getRolePermissions());
+        hcb.append(getUserRolePermissions());
+        hcb.append(getAccessRestrictions());
+        hcb.append(getReferences());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", Node.class.getSimpleName() + "[", "]");
+        joiner.add("nodeId=" + getNodeId());
+        joiner.add("nodeClass=" + getNodeClass());
+        joiner.add("browseName=" + getBrowseName());
+        joiner.add("displayName=" + getDisplayName());
+        joiner.add("description=" + getDescription());
+        joiner.add("writeMask=" + getWriteMask());
+        joiner.add("userWriteMask=" + getUserWriteMask());
+        joiner.add("rolePermissions=" + java.util.Arrays.toString(getRolePermissions()));
+        joiner.add("userRolePermissions=" + java.util.Arrays.toString(getUserRolePermissions()));
+        joiner.add("accessRestrictions=" + getAccessRestrictions());
+        joiner.add("references=" + java.util.Arrays.toString(getReferences()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

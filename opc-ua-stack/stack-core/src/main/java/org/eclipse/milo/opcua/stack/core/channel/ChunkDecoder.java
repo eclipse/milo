@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -34,10 +34,13 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.SequenceHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.SymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder.LegacySequenceNumberValidator.validateSequenceNumber;
 
 public final class ChunkDecoder {
 
@@ -194,14 +197,12 @@ public final class ChunkDecoder {
                 long sequenceNumber = sequenceHeader.getSequenceNumber();
                 requestId = sequenceHeader.getRequestId();
 
-                if (lastSequenceNumber != -1) {
-                    if (lastSequenceNumber + 1 != sequenceNumber) {
-                        String message = String.format(
-                            "expected sequence number %s but received %s",
-                            lastSequenceNumber + 1, sequenceNumber);
-
-                        throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
-                    }
+                if (!validateSequenceNumber(lastSequenceNumber, sequenceNumber)) {
+                    throw new UaException(
+                        StatusCodes.Bad_SecurityChecksFailed,
+                        String.format(
+                            "bad sequence number: %s, lastSequenceNumber=%s", sequenceNumber, lastSequenceNumber)
+                    );
                 }
 
                 lastSequenceNumber = sequenceNumber;
@@ -507,6 +508,38 @@ public final class ChunkDecoder {
                 return cipher;
             } catch (GeneralSecurityException e) {
                 throw new UaException(StatusCodes.Bad_InternalError, e);
+            }
+        }
+
+    }
+
+    /**
+     * Validate incoming chunk sequence numbers based on the "legacy" rules.
+     * <p>
+     * These rules apply to all non-ECC security profiles.
+     * <p>
+     * Sequence numbers monotonically increase and shall not wrap around until greater than
+     * UInteger.MAX_VALUE - 1024. The first number after the wrap around shall be less than 1024.
+     */
+    static class LegacySequenceNumberValidator {
+
+        private LegacySequenceNumberValidator() {}
+
+        static boolean validateSequenceNumber(long lastSequenceNumber, long sequenceNumber) {
+            if (lastSequenceNumber == -1) {
+                // awaiting first chunk, no expectation on sequence number, it can technically
+                // start at any value
+                return true;
+            } else if (lastSequenceNumber >= UInteger.MAX_VALUE - 1024 && lastSequenceNumber < UInteger.MAX_VALUE) {
+                // sequence number must be either:
+                //  - wrapped to less than 1024
+                //  - equal to sequence number + 1
+                return sequenceNumber < 1024 || sequenceNumber == lastSequenceNumber + 1;
+            } else if (lastSequenceNumber == UInteger.MAX_VALUE) {
+                // must wrap at this point
+                return sequenceNumber > 0 && sequenceNumber < 1024;
+            } else {
+                return sequenceNumber == lastSequenceNumber + 1;
             }
         }
 

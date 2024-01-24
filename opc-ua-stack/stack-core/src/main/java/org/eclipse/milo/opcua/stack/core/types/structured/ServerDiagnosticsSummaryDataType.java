@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.9">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.9</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class ServerDiagnosticsSummaryDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=859");
 
@@ -152,6 +152,66 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
 
     public UInteger getRejectedRequestsCount() {
         return rejectedRequestsCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ServerDiagnosticsSummaryDataType that = (ServerDiagnosticsSummaryDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getServerViewCount(), that.getServerViewCount());
+        eqb.append(getCurrentSessionCount(), that.getCurrentSessionCount());
+        eqb.append(getCumulatedSessionCount(), that.getCumulatedSessionCount());
+        eqb.append(getSecurityRejectedSessionCount(), that.getSecurityRejectedSessionCount());
+        eqb.append(getRejectedSessionCount(), that.getRejectedSessionCount());
+        eqb.append(getSessionTimeoutCount(), that.getSessionTimeoutCount());
+        eqb.append(getSessionAbortCount(), that.getSessionAbortCount());
+        eqb.append(getCurrentSubscriptionCount(), that.getCurrentSubscriptionCount());
+        eqb.append(getCumulatedSubscriptionCount(), that.getCumulatedSubscriptionCount());
+        eqb.append(getPublishingIntervalCount(), that.getPublishingIntervalCount());
+        eqb.append(getSecurityRejectedRequestsCount(), that.getSecurityRejectedRequestsCount());
+        eqb.append(getRejectedRequestsCount(), that.getRejectedRequestsCount());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getServerViewCount());
+        hcb.append(getCurrentSessionCount());
+        hcb.append(getCumulatedSessionCount());
+        hcb.append(getSecurityRejectedSessionCount());
+        hcb.append(getRejectedSessionCount());
+        hcb.append(getSessionTimeoutCount());
+        hcb.append(getSessionAbortCount());
+        hcb.append(getCurrentSubscriptionCount());
+        hcb.append(getCumulatedSubscriptionCount());
+        hcb.append(getPublishingIntervalCount());
+        hcb.append(getSecurityRejectedRequestsCount());
+        hcb.append(getRejectedRequestsCount());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ServerDiagnosticsSummaryDataType.class.getSimpleName() + "[", "]");
+        joiner.add("serverViewCount=" + getServerViewCount());
+        joiner.add("currentSessionCount=" + getCurrentSessionCount());
+        joiner.add("cumulatedSessionCount=" + getCumulatedSessionCount());
+        joiner.add("securityRejectedSessionCount=" + getSecurityRejectedSessionCount());
+        joiner.add("rejectedSessionCount=" + getRejectedSessionCount());
+        joiner.add("sessionTimeoutCount=" + getSessionTimeoutCount());
+        joiner.add("sessionAbortCount=" + getSessionAbortCount());
+        joiner.add("currentSubscriptionCount=" + getCurrentSubscriptionCount());
+        joiner.add("cumulatedSubscriptionCount=" + getCumulatedSubscriptionCount());
+        joiner.add("publishingIntervalCount=" + getPublishingIntervalCount());
+        joiner.add("securityRejectedRequestsCount=" + getSecurityRejectedRequestsCount());
+        joiner.add("rejectedRequestsCount=" + getRejectedRequestsCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

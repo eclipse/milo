@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
@@ -53,6 +54,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathTarget;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -64,6 +66,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
@@ -233,8 +237,7 @@ public abstract class UaNode implements Node {
      * @see #readRolePermissions()
      */
     @Override
-    @Nullable
-    public synchronized RolePermissionType[] getRolePermissions() {
+    public synchronized @Nullable RolePermissionType[] getRolePermissions() {
         return rolePermissions;
     }
 
@@ -246,8 +249,7 @@ public abstract class UaNode implements Node {
      * @see #readUserRolePermissions()
      */
     @Override
-    @Nullable
-    public synchronized RolePermissionType[] getUserRolePermissions() {
+    public synchronized @Nullable RolePermissionType[] getUserRolePermissions() {
         return userRolePermissions;
     }
 
@@ -259,8 +261,7 @@ public abstract class UaNode implements Node {
      * @see #readAccessRestrictions()
      */
     @Override
-    @Nullable
-    public synchronized AccessRestrictionType getAccessRestrictions() {
+    public synchronized @Nullable AccessRestrictionType getAccessRestrictions() {
         return accessRestrictions;
     }
 
@@ -417,7 +418,7 @@ public abstract class UaNode implements Node {
         if (statusCode != null && statusCode.isBad()) {
             throw new UaException(statusCode, "read NodeClass failed");
         } else {
-            Integer i = (Integer) value.getValue().getValue();
+            Integer i = (Integer) requireNonNullElse(value.getValue().getValue(), 0);
             NodeClass nodeClass = NodeClass.from(i);
             setNodeClass(nodeClass);
             return nodeClass;
@@ -810,7 +811,7 @@ public abstract class UaNode implements Node {
      * This operation does not update the local attribute.
      *
      * @param attributeId the {@link AttributeId} of the attribute to write.
-     * @param value       a {@link DataValue} containing the attribute value.
+     * @param value a {@link DataValue} containing the attribute value.
      * @return the {@link StatusCode} from the write operation.
      * @throws UaException if a service-level error occurs.
      */
@@ -827,7 +828,7 @@ public abstract class UaNode implements Node {
      * An asynchronous implementation of {@link #readAttribute(AttributeId)}.
      *
      * @return a CompletableFuture that completes successfully with the attribute value or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      * @see #readAttribute(AttributeId)
      */
     public CompletableFuture<DataValue> readAttributeAsync(AttributeId attributeId) {
@@ -844,26 +845,21 @@ public abstract class UaNode implements Node {
             List.of(readValueId)
         );
 
-        return future.thenApply(response -> response.getResults()[0]);
+        return future.thenApply(response -> requireNonNull(response.getResults())[0]);
     }
 
     /**
      * An asynchronous implementation of {@link #writeAttribute(AttributeId, DataValue)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<StatusCode> writeAttributeAsync(AttributeId attributeId, DataValue value) {
-        WriteValue writeValue = new WriteValue(
-            getNodeId(),
-            attributeId.uid(),
-            null,
-            value
-        );
+        var writeValue = new WriteValue(getNodeId(), attributeId.uid(), null, value);
 
         CompletableFuture<WriteResponse> future = client.writeAsync(List.of(writeValue));
 
-        return future.thenApply(response -> response.getResults()[0]);
+        return future.thenApply(response -> requireNonNull(response.getResults())[0]);
     }
 
     /**
@@ -898,7 +894,7 @@ public abstract class UaNode implements Node {
      * This call completes asynchronously.
      *
      * @return a CompletableFuture that completes successfully with the List of references or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      * @see AddressSpace#getBrowseOptions()
      * @see AddressSpace#modifyBrowseOptions(Consumer)
      * @see AddressSpace#setBrowseOptions(BrowseOptions)
@@ -914,7 +910,7 @@ public abstract class UaNode implements Node {
      *
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a CompletableFuture that completes successfully with the List of references or
-     * completes exceptionally if a service-level error occurs.
+     *     completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<ReferenceDescription>> browseAsync(BrowseOptions browseOptions) {
         return client.getAddressSpace().browseAsync(this, browseOptions);
@@ -952,7 +948,7 @@ public abstract class UaNode implements Node {
      * This call completes asynchronously.
      *
      * @return a CompletableFuture that completes successfully with the List of {@link UaNode}s
-     * referenced by this Node or completes exceptionally if a service-level error occurs.
+     *     referenced by this Node or completes exceptionally if a service-level error occurs.
      * @see AddressSpace#getBrowseOptions()
      * @see AddressSpace#modifyBrowseOptions(Consumer)
      * @see AddressSpace#setBrowseOptions(BrowseOptions)
@@ -968,7 +964,7 @@ public abstract class UaNode implements Node {
      *
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a CompletableFuture that completes successfully with the List of {@link UaNode}s
-     * referenced by this Node or completes exceptionally if a service-level error occurs.
+     *     referenced by this Node or completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(BrowseOptions browseOptions) {
         return client.getAddressSpace().browseNodesAsync(this, browseOptions);
@@ -1012,7 +1008,7 @@ public abstract class UaNode implements Node {
         );
 
         return future.thenApply(response -> {
-            DataValue[] values = response.getResults();
+            DataValue[] values = requireNonNullElse(response.getResults(), new DataValue[0]);
 
             assert attributeIds.size() == values.length;
 
@@ -1070,7 +1066,7 @@ public abstract class UaNode implements Node {
         }
 
         return client.writeAsync(writeValues).thenApply(response -> {
-            StatusCode[] results = response.getResults();
+            StatusCode[] results = requireNonNullElse(response.getResults(), new StatusCode[0]);
 
             return List.of(results);
         });
@@ -1087,7 +1083,7 @@ public abstract class UaNode implements Node {
      * instead.
      *
      * @return this {@link UaNode} if there was not already a canonical instance in the NodeCache,
-     * otherwise the other canonical instance from the NodeCache.
+     *     otherwise the other canonical instance from the NodeCache.
      */
     public UaNode canonicalize() {
         return client.getAddressSpace().getNodeCache().canonicalize(this);
@@ -1138,7 +1134,7 @@ public abstract class UaNode implements Node {
                 break;
             }
             case NodeClass: {
-                Integer i = (Integer) value.getValue().getValue();
+                Integer i = (Integer) requireNonNullElse(value.getValue().getValue(), 0);
                 NodeClass nodeClass = NodeClass.from(i);
                 setNodeClass(nodeClass);
                 break;
@@ -1229,10 +1225,11 @@ public abstract class UaNode implements Node {
         }
 
         return client.translateBrowsePathsAsync(browsePaths).thenCompose(r -> {
-            BrowsePathResult result = r.getResults()[0];
+            BrowsePathResult result = requireNonNull(r.getResults())[0];
 
             if (result.getStatusCode().isGood()) {
-                return completedFuture(result.getTargets()[0].getTargetId());
+                BrowsePathTarget[] targets = requireNonNull(result.getTargets());
+                return completedFuture(targets[0].getTargetId());
             } else {
                 return failedUaFuture(result.getStatusCode());
             }
@@ -1272,9 +1269,10 @@ public abstract class UaNode implements Node {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = List.of(result.getReferences());
+            ReferenceDescription[] references =
+                requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
 
-            Optional<CompletableFuture<? extends UaNode>> node = references.stream()
+            Optional<CompletableFuture<? extends UaNode>> node = Stream.of(references)
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
                     Optional<CompletableFuture<? extends UaNode>> opt = r.getNodeId()
@@ -1311,9 +1309,10 @@ public abstract class UaNode implements Node {
         );
 
         return future.thenCompose(result -> {
-            List<ReferenceDescription> references = List.of(result.getReferences());
+            ReferenceDescription[] references =
+                requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
 
-            Optional<CompletableFuture<PropertyTypeNode>> node = references.stream()
+            Optional<CompletableFuture<PropertyTypeNode>> node = Stream.of(references)
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
                     Optional<CompletableFuture<PropertyTypeNode>> opt = r.getNodeId()
@@ -1364,7 +1363,7 @@ public abstract class UaNode implements Node {
      * {@link ExtensionObject}, an attempt is made to decode the {@link ExtensionObject} into an
      * object cast to the type of {@code clazz}.
      *
-     * @param o     the Object to cast from.
+     * @param o the Object to cast from.
      * @param clazz the type to cast {@code o} to.
      * @return the object after casting, or null if {@code o} is null.
      */

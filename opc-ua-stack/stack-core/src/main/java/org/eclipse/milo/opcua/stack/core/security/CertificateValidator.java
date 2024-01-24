@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,13 +18,13 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 public interface CertificateValidator {
 
     /**
-     * Check that trust can be established using the provided certificate chain and then validate every certificate
-     * in the chain.
+     * Check that trust can be established using the provided certificate chain and then validate
+     * every certificate in the chain.
      * <p>
-     * The chain must begin with the end-entity certificate at index 0 followed by the remaining certificates in the
-     * chain, if any, in the correct order.
+     * The chain must begin with the end-entity certificate at index 0 followed by the remaining
+     * certificates in the chain, if any, in the correct order.
      *
-     * @throws UaException if {@code certificate} is not trusted or validation fails for any reason.
+     * @throws UaException if {@code certificateChain} is not trusted or validation fails.
      */
     void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException;
 

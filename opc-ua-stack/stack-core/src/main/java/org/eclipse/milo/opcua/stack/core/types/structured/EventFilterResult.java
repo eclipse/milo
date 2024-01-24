@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.22.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class EventFilterResult extends MonitoringFilterResult implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=734");
 
@@ -44,14 +45,15 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
 
     public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15314");
 
-    private final StatusCode[] selectClauseResults;
+    private final StatusCode @Nullable [] selectClauseResults;
 
-    private final DiagnosticInfo[] selectClauseDiagnosticInfos;
+    private final DiagnosticInfo @Nullable [] selectClauseDiagnosticInfos;
 
     private final ContentFilterResult whereClauseResult;
 
-    public EventFilterResult(StatusCode[] selectClauseResults,
-                             DiagnosticInfo[] selectClauseDiagnosticInfos, ContentFilterResult whereClauseResult) {
+    public EventFilterResult(StatusCode @Nullable [] selectClauseResults,
+                             DiagnosticInfo @Nullable [] selectClauseDiagnosticInfos,
+                             ContentFilterResult whereClauseResult) {
         this.selectClauseResults = selectClauseResults;
         this.selectClauseDiagnosticInfos = selectClauseDiagnosticInfos;
         this.whereClauseResult = whereClauseResult;
@@ -77,16 +79,49 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
         return JSON_ENCODING_ID;
     }
 
-    public StatusCode[] getSelectClauseResults() {
+    public StatusCode @Nullable [] getSelectClauseResults() {
         return selectClauseResults;
     }
 
-    public DiagnosticInfo[] getSelectClauseDiagnosticInfos() {
+    public DiagnosticInfo @Nullable [] getSelectClauseDiagnosticInfos() {
         return selectClauseDiagnosticInfos;
     }
 
     public ContentFilterResult getWhereClauseResult() {
         return whereClauseResult;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EventFilterResult that = (EventFilterResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSelectClauseResults(), that.getSelectClauseResults());
+        eqb.append(getSelectClauseDiagnosticInfos(), that.getSelectClauseDiagnosticInfos());
+        eqb.append(getWhereClauseResult(), that.getWhereClauseResult());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSelectClauseResults());
+        hcb.append(getSelectClauseDiagnosticInfos());
+        hcb.append(getWhereClauseResult());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", EventFilterResult.class.getSimpleName() + "[", "]");
+        joiner.add("selectClauseResults=" + java.util.Arrays.toString(getSelectClauseResults()));
+        joiner.add("selectClauseDiagnosticInfos=" + java.util.Arrays.toString(getSelectClauseDiagnosticInfos()));
+        joiner.add("whereClauseResult=" + getWhereClauseResult());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

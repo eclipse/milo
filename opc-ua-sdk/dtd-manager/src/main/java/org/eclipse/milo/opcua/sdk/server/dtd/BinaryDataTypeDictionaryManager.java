@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -75,6 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BinaryDataTypeDictionaryManager implements Lifecycle {
@@ -386,7 +387,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         enumeratedType.setName(name.getName());
         enumeratedType.setLengthInBits(32);
 
-        for (EnumField field : definition.getFields()) {
+        for (EnumField field : requireNonNullElse(definition.getFields(), new EnumField[0])) {
             EnumeratedValue enumeratedValue = new EnumeratedValue();
             enumeratedValue.setName(field.getName());
             enumeratedValue.setValue(field.getValue().intValue());
@@ -428,7 +429,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         LinkedHashMap<String, StructureField> allFields = new LinkedHashMap<>();
 
         for (StructureDefinition d : definitions) {
-            for (StructureField f : d.getFields()) {
+            for (StructureField f : requireNonNullElse(d.getFields(), new StructureField[0])) {
                 allFields.put(f.getName(), f);
             }
         }

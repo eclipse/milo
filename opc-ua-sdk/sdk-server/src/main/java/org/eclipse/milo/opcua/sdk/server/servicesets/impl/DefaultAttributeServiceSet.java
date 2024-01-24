@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,8 +46,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultAttributeServiceSet extends AbstractServiceSet implements AttributeServiceSet {
@@ -69,7 +71,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             return CompletableFuture.failedFuture(e);
         }
 
-        List<ReadValueId> nodesToRead = List.of(request.getNodesToRead());
+        List<ReadValueId> nodesToRead = Lists.ofNullable(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -133,7 +135,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             return CompletableFuture.failedFuture(e);
         }
 
-        List<HistoryReadValueId> nodesToRead = List.of(request.getNodesToRead());
+        List<HistoryReadValueId> nodesToRead = Lists.ofNullable(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -192,7 +194,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             return CompletableFuture.failedFuture(e);
         }
 
-        List<WriteValue> nodesToWrite = List.of(request.getNodesToWrite());
+        List<WriteValue> nodesToWrite = Lists.ofNullable(request.getNodesToWrite());
 
         if (nodesToWrite.isEmpty()) {
             return failedUaFuture(StatusCodes.Bad_NothingToDo);
@@ -243,7 +245,10 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             return CompletableFuture.failedFuture(e);
         }
 
-        List<HistoryUpdateDetails> historyUpdateDetailsList = Stream.of(request.getHistoryUpdateDetails())
+        var historyUpdateDetails =
+            requireNonNullElse(request.getHistoryUpdateDetails(), new ExtensionObject[0]);
+
+        List<HistoryUpdateDetails> historyUpdateDetailsList = Stream.of(historyUpdateDetails)
             .map(xo -> (HistoryUpdateDetails) xo.decode(server.getEncodingContext()))
             .collect(Collectors.toList());
 

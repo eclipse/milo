@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.12">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.12</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class SessionSecurityDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=868");
 
@@ -46,26 +47,27 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
 
     private final NodeId sessionId;
 
-    private final String clientUserIdOfSession;
+    private final @Nullable String clientUserIdOfSession;
 
-    private final String[] clientUserIdHistory;
+    private final String @Nullable [] clientUserIdHistory;
 
-    private final String authenticationMechanism;
+    private final @Nullable String authenticationMechanism;
 
-    private final String encoding;
+    private final @Nullable String encoding;
 
-    private final String transportProtocol;
+    private final @Nullable String transportProtocol;
 
     private final MessageSecurityMode securityMode;
 
-    private final String securityPolicyUri;
+    private final @Nullable String securityPolicyUri;
 
     private final ByteString clientCertificate;
 
-    public SessionSecurityDiagnosticsDataType(NodeId sessionId, String clientUserIdOfSession,
-                                              String[] clientUserIdHistory, String authenticationMechanism, String encoding,
-                                              String transportProtocol, MessageSecurityMode securityMode, String securityPolicyUri,
-                                              ByteString clientCertificate) {
+    public SessionSecurityDiagnosticsDataType(NodeId sessionId,
+                                              @Nullable String clientUserIdOfSession, String @Nullable [] clientUserIdHistory,
+                                              @Nullable String authenticationMechanism, @Nullable String encoding,
+                                              @Nullable String transportProtocol, MessageSecurityMode securityMode,
+                                              @Nullable String securityPolicyUri, ByteString clientCertificate) {
         this.sessionId = sessionId;
         this.clientUserIdOfSession = clientUserIdOfSession;
         this.clientUserIdHistory = clientUserIdHistory;
@@ -101,23 +103,23 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         return sessionId;
     }
 
-    public String getClientUserIdOfSession() {
+    public @Nullable String getClientUserIdOfSession() {
         return clientUserIdOfSession;
     }
 
-    public String[] getClientUserIdHistory() {
+    public String @Nullable [] getClientUserIdHistory() {
         return clientUserIdHistory;
     }
 
-    public String getAuthenticationMechanism() {
+    public @Nullable String getAuthenticationMechanism() {
         return authenticationMechanism;
     }
 
-    public String getEncoding() {
+    public @Nullable String getEncoding() {
         return encoding;
     }
 
-    public String getTransportProtocol() {
+    public @Nullable String getTransportProtocol() {
         return transportProtocol;
     }
 
@@ -125,12 +127,63 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         return securityMode;
     }
 
-    public String getSecurityPolicyUri() {
+    public @Nullable String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 
     public ByteString getClientCertificate() {
         return clientCertificate;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SessionSecurityDiagnosticsDataType that = (SessionSecurityDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getClientUserIdOfSession(), that.getClientUserIdOfSession());
+        eqb.append(getClientUserIdHistory(), that.getClientUserIdHistory());
+        eqb.append(getAuthenticationMechanism(), that.getAuthenticationMechanism());
+        eqb.append(getEncoding(), that.getEncoding());
+        eqb.append(getTransportProtocol(), that.getTransportProtocol());
+        eqb.append(getSecurityMode(), that.getSecurityMode());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getClientCertificate(), that.getClientCertificate());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSessionId());
+        hcb.append(getClientUserIdOfSession());
+        hcb.append(getClientUserIdHistory());
+        hcb.append(getAuthenticationMechanism());
+        hcb.append(getEncoding());
+        hcb.append(getTransportProtocol());
+        hcb.append(getSecurityMode());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getClientCertificate());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SessionSecurityDiagnosticsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("clientUserIdOfSession='" + getClientUserIdOfSession() + "'");
+        joiner.add("clientUserIdHistory=" + java.util.Arrays.toString(getClientUserIdHistory()));
+        joiner.add("authenticationMechanism='" + getAuthenticationMechanism() + "'");
+        joiner.add("encoding='" + getEncoding() + "'");
+        joiner.add("transportProtocol='" + getTransportProtocol() + "'");
+        joiner.add("securityMode=" + getSecurityMode());
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        joiner.add("clientCertificate=" + getClientCertificate());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

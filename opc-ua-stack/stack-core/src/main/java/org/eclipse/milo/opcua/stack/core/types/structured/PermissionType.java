@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,9 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -23,10 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/8.55">https://reference.opcfoundation.org/v105/Core/docs/Part3/8.55</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class PermissionType extends OptionSetUI32<PermissionType.Field> {
     public PermissionType(UInteger value) {
         super(value);
@@ -110,6 +105,29 @@ public class PermissionType extends OptionSetUI32<PermissionType.Field> {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PermissionType.class.getSimpleName() + "[", "]");
+        joiner.add("browse=" + getBrowse());
+        joiner.add("readRolePermissions=" + getReadRolePermissions());
+        joiner.add("writeAttribute=" + getWriteAttribute());
+        joiner.add("writeRolePermissions=" + getWriteRolePermissions());
+        joiner.add("writeHistorizing=" + getWriteHistorizing());
+        joiner.add("read=" + getRead());
+        joiner.add("write=" + getWrite());
+        joiner.add("readHistory=" + getReadHistory());
+        joiner.add("insertHistory=" + getInsertHistory());
+        joiner.add("modifyHistory=" + getModifyHistory());
+        joiner.add("deleteHistory=" + getDeleteHistory());
+        joiner.add("receiveEvents=" + getReceiveEvents());
+        joiner.add("call=" + getCall());
+        joiner.add("addReference=" + getAddReference());
+        joiner.add("removeReference=" + getRemoveReference());
+        joiner.add("deleteNode=" + getDeleteNode());
+        joiner.add("addNode=" + getAddNode());
+        return joiner.toString();
     }
 
     public static PermissionType of(PermissionType.Field... fields) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,14 +24,13 @@ import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.AddressSpaceManager;
+import org.eclipse.milo.opcua.sdk.server.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operator;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operators;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -156,7 +155,7 @@ public class EventContentFilter {
             }
 
             String indexRange = select.getIndexRange();
-            if (indexRange != null) {
+            if (indexRange != null && !indexRange.isEmpty()) {
                 if (relativeNode instanceof VariableNode) {
                     int valueRank = ((VariableNode) relativeNode).getValueRank();
 
@@ -346,7 +345,7 @@ public class EventContentFilter {
     @NotNull
     private static FilterOperand[] decodeOperands(
         EncodingContext context,
-        @Nullable ExtensionObject[] operandXos
+        ExtensionObject @Nullable [] operandXos
     ) {
 
         if (operandXos == null) {
@@ -422,7 +421,8 @@ public class EventContentFilter {
     private static Object getSimpleAttribute(
         @NotNull FilterContext context,
         @NotNull SimpleAttributeOperand operand,
-        @NotNull BaseEventTypeNode eventNode) throws UaException {
+        @NotNull BaseEventTypeNode eventNode
+    ) throws UaException {
 
         NodeId typeDefinitionId = operand.getTypeDefinitionId();
 
@@ -466,13 +466,8 @@ public class EventContentFilter {
 
             String indexRange = operand.getIndexRange();
 
-            AttributeContext attributeContext = new AttributeContext(
-                context.getServer(),
-                context.getSession().orElse(null)
-            );
-
             DataValue value = AttributeReader.readAttribute(
-                attributeContext,
+                context,
                 targetNode,
                 attributeId,
                 TimestampsToReturn.Neither,

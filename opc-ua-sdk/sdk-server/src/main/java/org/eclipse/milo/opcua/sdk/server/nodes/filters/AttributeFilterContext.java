@@ -17,17 +17,20 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.UaException;
 
-public abstract class AttributeFilterContext {
+public final class AttributeFilterContext {
 
     private volatile boolean observable = false;
 
-    private final UaNode node;
     private final Session session;
+    private final UaNode node;
+    private final Iterator<AttributeFilter> filterIterator;
 
-    private AttributeFilterContext(Session session, UaNode node) {
+    public AttributeFilterContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
         this.session = session;
         this.node = node;
+        this.filterIterator = filterIterator;
     }
 
     /**
@@ -40,11 +43,14 @@ public abstract class AttributeFilterContext {
     }
 
     /**
-     * Get the {@link Session} this the attribute get or set request is originating from, if there is one.
+     * Get the {@link Session} this the attribute get or set request is originating from, if there
+     * is one.
      * <p>
-     * No session indicates the call is internal and should not fail for access / authentication reasons.
+     * No session indicates the call is internal and should not fail for access / authentication
+     * reasons.
      *
-     * @return the {@link Session} this the attribute get or set request is originating from, if there is one.
+     * @return the {@link Session} this the attribute get or set request is originating from, if
+     *     there is one.
      */
     public Optional<Session> getSession() {
         return Optional.ofNullable(session);
@@ -53,7 +59,8 @@ public abstract class AttributeFilterContext {
     /**
      * Indicate that an attribute get should be observed by {@link AttributeObserver}s.
      *
-     * @param observable {@code true} if the attribute get should be observed by {@link AttributeObserver}s.
+     * @param observable {@code true} if the attribute get should be observed by
+     *     {@link AttributeObserver}s.
      */
     public void setObservable(boolean observable) {
         this.observable = observable;
@@ -66,56 +73,66 @@ public abstract class AttributeFilterContext {
         return observable;
     }
 
+    /**
+     * Get the value for the attribute identified by {@code attributeId} using the next filter in
+     * the chain.
+     *
+     * @param attributeId the {@link AttributeId} of the attribute to get the value of.
+     * @return the value for the attribute identified by {@code attributeId} from the next filter
+     *     in the chain.
+     */
+    public Object getAttribute(AttributeId attributeId) {
+        AttributeFilter next = nextAttributeFilter();
 
-    public static final class GetAttributeContext extends AttributeFilterContext {
-
-        private final Iterator<AttributeFilter> filterIterator;
-
-        GetAttributeContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
-            super(session, node);
-            this.filterIterator = filterIterator;
-        }
-
-        /**
-         * Get the value for the attribute identified by {@code attributeId} using the next filter in the chain.
-         *
-         * @param attributeId the {@link AttributeId} of the attribute to get the value of.
-         * @return the value for the attribute identified by {@code attributeId} from the next filter in the chain.
-         */
-        public Object getAttribute(AttributeId attributeId) {
-            AttributeFilter next = filterIterator.hasNext() ?
-                filterIterator.next() :
-                AttributeFilter.DEFAULT_INSTANCE;
-
-            return next.getAttribute(this, attributeId);
-        }
-
+        return next.getAttribute(this, attributeId);
     }
 
-    public static final class SetAttributeContext extends AttributeFilterContext {
+    /**
+     * Read the value for the attribute identified by {@code attributeId} using the next filter in
+     * the chain.
+     *
+     * @param attributeId the {@link AttributeId} of the attribute to read the value of.
+     * @return the value for the attribute identified by {@code attributeId} from the next filter
+     *     in the chain.
+     * @throws UaException if the attribute cannot be read.
+     */
+    public Object readAttribute(AttributeId attributeId) throws UaException {
+        AttributeFilter next = nextAttributeFilter();
 
-        private final Iterator<AttributeFilter> filterIterator;
+        return next.readAttribute(this, attributeId);
+    }
 
-        SetAttributeContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
-            super(session, node);
+    /**
+     * Set the value for the attribute identified by {@code attributeId} using the next filter in
+     * the chain.
+     *
+     * @param attributeId the {@link AttributeId} of the attribute to set the value of.
+     * @param value the value to set.
+     */
+    public void setAttribute(AttributeId attributeId, Object value) {
+        AttributeFilter next = nextAttributeFilter();
 
-            this.filterIterator = filterIterator;
-        }
+        next.setAttribute(this, attributeId, value);
+    }
 
-        /**
-         * Set the value for the attribute identified by {@code attributeId} using the next filter in the chain.
-         *
-         * @param attributeId the {@link AttributeId} of the attribute to set the value of.
-         * @param value       the value to set.
-         */
-        public void setAttribute(AttributeId attributeId, Object value) {
-            AttributeFilter next = filterIterator.hasNext() ?
-                filterIterator.next() :
-                AttributeFilter.DEFAULT_INSTANCE;
+    /**
+     * Write the value for the attribute identified by {@code attributeId} using the next filter in
+     * the chain.
+     *
+     * @param attributeId the {@link AttributeId} of the attribute to write the value of.
+     * @param value the value to write.
+     * @throws UaException if the attribute cannot be written.
+     */
+    public void writeAttribute(AttributeId attributeId, Object value) throws UaException {
+        AttributeFilter next = nextAttributeFilter();
 
-            next.setAttribute(this, attributeId, value);
-        }
+        next.writeAttribute(this, attributeId, value);
+    }
 
+    private AttributeFilter nextAttributeFilter() {
+        return filterIterator.hasNext() ?
+            filterIterator.next() :
+            AttributeFilter.DEFAULT_INSTANCE;
     }
 
 }

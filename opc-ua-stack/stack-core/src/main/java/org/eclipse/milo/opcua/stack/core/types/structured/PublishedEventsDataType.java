@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +27,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.8.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.8.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class PublishedEventsDataType extends PublishedDataSetSourceDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15582");
 
@@ -44,12 +45,12 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
 
     private final NodeId eventNotifier;
 
-    private final SimpleAttributeOperand[] selectedFields;
+    private final SimpleAttributeOperand @Nullable [] selectedFields;
 
     private final ContentFilter filter;
 
-    public PublishedEventsDataType(NodeId eventNotifier, SimpleAttributeOperand[] selectedFields,
-                                   ContentFilter filter) {
+    public PublishedEventsDataType(NodeId eventNotifier,
+                                   SimpleAttributeOperand @Nullable [] selectedFields, ContentFilter filter) {
         this.eventNotifier = eventNotifier;
         this.selectedFields = selectedFields;
         this.filter = filter;
@@ -79,12 +80,45 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
         return eventNotifier;
     }
 
-    public SimpleAttributeOperand[] getSelectedFields() {
+    public SimpleAttributeOperand @Nullable [] getSelectedFields() {
         return selectedFields;
     }
 
     public ContentFilter getFilter() {
         return filter;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PublishedEventsDataType that = (PublishedEventsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getEventNotifier(), that.getEventNotifier());
+        eqb.append(getSelectedFields(), that.getSelectedFields());
+        eqb.append(getFilter(), that.getFilter());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getEventNotifier());
+        hcb.append(getSelectedFields());
+        hcb.append(getFilter());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PublishedEventsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("eventNotifier=" + getEventNotifier());
+        joiner.add("selectedFields=" + java.util.Arrays.toString(getSelectedFields()));
+        joiner.add("filter=" + getFilter());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

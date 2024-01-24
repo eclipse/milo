@@ -19,9 +19,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.jetbrains.annotations.Nullable;
 
 public class AttributeFilterChain {
@@ -52,9 +51,10 @@ public class AttributeFilterChain {
     }
 
     /**
-     * Get the value for the attribute identified by {@code attributeId} from {@code node}.
+     * Using the next {@link AttributeFilter} in the chain, get the value for the attribute
+     * identified by {@code attributeId} from {@code node}.
      *
-     * @param node        the {@link UaNode} to get the attribute value from.
+     * @param node the {@link UaNode} to get the attribute value from.
      * @param attributeId the {@link AttributeId} of the attribute to get the value of.
      * @return the value for the attribute identified by {@code attributeId} from {@code node}.
      */
@@ -63,10 +63,11 @@ public class AttributeFilterChain {
     }
 
     /**
-     * Get the value for the attribute identified by {@code attributeId} from {@code node}.
+     * Using the next {@link AttributeFilter} in the chain, get the value for the attribute
+     * identified by {@code attributeId} from {@code node}.
      *
-     * @param session     the {@link Session} the attribute request is originating from, if there is one.
-     * @param node        the {@link UaNode} to get the attribute value from.
+     * @param session the {@link Session} the attribute request is originating from, if there is one.
+     * @param node the {@link UaNode} to get the attribute value from.
      * @param attributeId the {@link AttributeId} of the attribute to get the value of.
      * @return the value for the attribute identified by {@code attributeId} from {@code node}.
      */
@@ -77,7 +78,7 @@ public class AttributeFilterChain {
             filterIterator.next() :
             AttributeFilter.DEFAULT_INSTANCE;
 
-        GetAttributeContext ctx = new GetAttributeContext(session, node, filterIterator);
+        var ctx = new AttributeFilterContext(session, node, filterIterator);
 
         Object value = filter.getAttribute(ctx, attributeId);
 
@@ -89,11 +90,38 @@ public class AttributeFilterChain {
     }
 
     /**
+     * Read the value for the attribute identified by {@code attributeId} from {@code node}.
+     *
+     * @param session the {@link Session} the attribute request is originating from, if there is one.
+     * @param node the {@link UaNode} to read the attribute value from.
+     * @param attributeId the {@link AttributeId} of the attribute to read the value of.
+     * @return the value for the attribute identified by {@code attributeId} from {@code node}.
+     * @throws UaException if the attribute cannot be read.
+     */
+    public Object readAttribute(@Nullable Session session, UaNode node, AttributeId attributeId) throws UaException {
+        Iterator<AttributeFilter> filterIterator = filters.iterator();
+
+        AttributeFilter filter = filterIterator.hasNext() ?
+            filterIterator.next() :
+            AttributeFilter.DEFAULT_INSTANCE;
+
+        var ctx = new AttributeFilterContext(session, node, filterIterator);
+
+        Object value = filter.readAttribute(ctx, attributeId);
+
+        if (ctx.isObservable()) {
+            node.fireAttributeChanged(attributeId, value);
+        }
+
+        return value;
+    }
+
+    /**
      * Set the value for the attribute identified by {@code attributeId}.
      *
-     * @param node        the {@link UaNode} to set the attribute value on.
+     * @param node the {@link UaNode} to set the attribute value on.
      * @param attributeId the {@link AttributeId} of the attribute to set the value of.
-     * @param value       the value to set.
+     * @param value the value to set.
      */
     public void setAttribute(UaNode node, AttributeId attributeId, Object value) {
         setAttribute(null, node, attributeId, value);
@@ -102,10 +130,11 @@ public class AttributeFilterChain {
     /**
      * Set the value for the attribute identified by {@code attributeId}.
      *
-     * @param session     the {@link Session} the attribute request is originating from, if there is one.
-     * @param node        the {@link UaNode} to set the attribute value on.
+     * @param session the {@link Session} the attribute request is originating from, if there is
+     *     one.
+     * @param node the {@link UaNode} to set the attribute value on.
      * @param attributeId the {@link AttributeId} of the attribute to set the value of.
-     * @param value       the value to set.
+     * @param value the value to set.
      */
     public void setAttribute(@Nullable Session session, UaNode node, AttributeId attributeId, Object value) {
         Iterator<AttributeFilter> filterIterator = filters.iterator();
@@ -114,9 +143,37 @@ public class AttributeFilterChain {
             filterIterator.next() :
             AttributeFilter.DEFAULT_INSTANCE;
 
-        SetAttributeContext ctx = new SetAttributeContext(session, node, filterIterator);
+        var ctx = new AttributeFilterContext(session, node, filterIterator);
 
         filter.setAttribute(ctx, attributeId, value);
+    }
+
+    /**
+     * Write the value for the attribute identified by {@code attributeId}.
+     *
+     * @param session the {@link Session} the attribute request is originating from, if there is
+     *     one.
+     * @param node the {@link UaNode} to write the attribute value on.
+     * @param attributeId the {@link AttributeId} of the attribute to write the value of.
+     * @param value the value to write.
+     * @throws UaException if the attribute cannot be written.
+     */
+    public void writeAttribute(
+        @Nullable Session session,
+        UaNode node,
+        AttributeId attributeId,
+        Object value
+    ) throws UaException {
+
+        Iterator<AttributeFilter> filterIterator = filters.iterator();
+
+        AttributeFilter filter = filterIterator.hasNext() ?
+            filterIterator.next() :
+            AttributeFilter.DEFAULT_INSTANCE;
+
+        var ctx = new AttributeFilterContext(session, node, filterIterator);
+
+        filter.writeAttribute(ctx, attributeId, value);
     }
 
     /**
