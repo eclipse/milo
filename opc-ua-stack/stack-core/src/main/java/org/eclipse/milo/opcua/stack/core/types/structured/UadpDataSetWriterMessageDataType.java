@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +28,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.3.6">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.3.1/#6.3.1.3.6</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15652");
 
@@ -93,6 +93,42 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
 
     public UShort getDataSetOffset() {
         return dataSetOffset;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        UadpDataSetWriterMessageDataType that = (UadpDataSetWriterMessageDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getDataSetMessageContentMask(), that.getDataSetMessageContentMask());
+        eqb.append(getConfiguredSize(), that.getConfiguredSize());
+        eqb.append(getNetworkMessageNumber(), that.getNetworkMessageNumber());
+        eqb.append(getDataSetOffset(), that.getDataSetOffset());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getDataSetMessageContentMask());
+        hcb.append(getConfiguredSize());
+        hcb.append(getNetworkMessageNumber());
+        hcb.append(getDataSetOffset());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", UadpDataSetWriterMessageDataType.class.getSimpleName() + "[", "]");
+        joiner.add("dataSetMessageContentMask=" + getDataSetMessageContentMask());
+        joiner.add("configuredSize=" + getConfiguredSize());
+        joiner.add("networkMessageNumber=" + getNetworkMessageNumber());
+        joiner.add("dataSetOffset=" + getDataSetOffset());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

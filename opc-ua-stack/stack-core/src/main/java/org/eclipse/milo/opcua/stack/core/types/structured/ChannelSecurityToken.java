@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +28,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.5.2/#5.5.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.5.2/#5.5.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class ChannelSecurityToken extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=441");
 
@@ -93,6 +93,42 @@ public class ChannelSecurityToken extends Structure implements UaStructuredType 
 
     public UInteger getRevisedLifetime() {
         return revisedLifetime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ChannelSecurityToken that = (ChannelSecurityToken) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getChannelId(), that.getChannelId());
+        eqb.append(getTokenId(), that.getTokenId());
+        eqb.append(getCreatedAt(), that.getCreatedAt());
+        eqb.append(getRevisedLifetime(), that.getRevisedLifetime());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getChannelId());
+        hcb.append(getTokenId());
+        hcb.append(getCreatedAt());
+        hcb.append(getRevisedLifetime());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ChannelSecurityToken.class.getSimpleName() + "[", "]");
+        joiner.add("channelId=" + getChannelId());
+        joiner.add("tokenId=" + getTokenId());
+        joiner.add("createdAt=" + getCreatedAt());
+        joiner.add("revisedLifetime=" + getRevisedLifetime());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

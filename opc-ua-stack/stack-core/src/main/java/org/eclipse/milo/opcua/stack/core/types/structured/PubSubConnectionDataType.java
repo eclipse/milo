@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class PubSubConnectionDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15617");
 
@@ -132,6 +133,57 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
 
     public ReaderGroupDataType @Nullable [] getReaderGroups() {
         return readerGroups;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PubSubConnectionDataType that = (PubSubConnectionDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getEnabled(), that.getEnabled());
+        eqb.append(getPublisherId(), that.getPublisherId());
+        eqb.append(getTransportProfileUri(), that.getTransportProfileUri());
+        eqb.append(getAddress(), that.getAddress());
+        eqb.append(getConnectionProperties(), that.getConnectionProperties());
+        eqb.append(getTransportSettings(), that.getTransportSettings());
+        eqb.append(getWriterGroups(), that.getWriterGroups());
+        eqb.append(getReaderGroups(), that.getReaderGroups());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getPublisherId());
+        hcb.append(getTransportProfileUri());
+        hcb.append(getAddress());
+        hcb.append(getConnectionProperties());
+        hcb.append(getTransportSettings());
+        hcb.append(getWriterGroups());
+        hcb.append(getReaderGroups());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubConnectionDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("enabled=" + getEnabled());
+        joiner.add("publisherId=" + getPublisherId());
+        joiner.add("transportProfileUri='" + getTransportProfileUri() + "'");
+        joiner.add("address=" + getAddress());
+        joiner.add("connectionProperties=" + java.util.Arrays.toString(getConnectionProperties()));
+        joiner.add("transportSettings=" + getTransportSettings());
+        joiner.add("writerGroups=" + java.util.Arrays.toString(getWriterGroups()));
+        joiner.add("readerGroups=" + java.util.Arrays.toString(getReaderGroups()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

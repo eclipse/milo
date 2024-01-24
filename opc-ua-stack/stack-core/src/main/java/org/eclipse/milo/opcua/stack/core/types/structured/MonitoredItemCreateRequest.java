@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +28,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.2/#5.12.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.2/#5.12.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class MonitoredItemCreateRequest extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=743");
 
@@ -86,6 +86,39 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
 
     public MonitoringParameters getRequestedParameters() {
         return requestedParameters;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        MonitoredItemCreateRequest that = (MonitoredItemCreateRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getItemToMonitor(), that.getItemToMonitor());
+        eqb.append(getMonitoringMode(), that.getMonitoringMode());
+        eqb.append(getRequestedParameters(), that.getRequestedParameters());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getItemToMonitor());
+        hcb.append(getMonitoringMode());
+        hcb.append(getRequestedParameters());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", MonitoredItemCreateRequest.class.getSimpleName() + "[", "]");
+        joiner.add("itemToMonitor=" + getItemToMonitor());
+        joiner.add("monitoringMode=" + getMonitoringMode());
+        joiner.add("requestedParameters=" + getRequestedParameters());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

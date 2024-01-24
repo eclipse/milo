@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class CreateSessionRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=459");
 
@@ -131,6 +132,57 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
 
     public UInteger getMaxResponseMessageSize() {
         return maxResponseMessageSize;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CreateSessionRequest that = (CreateSessionRequest) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getRequestHeader(), that.getRequestHeader());
+        eqb.append(getClientDescription(), that.getClientDescription());
+        eqb.append(getServerUri(), that.getServerUri());
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getSessionName(), that.getSessionName());
+        eqb.append(getClientNonce(), that.getClientNonce());
+        eqb.append(getClientCertificate(), that.getClientCertificate());
+        eqb.append(getRequestedSessionTimeout(), that.getRequestedSessionTimeout());
+        eqb.append(getMaxResponseMessageSize(), that.getMaxResponseMessageSize());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getRequestHeader());
+        hcb.append(getClientDescription());
+        hcb.append(getServerUri());
+        hcb.append(getEndpointUrl());
+        hcb.append(getSessionName());
+        hcb.append(getClientNonce());
+        hcb.append(getClientCertificate());
+        hcb.append(getRequestedSessionTimeout());
+        hcb.append(getMaxResponseMessageSize());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", CreateSessionRequest.class.getSimpleName() + "[", "]");
+        joiner.add("requestHeader=" + getRequestHeader());
+        joiner.add("clientDescription=" + getClientDescription());
+        joiner.add("serverUri='" + getServerUri() + "'");
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("sessionName='" + getSessionName() + "'");
+        joiner.add("clientNonce=" + getClientNonce());
+        joiner.add("clientCertificate=" + getClientCertificate());
+        joiner.add("requestedSessionTimeout=" + getRequestedSessionTimeout());
+        joiner.add("maxResponseMessageSize=" + getMaxResponseMessageSize());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

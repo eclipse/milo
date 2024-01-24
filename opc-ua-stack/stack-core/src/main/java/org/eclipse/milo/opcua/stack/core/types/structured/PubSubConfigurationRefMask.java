@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,22 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.7.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.3/#9.1.3.7.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class PubSubConfigurationRefMask extends OptionSetUI32<PubSubConfigurationRefMask.Field> {
     public PubSubConfigurationRefMask(UInteger value) {
         super(value);
@@ -89,13 +87,32 @@ public class PubSubConfigurationRefMask extends OptionSetUI32<PubSubConfiguratio
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<PubSubConfigurationRefMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static PubSubConfigurationRefMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubConfigurationRefMask.class.getSimpleName() + "[", "]");
+        joiner.add("elementAdd=" + getElementAdd());
+        joiner.add("elementMatch=" + getElementMatch());
+        joiner.add("elementModify=" + getElementModify());
+        joiner.add("elementRemove=" + getElementRemove());
+        joiner.add("referenceWriter=" + getReferenceWriter());
+        joiner.add("referenceReader=" + getReferenceReader());
+        joiner.add("referenceWriterGroup=" + getReferenceWriterGroup());
+        joiner.add("referenceReaderGroup=" + getReferenceReaderGroup());
+        joiner.add("referenceConnection=" + getReferenceConnection());
+        joiner.add("referencePubDataset=" + getReferencePubDataset());
+        joiner.add("referenceSubDataset=" + getReferenceSubDataset());
+        joiner.add("referenceSecurityGroup=" + getReferenceSecurityGroup());
+        joiner.add("referencePushTarget=" + getReferencePushTarget());
+        return joiner.toString();
+    }
+
+    public static PubSubConfigurationRefMask of(PubSubConfigurationRefMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -105,7 +122,7 @@ public class PubSubConfigurationRefMask extends OptionSetUI32<PubSubConfiguratio
         return new PubSubConfigurationRefMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         ElementAdd(0),
 
         ElementMatch(1),

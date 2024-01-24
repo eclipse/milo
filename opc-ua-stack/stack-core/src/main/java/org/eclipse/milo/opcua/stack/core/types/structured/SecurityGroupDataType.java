@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,16 +28,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class SecurityGroupDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23601");
 
@@ -130,6 +131,57 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
 
     public KeyValuePair @Nullable [] getGroupProperties() {
         return groupProperties;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SecurityGroupDataType that = (SecurityGroupDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getSecurityGroupFolder(), that.getSecurityGroupFolder());
+        eqb.append(getKeyLifetime(), that.getKeyLifetime());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getMaxFutureKeyCount(), that.getMaxFutureKeyCount());
+        eqb.append(getMaxPastKeyCount(), that.getMaxPastKeyCount());
+        eqb.append(getSecurityGroupId(), that.getSecurityGroupId());
+        eqb.append(getRolePermissions(), that.getRolePermissions());
+        eqb.append(getGroupProperties(), that.getGroupProperties());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getSecurityGroupFolder());
+        hcb.append(getKeyLifetime());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getMaxFutureKeyCount());
+        hcb.append(getMaxPastKeyCount());
+        hcb.append(getSecurityGroupId());
+        hcb.append(getRolePermissions());
+        hcb.append(getGroupProperties());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SecurityGroupDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("securityGroupFolder=" + java.util.Arrays.toString(getSecurityGroupFolder()));
+        joiner.add("keyLifetime=" + getKeyLifetime());
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        joiner.add("maxFutureKeyCount=" + getMaxFutureKeyCount());
+        joiner.add("maxPastKeyCount=" + getMaxPastKeyCount());
+        joiner.add("securityGroupId='" + getSecurityGroupId() + "'");
+        joiner.add("rolePermissions=" + java.util.Arrays.toString(getRolePermissions()));
+        joiner.add("groupProperties=" + java.util.Arrays.toString(getGroupProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

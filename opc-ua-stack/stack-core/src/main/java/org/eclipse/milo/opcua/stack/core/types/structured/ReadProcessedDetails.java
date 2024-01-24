@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.4/#6.4.4.1">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.4.4/#6.4.4.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class ReadProcessedDetails extends HistoryReadDetails implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=650");
 
@@ -101,6 +102,45 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
 
     public AggregateConfiguration getAggregateConfiguration() {
         return aggregateConfiguration;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ReadProcessedDetails that = (ReadProcessedDetails) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStartTime(), that.getStartTime());
+        eqb.append(getEndTime(), that.getEndTime());
+        eqb.append(getProcessingInterval(), that.getProcessingInterval());
+        eqb.append(getAggregateType(), that.getAggregateType());
+        eqb.append(getAggregateConfiguration(), that.getAggregateConfiguration());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStartTime());
+        hcb.append(getEndTime());
+        hcb.append(getProcessingInterval());
+        hcb.append(getAggregateType());
+        hcb.append(getAggregateConfiguration());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ReadProcessedDetails.class.getSimpleName() + "[", "]");
+        joiner.add("startTime=" + getStartTime());
+        joiner.add("endTime=" + getEndTime());
+        joiner.add("processingInterval=" + getProcessingInterval());
+        joiner.add("aggregateType=" + java.util.Arrays.toString(getAggregateType()));
+        joiner.add("aggregateConfiguration=" + getAggregateConfiguration());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

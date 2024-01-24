@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,16 +25,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.6">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.6</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class BrowseResult extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=522");
 
@@ -88,6 +84,39 @@ public class BrowseResult extends Structure implements UaStructuredType {
 
     public ReferenceDescription @Nullable [] getReferences() {
         return references;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        BrowseResult that = (BrowseResult) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStatusCode(), that.getStatusCode());
+        eqb.append(getContinuationPoint(), that.getContinuationPoint());
+        eqb.append(getReferences(), that.getReferences());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStatusCode());
+        hcb.append(getContinuationPoint());
+        hcb.append(getReferences());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", BrowseResult.class.getSimpleName() + "[", "]");
+        joiner.add("statusCode=" + getStatusCode());
+        joiner.add("continuationPoint=" + getContinuationPoint());
+        joiner.add("references=" + java.util.Arrays.toString(getReferences()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

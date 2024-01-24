@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,22 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class DataSetFieldContentMask extends OptionSetUI32<DataSetFieldContentMask.Field> {
     public DataSetFieldContentMask(UInteger value) {
         super(value);
@@ -61,13 +59,25 @@ public class DataSetFieldContentMask extends OptionSetUI32<DataSetFieldContentMa
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<DataSetFieldContentMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static DataSetFieldContentMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataSetFieldContentMask.class.getSimpleName() + "[", "]");
+        joiner.add("statusCode=" + getStatusCode());
+        joiner.add("sourceTimestamp=" + getSourceTimestamp());
+        joiner.add("serverTimestamp=" + getServerTimestamp());
+        joiner.add("sourcePicoSeconds=" + getSourcePicoSeconds());
+        joiner.add("serverPicoSeconds=" + getServerPicoSeconds());
+        joiner.add("rawData=" + getRawData());
+        return joiner.toString();
+    }
+
+    public static DataSetFieldContentMask of(DataSetFieldContentMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -77,7 +87,7 @@ public class DataSetFieldContentMask extends OptionSetUI32<DataSetFieldContentMa
         return new DataSetFieldContentMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         StatusCode(0),
 
         SourceTimestamp(1),

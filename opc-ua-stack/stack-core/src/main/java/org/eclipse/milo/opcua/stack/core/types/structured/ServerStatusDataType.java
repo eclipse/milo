@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -26,15 +29,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.10</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class ServerStatusDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=862");
 
@@ -108,6 +108,48 @@ public class ServerStatusDataType extends Structure implements UaStructuredType 
 
     public LocalizedText getShutdownReason() {
         return shutdownReason;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ServerStatusDataType that = (ServerStatusDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getStartTime(), that.getStartTime());
+        eqb.append(getCurrentTime(), that.getCurrentTime());
+        eqb.append(getState(), that.getState());
+        eqb.append(getBuildInfo(), that.getBuildInfo());
+        eqb.append(getSecondsTillShutdown(), that.getSecondsTillShutdown());
+        eqb.append(getShutdownReason(), that.getShutdownReason());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getStartTime());
+        hcb.append(getCurrentTime());
+        hcb.append(getState());
+        hcb.append(getBuildInfo());
+        hcb.append(getSecondsTillShutdown());
+        hcb.append(getShutdownReason());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", ServerStatusDataType.class.getSimpleName() + "[", "]");
+        joiner.add("startTime=" + getStartTime());
+        joiner.add("currentTime=" + getCurrentTime());
+        joiner.add("state=" + getState());
+        joiner.add("buildInfo=" + getBuildInfo());
+        joiner.add("secondsTillShutdown=" + getSecondsTillShutdown());
+        joiner.add("shutdownReason=" + getShutdownReason());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,15 +28,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.2/#5.13.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.13.2/#5.13.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class CreateSubscriptionResponse extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=788");
 
@@ -100,6 +101,45 @@ public class CreateSubscriptionResponse extends Structure implements UaResponseM
 
     public UInteger getRevisedMaxKeepAliveCount() {
         return revisedMaxKeepAliveCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CreateSubscriptionResponse that = (CreateSubscriptionResponse) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getSubscriptionId(), that.getSubscriptionId());
+        eqb.append(getRevisedPublishingInterval(), that.getRevisedPublishingInterval());
+        eqb.append(getRevisedLifetimeCount(), that.getRevisedLifetimeCount());
+        eqb.append(getRevisedMaxKeepAliveCount(), that.getRevisedMaxKeepAliveCount());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        hcb.append(getSubscriptionId());
+        hcb.append(getRevisedPublishingInterval());
+        hcb.append(getRevisedLifetimeCount());
+        hcb.append(getRevisedMaxKeepAliveCount());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", CreateSubscriptionResponse.class.getSimpleName() + "[", "]");
+        joiner.add("responseHeader=" + getResponseHeader());
+        joiner.add("subscriptionId=" + getSubscriptionId());
+        joiner.add("revisedPublishingInterval=" + getRevisedPublishingInterval());
+        joiner.add("revisedLifetimeCount=" + getRevisedLifetimeCount());
+        joiner.add("revisedMaxKeepAliveCount=" + getRevisedMaxKeepAliveCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

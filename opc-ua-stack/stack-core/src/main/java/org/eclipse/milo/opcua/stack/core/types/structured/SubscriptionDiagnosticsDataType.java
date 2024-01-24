@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Boolean;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,15 +30,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.15">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.15</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class SubscriptionDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=874");
 
@@ -293,6 +295,123 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
 
     public UInteger getEventQueueOverFlowCount() {
         return eventQueueOverFlowCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SubscriptionDiagnosticsDataType that = (SubscriptionDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getSubscriptionId(), that.getSubscriptionId());
+        eqb.append(getPriority(), that.getPriority());
+        eqb.append(getPublishingInterval(), that.getPublishingInterval());
+        eqb.append(getMaxKeepAliveCount(), that.getMaxKeepAliveCount());
+        eqb.append(getMaxLifetimeCount(), that.getMaxLifetimeCount());
+        eqb.append(getMaxNotificationsPerPublish(), that.getMaxNotificationsPerPublish());
+        eqb.append(getPublishingEnabled(), that.getPublishingEnabled());
+        eqb.append(getModifyCount(), that.getModifyCount());
+        eqb.append(getEnableCount(), that.getEnableCount());
+        eqb.append(getDisableCount(), that.getDisableCount());
+        eqb.append(getRepublishRequestCount(), that.getRepublishRequestCount());
+        eqb.append(getRepublishMessageRequestCount(), that.getRepublishMessageRequestCount());
+        eqb.append(getRepublishMessageCount(), that.getRepublishMessageCount());
+        eqb.append(getTransferRequestCount(), that.getTransferRequestCount());
+        eqb.append(getTransferredToAltClientCount(), that.getTransferredToAltClientCount());
+        eqb.append(getTransferredToSameClientCount(), that.getTransferredToSameClientCount());
+        eqb.append(getPublishRequestCount(), that.getPublishRequestCount());
+        eqb.append(getDataChangeNotificationsCount(), that.getDataChangeNotificationsCount());
+        eqb.append(getEventNotificationsCount(), that.getEventNotificationsCount());
+        eqb.append(getNotificationsCount(), that.getNotificationsCount());
+        eqb.append(getLatePublishRequestCount(), that.getLatePublishRequestCount());
+        eqb.append(getCurrentKeepAliveCount(), that.getCurrentKeepAliveCount());
+        eqb.append(getCurrentLifetimeCount(), that.getCurrentLifetimeCount());
+        eqb.append(getUnacknowledgedMessageCount(), that.getUnacknowledgedMessageCount());
+        eqb.append(getDiscardedMessageCount(), that.getDiscardedMessageCount());
+        eqb.append(getMonitoredItemCount(), that.getMonitoredItemCount());
+        eqb.append(getDisabledMonitoredItemCount(), that.getDisabledMonitoredItemCount());
+        eqb.append(getMonitoringQueueOverflowCount(), that.getMonitoringQueueOverflowCount());
+        eqb.append(getNextSequenceNumber(), that.getNextSequenceNumber());
+        eqb.append(getEventQueueOverFlowCount(), that.getEventQueueOverFlowCount());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSessionId());
+        hcb.append(getSubscriptionId());
+        hcb.append(getPriority());
+        hcb.append(getPublishingInterval());
+        hcb.append(getMaxKeepAliveCount());
+        hcb.append(getMaxLifetimeCount());
+        hcb.append(getMaxNotificationsPerPublish());
+        hcb.append(getPublishingEnabled());
+        hcb.append(getModifyCount());
+        hcb.append(getEnableCount());
+        hcb.append(getDisableCount());
+        hcb.append(getRepublishRequestCount());
+        hcb.append(getRepublishMessageRequestCount());
+        hcb.append(getRepublishMessageCount());
+        hcb.append(getTransferRequestCount());
+        hcb.append(getTransferredToAltClientCount());
+        hcb.append(getTransferredToSameClientCount());
+        hcb.append(getPublishRequestCount());
+        hcb.append(getDataChangeNotificationsCount());
+        hcb.append(getEventNotificationsCount());
+        hcb.append(getNotificationsCount());
+        hcb.append(getLatePublishRequestCount());
+        hcb.append(getCurrentKeepAliveCount());
+        hcb.append(getCurrentLifetimeCount());
+        hcb.append(getUnacknowledgedMessageCount());
+        hcb.append(getDiscardedMessageCount());
+        hcb.append(getMonitoredItemCount());
+        hcb.append(getDisabledMonitoredItemCount());
+        hcb.append(getMonitoringQueueOverflowCount());
+        hcb.append(getNextSequenceNumber());
+        hcb.append(getEventQueueOverFlowCount());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SubscriptionDiagnosticsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("subscriptionId=" + getSubscriptionId());
+        joiner.add("priority=" + getPriority());
+        joiner.add("publishingInterval=" + getPublishingInterval());
+        joiner.add("maxKeepAliveCount=" + getMaxKeepAliveCount());
+        joiner.add("maxLifetimeCount=" + getMaxLifetimeCount());
+        joiner.add("maxNotificationsPerPublish=" + getMaxNotificationsPerPublish());
+        joiner.add("publishingEnabled=" + getPublishingEnabled());
+        joiner.add("modifyCount=" + getModifyCount());
+        joiner.add("enableCount=" + getEnableCount());
+        joiner.add("disableCount=" + getDisableCount());
+        joiner.add("republishRequestCount=" + getRepublishRequestCount());
+        joiner.add("republishMessageRequestCount=" + getRepublishMessageRequestCount());
+        joiner.add("republishMessageCount=" + getRepublishMessageCount());
+        joiner.add("transferRequestCount=" + getTransferRequestCount());
+        joiner.add("transferredToAltClientCount=" + getTransferredToAltClientCount());
+        joiner.add("transferredToSameClientCount=" + getTransferredToSameClientCount());
+        joiner.add("publishRequestCount=" + getPublishRequestCount());
+        joiner.add("dataChangeNotificationsCount=" + getDataChangeNotificationsCount());
+        joiner.add("eventNotificationsCount=" + getEventNotificationsCount());
+        joiner.add("notificationsCount=" + getNotificationsCount());
+        joiner.add("latePublishRequestCount=" + getLatePublishRequestCount());
+        joiner.add("currentKeepAliveCount=" + getCurrentKeepAliveCount());
+        joiner.add("currentLifetimeCount=" + getCurrentLifetimeCount());
+        joiner.add("unacknowledgedMessageCount=" + getUnacknowledgedMessageCount());
+        joiner.add("discardedMessageCount=" + getDiscardedMessageCount());
+        joiner.add("monitoredItemCount=" + getMonitoredItemCount());
+        joiner.add("disabledMonitoredItemCount=" + getDisabledMonitoredItemCount());
+        joiner.add("monitoringQueueOverflowCount=" + getMonitoringQueueOverflowCount());
+        joiner.add("nextSequenceNumber=" + getNextSequenceNumber());
+        joiner.add("eventQueueOverFlowCount=" + getEventQueueOverFlowCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

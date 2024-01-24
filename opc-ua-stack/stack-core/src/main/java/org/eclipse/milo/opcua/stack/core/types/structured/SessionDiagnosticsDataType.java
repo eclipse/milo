@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Double;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.11">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.11</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class SessionDiagnosticsDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=865");
 
@@ -389,6 +390,159 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     public ServiceCounterDataType getUnregisterNodesCount() {
         return unregisterNodesCount;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        SessionDiagnosticsDataType that = (SessionDiagnosticsDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getSessionName(), that.getSessionName());
+        eqb.append(getClientDescription(), that.getClientDescription());
+        eqb.append(getServerUri(), that.getServerUri());
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getLocaleIds(), that.getLocaleIds());
+        eqb.append(getActualSessionTimeout(), that.getActualSessionTimeout());
+        eqb.append(getMaxResponseMessageSize(), that.getMaxResponseMessageSize());
+        eqb.append(getClientConnectionTime(), that.getClientConnectionTime());
+        eqb.append(getClientLastContactTime(), that.getClientLastContactTime());
+        eqb.append(getCurrentSubscriptionsCount(), that.getCurrentSubscriptionsCount());
+        eqb.append(getCurrentMonitoredItemsCount(), that.getCurrentMonitoredItemsCount());
+        eqb.append(getCurrentPublishRequestsInQueue(), that.getCurrentPublishRequestsInQueue());
+        eqb.append(getTotalRequestCount(), that.getTotalRequestCount());
+        eqb.append(getUnauthorizedRequestCount(), that.getUnauthorizedRequestCount());
+        eqb.append(getReadCount(), that.getReadCount());
+        eqb.append(getHistoryReadCount(), that.getHistoryReadCount());
+        eqb.append(getWriteCount(), that.getWriteCount());
+        eqb.append(getHistoryUpdateCount(), that.getHistoryUpdateCount());
+        eqb.append(getCallCount(), that.getCallCount());
+        eqb.append(getCreateMonitoredItemsCount(), that.getCreateMonitoredItemsCount());
+        eqb.append(getModifyMonitoredItemsCount(), that.getModifyMonitoredItemsCount());
+        eqb.append(getSetMonitoringModeCount(), that.getSetMonitoringModeCount());
+        eqb.append(getSetTriggeringCount(), that.getSetTriggeringCount());
+        eqb.append(getDeleteMonitoredItemsCount(), that.getDeleteMonitoredItemsCount());
+        eqb.append(getCreateSubscriptionCount(), that.getCreateSubscriptionCount());
+        eqb.append(getModifySubscriptionCount(), that.getModifySubscriptionCount());
+        eqb.append(getSetPublishingModeCount(), that.getSetPublishingModeCount());
+        eqb.append(getPublishCount(), that.getPublishCount());
+        eqb.append(getRepublishCount(), that.getRepublishCount());
+        eqb.append(getTransferSubscriptionsCount(), that.getTransferSubscriptionsCount());
+        eqb.append(getDeleteSubscriptionsCount(), that.getDeleteSubscriptionsCount());
+        eqb.append(getAddNodesCount(), that.getAddNodesCount());
+        eqb.append(getAddReferencesCount(), that.getAddReferencesCount());
+        eqb.append(getDeleteNodesCount(), that.getDeleteNodesCount());
+        eqb.append(getDeleteReferencesCount(), that.getDeleteReferencesCount());
+        eqb.append(getBrowseCount(), that.getBrowseCount());
+        eqb.append(getBrowseNextCount(), that.getBrowseNextCount());
+        eqb.append(getTranslateBrowsePathsToNodeIdsCount(), that.getTranslateBrowsePathsToNodeIdsCount());
+        eqb.append(getQueryFirstCount(), that.getQueryFirstCount());
+        eqb.append(getQueryNextCount(), that.getQueryNextCount());
+        eqb.append(getRegisterNodesCount(), that.getRegisterNodesCount());
+        eqb.append(getUnregisterNodesCount(), that.getUnregisterNodesCount());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSessionId());
+        hcb.append(getSessionName());
+        hcb.append(getClientDescription());
+        hcb.append(getServerUri());
+        hcb.append(getEndpointUrl());
+        hcb.append(getLocaleIds());
+        hcb.append(getActualSessionTimeout());
+        hcb.append(getMaxResponseMessageSize());
+        hcb.append(getClientConnectionTime());
+        hcb.append(getClientLastContactTime());
+        hcb.append(getCurrentSubscriptionsCount());
+        hcb.append(getCurrentMonitoredItemsCount());
+        hcb.append(getCurrentPublishRequestsInQueue());
+        hcb.append(getTotalRequestCount());
+        hcb.append(getUnauthorizedRequestCount());
+        hcb.append(getReadCount());
+        hcb.append(getHistoryReadCount());
+        hcb.append(getWriteCount());
+        hcb.append(getHistoryUpdateCount());
+        hcb.append(getCallCount());
+        hcb.append(getCreateMonitoredItemsCount());
+        hcb.append(getModifyMonitoredItemsCount());
+        hcb.append(getSetMonitoringModeCount());
+        hcb.append(getSetTriggeringCount());
+        hcb.append(getDeleteMonitoredItemsCount());
+        hcb.append(getCreateSubscriptionCount());
+        hcb.append(getModifySubscriptionCount());
+        hcb.append(getSetPublishingModeCount());
+        hcb.append(getPublishCount());
+        hcb.append(getRepublishCount());
+        hcb.append(getTransferSubscriptionsCount());
+        hcb.append(getDeleteSubscriptionsCount());
+        hcb.append(getAddNodesCount());
+        hcb.append(getAddReferencesCount());
+        hcb.append(getDeleteNodesCount());
+        hcb.append(getDeleteReferencesCount());
+        hcb.append(getBrowseCount());
+        hcb.append(getBrowseNextCount());
+        hcb.append(getTranslateBrowsePathsToNodeIdsCount());
+        hcb.append(getQueryFirstCount());
+        hcb.append(getQueryNextCount());
+        hcb.append(getRegisterNodesCount());
+        hcb.append(getUnregisterNodesCount());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", SessionDiagnosticsDataType.class.getSimpleName() + "[", "]");
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("sessionName='" + getSessionName() + "'");
+        joiner.add("clientDescription=" + getClientDescription());
+        joiner.add("serverUri='" + getServerUri() + "'");
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("localeIds=" + java.util.Arrays.toString(getLocaleIds()));
+        joiner.add("actualSessionTimeout=" + getActualSessionTimeout());
+        joiner.add("maxResponseMessageSize=" + getMaxResponseMessageSize());
+        joiner.add("clientConnectionTime=" + getClientConnectionTime());
+        joiner.add("clientLastContactTime=" + getClientLastContactTime());
+        joiner.add("currentSubscriptionsCount=" + getCurrentSubscriptionsCount());
+        joiner.add("currentMonitoredItemsCount=" + getCurrentMonitoredItemsCount());
+        joiner.add("currentPublishRequestsInQueue=" + getCurrentPublishRequestsInQueue());
+        joiner.add("totalRequestCount=" + getTotalRequestCount());
+        joiner.add("unauthorizedRequestCount=" + getUnauthorizedRequestCount());
+        joiner.add("readCount=" + getReadCount());
+        joiner.add("historyReadCount=" + getHistoryReadCount());
+        joiner.add("writeCount=" + getWriteCount());
+        joiner.add("historyUpdateCount=" + getHistoryUpdateCount());
+        joiner.add("callCount=" + getCallCount());
+        joiner.add("createMonitoredItemsCount=" + getCreateMonitoredItemsCount());
+        joiner.add("modifyMonitoredItemsCount=" + getModifyMonitoredItemsCount());
+        joiner.add("setMonitoringModeCount=" + getSetMonitoringModeCount());
+        joiner.add("setTriggeringCount=" + getSetTriggeringCount());
+        joiner.add("deleteMonitoredItemsCount=" + getDeleteMonitoredItemsCount());
+        joiner.add("createSubscriptionCount=" + getCreateSubscriptionCount());
+        joiner.add("modifySubscriptionCount=" + getModifySubscriptionCount());
+        joiner.add("setPublishingModeCount=" + getSetPublishingModeCount());
+        joiner.add("publishCount=" + getPublishCount());
+        joiner.add("republishCount=" + getRepublishCount());
+        joiner.add("transferSubscriptionsCount=" + getTransferSubscriptionsCount());
+        joiner.add("deleteSubscriptionsCount=" + getDeleteSubscriptionsCount());
+        joiner.add("addNodesCount=" + getAddNodesCount());
+        joiner.add("addReferencesCount=" + getAddReferencesCount());
+        joiner.add("deleteNodesCount=" + getDeleteNodesCount());
+        joiner.add("deleteReferencesCount=" + getDeleteReferencesCount());
+        joiner.add("browseCount=" + getBrowseCount());
+        joiner.add("browseNextCount=" + getBrowseNextCount());
+        joiner.add("translateBrowsePathsToNodeIdsCount=" + getTranslateBrowsePathsToNodeIdsCount());
+        joiner.add("queryFirstCount=" + getQueryFirstCount());
+        joiner.add("queryNextCount=" + getQueryNextCount());
+        joiner.add("registerNodesCount=" + getRegisterNodesCount());
+        joiner.add("unregisterNodesCount=" + getUnregisterNodesCount());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

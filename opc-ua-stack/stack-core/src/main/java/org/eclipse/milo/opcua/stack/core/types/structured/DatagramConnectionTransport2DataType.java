@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.lang.Class;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,16 +27,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.2.7">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.2.7</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class DatagramConnectionTransport2DataType extends DatagramConnectionTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23612");
 
@@ -95,6 +95,44 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
 
     public QosDataType @Nullable [] getDatagramQos() {
         return datagramQos;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DatagramConnectionTransport2DataType that = (DatagramConnectionTransport2DataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getDiscoveryAnnounceRate(), that.getDiscoveryAnnounceRate());
+        eqb.append(getDiscoveryMaxMessageSize(), that.getDiscoveryMaxMessageSize());
+        eqb.append(getQosCategory(), that.getQosCategory());
+        eqb.append(getDatagramQos(), that.getDatagramQos());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getDiscoveryAnnounceRate());
+        hcb.append(getDiscoveryMaxMessageSize());
+        hcb.append(getQosCategory());
+        hcb.append(getDatagramQos());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DatagramConnectionTransport2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("discoveryAnnounceRate=" + getDiscoveryAnnounceRate());
+        joiner.add("discoveryMaxMessageSize=" + getDiscoveryMaxMessageSize());
+        joiner.add("qosCategory='" + getQosCategory() + "'");
+        joiner.add("datagramQos=" + java.util.Arrays.toString(getDatagramQos()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {
