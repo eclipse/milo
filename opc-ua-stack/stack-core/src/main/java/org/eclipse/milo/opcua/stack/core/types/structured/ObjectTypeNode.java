@@ -83,8 +83,8 @@ public class ObjectTypeNode extends TypeNode implements UaStructuredType {
         }
         ObjectTypeNode that = (ObjectTypeNode) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getIsAbstract(), that.getIsAbstract());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getIsAbstract(), that.getIsAbstract());
         return eqb.build();
     }
 

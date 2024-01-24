@@ -85,8 +85,8 @@ public class GenericAttributes extends NodeAttributes implements UaStructuredTyp
         }
         GenericAttributes that = (GenericAttributes) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getAttributeValues(), that.getAttributeValues());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getAttributeValues(), that.getAttributeValues());
         return eqb.build();
     }
 

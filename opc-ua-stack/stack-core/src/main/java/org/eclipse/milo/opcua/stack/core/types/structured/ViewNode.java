@@ -91,9 +91,9 @@ public class ViewNode extends InstanceNode implements UaStructuredType {
         }
         ViewNode that = (ViewNode) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getContainsNoLoops(), that.getContainsNoLoops());
         eqb.append(getEventNotifier(), that.getEventNotifier());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

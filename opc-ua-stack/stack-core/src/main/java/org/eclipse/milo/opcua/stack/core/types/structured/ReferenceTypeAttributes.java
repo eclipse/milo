@@ -99,10 +99,10 @@ public class ReferenceTypeAttributes extends NodeAttributes implements UaStructu
         }
         ReferenceTypeAttributes that = (ReferenceTypeAttributes) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getIsAbstract(), that.getIsAbstract());
         eqb.append(getSymmetric(), that.getSymmetric());
         eqb.append(getInverseName(), that.getInverseName());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

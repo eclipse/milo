@@ -140,6 +140,7 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
         }
         VariableAttributes that = (VariableAttributes) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getValue(), that.getValue());
         eqb.append(getDataType(), that.getDataType());
         eqb.append(getValueRank(), that.getValueRank());
@@ -148,7 +149,6 @@ public class VariableAttributes extends NodeAttributes implements UaStructuredTy
         eqb.append(getUserAccessLevel(), that.getUserAccessLevel());
         eqb.append(getMinimumSamplingInterval(), that.getMinimumSamplingInterval());
         eqb.append(getHistorizing(), that.getHistorizing());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

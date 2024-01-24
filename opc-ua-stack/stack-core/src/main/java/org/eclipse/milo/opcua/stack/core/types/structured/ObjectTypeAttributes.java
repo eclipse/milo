@@ -84,8 +84,8 @@ public class ObjectTypeAttributes extends NodeAttributes implements UaStructured
         }
         ObjectTypeAttributes that = (ObjectTypeAttributes) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getIsAbstract(), that.getIsAbstract());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getIsAbstract(), that.getIsAbstract());
         return eqb.build();
     }
 

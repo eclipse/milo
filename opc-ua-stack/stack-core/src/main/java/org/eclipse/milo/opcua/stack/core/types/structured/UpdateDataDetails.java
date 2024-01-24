@@ -93,9 +93,9 @@ public class UpdateDataDetails extends HistoryUpdateDetails implements UaStructu
         }
         UpdateDataDetails that = (UpdateDataDetails) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getPerformInsertReplace(), that.getPerformInsertReplace());
         eqb.append(getUpdateValues(), that.getUpdateValues());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

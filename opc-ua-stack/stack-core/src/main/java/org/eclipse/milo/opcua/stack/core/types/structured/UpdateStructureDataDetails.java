@@ -93,9 +93,9 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails implements 
         }
         UpdateStructureDataDetails that = (UpdateStructureDataDetails) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getPerformInsertReplace(), that.getPerformInsertReplace());
         eqb.append(getUpdateValues(), that.getUpdateValues());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

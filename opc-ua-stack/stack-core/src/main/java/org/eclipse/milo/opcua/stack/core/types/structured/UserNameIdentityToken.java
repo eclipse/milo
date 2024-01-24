@@ -99,10 +99,10 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         }
         UserNameIdentityToken that = (UserNameIdentityToken) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getUserName(), that.getUserName());
         eqb.append(getPassword(), that.getPassword());
         eqb.append(getEncryptionAlgorithm(), that.getEncryptionAlgorithm());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

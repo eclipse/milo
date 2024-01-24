@@ -104,10 +104,10 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
         }
         ReaderGroupDataType that = (ReaderGroupDataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getTransportSettings(), that.getTransportSettings());
         eqb.append(getMessageSettings(), that.getMessageSettings());
         eqb.append(getDataSetReaders(), that.getDataSetReaders());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

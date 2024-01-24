@@ -84,8 +84,8 @@ public class StructureDescription extends DataTypeDescription implements UaStruc
         }
         StructureDescription that = (StructureDescription) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getStructureDefinition(), that.getStructureDefinition());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getStructureDefinition(), that.getStructureDefinition());
         return eqb.build();
     }
 

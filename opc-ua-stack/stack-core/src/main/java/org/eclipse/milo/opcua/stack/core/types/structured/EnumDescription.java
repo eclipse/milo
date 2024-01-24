@@ -88,9 +88,9 @@ public class EnumDescription extends DataTypeDescription implements UaStructured
         }
         EnumDescription that = (EnumDescription) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getEnumDefinition(), that.getEnumDefinition());
         eqb.append(getBuiltInType(), that.getBuiltInType());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

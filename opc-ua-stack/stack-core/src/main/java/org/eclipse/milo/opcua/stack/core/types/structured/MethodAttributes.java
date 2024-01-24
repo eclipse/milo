@@ -87,9 +87,9 @@ public class MethodAttributes extends NodeAttributes implements UaStructuredType
         }
         MethodAttributes that = (MethodAttributes) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getExecutable(), that.getExecutable());
         eqb.append(getUserExecutable(), that.getUserExecutable());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

@@ -117,12 +117,12 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
         }
         VariableTypeAttributes that = (VariableTypeAttributes) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getValue(), that.getValue());
         eqb.append(getDataType(), that.getDataType());
         eqb.append(getValueRank(), that.getValueRank());
         eqb.append(getArrayDimensions(), that.getArrayDimensions());
         eqb.append(getIsAbstract(), that.getIsAbstract());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

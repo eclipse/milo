@@ -92,9 +92,9 @@ public class SimpleTypeDescription extends DataTypeDescription implements UaStru
         }
         SimpleTypeDescription that = (SimpleTypeDescription) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getBaseDataType(), that.getBaseDataType());
         eqb.append(getBuiltInType(), that.getBuiltInType());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

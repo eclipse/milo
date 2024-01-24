@@ -106,11 +106,11 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         }
         DatagramConnectionTransport2DataType that = (DatagramConnectionTransport2DataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getDiscoveryAnnounceRate(), that.getDiscoveryAnnounceRate());
         eqb.append(getDiscoveryMaxMessageSize(), that.getDiscoveryMaxMessageSize());
         eqb.append(getQosCategory(), that.getQosCategory());
         eqb.append(getDatagramQos(), that.getDatagramQos());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

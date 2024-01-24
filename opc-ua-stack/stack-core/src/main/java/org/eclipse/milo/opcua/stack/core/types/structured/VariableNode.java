@@ -143,6 +143,7 @@ public class VariableNode extends InstanceNode implements UaStructuredType {
         }
         VariableNode that = (VariableNode) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getValue(), that.getValue());
         eqb.append(getDataType(), that.getDataType());
         eqb.append(getValueRank(), that.getValueRank());
@@ -152,7 +153,6 @@ public class VariableNode extends InstanceNode implements UaStructuredType {
         eqb.append(getMinimumSamplingInterval(), that.getMinimumSamplingInterval());
         eqb.append(getHistorizing(), that.getHistorizing());
         eqb.append(getAccessLevelEx(), that.getAccessLevelEx());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

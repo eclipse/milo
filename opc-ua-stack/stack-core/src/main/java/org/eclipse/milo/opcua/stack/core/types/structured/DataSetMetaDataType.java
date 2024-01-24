@@ -117,12 +117,12 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         }
         DataSetMetaDataType that = (DataSetMetaDataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getName(), that.getName());
         eqb.append(getDescription(), that.getDescription());
         eqb.append(getFields(), that.getFields());
         eqb.append(getDataSetClassId(), that.getDataSetClassId());
         eqb.append(getConfigurationVersion(), that.getConfigurationVersion());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

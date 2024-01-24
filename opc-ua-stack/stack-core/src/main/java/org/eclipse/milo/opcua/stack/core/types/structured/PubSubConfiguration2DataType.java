@@ -133,6 +133,7 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         }
         PubSubConfiguration2DataType that = (PubSubConfiguration2DataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getSubscribedDataSets(), that.getSubscribedDataSets());
         eqb.append(getDataSetClasses(), that.getDataSetClasses());
         eqb.append(getDefaultSecurityKeyServices(), that.getDefaultSecurityKeyServices());
@@ -140,7 +141,6 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         eqb.append(getPubSubKeyPushTargets(), that.getPubSubKeyPushTargets());
         eqb.append(getConfigurationVersion(), that.getConfigurationVersion());
         eqb.append(getConfigurationProperties(), that.getConfigurationProperties());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

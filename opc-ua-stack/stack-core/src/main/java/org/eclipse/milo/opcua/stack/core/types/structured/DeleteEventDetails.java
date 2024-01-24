@@ -84,8 +84,8 @@ public class DeleteEventDetails extends HistoryUpdateDetails implements UaStruct
         }
         DeleteEventDetails that = (DeleteEventDetails) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getEventIds(), that.getEventIds());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getEventIds(), that.getEventIds());
         return eqb.build();
     }
 

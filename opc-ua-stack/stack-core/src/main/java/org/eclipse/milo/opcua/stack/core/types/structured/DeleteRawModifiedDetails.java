@@ -99,10 +99,10 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails implements Ua
         }
         DeleteRawModifiedDetails that = (DeleteRawModifiedDetails) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getIsDeleteModified(), that.getIsDeleteModified());
         eqb.append(getStartTime(), that.getStartTime());
         eqb.append(getEndTime(), that.getEndTime());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

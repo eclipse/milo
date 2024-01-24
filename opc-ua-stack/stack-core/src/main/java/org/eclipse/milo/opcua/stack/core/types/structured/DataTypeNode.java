@@ -92,9 +92,9 @@ public class DataTypeNode extends TypeNode implements UaStructuredType {
         }
         DataTypeNode that = (DataTypeNode) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getIsAbstract(), that.getIsAbstract());
         eqb.append(getDataTypeDefinition(), that.getDataTypeDefinition());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

@@ -103,10 +103,10 @@ public class ReferenceTypeNode extends TypeNode implements UaStructuredType {
         }
         ReferenceTypeNode that = (ReferenceTypeNode) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getIsAbstract(), that.getIsAbstract());
         eqb.append(getSymmetric(), that.getSymmetric());
         eqb.append(getInverseName(), that.getInverseName());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

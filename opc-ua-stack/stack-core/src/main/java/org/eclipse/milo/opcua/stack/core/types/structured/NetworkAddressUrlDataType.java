@@ -83,8 +83,8 @@ public class NetworkAddressUrlDataType extends NetworkAddressDataType implements
         }
         NetworkAddressUrlDataType that = (NetworkAddressUrlDataType) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getUrl(), that.getUrl());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getUrl(), that.getUrl());
         return eqb.build();
     }
 

@@ -80,8 +80,8 @@ public class EnumField extends EnumValueType implements UaStructuredType {
         }
         EnumField that = (EnumField) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getName(), that.getName());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getName(), that.getName());
         return eqb.build();
     }
 

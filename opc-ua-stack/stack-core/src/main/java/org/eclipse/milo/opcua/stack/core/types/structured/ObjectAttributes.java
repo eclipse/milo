@@ -80,8 +80,8 @@ public class ObjectAttributes extends NodeAttributes implements UaStructuredType
         }
         ObjectAttributes that = (ObjectAttributes) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getEventNotifier(), that.getEventNotifier());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getEventNotifier(), that.getEventNotifier());
         return eqb.build();
     }
 

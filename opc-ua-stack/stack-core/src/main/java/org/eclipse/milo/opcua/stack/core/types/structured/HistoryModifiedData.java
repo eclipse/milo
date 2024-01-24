@@ -85,8 +85,8 @@ public class HistoryModifiedData extends HistoryData implements UaStructuredType
         }
         HistoryModifiedData that = (HistoryModifiedData) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getModificationInfos(), that.getModificationInfos());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getModificationInfos(), that.getModificationInfos());
         return eqb.build();
     }
 

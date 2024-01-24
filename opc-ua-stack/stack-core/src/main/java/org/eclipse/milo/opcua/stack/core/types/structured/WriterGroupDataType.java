@@ -151,6 +151,7 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         }
         WriterGroupDataType that = (WriterGroupDataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getWriterGroupId(), that.getWriterGroupId());
         eqb.append(getPublishingInterval(), that.getPublishingInterval());
         eqb.append(getKeepAliveTime(), that.getKeepAliveTime());
@@ -160,7 +161,6 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         eqb.append(getTransportSettings(), that.getTransportSettings());
         eqb.append(getMessageSettings(), that.getMessageSettings());
         eqb.append(getDataSetWriters(), that.getDataSetWriters());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

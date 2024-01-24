@@ -84,8 +84,8 @@ public class ObjectNode extends InstanceNode implements UaStructuredType {
         }
         ObjectNode that = (ObjectNode) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getEventNotifier(), that.getEventNotifier());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getEventNotifier(), that.getEventNotifier());
         return eqb.build();
     }
 

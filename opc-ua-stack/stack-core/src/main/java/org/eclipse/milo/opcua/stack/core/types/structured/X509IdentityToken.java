@@ -84,8 +84,8 @@ public class X509IdentityToken extends UserIdentityToken implements UaStructured
         }
         X509IdentityToken that = (X509IdentityToken) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getCertificateData(), that.getCertificateData());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getCertificateData(), that.getCertificateData());
         return eqb.build();
     }
 

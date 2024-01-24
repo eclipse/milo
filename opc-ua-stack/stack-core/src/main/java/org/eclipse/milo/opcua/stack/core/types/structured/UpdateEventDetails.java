@@ -99,10 +99,10 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
         }
         UpdateEventDetails that = (UpdateEventDetails) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getPerformInsertReplace(), that.getPerformInsertReplace());
         eqb.append(getFilter(), that.getFilter());
         eqb.append(getEventData(), that.getEventData());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

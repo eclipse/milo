@@ -116,12 +116,12 @@ public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTr
         }
         DatagramWriterGroupTransport2DataType that = (DatagramWriterGroupTransport2DataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getAddress(), that.getAddress());
         eqb.append(getQosCategory(), that.getQosCategory());
         eqb.append(getDatagramQos(), that.getDatagramQos());
         eqb.append(getDiscoveryAnnounceRate(), that.getDiscoveryAnnounceRate());
         eqb.append(getTopic(), that.getTopic());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

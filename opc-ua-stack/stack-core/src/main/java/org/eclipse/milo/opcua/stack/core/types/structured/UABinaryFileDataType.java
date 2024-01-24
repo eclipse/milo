@@ -102,10 +102,10 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
         }
         UABinaryFileDataType that = (UABinaryFileDataType) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getSchemaLocation(), that.getSchemaLocation());
         eqb.append(getFileHeader(), that.getFileHeader());
         eqb.append(getBody(), that.getBody());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 

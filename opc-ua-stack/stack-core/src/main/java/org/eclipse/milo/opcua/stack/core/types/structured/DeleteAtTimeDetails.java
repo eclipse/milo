@@ -84,8 +84,8 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
         }
         DeleteAtTimeDetails that = (DeleteAtTimeDetails) object;
         var eqb = new EqualsBuilder();
-        eqb.append(getReqTimes(), that.getReqTimes());
         eqb.appendSuper(super.equals(object));
+        eqb.append(getReqTimes(), that.getReqTimes());
         return eqb.build();
     }
 

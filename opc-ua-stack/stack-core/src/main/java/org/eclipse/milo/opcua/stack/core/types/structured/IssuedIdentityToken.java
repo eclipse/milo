@@ -92,9 +92,9 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
         IssuedIdentityToken that = (IssuedIdentityToken) object;
         var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
         eqb.append(getTokenData(), that.getTokenData());
         eqb.append(getEncryptionAlgorithm(), that.getEncryptionAlgorithm());
-        eqb.appendSuper(super.equals(object));
         return eqb.build();
     }
 
