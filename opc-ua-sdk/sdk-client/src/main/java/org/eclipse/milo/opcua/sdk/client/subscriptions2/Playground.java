@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 import java.util.ArrayList;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.CreateMonitoredItemBatch;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 
@@ -74,7 +75,7 @@ public class Playground {
         // create batch of monitored items
         {
             var monitoredItems = new ArrayList<OpcUaMonitoredItem>();
-            var batch = new Object();
+            var batch = new CreateMonitoredItemBatch();
 
             for (int i = 0; i < 10; i++) {
                 var monitoredItem = OpcUaMonitoredItem.newDataItem(

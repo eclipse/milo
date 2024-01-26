@@ -10,15 +10,28 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.List;
+
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.CreateMonitoredItemBatch;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.DeleteMonitoredItemBatch;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.ModifyMonitoredItemBatch;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.SetMonitoringModeBatch;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+
+import static java.util.Objects.requireNonNull;
 
 public class OpcUaMonitoredItem {
 
@@ -33,23 +46,47 @@ public class OpcUaMonitoredItem {
         this.readValueId = readValueId;
     }
 
-    public void create() throws UaException {}
+    public void create() throws UaException {
+        // TODO
+        
+        UInteger subscriptionId = subscription.getSubscriptionId().orElseThrow();
 
-    public void create(Object batch) {}
+        var request = new MonitoredItemCreateRequest(
+            readValueId,
+            monitoringMode,
+            new MonitoringParameters(
+                null, // clientHandle,
+                samplingInterval,
+                null,
+                null, //queueSize,
+                null //discardOldest
+            )
+        );
+
+        CreateMonitoredItemsResponse response = subscription.getClient().createMonitoredItems(
+            subscriptionId,
+            TimestampsToReturn.Both,
+            List.of(request)
+        );
+
+        StatusCode result = requireNonNull(response.getResults())[0].getStatusCode();
+    }
+
+    public void create(CreateMonitoredItemBatch batch) {}
 
     public void modify() throws UaException {}
 
-    public void modify(Object batch) {}
+    public void modify(ModifyMonitoredItemBatch batch) {}
 
     public void delete() throws UaException {}
 
-    public void delete(Object batch) {}
+    public void delete(DeleteMonitoredItemBatch batch) {}
 
     public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
         // TODO
     }
 
-    public void setMonitoringMode(MonitoringMode monitoringMode, Object batch) {
+    public void setMonitoringMode(MonitoringMode monitoringMode, SetMonitoringModeBatch batch) {
         // TODO
     }
 
