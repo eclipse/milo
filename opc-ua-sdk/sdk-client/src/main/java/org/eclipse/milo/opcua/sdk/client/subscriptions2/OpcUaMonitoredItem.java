@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,9 +46,9 @@ public class OpcUaMonitoredItem {
         this.readValueId = readValueId;
     }
 
-    public void create() throws UaException {
+    public StatusCode create() throws UaException {
         // TODO
-        
+
         UInteger subscriptionId = subscription.getSubscriptionId().orElseThrow();
 
         var request = new MonitoredItemCreateRequest(
@@ -70,6 +70,12 @@ public class OpcUaMonitoredItem {
         );
 
         StatusCode result = requireNonNull(response.getResults())[0].getStatusCode();
+
+        if (result.isGood()) {
+            subscription.register(this);
+        }
+
+        return result;
     }
 
     public void create(CreateMonitoredItemBatch batch) {}

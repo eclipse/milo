@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,12 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
@@ -48,6 +50,9 @@ public class OpcUaSubscription {
     private final AtomicReference<ModificationDiff> diffRef = new AtomicReference<>(null);
 
     private final ReentrantLock lock = new ReentrantLock();
+
+    private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = new ConcurrentHashMap<>();
+    private final Map<UInteger, OpcUaMonitoredItem> itemsByServerHandle = new ConcurrentHashMap<>();
 
     private Double requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
     private UInteger requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
@@ -569,6 +574,40 @@ public class OpcUaSubscription {
             lock.lock();
 
             return lifetimeAndKeepAliveCalculated;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    void register(OpcUaMonitoredItem item) {
+        register(List.of(item));
+    }
+
+    void register(List<OpcUaMonitoredItem> items) {
+        try {
+            lock.lock();
+
+            for (OpcUaMonitoredItem item : items) {
+                itemsByClientHandle.put(item.getClientHandle(), item);
+                itemsByServerHandle.put(item.getMonitoredItemId(), item);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    void unregister(OpcUaMonitoredItem item) {
+        unregister(List.of(item));
+    }
+
+    void unregister(List<OpcUaMonitoredItem> items) {
+        try {
+            lock.lock();
+
+            for (OpcUaMonitoredItem item : items) {
+                itemsByClientHandle.remove(item.getClientHandle());
+                itemsByServerHandle.remove(item.getMonitoredItemId());
+            }
         } finally {
             lock.unlock();
         }
