@@ -11,14 +11,22 @@
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.CreateMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.DeleteMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.ModifyMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.SetMonitoringModeBatch;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -28,15 +36,34 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import static java.util.Objects.requireNonNull;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcUaMonitoredItem {
 
-    private double samplingInterval = 1000.0;
+
+    private State state = State.INITIAL;
+    private final ReentrantLock lock = new ReentrantLock();
+    private final AtomicReference<ModificationDiff> diffRef = new AtomicReference<>(null);
+
+
+    // MonitoredItem parameters that a user might modify via SetMonitoringMode:
     private MonitoringMode monitoringMode = MonitoringMode.Reporting;
+
+    // MonitoredItem parameters that a user might modify via ModifyMonitoredItem:
+    private UInteger clientHandle;
+    private Double requestedSamplingInterval = 1000.0;
+    private ExtensionObject filter;
+    private UInteger requestedQueueSize = uint(1);
+    private boolean discardOldest = true;
+
+    private Double revisedSamplingInterval;
+    private UInteger revisedQueueSize;
+    private ExtensionObject filterResult;
 
     private final OpcUaSubscription subscription;
     private final ReadValueId readValueId;
@@ -47,36 +74,66 @@ public class OpcUaMonitoredItem {
     }
 
     public StatusCode create() throws UaException {
-        // TODO
-
-        UInteger subscriptionId = subscription.getSubscriptionId().orElseThrow();
-
-        var request = new MonitoredItemCreateRequest(
-            readValueId,
-            monitoringMode,
-            new MonitoringParameters(
-                null, // clientHandle,
-                samplingInterval,
-                null,
-                null, //queueSize,
-                null //discardOldest
-            )
-        );
-
-        CreateMonitoredItemsResponse response = subscription.getClient().createMonitoredItems(
-            subscriptionId,
-            TimestampsToReturn.Both,
-            List.of(request)
-        );
-
-        StatusCode result = requireNonNull(response.getResults())[0].getStatusCode();
-
-        if (result.isGood()) {
-            subscription.register(this);
+        try {
+            return createAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
-
-        return result;
     }
+
+    public CompletableFuture<StatusCode> createAsync() {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                if (clientHandle == null) {
+                    // clientHandle = subscription.nextClientHandle();
+                }
+
+                var request = new MonitoredItemCreateRequest(
+                    readValueId,
+                    monitoringMode,
+                    new MonitoringParameters(clientHandle, requestedSamplingInterval, filter, requestedQueueSize, discardOldest)
+                );
+
+                CompletableFuture<CreateMonitoredItemsResponse> future =
+                    subscription.getClient().createMonitoredItemsAsync(
+                        subscription.getSubscriptionId().orElseThrow(),
+                        TimestampsToReturn.Both,
+                        List.of(request)
+                    );
+
+                return future.thenCompose(response -> {
+                    lock.lock();
+                    try {
+                        MonitoredItemCreateResult result = requireNonNull(response.getResults())[0];
+
+                        StatusCode statusCode = result.getStatusCode();
+
+                        if (statusCode.isGood()) {
+                            this.filterResult = result.getFilterResult();
+                            this.revisedQueueSize = result.getRevisedQueueSize();
+                            this.revisedSamplingInterval = result.getRevisedSamplingInterval();
+
+                            state = State.SYNCHRONIZED;
+                        } else {
+                            // TODO
+                            state = State.INITIAL;
+                        }
+
+                        return CompletableFuture.completedFuture(statusCode);
+                    } finally {
+                        lock.unlock();
+                    }
+                });
+            } else {
+                return CompletableFuture.completedFuture(StatusCode.GOOD);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
 
     public void create(CreateMonitoredItemBatch batch) {}
 
@@ -96,8 +153,44 @@ public class OpcUaMonitoredItem {
         // TODO
     }
 
+    public void setClientHandle(UInteger clientHandle) {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                this.clientHandle = clientHandle;
+            } else {
+                ModificationDiff diff = diffRef.updateAndGet(
+                    d ->
+                        Objects.requireNonNullElseGet(d, ModificationDiff::new)
+                );
+
+                diff.clientHandle = clientHandle;
+
+                state = State.UNSYNCHRONIZED;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void setSamplingInterval(double samplingInterval) {
-        this.samplingInterval = samplingInterval;
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                this.requestedSamplingInterval = samplingInterval;
+            } else {
+                ModificationDiff diff = diffRef.updateAndGet(
+                    d ->
+                        Objects.requireNonNullElseGet(d, ModificationDiff::new)
+                );
+
+                diff.requestedSamplingInterval = samplingInterval;
+
+                state = State.UNSYNCHRONIZED;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     public UInteger getClientHandle() {
@@ -106,6 +199,18 @@ public class OpcUaMonitoredItem {
 
     public UInteger getMonitoredItemId() {
         return null; // TODO
+    }
+
+    public Optional<UInteger> getRevisedQueueSize() {
+        return Optional.ofNullable(revisedQueueSize);
+    }
+
+    public Optional<Double> getRevisedSamplingInterval() {
+        return Optional.ofNullable(revisedSamplingInterval);
+    }
+
+    public Optional<ExtensionObject> getFilterResult() {
+        return Optional.ofNullable(filterResult);
     }
 
     public void addDataValueListener(DataValueListener listener) {}
@@ -158,8 +263,11 @@ public class OpcUaMonitoredItem {
 
     private static class ModificationDiff {
 
+        private UInteger clientHandle;
         private Double requestedSamplingInterval;
+        private ExtensionObject filter;
         private UInteger requestedQueueSize;
+        private Boolean discardOldest;
 
     }
 
