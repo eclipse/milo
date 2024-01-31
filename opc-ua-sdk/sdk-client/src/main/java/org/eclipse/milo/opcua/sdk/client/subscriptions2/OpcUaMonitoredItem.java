@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -55,15 +56,16 @@ public class OpcUaMonitoredItem {
     private MonitoringMode monitoringMode = MonitoringMode.Reporting;
 
     // MonitoredItem parameters that a user might modify via ModifyMonitoredItem:
-    private UInteger clientHandle;
+    private @Nullable UInteger clientHandle;
     private Double requestedSamplingInterval = 1000.0;
-    private ExtensionObject filter;
+    private @Nullable ExtensionObject filter;
     private UInteger requestedQueueSize = uint(1);
     private boolean discardOldest = true;
 
-    private Double revisedSamplingInterval;
-    private UInteger revisedQueueSize;
-    private ExtensionObject filterResult;
+    private @Nullable UInteger monitoredItemId;
+    private @Nullable Double revisedSamplingInterval;
+    private @Nullable UInteger revisedQueueSize;
+    private @Nullable ExtensionObject filterResult;
 
     private final OpcUaSubscription subscription;
     private final ReadValueId readValueId;
@@ -87,13 +89,19 @@ public class OpcUaMonitoredItem {
         try {
             if (state == State.INITIAL) {
                 if (clientHandle == null) {
-                    // clientHandle = subscription.nextClientHandle();
+                    clientHandle = subscription.nextClientHandle();
                 }
 
                 var request = new MonitoredItemCreateRequest(
                     readValueId,
                     monitoringMode,
-                    new MonitoringParameters(clientHandle, requestedSamplingInterval, filter, requestedQueueSize, discardOldest)
+                    new MonitoringParameters(
+                        clientHandle,
+                        requestedSamplingInterval,
+                        filter,
+                        requestedQueueSize,
+                        discardOldest
+                    )
                 );
 
                 CompletableFuture<CreateMonitoredItemsResponse> future =
@@ -111,6 +119,7 @@ public class OpcUaMonitoredItem {
                         StatusCode statusCode = result.getStatusCode();
 
                         if (statusCode.isGood()) {
+                            this.monitoredItemId = result.getMonitoredItemId();
                             this.filterResult = result.getFilterResult();
                             this.revisedQueueSize = result.getRevisedQueueSize();
                             this.revisedSamplingInterval = result.getRevisedSamplingInterval();
@@ -193,12 +202,52 @@ public class OpcUaMonitoredItem {
         }
     }
 
-    public UInteger getClientHandle() {
-        return null; // TODO
+    public void setRequestedQueueSize(UInteger requestedQueueSize) {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                this.requestedQueueSize = requestedQueueSize;
+            } else {
+                ModificationDiff diff = diffRef.updateAndGet(
+                    d ->
+                        Objects.requireNonNullElseGet(d, ModificationDiff::new)
+                );
+
+                diff.requestedQueueSize = requestedQueueSize;
+
+                state = State.UNSYNCHRONIZED;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public UInteger getMonitoredItemId() {
-        return null; // TODO
+    public void setDiscardOldest(boolean discardOldest) {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                this.discardOldest = discardOldest;
+            } else {
+                ModificationDiff diff = diffRef.updateAndGet(
+                    d ->
+                        Objects.requireNonNullElseGet(d, ModificationDiff::new)
+                );
+
+                diff.discardOldest = discardOldest;
+
+                state = State.UNSYNCHRONIZED;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Optional<UInteger> getClientHandle() {
+        return Optional.ofNullable(clientHandle);
+    }
+
+    public Optional<UInteger> getMonitoredItemId() {
+        return Optional.ofNullable(monitoredItemId);
     }
 
     public Optional<UInteger> getRevisedQueueSize() {
@@ -263,11 +312,11 @@ public class OpcUaMonitoredItem {
 
     private static class ModificationDiff {
 
-        private UInteger clientHandle;
-        private Double requestedSamplingInterval;
-        private ExtensionObject filter;
-        private UInteger requestedQueueSize;
-        private Boolean discardOldest;
+        private @Nullable UInteger clientHandle;
+        private @Nullable Double requestedSamplingInterval;
+        private @Nullable ExtensionObject filter;
+        private @Nullable UInteger requestedQueueSize;
+        private @Nullable Boolean discardOldest;
 
     }
 

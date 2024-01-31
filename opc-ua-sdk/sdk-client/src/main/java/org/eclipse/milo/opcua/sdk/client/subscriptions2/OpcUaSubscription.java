@@ -52,7 +52,10 @@ public class OpcUaSubscription {
     private final ReentrantLock lock = new ReentrantLock();
 
     private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = new ConcurrentHashMap<>();
-    private final Map<UInteger, OpcUaMonitoredItem> itemsByServerHandle = new ConcurrentHashMap<>();
+    private final Map<UInteger, OpcUaMonitoredItem> itemsByMonitoredItemId = new ConcurrentHashMap<>();
+
+    private final ClientHandleSequence clientHandleSequence =
+        new ClientHandleSequence(itemsByClientHandle::containsKey);
 
     private Double requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
     private UInteger requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
@@ -588,8 +591,8 @@ public class OpcUaSubscription {
             lock.lock();
 
             for (OpcUaMonitoredItem item : items) {
-                itemsByClientHandle.put(item.getClientHandle(), item);
-                itemsByServerHandle.put(item.getMonitoredItemId(), item);
+                item.getClientHandle().ifPresent(h -> itemsByClientHandle.put(h, item));
+                item.getMonitoredItemId().ifPresent(id -> itemsByMonitoredItemId.put(id, item));
             }
         } finally {
             lock.unlock();
@@ -605,12 +608,16 @@ public class OpcUaSubscription {
             lock.lock();
 
             for (OpcUaMonitoredItem item : items) {
-                itemsByClientHandle.remove(item.getClientHandle());
-                itemsByServerHandle.remove(item.getMonitoredItemId());
+                item.getClientHandle().ifPresent(itemsByClientHandle::remove);
+                item.getMonitoredItemId().ifPresent(itemsByMonitoredItemId::remove);
             }
         } finally {
             lock.unlock();
         }
+    }
+
+    UInteger nextClientHandle() {
+        return clientHandleSequence.nextClientHandle();
     }
 
     private static UInteger calculateMaxKeepAliveCount(double publishingInterval) {
