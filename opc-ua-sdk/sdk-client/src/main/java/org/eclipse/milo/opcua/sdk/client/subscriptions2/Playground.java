@@ -63,7 +63,7 @@ public class Playground {
                 NodeIds.Server_ServerStatus_CurrentTime
             );
 
-            monitoredItem.addDataValueListener(
+            monitoredItem.setDataValueListener(
                 (item, value) ->
                     System.out.printf(
                         "[%s] Received value: %s%n",
@@ -88,7 +88,7 @@ public class Playground {
 
                 monitoredItems.add(monitoredItem);
 
-                monitoredItem.addDataValueListener(
+                monitoredItem.setDataValueListener(
                     (item, value) ->
                         System.out.printf(
                             "[%s] Received value: %s%n",

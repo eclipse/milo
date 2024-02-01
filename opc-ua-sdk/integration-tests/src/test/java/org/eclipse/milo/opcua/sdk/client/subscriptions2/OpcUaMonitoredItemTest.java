@@ -15,13 +15,20 @@ import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
-    private final OpcUaSubscription subscription = new OpcUaSubscription(client);
+    private OpcUaSubscription subscription;
+
+    @BeforeEach
+    void setUp() throws UaException {
+        subscription = new OpcUaSubscription(client);
+        subscription.create();
+    }
 
     @AfterEach
     void tearDown() throws UaException {

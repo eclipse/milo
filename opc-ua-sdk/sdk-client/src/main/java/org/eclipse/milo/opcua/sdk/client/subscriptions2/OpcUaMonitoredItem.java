@@ -23,11 +23,14 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.CreateMonitored
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.DeleteMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.ModifyMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.SetMonitoringModeBatch;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -51,6 +54,8 @@ public class OpcUaMonitoredItem {
     private final ReentrantLock lock = new ReentrantLock();
     private final AtomicReference<ModificationDiff> diffRef = new AtomicReference<>(null);
 
+    private @Nullable DataValueListener dataValueListener;
+    private @Nullable EventValueListener eventValueListener;
 
     // MonitoredItem parameters that a user might modify via SetMonitoringMode:
     private MonitoringMode monitoringMode = MonitoringMode.Reporting;
@@ -242,6 +247,26 @@ public class OpcUaMonitoredItem {
         }
     }
 
+    public void setFilter(ExtensionObject filter) {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                this.filter = filter;
+            } else {
+                ModificationDiff diff = diffRef.updateAndGet(
+                    d ->
+                        Objects.requireNonNullElseGet(d, ModificationDiff::new)
+                );
+
+                diff.filter = filter;
+
+                state = State.UNSYNCHRONIZED;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public Optional<UInteger> getClientHandle() {
         return Optional.ofNullable(clientHandle);
     }
@@ -262,13 +287,23 @@ public class OpcUaMonitoredItem {
         return Optional.ofNullable(filterResult);
     }
 
-    public void addDataValueListener(DataValueListener listener) {}
+    public void setDataValueListener(DataValueListener listener) {
+        lock.lock();
+        try {
+            this.dataValueListener = listener;
+        } finally {
+            lock.unlock();
+        }
+    }
 
-    public void removeDataValueListener(DataValueListener listener) {}
-
-    public void addEventValueListener(EventValueListener listener) {}
-
-    public void removeEventValueListener(EventValueListener listener) {}
+    public void setEventValueListener(EventValueListener listener) {
+        lock.lock();
+        try {
+            this.eventValueListener = listener;
+        } finally {
+            lock.unlock();
+        }
+    }
 
     /**
      * A callback that receives notification of new values for a {@link ManagedDataItem}.
@@ -329,27 +364,70 @@ public class OpcUaMonitoredItem {
     }
 
     public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, NodeId nodeId) {
-        return null; // TODO
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.Value.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        return newDataItem(subscription, readValueId);
     }
 
     public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, NodeId nodeId, double samplingInterval) {
-        return null; // TODO
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.Value.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        return newDataItem(subscription, readValueId, samplingInterval);
     }
 
     public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, ReadValueId readValueId) {
-        return null; // TODO
+        return new OpcUaMonitoredItem(subscription, readValueId);
     }
 
     public static OpcUaMonitoredItem newDataItem(OpcUaSubscription subscription, ReadValueId readValueId, double samplingInterval) {
-        return null; // TODO
+        var item = newDataItem(subscription, readValueId);
+        item.setSamplingInterval(samplingInterval);
+
+        return item;
     }
 
     public static OpcUaMonitoredItem newEventItem(OpcUaSubscription subscription, NodeId nodeId) {
-        return null; // TODO
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.EventNotifier.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        return new OpcUaMonitoredItem(subscription, readValueId);
     }
 
-    public static OpcUaMonitoredItem newEventItem(OpcUaSubscription subscription, NodeId nodeId, EventFilter eventFilter) {
-        return null; // TODO
+    public static OpcUaMonitoredItem newEventItem(
+        OpcUaSubscription subscription,
+        NodeId nodeId,
+        EventFilter eventFilter
+    ) {
+
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.EventNotifier.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        EncodingContext ctx = subscription.getClient().getStaticEncodingContext();
+        ExtensionObject filter = ExtensionObject.encode(ctx, eventFilter);
+
+        var item = new OpcUaMonitoredItem(subscription, readValueId);
+        item.setSamplingInterval(0.0);
+        item.setFilter(filter);
+
+        return item;
     }
 
 }
