@@ -10,11 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
-import java.util.concurrent.ExecutionException;
-
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.junit.jupiter.api.AfterEach;
@@ -23,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
@@ -43,73 +39,40 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
     @Test
     void createMonitoredItem() throws UaException {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        monitoredItem.create();
-    }
-
-    @Test
-    void createMonitoredItem_InvalidState() throws UaException {
-        var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
-            NodeIds.Server_ServerStatus_CurrentTime
-        );
-
-        monitoredItem.create();
-
-        // already created, can't create again
-        assertThrows(UaException.class, monitoredItem::create);
+        subscription.addMonitoredItem(monitoredItem);
+        assertEquals(1, subscription.synchronizeMonitoredItems());
+        assertEquals(OpcUaMonitoredItem.State.SYNCHRONIZED, monitoredItem.getState());
     }
 
     @Test
     void deleteMonitoredItem() throws UaException {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        monitoredItem.create();
-        monitoredItem.delete();
-    }
+        subscription.addMonitoredItem(monitoredItem);
+        assertEquals(1, subscription.synchronizeMonitoredItems());
+        assertEquals(OpcUaMonitoredItem.State.SYNCHRONIZED, monitoredItem.getState());
 
-    @Test
-    void deleteMonitoredItem_InvalidState() throws UaException, InterruptedException {
-        var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
-            NodeIds.Server_ServerStatus_CurrentTime
-        );
-
-        // doesn't exist yet
-        assertThrows(UaException.class, monitoredItem::delete);
-
-        try {
-            monitoredItem.deleteAsync().toCompletableFuture().get();
-        } catch (ExecutionException e) {
-            UaException uax = UaException.extract(e).orElseThrow();
-            assertEquals(StatusCodes.Bad_InvalidState, uax.getStatusCode().getValue());
-        }
-
-        monitoredItem.create();
-        monitoredItem.delete();
-
-        // already deleted, can't delete again
-        assertThrows(UaException.class, monitoredItem::delete);
+        subscription.removeMonitoredItem(monitoredItem);
+        assertEquals(1, subscription.synchronizeMonitoredItems());
+        assertEquals(OpcUaMonitoredItem.State.INITIAL, monitoredItem.getState());
     }
 
     @Test
     void modifyMonitoredItem_SamplingInterval() throws UaException {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        monitoredItem.create();
+        subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
 
         monitoredItem.setSamplingInterval(5000.0);
-        monitoredItem.modify();
-
+        assertEquals(1, subscription.synchronizeMonitoredItems());
         assertEquals(5000.0, monitoredItem.getRequestedSamplingInterval());
         assertEquals(5000.0, monitoredItem.getRevisedSamplingInterval().orElseThrow());
     }
@@ -117,48 +80,30 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
     @Test
     void modifyMonitoredItem_QueueSize() throws UaException {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        monitoredItem.create();
+        subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
 
         monitoredItem.setRequestedQueueSize(uint(10));
-        monitoredItem.modify();
-
+        assertEquals(1, subscription.synchronizeMonitoredItems());
         assertEquals(uint(10), monitoredItem.getRequestedQueueSize());
         assertEquals(uint(10), monitoredItem.getRevisedQueueSize().orElseThrow());
     }
 
     @Test
-    void modifyMonitoredItem_InvalidState() throws UaException {
-        var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
-            NodeIds.Server_ServerStatus_CurrentTime
-        );
-
-        // doesn't exist yet
-        assertThrows(UaException.class, monitoredItem::modify);
-
-        monitoredItem.create();
-        monitoredItem.delete();
-
-        // already deleted, can't modify
-        assertThrows(UaException.class, monitoredItem::modify);
-    }
-
-    @Test
     void modifyMonitoredItem_MonitoringMode() throws UaException {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            subscription,
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
-        monitoredItem.create();
+        subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
 
         monitoredItem.setMonitoringMode(MonitoringMode.Disabled);
-        monitoredItem.modify();
-
+        int total = subscription.synchronizeMonitoredItems();
+        assertEquals(1, total);
         assertEquals(MonitoringMode.Disabled, monitoredItem.getMonitoringMode());
     }
 

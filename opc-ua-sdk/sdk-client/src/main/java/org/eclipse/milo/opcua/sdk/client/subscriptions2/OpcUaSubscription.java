@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,21 +23,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.DeleteSubscriptionBatch;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.SetPublishingModeBatch;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.supplyAsyncCompose;
@@ -53,11 +61,20 @@ public class OpcUaSubscription {
 
     private final ReentrantLock lock = new ReentrantLock();
 
-    private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = new ConcurrentHashMap<>();
-    private final Map<UInteger, OpcUaMonitoredItem> itemsByMonitoredItemId = new ConcurrentHashMap<>();
+
+    /**
+     * MonitoredItems added to this Subscription, by ClientHandle.
+     */
+    private final Map<UInteger, OpcUaMonitoredItem> monitoredItems = new ConcurrentHashMap<>();
+
+    /**
+     * MonitoredItems that have been removed from the Subscription and are pending deletion on the
+     * Server.
+     */
+    private List<OpcUaMonitoredItem> itemsToDelete = new ArrayList<>();
 
     private final ClientHandleSequence clientHandleSequence =
-        new ClientHandleSequence(itemsByClientHandle::containsKey);
+        new ClientHandleSequence(monitoredItems::containsKey);
 
     private Double requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
     private UInteger requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
@@ -91,6 +108,8 @@ public class OpcUaSubscription {
     public OpcUaClient getClient() {
         return client;
     }
+
+    //region Subscription Management
 
     public void create() throws UaException {
         lock.lock();
@@ -246,15 +265,152 @@ public class OpcUaSubscription {
         }
     }
 
-    public CompletableFuture<Unit> deleteAsync(DeleteSubscriptionBatch batch) {
-        try {
-            lock.lock();
+    //endregion
 
-            return null; // TODO
-        } finally {
-            lock.unlock();
+    //region Monitored Item Management
+
+    public void addMonitoredItem(OpcUaMonitoredItem item) {
+        UInteger clientHandle = clientHandleSequence.nextClientHandle();
+        item.setClientHandle(clientHandle);
+        item.setSubscription(this);
+        monitoredItems.put(clientHandle, item);
+    }
+
+    public void addMonitoredItems(List<OpcUaMonitoredItem> items) {
+        items.forEach(this::addMonitoredItem);
+    }
+
+    public void removeMonitoredItem(OpcUaMonitoredItem item) {
+        OpcUaMonitoredItem removedItem =
+            item.getClientHandle().map(monitoredItems::remove).orElse(null);
+
+        if (removedItem != null) {
+            removedItem.setSubscription(null);
+            itemsToDelete.add(removedItem);
+            state = State.UNSYNCHRONIZED;
         }
     }
+
+    public void removeMonitoredItems(List<OpcUaMonitoredItem> items) {
+        items.forEach(this::removeMonitoredItem);
+    }
+
+    /**
+     * Synchronize the Subscription's MonitoredItems with the Server.
+     * <p>
+     * This is a compound operation that deletes any MonitoredItems that have been removed from
+     * the Subscription, modifies any existing MonitoredItems that have been changed, and creates
+     * any new MonitoredItems that have been added but not yet created on the Server.
+     *
+     * @return the total number of MonitoredItems that were deleted, modified, or created.
+     * @throws UaException if any of the service calls fail.
+     */
+    public int synchronizeMonitoredItems() throws UaException {
+        List<OpcUaMonitoredItem> deletedItems = deleteMonitoredItems();
+        List<OpcUaMonitoredItem> modifiedItems = modifyMonitoredItems();
+        List<OpcUaMonitoredItem> createdItems = createMonitoredItems();
+
+        return deletedItems.size() + modifiedItems.size() + createdItems.size();
+    }
+
+    /**
+     * Create any MonitoredItems that have been added to the Subscription but not yet created on
+     * the Server.
+     *
+     * @return a List of the MonitoredItems that were created.
+     * @throws UaException if the create service call fails.
+     */
+    private List<OpcUaMonitoredItem> createMonitoredItems() throws UaException {
+        List<OpcUaMonitoredItem> itemsToCreate = monitoredItems.values()
+            .stream()
+            .filter(item -> item.getState() == OpcUaMonitoredItem.State.INITIAL)
+            .collect(Collectors.toList());
+
+        if (!itemsToCreate.isEmpty()) {
+            CreateMonitoredItemsResponse response = client.createMonitoredItems(
+                subscriptionId,
+                TimestampsToReturn.Both,
+                itemsToCreate.stream()
+                    .map(OpcUaMonitoredItem::newCreateRequest)
+                    .collect(Collectors.toList())
+            );
+
+            MonitoredItemCreateResult[] results = requireNonNull(response.getResults());
+
+            for (int i = 0; i < results.length; i++) {
+                MonitoredItemCreateResult result = results[i];
+
+                itemsToCreate.get(i).applyCreateResult(result);
+            }
+        }
+
+        return itemsToCreate;
+    }
+
+    /**
+     * Modify any MonitoredItems that have been changed.
+     *
+     * @return a List of the MonitoredItems that were modified.
+     * @throws UaException if the modify service call fails.
+     */
+    private List<OpcUaMonitoredItem> modifyMonitoredItems() throws UaException {
+        List<OpcUaMonitoredItem> itemsToModify = monitoredItems.values()
+            .stream()
+            .filter(item -> item.getState() == OpcUaMonitoredItem.State.UNSYNCHRONIZED)
+            .collect(Collectors.toList());
+
+        if (!itemsToModify.isEmpty()) {
+            ModifyMonitoredItemsResponse response = client.modifyMonitoredItems(
+                subscriptionId,
+                TimestampsToReturn.Both,
+                itemsToModify.stream()
+                    .map(OpcUaMonitoredItem::newModifyRequest)
+                    .collect(Collectors.toList())
+            );
+
+            MonitoredItemModifyResult[] results = requireNonNull(response.getResults());
+
+            for (int i = 0; i < results.length; i++) {
+                MonitoredItemModifyResult result = results[i];
+
+                itemsToModify.get(i).applyModifyResult(result);
+            }
+        }
+
+        return itemsToModify;
+    }
+
+    /**
+     * Delete any MonitoredItems that have been removed from the Subscription.
+     *
+     * @return a List of the MonitoredItems that were deleted.
+     * @throws UaException if the delete service call fails.
+     */
+    private List<OpcUaMonitoredItem> deleteMonitoredItems() throws UaException {
+        List<OpcUaMonitoredItem> itemsToDelete = this.itemsToDelete;
+        this.itemsToDelete = new ArrayList<>();
+
+        if (!itemsToDelete.isEmpty()) {
+            List<UInteger> itemIds = itemsToDelete.stream()
+                .map(item -> item.getMonitoredItemId().orElseThrow())
+                .collect(Collectors.toList());
+
+            DeleteMonitoredItemsResponse response =
+                client.deleteMonitoredItems(subscriptionId, itemIds);
+
+            StatusCode[] results = requireNonNull(response.getResults());
+
+            for (int i = 0; i < results.length; i++) {
+                StatusCode result = results[i];
+
+                itemsToDelete.get(i).applyDeleteResult(result);
+            }
+        }
+
+        return itemsToDelete;
+    }
+
+    //endregion
 
     public void setPublishingMode(boolean enabled) throws UaException {
         try {
@@ -276,10 +432,6 @@ public class OpcUaSubscription {
 
             return future.thenCompose(response -> CompletableFuture.completedFuture(Unit.VALUE));
         }
-    }
-
-    public void setPublishingMode(boolean enabled, SetPublishingModeBatch batch) {
-        // TODO
     }
 
     public State getState() {
@@ -570,40 +722,6 @@ public class OpcUaSubscription {
             lock.lock();
 
             return lifetimeAndKeepAliveCalculated;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    void register(OpcUaMonitoredItem item) {
-        register(List.of(item));
-    }
-
-    void register(List<OpcUaMonitoredItem> items) {
-        try {
-            lock.lock();
-
-            for (OpcUaMonitoredItem item : items) {
-                item.getClientHandle().ifPresent(h -> itemsByClientHandle.put(h, item));
-                item.getMonitoredItemId().ifPresent(id -> itemsByMonitoredItemId.put(id, item));
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    void unregister(OpcUaMonitoredItem item) {
-        unregister(List.of(item));
-    }
-
-    void unregister(List<OpcUaMonitoredItem> items) {
-        try {
-            lock.lock();
-
-            for (OpcUaMonitoredItem item : items) {
-                item.getClientHandle().ifPresent(itemsByClientHandle::remove);
-                item.getMonitoredItemId().ifPresent(itemsByMonitoredItemId::remove);
-            }
         } finally {
             lock.unlock();
         }

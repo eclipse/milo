@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 import java.util.ArrayList;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.CreateMonitoredItemBatch;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 
@@ -55,31 +54,12 @@ public class Playground {
     }
 
     private static void monitoredItems(OpcUaSubscription subscription) throws UaException {
-        // create single monitored item
-        {
-            var monitoredItem = OpcUaMonitoredItem.newDataItem(
-                subscription,
-                NodeIds.Server_ServerStatus_CurrentTime
-            );
-
-            monitoredItem.setDataValueListener(
-                (item, value) ->
-                    System.out.printf(
-                        "[%s] Received value: %s%n",
-                        item.getMonitoredItemId(), value)
-            );
-
-            monitoredItem.create();
-        }
-
-        // create batch of monitored items
+        // bulk create, modify, delete monitored items, via subscription
         {
             var monitoredItems = new ArrayList<OpcUaMonitoredItem>();
-            var batch = new CreateMonitoredItemBatch();
 
             for (int i = 0; i < 10; i++) {
                 var monitoredItem = OpcUaMonitoredItem.newDataItem(
-                    subscription,
                     NodeIds.Server_ServerStatus_CurrentTime
                 );
 
@@ -92,11 +72,27 @@ public class Playground {
                             item.getMonitoredItemId(), value)
                 );
 
-                monitoredItem.create(batch);
+                subscription.addMonitoredItem(monitoredItem);
             }
 
-            // batch.execute();
+            subscription.synchronizeMonitoredItems();
+
+
+            for (OpcUaMonitoredItem monitoredItem : monitoredItems) {
+                monitoredItem.setSamplingInterval(100.0);
+                monitoredItem.setRequestedQueueSize(uint(10));
+            }
+
+            subscription.synchronizeMonitoredItems();
+
+            for (int i = 0; i < monitoredItems.size(); i += 2) {
+                subscription.removeMonitoredItem(monitoredItems.get(i));
+            }
+
+            subscription.synchronizeMonitoredItems();
         }
+
+
     }
 
 }
