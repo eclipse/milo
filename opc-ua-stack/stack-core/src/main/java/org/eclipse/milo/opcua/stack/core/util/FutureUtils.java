@@ -15,8 +15,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +26,10 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class FutureUtils {
+
+    public static <T> CompletionStage<T> supplyAsyncCompose(Supplier<CompletionStage<T>> supplier, Executor executor) {
+        return CompletableFuture.supplyAsync(supplier, executor).thenCompose(Function.identity());
+    }
 
     public static <T> CompletableFuture<List<T>> sequence(Stream<CompletableFuture<T>> stream) {
         return sequence(stream.collect(Collectors.toList()));

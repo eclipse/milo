@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.supplyAsyncCompose;
 
 public class OpcUaSubscription {
 
@@ -91,18 +93,8 @@ public class OpcUaSubscription {
     }
 
     public void create() throws UaException {
+        lock.lock();
         try {
-            createAsync().get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
-    public CompletableFuture<Unit> createAsync() {
-        try {
-            lock.lock();
-
             if (state == State.INITIAL) {
                 if (requestedMaxKeepAliveCount == null) {
                     requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
@@ -111,7 +103,7 @@ public class OpcUaSubscription {
                     requestedLifetimeCount = calculateLifetimeCount(requestedMaxKeepAliveCount);
                 }
 
-                CompletableFuture<CreateSubscriptionResponse> future = client.createSubscriptionAsync(
+                CreateSubscriptionResponse response = client.createSubscription(
                     requestedPublishingInterval,
                     requestedLifetimeCount,
                     requestedMaxKeepAliveCount,
@@ -120,35 +112,36 @@ public class OpcUaSubscription {
                     priority
                 );
 
-                return future.thenCompose(response -> {
-                    try {
-                        lock.lock();
+                state = State.SYNCHRONIZED;
 
-                        subscriptionId = response.getSubscriptionId();
-                        revisedPublishingInterval = response.getRevisedPublishingInterval();
-                        revisedLifetimeCount = response.getRevisedLifetimeCount();
-                        revisedMaxKeepAliveCount = response.getRevisedMaxKeepAliveCount();
+                subscriptionId = response.getSubscriptionId();
+                revisedPublishingInterval = response.getRevisedPublishingInterval();
+                revisedLifetimeCount = response.getRevisedLifetimeCount();
+                revisedMaxKeepAliveCount = response.getRevisedMaxKeepAliveCount();
 
-                        state = State.SYNCHRONIZED;
-                    } finally {
-                        lock.unlock();
+                client.getPublishingManager().addSubscription(
+                    this,
+                    notificationMessage -> {
+                        // TODO
                     }
-
-                    client.getPublishingManager().addSubscription(
-                        this,
-                        notificationMessage -> {
-                            // TODO
-                        }
-                    );
-
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                });
+                );
             } else {
-                return CompletableFuture.completedFuture(Unit.VALUE);
+                throw new UaException(StatusCodes.Bad_InvalidState);
             }
         } finally {
             lock.unlock();
         }
+    }
+
+    public CompletionStage<Unit> createAsync() {
+        return supplyAsyncCompose(() -> {
+            try {
+                create();
+                return CompletableFuture.completedFuture(Unit.VALUE);
+            } catch (UaException e) {
+                return CompletableFuture.failedFuture(e);
+            }
+        }, client.getTransport().getConfig().getExecutor());
     }
 
     public void modify() throws UaException {

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -37,15 +37,21 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.supplyAsyncCompose;
 
 public class OpcUaMonitoredItem {
 
@@ -80,16 +86,7 @@ public class OpcUaMonitoredItem {
         this.readValueId = readValueId;
     }
 
-    public StatusCode create() throws UaException {
-        try {
-            return createAsync().get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
-    public CompletableFuture<StatusCode> createAsync() {
+    public void create() throws UaException {
         lock.lock();
         try {
             if (state == State.INITIAL) {
@@ -109,55 +106,182 @@ public class OpcUaMonitoredItem {
                     )
                 );
 
-                CompletableFuture<CreateMonitoredItemsResponse> future =
-                    subscription.getClient().createMonitoredItemsAsync(
+                CreateMonitoredItemsResponse response =
+                    subscription.getClient().createMonitoredItems(
                         subscription.getSubscriptionId().orElseThrow(),
                         TimestampsToReturn.Both,
                         List.of(request)
                     );
 
-                return future.thenCompose(response -> {
-                    lock.lock();
-                    try {
-                        MonitoredItemCreateResult result = requireNonNull(response.getResults())[0];
+                MonitoredItemCreateResult result = requireNonNull(response.getResults())[0];
 
-                        StatusCode statusCode = result.getStatusCode();
+                StatusCode statusCode = result.getStatusCode();
 
-                        if (statusCode.isGood()) {
-                            this.monitoredItemId = result.getMonitoredItemId();
-                            this.filterResult = result.getFilterResult();
-                            this.revisedQueueSize = result.getRevisedQueueSize();
-                            this.revisedSamplingInterval = result.getRevisedSamplingInterval();
+                if (statusCode.isGood()) {
+                    state = State.SYNCHRONIZED;
 
-                            state = State.SYNCHRONIZED;
-                        } else {
-                            // TODO
-                            state = State.INITIAL;
-                        }
+                    this.monitoredItemId = result.getMonitoredItemId();
+                    this.filterResult = result.getFilterResult();
+                    this.revisedQueueSize = result.getRevisedQueueSize();
+                    this.revisedSamplingInterval = result.getRevisedSamplingInterval();
+                } else {
+                    state = State.INITIAL;
 
-                        return CompletableFuture.completedFuture(statusCode);
-                    } finally {
-                        lock.unlock();
-                    }
-                });
+                    throw new UaException(statusCode);
+                }
             } else {
-                return CompletableFuture.completedFuture(StatusCode.GOOD);
+                throw new UaException(StatusCodes.Bad_InvalidState);
             }
         } finally {
             lock.unlock();
         }
     }
 
+    public CompletableFuture<Unit> createAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                create();
+                return Unit.VALUE;
+            } catch (UaException e) {
+                throw new RuntimeException(e);
+            }
+        }, subscription.getClient().getTransport().getConfig().getExecutor());
+    }
 
-    public void create(CreateMonitoredItemBatch batch) {}
+    public void create(CreateMonitoredItemBatch batch) {
+        // TODO
+    }
 
-    public void modify() throws UaException {}
+    public void modify() throws UaException {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                throw new UaException(StatusCodes.Bad_InvalidState);
+            } else {
+                ModificationDiff diff = diffRef.getAndSet(null);
 
-    public void modify(ModifyMonitoredItemBatch batch) {}
+                if (diff != null) {
+                    if (diff.clientHandle != null) {
+                        clientHandle = diff.clientHandle;
+                    }
+                    if (diff.requestedSamplingInterval != null) {
+                        requestedSamplingInterval = diff.requestedSamplingInterval;
+                    }
+                    if (diff.filter != null) {
+                        filter = diff.filter;
+                    }
+                    if (diff.requestedQueueSize != null) {
+                        requestedQueueSize = diff.requestedQueueSize;
+                    }
+                    if (diff.discardOldest != null) {
+                        discardOldest = diff.discardOldest;
+                    }
+                }
 
-    public void delete() throws UaException {}
+                var request = new MonitoredItemModifyRequest(
+                    monitoredItemId,
+                    new MonitoringParameters(
+                        clientHandle,
+                        requestedSamplingInterval,
+                        filter,
+                        requestedQueueSize,
+                        discardOldest
+                    )
+                );
 
-    public void delete(DeleteMonitoredItemBatch batch) {}
+                ModifyMonitoredItemsResponse response = subscription.getClient().modifyMonitoredItems(
+                    subscription.getSubscriptionId().orElseThrow(),
+                    TimestampsToReturn.Both,
+                    List.of(request)
+                );
+
+                MonitoredItemModifyResult result = requireNonNull(response.getResults())[0];
+
+                StatusCode statusCode = result.getStatusCode();
+
+                if (statusCode.isGood()) {
+                    state = State.SYNCHRONIZED;
+
+                    this.filterResult = result.getFilterResult();
+                    this.revisedQueueSize = result.getRevisedQueueSize();
+                    this.revisedSamplingInterval = result.getRevisedSamplingInterval();
+                } else {
+                    if (statusCode.getValue() == StatusCodes.Bad_MonitoredItemIdInvalid) {
+                        state = State.INITIAL;
+                    } else {
+                        state = State.UNSYNCHRONIZED;
+                    }
+
+                    throw new UaException(statusCode);
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public CompletableFuture<Unit> modifyAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                modify();
+                return Unit.VALUE;
+            } catch (UaException e) {
+                throw new RuntimeException(e);
+            }
+        }, subscription.getClient().getTransport().getConfig().getExecutor());
+    }
+
+    public void modify(ModifyMonitoredItemBatch batch) {
+        // TODO
+    }
+
+    public void delete() throws UaException {
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                throw new UaException(StatusCodes.Bad_InvalidState);
+            } else {
+                if (monitoredItemId != null) {
+                    DeleteMonitoredItemsResponse response =
+                        subscription.getClient().deleteMonitoredItems(
+                            subscription.getSubscriptionId().orElseThrow(),
+                            List.of(monitoredItemId)
+                        );
+
+                    StatusCode result = requireNonNull(response.getResults())[0];
+
+                    if (result.isGood()) {
+                        state = State.INITIAL;
+                    } else {
+                        if (result.getValue() == StatusCodes.Bad_MonitoredItemIdInvalid) {
+                            state = State.INITIAL;
+                        }
+
+                        throw new UaException(result);
+                    }
+                } else {
+                    throw new UaException(StatusCodes.Bad_InvalidState);
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public CompletionStage<Unit> deleteAsync() {
+        return supplyAsyncCompose(() -> {
+            try {
+                delete();
+                return CompletableFuture.completedFuture(Unit.VALUE);
+            } catch (UaException e) {
+                return CompletableFuture.failedFuture(e);
+            }
+        }, subscription.getClient().getTransport().getConfig().getExecutor());
+    }
+
+    public void delete(DeleteMonitoredItemBatch batch) {
+        // TODO
+    }
 
     public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
         // TODO
@@ -273,6 +397,14 @@ public class OpcUaMonitoredItem {
 
     public Optional<UInteger> getMonitoredItemId() {
         return Optional.ofNullable(monitoredItemId);
+    }
+
+    public Double getRequestedSamplingInterval() {
+        return requestedSamplingInterval;
+    }
+
+    public UInteger getRequestedQueueSize() {
+        return requestedQueueSize;
     }
 
     public Optional<UInteger> getRevisedQueueSize() {
