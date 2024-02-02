@@ -16,6 +16,7 @@ import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -144,6 +145,21 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
         // already deleted, can't modify
         assertThrows(UaException.class, monitoredItem::modify);
+    }
+
+    @Test
+    void modifyMonitoredItem_MonitoringMode() throws UaException {
+        var monitoredItem = OpcUaMonitoredItem.newDataItem(
+            subscription,
+            NodeIds.Server_ServerStatus_CurrentTime
+        );
+
+        monitoredItem.create();
+
+        monitoredItem.setMonitoringMode(MonitoringMode.Disabled);
+        monitoredItem.modify();
+
+        assertEquals(MonitoringMode.Disabled, monitoredItem.getMonitoringMode());
     }
 
 }

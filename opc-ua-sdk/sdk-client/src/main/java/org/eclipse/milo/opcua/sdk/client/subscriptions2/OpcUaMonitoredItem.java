@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.CreateMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.DeleteMonitoredItemBatch;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.ModifyMonitoredItemBatch;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.batching.SetMonitoringModeBatch;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -46,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,13 +137,13 @@ public class OpcUaMonitoredItem {
         }
     }
 
-    public CompletableFuture<Unit> createAsync() {
-        return CompletableFuture.supplyAsync(() -> {
+    public CompletionStage<Unit> createAsync() {
+        return supplyAsyncCompose(() -> {
             try {
                 create();
-                return Unit.VALUE;
+                return CompletableFuture.completedFuture(Unit.VALUE);
             } catch (UaException e) {
-                throw new RuntimeException(e);
+                return CompletableFuture.failedFuture(e);
             }
         }, subscription.getClient().getTransport().getConfig().getExecutor());
     }
@@ -158,61 +158,18 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 throw new UaException(StatusCodes.Bad_InvalidState);
             } else {
-                ModificationDiff diff = diffRef.getAndSet(null);
+                ModificationDiff diff = diffRef.get();
 
                 if (diff != null) {
-                    if (diff.clientHandle != null) {
-                        clientHandle = diff.clientHandle;
-                    }
-                    if (diff.requestedSamplingInterval != null) {
-                        requestedSamplingInterval = diff.requestedSamplingInterval;
-                    }
-                    if (diff.filter != null) {
-                        filter = diff.filter;
-                    }
-                    if (diff.requestedQueueSize != null) {
-                        requestedQueueSize = diff.requestedQueueSize;
-                    }
-                    if (diff.discardOldest != null) {
-                        discardOldest = diff.discardOldest;
-                    }
-                }
-
-                var request = new MonitoredItemModifyRequest(
-                    monitoredItemId,
-                    new MonitoringParameters(
-                        clientHandle,
-                        requestedSamplingInterval,
-                        filter,
-                        requestedQueueSize,
-                        discardOldest
-                    )
-                );
-
-                ModifyMonitoredItemsResponse response = subscription.getClient().modifyMonitoredItems(
-                    subscription.getSubscriptionId().orElseThrow(),
-                    TimestampsToReturn.Both,
-                    List.of(request)
-                );
-
-                MonitoredItemModifyResult result = requireNonNull(response.getResults())[0];
-
-                StatusCode statusCode = result.getStatusCode();
-
-                if (statusCode.isGood()) {
-                    state = State.SYNCHRONIZED;
-
-                    this.filterResult = result.getFilterResult();
-                    this.revisedQueueSize = result.getRevisedQueueSize();
-                    this.revisedSamplingInterval = result.getRevisedSamplingInterval();
-                } else {
-                    if (statusCode.getValue() == StatusCodes.Bad_MonitoredItemIdInvalid) {
-                        state = State.INITIAL;
-                    } else {
-                        state = State.UNSYNCHRONIZED;
+                    if (diff.isMonitoringModeModified()) {
+                        modifyMonitoringMode(diff);
                     }
 
-                    throw new UaException(statusCode);
+                    if (diff.isMonitoringParameterModified()) {
+                        modifyMonitoringParameters(diff);
+                    }
+
+                    diffRef.set(null);
                 }
             }
         } finally {
@@ -220,13 +177,103 @@ public class OpcUaMonitoredItem {
         }
     }
 
-    public CompletableFuture<Unit> modifyAsync() {
-        return CompletableFuture.supplyAsync(() -> {
+    private void modifyMonitoringMode(ModificationDiff diff) throws UaException {
+        UInteger subscriptionId = subscription.getSubscriptionId().orElse(null);
+        if (subscriptionId == null || monitoredItemId == null) {
+            throw new UaException(StatusCodes.Bad_InvalidState);
+        }
+
+        SetMonitoringModeResponse response = subscription.getClient().setMonitoringMode(
+            subscription.getSubscriptionId().orElseThrow(),
+            diff.monitoringMode,
+            List.of(monitoredItemId)
+        );
+
+        StatusCode result = requireNonNull(response.getResults())[0];
+
+        if (result.isGood()) {
+            state = State.SYNCHRONIZED;
+
+            this.monitoringMode = diff.monitoringMode;
+
+            diff.clearMonitoringMode();
+        } else {
+            if (result.getValue() == StatusCodes.Bad_MonitoredItemIdInvalid) {
+                state = State.INITIAL;
+            } else {
+                state = State.UNSYNCHRONIZED;
+            }
+
+            throw new UaException(result);
+        }
+    }
+
+    private void modifyMonitoringParameters(ModificationDiff diff) throws UaException {
+        UInteger newClientHandle = diff.clientHandle != null ?
+            diff.clientHandle : clientHandle;
+        Double newRequestedSamplingInterval = diff.requestedSamplingInterval != null ?
+            diff.requestedSamplingInterval : requestedSamplingInterval;
+        ExtensionObject newFilter = diff.filter != null ?
+            diff.filter : filter;
+        UInteger newRequestedQueueSize = diff.requestedQueueSize != null ?
+            diff.requestedQueueSize : requestedQueueSize;
+        Boolean newDiscardOldest = diff.discardOldest != null ?
+            diff.discardOldest : discardOldest;
+
+
+        var request = new MonitoredItemModifyRequest(
+            monitoredItemId,
+            new MonitoringParameters(
+                newClientHandle,
+                newRequestedSamplingInterval,
+                newFilter,
+                newRequestedQueueSize,
+                newDiscardOldest
+            )
+        );
+
+        ModifyMonitoredItemsResponse response = subscription.getClient().modifyMonitoredItems(
+            subscription.getSubscriptionId().orElseThrow(),
+            TimestampsToReturn.Both,
+            List.of(request)
+        );
+
+        MonitoredItemModifyResult result = requireNonNull(response.getResults())[0];
+
+        StatusCode statusCode = result.getStatusCode();
+
+        if (statusCode.isGood()) {
+            state = State.SYNCHRONIZED;
+
+            this.clientHandle = newClientHandle;
+            this.requestedSamplingInterval = newRequestedSamplingInterval;
+            this.filter = newFilter;
+            this.requestedQueueSize = newRequestedQueueSize;
+            this.discardOldest = newDiscardOldest;
+            
+            this.filterResult = result.getFilterResult();
+            this.revisedQueueSize = result.getRevisedQueueSize();
+            this.revisedSamplingInterval = result.getRevisedSamplingInterval();
+
+            diff.clearMonitoringParameters();
+        } else {
+            if (statusCode.getValue() == StatusCodes.Bad_MonitoredItemIdInvalid) {
+                state = State.INITIAL;
+            } else {
+                state = State.UNSYNCHRONIZED;
+            }
+
+            throw new UaException(statusCode);
+        }
+    }
+
+    public CompletionStage<Unit> modifyAsync() {
+        return supplyAsyncCompose(() -> {
             try {
                 modify();
-                return Unit.VALUE;
+                return CompletableFuture.completedFuture(Unit.VALUE);
             } catch (UaException e) {
-                throw new RuntimeException(e);
+                return CompletableFuture.failedFuture(e);
             }
         }, subscription.getClient().getTransport().getConfig().getExecutor());
     }
@@ -241,12 +288,11 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 throw new UaException(StatusCodes.Bad_InvalidState);
             } else {
-                if (monitoredItemId != null) {
+                UInteger subscriptionId = subscription.getSubscriptionId().orElse(null);
+
+                if (subscriptionId != null && monitoredItemId != null) {
                     DeleteMonitoredItemsResponse response =
-                        subscription.getClient().deleteMonitoredItems(
-                            subscription.getSubscriptionId().orElseThrow(),
-                            List.of(monitoredItemId)
-                        );
+                        subscription.getClient().deleteMonitoredItems(subscriptionId, List.of(monitoredItemId));
 
                     StatusCode result = requireNonNull(response.getResults())[0];
 
@@ -284,11 +330,23 @@ public class OpcUaMonitoredItem {
     }
 
     public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
-        // TODO
-    }
+        lock.lock();
+        try {
+            if (state == State.INITIAL) {
+                this.monitoringMode = monitoringMode;
+            } else {
+                ModificationDiff diff = diffRef.updateAndGet(
+                    d ->
+                        Objects.requireNonNullElseGet(d, ModificationDiff::new)
+                );
 
-    public void setMonitoringMode(MonitoringMode monitoringMode, SetMonitoringModeBatch batch) {
-        // TODO
+                diff.monitoringMode = monitoringMode;
+
+                state = State.UNSYNCHRONIZED;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void setClientHandle(UInteger clientHandle) {
@@ -419,6 +477,10 @@ public class OpcUaMonitoredItem {
         return Optional.ofNullable(filterResult);
     }
 
+    public MonitoringMode getMonitoringMode() {
+        return monitoringMode;
+    }
+
     public void setDataValueListener(DataValueListener listener) {
         lock.lock();
         try {
@@ -484,6 +546,32 @@ public class OpcUaMonitoredItem {
         private @Nullable ExtensionObject filter;
         private @Nullable UInteger requestedQueueSize;
         private @Nullable Boolean discardOldest;
+        private @Nullable MonitoringMode monitoringMode;
+
+
+        void clearMonitoringMode() {
+            monitoringMode = null;
+        }
+
+        void clearMonitoringParameters() {
+            clientHandle = null;
+            requestedSamplingInterval = null;
+            filter = null;
+            requestedQueueSize = null;
+            discardOldest = null;
+        }
+
+        boolean isMonitoringModeModified() {
+            return monitoringMode != null;
+        }
+
+        boolean isMonitoringParameterModified() {
+            return clientHandle != null ||
+                requestedSamplingInterval != null ||
+                filter != null ||
+                requestedQueueSize != null ||
+                discardOldest != null;
+        }
 
     }
 
