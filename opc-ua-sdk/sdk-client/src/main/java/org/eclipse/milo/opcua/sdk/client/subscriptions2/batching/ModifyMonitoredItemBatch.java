@@ -10,5 +10,45 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2.batching;
 
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+
 public class ModifyMonitoredItemBatch {
+
+
+    public void add(OpcUaMonitoredItem item) {
+
+    }
+
+    public List<ModifyMonitoredItemResult> execute() {
+        return null;
+    }
+
+    public CompletionStage<List<ModifyMonitoredItemResult>> executeAsync() {
+        return null;
+    }
+
+    public static class ModifyMonitoredItemResult {
+
+        private final StatusCode serviceResult;
+        private final StatusCode operationResult;
+
+        public ModifyMonitoredItemResult(StatusCode serviceResult, StatusCode operationResult) {
+            this.serviceResult = serviceResult;
+            this.operationResult = operationResult;
+        }
+
+        public StatusCode getServiceResult() {
+            return serviceResult;
+        }
+
+        public StatusCode getOperationResult() {
+            return operationResult;
+        }
+
+    }
+
 }

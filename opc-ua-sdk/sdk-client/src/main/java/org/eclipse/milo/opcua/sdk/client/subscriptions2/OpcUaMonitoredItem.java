@@ -58,7 +58,7 @@ public class OpcUaMonitoredItem {
 
     private State state = State.INITIAL;
     private final ReentrantLock lock = new ReentrantLock();
-    private final AtomicReference<ModificationDiff> diffRef = new AtomicReference<>(null);
+    private final AtomicReference<ModificationDiff> pendingModification = new AtomicReference<>(null);
 
     private @Nullable DataValueListener dataValueListener;
     private @Nullable EventValueListener eventValueListener;
@@ -73,6 +73,7 @@ public class OpcUaMonitoredItem {
     private UInteger requestedQueueSize = uint(1);
     private boolean discardOldest = true;
 
+    // MonitoredItem parameters that are returned from the server:
     private @Nullable UInteger monitoredItemId;
     private @Nullable Double revisedSamplingInterval;
     private @Nullable UInteger revisedQueueSize;
@@ -158,7 +159,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 throw new UaException(StatusCodes.Bad_InvalidState);
             } else {
-                ModificationDiff diff = diffRef.get();
+                ModificationDiff diff = pendingModification.get();
 
                 if (diff != null) {
                     if (diff.isMonitoringModeModified()) {
@@ -169,7 +170,7 @@ public class OpcUaMonitoredItem {
                         modifyMonitoringParameters(diff);
                     }
 
-                    diffRef.set(null);
+                    pendingModification.set(null);
                 }
             }
         } finally {
@@ -220,7 +221,6 @@ public class OpcUaMonitoredItem {
         Boolean newDiscardOldest = diff.discardOldest != null ?
             diff.discardOldest : discardOldest;
 
-
         var request = new MonitoredItemModifyRequest(
             monitoredItemId,
             new MonitoringParameters(
@@ -250,7 +250,7 @@ public class OpcUaMonitoredItem {
             this.filter = newFilter;
             this.requestedQueueSize = newRequestedQueueSize;
             this.discardOldest = newDiscardOldest;
-            
+
             this.filterResult = result.getFilterResult();
             this.revisedQueueSize = result.getRevisedQueueSize();
             this.revisedSamplingInterval = result.getRevisedSamplingInterval();
@@ -335,7 +335,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 this.monitoringMode = monitoringMode;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(
+                ModificationDiff diff = pendingModification.updateAndGet(
                     d ->
                         Objects.requireNonNullElseGet(d, ModificationDiff::new)
                 );
@@ -355,7 +355,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 this.clientHandle = clientHandle;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(
+                ModificationDiff diff = pendingModification.updateAndGet(
                     d ->
                         Objects.requireNonNullElseGet(d, ModificationDiff::new)
                 );
@@ -375,7 +375,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 this.requestedSamplingInterval = samplingInterval;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(
+                ModificationDiff diff = pendingModification.updateAndGet(
                     d ->
                         Objects.requireNonNullElseGet(d, ModificationDiff::new)
                 );
@@ -395,7 +395,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 this.requestedQueueSize = requestedQueueSize;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(
+                ModificationDiff diff = pendingModification.updateAndGet(
                     d ->
                         Objects.requireNonNullElseGet(d, ModificationDiff::new)
                 );
@@ -415,7 +415,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 this.discardOldest = discardOldest;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(
+                ModificationDiff diff = pendingModification.updateAndGet(
                     d ->
                         Objects.requireNonNullElseGet(d, ModificationDiff::new)
                 );
@@ -435,7 +435,7 @@ public class OpcUaMonitoredItem {
             if (state == State.INITIAL) {
                 this.filter = filter;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(
+                ModificationDiff diff = pendingModification.updateAndGet(
                     d ->
                         Objects.requireNonNullElseGet(d, ModificationDiff::new)
                 );

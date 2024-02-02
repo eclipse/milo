@@ -49,7 +49,7 @@ public class OpcUaSubscription {
 
     private State state = State.INITIAL;
 
-    private final AtomicReference<ModificationDiff> diffRef = new AtomicReference<>(null);
+    private final AtomicReference<ModificationDiff> pendingModification = new AtomicReference<>(null);
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -162,7 +162,7 @@ public class OpcUaSubscription {
             } else if (state == State.SYNCHRONIZED) {
                 return CompletableFuture.completedFuture(Unit.VALUE);
             } else {
-                ModificationDiff diff = diffRef.getAndSet(null);
+                ModificationDiff diff = pendingModification.getAndSet(null);
                 assert diff != null;
 
                 CompletableFuture<ModifySubscriptionResponse> future = client.modifySubscriptionAsync(
@@ -188,7 +188,7 @@ public class OpcUaSubscription {
                         revisedLifetimeCount = response.getRevisedLifetimeCount();
                         revisedMaxKeepAliveCount = response.getRevisedMaxKeepAliveCount();
 
-                        if (diffRef.get() == null) {
+                        if (pendingModification.get() == null) {
                             state = State.SYNCHRONIZED;
                         }
                     } finally {
@@ -392,7 +392,7 @@ public class OpcUaSubscription {
             if (state == State.INITIAL) {
                 this.requestedPublishingInterval = publishingInterval;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
 
                 diff.requestedPublishingInterval = publishingInterval;
 
@@ -434,7 +434,7 @@ public class OpcUaSubscription {
             if (state == State.INITIAL) {
                 this.requestedLifetimeCount = lifetimeCount;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
                 diff.requestedLifetimeCount = lifetimeCount;
 
                 state = State.UNSYNCHRONIZED;
@@ -467,7 +467,7 @@ public class OpcUaSubscription {
             if (state == State.INITIAL) {
                 this.requestedMaxKeepAliveCount = maxKeepAliveCount;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
                 diff.requestedMaxKeepAliveCount = maxKeepAliveCount;
 
                 state = State.UNSYNCHRONIZED;
@@ -500,7 +500,7 @@ public class OpcUaSubscription {
             if (state == State.INITIAL) {
                 this.priority = priority;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
                 diff.priority = priority;
 
                 state = State.UNSYNCHRONIZED;
@@ -533,7 +533,7 @@ public class OpcUaSubscription {
             if (state == State.INITIAL) {
                 this.maxNotificationsPerPublish = maxNotificationsPerPublish;
             } else {
-                ModificationDiff diff = diffRef.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
                 diff.maxNotificationsPerPublish = maxNotificationsPerPublish;
 
                 state = State.UNSYNCHRONIZED;
