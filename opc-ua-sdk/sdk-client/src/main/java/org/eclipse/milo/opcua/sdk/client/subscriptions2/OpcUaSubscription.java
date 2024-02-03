@@ -321,7 +321,7 @@ public class OpcUaSubscription {
      * @return a List of the MonitoredItems that were created.
      * @throws UaException if the create service call fails.
      */
-    private List<OpcUaMonitoredItem> createMonitoredItems() throws UaException {
+    List<OpcUaMonitoredItem> createMonitoredItems() throws UaException {
         List<OpcUaMonitoredItem> itemsToCreate = monitoredItems.values()
             .stream()
             .filter(item -> item.getState() == OpcUaMonitoredItem.State.INITIAL)
@@ -354,7 +354,7 @@ public class OpcUaSubscription {
      * @return a List of the MonitoredItems that were modified.
      * @throws UaException if the modify service call fails.
      */
-    private List<OpcUaMonitoredItem> modifyMonitoredItems() throws UaException {
+    List<OpcUaMonitoredItem> modifyMonitoredItems() throws UaException {
         List<OpcUaMonitoredItem> itemsToModify = monitoredItems.values()
             .stream()
             .filter(item -> item.getState() == OpcUaMonitoredItem.State.UNSYNCHRONIZED)
@@ -387,7 +387,7 @@ public class OpcUaSubscription {
      * @return a List of the MonitoredItems that were deleted.
      * @throws UaException if the delete service call fails.
      */
-    private List<OpcUaMonitoredItem> deleteMonitoredItems() throws UaException {
+    List<OpcUaMonitoredItem> deleteMonitoredItems() throws UaException {
         List<OpcUaMonitoredItem> itemsToDelete = this.itemsToDelete;
         this.itemsToDelete = new ArrayList<>();
 

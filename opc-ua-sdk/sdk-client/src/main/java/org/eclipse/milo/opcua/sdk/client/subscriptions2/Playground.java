@@ -46,6 +46,18 @@ public class Playground {
 
         System.out.println(subscription);
 
+        var monitoredItem = OpcUaMonitoredItem.newDataItem(
+            NodeIds.Server_ServerStatus_CurrentTime
+        );
+
+        monitoredItem.setDataValueListener(
+            (item, value) ->
+                System.out.printf("[%s] Received value: %s%n", item.getMonitoredItemId(), value)
+        );
+
+        subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
+
         subscription.delete();
 
         System.out.println(subscription);

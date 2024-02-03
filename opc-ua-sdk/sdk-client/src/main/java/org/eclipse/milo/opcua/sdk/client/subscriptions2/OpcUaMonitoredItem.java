@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.EnumSet;
 import java.util.Optional;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -39,10 +39,10 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaMonitoredItem {
 
-
     private State state = State.INITIAL;
-    private final ReentrantLock lock = new ReentrantLock();
     private ModificationDiff pendingModification;
+
+    private EnumSet<ModifiedParameter> modifications = EnumSet.noneOf(ModifiedParameter.class);
 
     private @Nullable DataValueListener dataValueListener;
     private @Nullable EventValueListener eventValueListener;
@@ -76,98 +76,83 @@ public class OpcUaMonitoredItem {
         this.readValueId = readValueId;
     }
 
-    public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
-        lock.lock();
-        try {
-            if (state == State.INITIAL) {
-                this.monitoringMode = monitoringMode;
-            } else {
-                if (pendingModification == null) {
-                    pendingModification = new ModificationDiff();
-                }
-
-                pendingModification.monitoringMode = monitoringMode;
-
-                state = State.UNSYNCHRONIZED;
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public void setSamplingInterval(double samplingInterval) {
-        lock.lock();
-        try {
-            if (state == State.INITIAL) {
-                this.samplingInterval = samplingInterval;
-            } else {
-                if (pendingModification == null) {
-                    pendingModification = new ModificationDiff();
-                }
-
-                pendingModification.requestedSamplingInterval = samplingInterval;
-
-                state = State.UNSYNCHRONIZED;
+        if (state == State.INITIAL) {
+            this.samplingInterval = samplingInterval;
+        } else {
+            if (pendingModification == null) {
+                pendingModification = new ModificationDiff();
             }
-        } finally {
-            lock.unlock();
+
+            pendingModification.requestedSamplingInterval = samplingInterval;
+
+            modifications.add(ModifiedParameter.SAMPLING_INTERVAL);
+
+            state = State.UNSYNCHRONIZED;
         }
     }
 
     public void setQueueSize(UInteger queueSize) {
-        lock.lock();
-        try {
-            if (state == State.INITIAL) {
-                this.queueSize = queueSize;
-            } else {
-                if (pendingModification == null) {
-                    pendingModification = new ModificationDiff();
-                }
-
-                pendingModification.requestedQueueSize = queueSize;
-
-                state = State.UNSYNCHRONIZED;
+        if (state == State.INITIAL) {
+            this.queueSize = queueSize;
+        } else {
+            if (pendingModification == null) {
+                pendingModification = new ModificationDiff();
             }
-        } finally {
-            lock.unlock();
+
+            pendingModification.requestedQueueSize = queueSize;
+
+            modifications.add(ModifiedParameter.QUEUE_SIZE);
+
+            state = State.UNSYNCHRONIZED;
         }
     }
 
     public void setDiscardOldest(boolean discardOldest) {
-        lock.lock();
-        try {
-            if (state == State.INITIAL) {
-                this.discardOldest = discardOldest;
-            } else {
-                if (pendingModification == null) {
-                    pendingModification = new ModificationDiff();
-                }
-
-                pendingModification.discardOldest = discardOldest;
-
-                state = State.UNSYNCHRONIZED;
+        if (state == State.INITIAL) {
+            this.discardOldest = discardOldest;
+        } else {
+            if (pendingModification == null) {
+                pendingModification = new ModificationDiff();
             }
-        } finally {
-            lock.unlock();
+
+            pendingModification.discardOldest = discardOldest;
+
+            modifications.add(ModifiedParameter.DISCARD_OLDEST);
+
+            state = State.UNSYNCHRONIZED;
         }
     }
 
     public void setFilter(@Nullable MonitoringFilter filter) {
-        lock.lock();
-        try {
-            if (state == State.INITIAL) {
-                this.filter = filter;
-            } else {
-                if (pendingModification == null) {
-                    pendingModification = new ModificationDiff();
-                }
-
-                pendingModification.filter = filter;
-
-                state = State.UNSYNCHRONIZED;
+        if (state == State.INITIAL) {
+            this.filter = filter;
+        } else {
+            if (pendingModification == null) {
+                pendingModification = new ModificationDiff();
             }
-        } finally {
-            lock.unlock();
+
+            pendingModification.filter = filter;
+
+            modifications.add(ModifiedParameter.FILTER);
+
+            state = State.UNSYNCHRONIZED;
+        }
+    }
+
+    public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
+        if (state == State.INITIAL) {
+            this.monitoringMode = monitoringMode;
+        } else {
+            if (pendingModification == null) {
+                pendingModification = new ModificationDiff();
+            }
+
+            pendingModification.monitoringMode = monitoringMode;
+
+            modifications.add(ModifiedParameter.MONITORING_MODE);
+
+            state = State.UNSYNCHRONIZED;
         }
     }
 
@@ -240,35 +225,24 @@ public class OpcUaMonitoredItem {
         return Optional.ofNullable(lastOperationResult);
     }
 
-    public void setDataValueListener(DataValueListener listener) {
-        lock.lock();
-        try {
-            this.dataValueListener = listener;
-        } finally {
-            lock.unlock();
-        }
+    public void setDataValueListener(@Nullable DataValueListener listener) {
+        this.dataValueListener = listener;
     }
 
-    public void setEventValueListener(EventValueListener listener) {
-        lock.lock();
-        try {
-            this.eventValueListener = listener;
-        } finally {
-            lock.unlock();
-        }
+    public void setEventValueListener(@Nullable EventValueListener listener) {
+        this.eventValueListener = listener;
     }
 
-    void setSubscription(OpcUaSubscription subscription) {
-        lock.lock();
-        try {
-            this.subscription = subscription;
-        } finally {
-            lock.unlock();
-        }
+    void setSubscription(@Nullable OpcUaSubscription subscription) {
+        this.subscription = subscription;
     }
 
     State getState() {
         return state;
+    }
+
+    EnumSet<ModifiedParameter> getModifications() {
+        return modifications;
     }
 
     void reset() {
@@ -503,6 +477,14 @@ public class OpcUaMonitoredItem {
         SYNCHRONIZED,
 
         UNSYNCHRONIZED
+    }
+
+    enum ModifiedParameter {
+        SAMPLING_INTERVAL,
+        QUEUE_SIZE,
+        DISCARD_OLDEST,
+        FILTER,
+        MONITORING_MODE
     }
 
     public static OpcUaMonitoredItem newDataItem(NodeId nodeId) {
