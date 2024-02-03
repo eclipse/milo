@@ -80,7 +80,7 @@ public class Playground {
 
             for (OpcUaMonitoredItem monitoredItem : monitoredItems) {
                 monitoredItem.setSamplingInterval(100.0);
-                monitoredItem.setRequestedQueueSize(uint(10));
+                monitoredItem.setQueueSize(uint(10));
             }
 
             subscription.synchronizeMonitoredItems();

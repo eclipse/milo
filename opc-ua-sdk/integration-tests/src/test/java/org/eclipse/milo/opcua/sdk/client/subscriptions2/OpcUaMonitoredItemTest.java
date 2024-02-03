@@ -73,7 +73,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
         monitoredItem.setSamplingInterval(5000.0);
         assertEquals(1, subscription.synchronizeMonitoredItems());
-        assertEquals(5000.0, monitoredItem.getRequestedSamplingInterval());
+        assertEquals(5000.0, monitoredItem.getSamplingInterval());
         assertEquals(5000.0, monitoredItem.getRevisedSamplingInterval().orElseThrow());
     }
 
@@ -86,9 +86,9 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.addMonitoredItem(monitoredItem);
         subscription.synchronizeMonitoredItems();
 
-        monitoredItem.setRequestedQueueSize(uint(10));
+        monitoredItem.setQueueSize(uint(10));
         assertEquals(1, subscription.synchronizeMonitoredItems());
-        assertEquals(uint(10), monitoredItem.getRequestedQueueSize());
+        assertEquals(uint(10), monitoredItem.getQueueSize());
         assertEquals(uint(10), monitoredItem.getRevisedQueueSize().orElseThrow());
     }
 

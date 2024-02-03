@@ -286,6 +286,7 @@ public class OpcUaSubscription {
 
         if (removedItem != null) {
             removedItem.setSubscription(null);
+            removedItem.setClientHandle(null);
             itemsToDelete.add(removedItem);
             state = State.UNSYNCHRONIZED;
         }
