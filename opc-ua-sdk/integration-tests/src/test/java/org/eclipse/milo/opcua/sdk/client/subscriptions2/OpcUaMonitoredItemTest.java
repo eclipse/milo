@@ -16,13 +16,13 @@ import java.util.List;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
@@ -106,7 +106,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
     }
 
     @Test
-    void modifyMonitoredItem_MonitoringMode() throws UaException {
+    void modifyMonitoredItem_DiscardOldest() throws UaException {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
             NodeIds.Server_ServerStatus_CurrentTime
         );
@@ -114,12 +114,12 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.addMonitoredItem(monitoredItem);
         subscription.createMonitoredItems();
 
-        monitoredItem.setMonitoringMode(MonitoringMode.Disabled);
+        monitoredItem.setDiscardOldest(false);
         List<OpcUaMonitoredItem> modified = subscription.modifyMonitoredItems();
 
         assertEquals(1, modified.size());
         assertEquals(monitoredItem, modified.get(0));
-        assertEquals(MonitoringMode.Disabled, monitoredItem.getMonitoringMode());
+        assertFalse(monitoredItem.getDiscardOldest());
     }
 
     @Test

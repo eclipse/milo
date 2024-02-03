@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
@@ -40,6 +41,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRe
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
@@ -263,6 +266,27 @@ public class OpcUaSubscription {
         } finally {
             lock.unlock();
         }
+    }
+
+    //endregion
+
+    //region MonitoredMode Management
+
+    public void setMonitoringMode(
+        MonitoringMode monitoringMode,
+        List<OpcUaMonitoredItem> monitoredItems
+    ) throws UaException {
+
+        List<UInteger> monitoredItemIds = monitoredItems.stream()
+            .map(item -> item.getMonitoredItemId().orElseThrow())
+            .collect(Collectors.toList());
+
+        SetMonitoringModeResponse response =
+            client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
+
+        StatusCode[] results = requireNonNull(response.getResults());
+
+        // TODO
     }
 
     //endregion
