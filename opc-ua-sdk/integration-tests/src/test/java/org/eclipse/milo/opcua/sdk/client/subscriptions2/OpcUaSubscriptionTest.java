@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.State;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.SyncState;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -30,7 +30,7 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             assertTrue(subscription.getSubscriptionId().isPresent());
             assertTrue(subscription.getRevisedLifetimeCount().isPresent());
@@ -38,7 +38,7 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
             assertTrue(subscription.getRevisedPublishingInterval().isPresent());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -46,16 +46,16 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
     void deleteSubscription() throws UaException {
         var subscription = new OpcUaSubscription(client);
 
-        assertEquals(State.INITIAL, subscription.getState());
+        assertEquals(SyncState.INITIAL, subscription.getSyncState());
         subscription.delete(); // no-op if in INITIAL state
-        assertEquals(State.INITIAL, subscription.getState());
+        assertEquals(SyncState.INITIAL, subscription.getSyncState());
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -65,20 +65,21 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             Double newPublishingInterval = subscription.getRevisedPublishingInterval()
                 .map(v -> v * 2.0)
                 .orElseThrow();
             subscription.setPublishingInterval(newPublishingInterval);
-            assertEquals(State.UNSYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.UNSYNCHRONIZED, subscription.getSyncState());
 
             subscription.modify();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+            assertEquals(newPublishingInterval, subscription.getPublishingInterval());
             assertEquals(newPublishingInterval, subscription.getRevisedPublishingInterval().get());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -88,20 +89,21 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             UInteger newLifetimeCount = subscription.getRevisedLifetimeCount()
                 .map(v -> v.add(UInteger.valueOf(10)))
                 .orElseThrow();
             subscription.setLifetimeCount(newLifetimeCount);
-            assertEquals(State.UNSYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.UNSYNCHRONIZED, subscription.getSyncState());
 
             subscription.modify();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+            assertEquals(newLifetimeCount, subscription.getLifetimeCount());
             assertEquals(newLifetimeCount, subscription.getRevisedLifetimeCount().get());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -111,20 +113,21 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             UInteger newMaxKeepAliveCount = subscription.getRevisedMaxKeepAliveCount()
                 .map(v -> v.add(UInteger.valueOf(10)))
                 .orElseThrow();
             subscription.setMaxKeepAliveCount(newMaxKeepAliveCount);
-            assertEquals(State.UNSYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.UNSYNCHRONIZED, subscription.getSyncState());
 
             subscription.modify();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+            assertEquals(newMaxKeepAliveCount, subscription.getMaxKeepAliveCount());
             assertEquals(newMaxKeepAliveCount, subscription.getRevisedMaxKeepAliveCount().get());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -134,19 +137,20 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             UInteger newMaxNotificationsPerPublish = subscription.getMaxNotificationsPerPublish()
                 .add(UInteger.valueOf(10));
             subscription.setMaxNotificationsPerPublish(newMaxNotificationsPerPublish);
-            assertEquals(State.UNSYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.UNSYNCHRONIZED, subscription.getSyncState());
 
             subscription.modify();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
             assertEquals(newMaxNotificationsPerPublish, subscription.getMaxNotificationsPerPublish());
+            assertEquals(newMaxNotificationsPerPublish, subscription.getServerState().orElseThrow().getMaxNotificationsPerPublish());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -156,19 +160,20 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             UByte newPriority = subscription.getPriority()
                 .add(UByte.valueOf(1));
             subscription.setPriority(newPriority);
-            assertEquals(State.UNSYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.UNSYNCHRONIZED, subscription.getSyncState());
 
             subscription.modify();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
             assertEquals(newPriority, subscription.getPriority());
+            assertEquals(newPriority, subscription.getServerState().orElseThrow().getPriority());
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 
@@ -178,24 +183,24 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         try {
             subscription.create();
-            assertEquals(State.SYNCHRONIZED, subscription.getState());
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             // lifetime and keep alive are calculated
             {
-                UInteger previousRequestedLifetimeCount = subscription.getRequestedLifetimeCount();
-                UInteger previousMaxKeepAliveCount = subscription.getRequestedMaxKeepAliveCount();
+                UInteger previousRequestedLifetimeCount = subscription.getLifetimeCount();
+                UInteger previousMaxKeepAliveCount = subscription.getMaxKeepAliveCount();
 
                 subscription.setPublishingInterval(60_000.0);
 
                 subscription.modify();
-                assertEquals(State.SYNCHRONIZED, subscription.getState());
-                assertNotEquals(previousRequestedLifetimeCount, subscription.getRequestedLifetimeCount());
-                assertNotEquals(previousMaxKeepAliveCount, subscription.getRequestedMaxKeepAliveCount());
+                assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+                assertNotEquals(previousRequestedLifetimeCount, subscription.getLifetimeCount());
+                assertNotEquals(previousMaxKeepAliveCount, subscription.getMaxKeepAliveCount());
 
                 UInteger revisedLifetimeCount = subscription.getRevisedLifetimeCount().orElseThrow();
                 UInteger revisedMaxKeepAliveCount = subscription.getRevisedMaxKeepAliveCount().orElseThrow();
-                assertEquals(revisedLifetimeCount, subscription.getRequestedLifetimeCount());
-                assertEquals(revisedMaxKeepAliveCount, subscription.getRequestedMaxKeepAliveCount());
+                assertEquals(revisedLifetimeCount, subscription.getLifetimeCount());
+                assertEquals(revisedMaxKeepAliveCount, subscription.getMaxKeepAliveCount());
             }
 
             // lifetime and keep alive are not calculated
@@ -203,18 +208,36 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
                 subscription.setLifetimeAndKeepAliveCalculated(false);
                 assertFalse(subscription.isLifetimeAndKeepAliveCalculated());
 
-                UInteger requestedLifetimeCount = subscription.getRequestedLifetimeCount();
-                UInteger requestedMaxKeepAliveCount = subscription.getRequestedMaxKeepAliveCount();
+                UInteger requestedLifetimeCount = subscription.getLifetimeCount();
+                UInteger requestedMaxKeepAliveCount = subscription.getMaxKeepAliveCount();
                 subscription.setPublishingInterval(1000.0);
 
                 subscription.modify();
-                assertEquals(State.SYNCHRONIZED, subscription.getState());
-                assertEquals(requestedLifetimeCount, subscription.getRequestedLifetimeCount());
-                assertEquals(requestedMaxKeepAliveCount, subscription.getRequestedMaxKeepAliveCount());
+                assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+                assertEquals(requestedLifetimeCount, subscription.getLifetimeCount());
+                assertEquals(requestedMaxKeepAliveCount, subscription.getMaxKeepAliveCount());
             }
         } finally {
             subscription.delete();
-            assertEquals(State.INITIAL, subscription.getState());
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
+        }
+    }
+
+    @Test
+    void setPublishingMode() throws UaException {
+        var subscription = new OpcUaSubscription(client);
+
+        try {
+            subscription.create();
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+
+            subscription.setPublishingMode(false);
+            assertFalse(subscription.isPublishingEnabled().orElseThrow());
+            subscription.setPublishingMode(true);
+            assertTrue(subscription.isPublishingEnabled().orElseThrow());
+        } finally {
+            subscription.delete();
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
 

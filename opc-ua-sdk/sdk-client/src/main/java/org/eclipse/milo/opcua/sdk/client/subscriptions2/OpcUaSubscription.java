@@ -20,9 +20,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -41,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRe
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -58,12 +55,11 @@ public class OpcUaSubscription {
     private static final UInteger DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH = uint(65535);
     private static final UByte DEFAULT_PRIORITY = ubyte(0);
 
-    private State state = State.INITIAL;
+    private SyncState syncState = SyncState.INITIAL;
 
-    private final AtomicReference<ModificationDiff> pendingModification = new AtomicReference<>(null);
+    private ServerState serverState;
 
-    private final ReentrantLock lock = new ReentrantLock();
-
+    private final AtomicReference<Modifications> modifications = new AtomicReference<>(null);
 
     /**
      * MonitoredItems added to this Subscription, by ClientHandle.
@@ -79,16 +75,11 @@ public class OpcUaSubscription {
     private final ClientHandleSequence clientHandleSequence =
         new ClientHandleSequence(monitoredItems::containsKey);
 
-    private Double requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
-    private UInteger requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
-    private UInteger requestedLifetimeCount = calculateLifetimeCount(requestedMaxKeepAliveCount);
+    private Double publishingInterval = DEFAULT_PUBLISHING_INTERVAL;
+    private UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
+    private UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
     private UInteger maxNotificationsPerPublish = DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH;
     private UByte priority = DEFAULT_PRIORITY;
-
-    private UInteger subscriptionId;
-    private Double revisedPublishingInterval;
-    private UInteger revisedLifetimeCount;
-    private UInteger revisedMaxKeepAliveCount;
 
     private boolean lifetimeAndKeepAliveCalculated = true;
 
@@ -98,9 +89,9 @@ public class OpcUaSubscription {
         this.client = client;
     }
 
-    public OpcUaSubscription(OpcUaClient client, double requestedPublishingInterval) {
+    public OpcUaSubscription(OpcUaClient client, double publishingInterval) {
         this.client = client;
-        this.requestedPublishingInterval = requestedPublishingInterval;
+        this.publishingInterval = publishingInterval;
     }
 
     /**
@@ -115,43 +106,43 @@ public class OpcUaSubscription {
     //region Subscription Management
 
     public void create() throws UaException {
-        lock.lock();
-        try {
-            if (state == State.INITIAL) {
-                if (requestedMaxKeepAliveCount == null) {
-                    requestedMaxKeepAliveCount = calculateMaxKeepAliveCount(requestedPublishingInterval);
-                }
-                if (requestedLifetimeCount == null) {
-                    requestedLifetimeCount = calculateLifetimeCount(requestedMaxKeepAliveCount);
-                }
-
-                CreateSubscriptionResponse response = client.createSubscription(
-                    requestedPublishingInterval,
-                    requestedLifetimeCount,
-                    requestedMaxKeepAliveCount,
-                    maxNotificationsPerPublish,
-                    true,
-                    priority
-                );
-
-                state = State.SYNCHRONIZED;
-
-                subscriptionId = response.getSubscriptionId();
-                revisedPublishingInterval = response.getRevisedPublishingInterval();
-                revisedLifetimeCount = response.getRevisedLifetimeCount();
-                revisedMaxKeepAliveCount = response.getRevisedMaxKeepAliveCount();
-
-                client.getPublishingManager().addSubscription(
-                    this,
-                    notificationMessage -> {
-                        // TODO
-                    }
-                );
-            } else {
-                throw new UaException(StatusCodes.Bad_InvalidState);
+        if (syncState == SyncState.INITIAL) {
+            if (maxKeepAliveCount == null) {
+                maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
             }
-        } finally {
-            lock.unlock();
+            if (lifetimeCount == null) {
+                lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
+            }
+
+            CreateSubscriptionResponse response = client.createSubscription(
+                publishingInterval,
+                lifetimeCount,
+                maxKeepAliveCount,
+                maxNotificationsPerPublish,
+                true,
+                priority
+            );
+
+            syncState = SyncState.SYNCHRONIZED;
+
+            serverState = new ServerState(
+                response.getSubscriptionId(),
+                response.getRevisedPublishingInterval(),
+                response.getRevisedLifetimeCount(),
+                response.getRevisedMaxKeepAliveCount(),
+                maxNotificationsPerPublish,
+                priority,
+                true
+            );
+
+            client.getPublishingManager().addSubscription(
+                this,
+                notificationMessage -> {
+                    // TODO
+                }
+            );
+        } else {
+            throw new UaException(StatusCodes.Bad_InvalidState);
         }
     }
 
@@ -167,105 +158,77 @@ public class OpcUaSubscription {
     }
 
     public void modify() throws UaException {
-        try {
-            modifyAsync().get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        if (syncState == SyncState.INITIAL) {
+            throw new UaException(StatusCodes.Bad_InvalidState);
+        } else if (syncState == SyncState.UNSYNCHRONIZED) {
+            Modifications diff = modifications.getAndSet(null);
+            assert diff != null;
+
+            ModifySubscriptionResponse response = client.modifySubscription(
+                serverState.getSubscriptionId(),
+                diff.publishingInterval().orElse(serverState.getPublishingInterval()),
+                diff.lifetimeCount().orElse(serverState.getLifetimeCount()),
+                diff.maxKeepAliveCount().orElse(serverState.getMaxKeepAliveCount()),
+                diff.maxNotificationsPerPublish().orElse(maxNotificationsPerPublish),
+                diff.priority().orElse(priority)
+            );
+
+            serverState = new ServerState(
+                serverState.getSubscriptionId(),
+                response.getRevisedPublishingInterval(),
+                response.getRevisedLifetimeCount(),
+                response.getRevisedMaxKeepAliveCount(),
+                maxNotificationsPerPublish,
+                priority,
+                serverState.isPublishingEnabled()
+            );
+
+            syncState = SyncState.SYNCHRONIZED;
+
+            if (modifications.get() == null) {
+                syncState = SyncState.SYNCHRONIZED;
+            }
         }
     }
 
-    public CompletableFuture<Unit> modifyAsync() {
-        try {
-            lock.lock();
-
-            if (state == State.INITIAL) {
-                return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_InvalidState));
-            } else if (state == State.SYNCHRONIZED) {
+    public CompletionStage<Unit> modifyAsync() {
+        return supplyAsyncCompose(() -> {
+            try {
+                modify();
                 return CompletableFuture.completedFuture(Unit.VALUE);
-            } else {
-                ModificationDiff diff = pendingModification.getAndSet(null);
-                assert diff != null;
-
-                CompletableFuture<ModifySubscriptionResponse> future = client.modifySubscriptionAsync(
-                    subscriptionId,
-                    diff.requestedPublishingInterval().orElse(revisedPublishingInterval),
-                    diff.requestedLifetimeCount().orElse(revisedLifetimeCount),
-                    diff.requestedMaxKeepAliveCount().orElse(revisedMaxKeepAliveCount),
-                    diff.maxNotificationsPerPublish().orElse(maxNotificationsPerPublish),
-                    diff.priority().orElse(priority)
-                );
-
-                return future.thenCompose(response -> {
-                    try {
-                        lock.lock();
-
-                        requestedPublishingInterval = diff.requestedPublishingInterval().orElse(requestedPublishingInterval);
-                        requestedLifetimeCount = diff.requestedLifetimeCount().orElse(requestedLifetimeCount);
-                        requestedMaxKeepAliveCount = diff.requestedMaxKeepAliveCount().orElse(requestedMaxKeepAliveCount);
-                        maxNotificationsPerPublish = diff.maxNotificationsPerPublish().orElse(maxNotificationsPerPublish);
-                        priority = diff.priority().orElse(priority);
-
-                        revisedPublishingInterval = response.getRevisedPublishingInterval();
-                        revisedLifetimeCount = response.getRevisedLifetimeCount();
-                        revisedMaxKeepAliveCount = response.getRevisedMaxKeepAliveCount();
-
-                        if (pendingModification.get() == null) {
-                            state = State.SYNCHRONIZED;
-                        }
-                    } finally {
-                        lock.unlock();
-                    }
-
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                });
+            } catch (UaException e) {
+                return CompletableFuture.failedFuture(e);
             }
-        } finally {
-            lock.unlock();
-        }
+        }, client.getTransport().getConfig().getExecutor());
     }
 
     public void delete() throws UaException {
-        try {
-            deleteAsync().get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        if (syncState != SyncState.INITIAL) {
+            DeleteSubscriptionsResponse response =
+                client.deleteSubscriptions(List.of(serverState.getSubscriptionId()));
+
+            StatusCode[] results = requireNonNull(response.getResults());
+
+            if (results[0].isGood()) {
+                serverState = null;
+                syncState = SyncState.INITIAL;
+
+                client.getPublishingManager().removeSubscription(this);
+            } else {
+                throw new UaException(results[0]);
+            }
         }
     }
 
-    public CompletableFuture<Unit> deleteAsync() {
-        try {
-            lock.lock();
-
-            if (state != State.INITIAL) {
-                CompletableFuture<DeleteSubscriptionsResponse> future =
-                    client.deleteSubscriptionsAsync(List.of(subscriptionId));
-
-                return future.thenCompose(response -> {
-                    try {
-                        lock.lock();
-
-                        subscriptionId = null;
-                        revisedPublishingInterval = null;
-                        revisedLifetimeCount = null;
-                        revisedMaxKeepAliveCount = null;
-
-                        state = State.INITIAL;
-                    } finally {
-                        lock.unlock();
-                    }
-
-                    client.getPublishingManager().removeSubscription(this);
-
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                });
-            } else {
+    public CompletionStage<Unit> deleteAsync() {
+        return supplyAsyncCompose(() -> {
+            try {
+                delete();
                 return CompletableFuture.completedFuture(Unit.VALUE);
+            } catch (UaException e) {
+                return CompletableFuture.failedFuture(e);
             }
-        } finally {
-            lock.unlock();
-        }
+        }, client.getTransport().getConfig().getExecutor());
     }
 
     //endregion
@@ -282,11 +245,15 @@ public class OpcUaSubscription {
             .collect(Collectors.toList());
 
         SetMonitoringModeResponse response =
-            client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
+            client.setMonitoringMode(serverState.getSubscriptionId(), monitoringMode, monitoredItemIds);
 
         StatusCode[] results = requireNonNull(response.getResults());
 
-        // TODO
+        for (int i = 0; i < results.length; i++) {
+            StatusCode result = results[i];
+
+            monitoredItems.get(i).applySetMonitoringModeResult(result);
+        }
     }
 
     //endregion
@@ -315,7 +282,7 @@ public class OpcUaSubscription {
             removedItem.setSubscription(null);
             removedItem.setClientHandle(null);
             itemsToDelete.add(removedItem);
-            state = State.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
         }
     }
 
@@ -351,12 +318,12 @@ public class OpcUaSubscription {
     List<OpcUaMonitoredItem> createMonitoredItems() throws UaException {
         List<OpcUaMonitoredItem> itemsToCreate = monitoredItems.values()
             .stream()
-            .filter(item -> item.getState() == OpcUaMonitoredItem.State.INITIAL)
+            .filter(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.INITIAL)
             .collect(Collectors.toList());
 
         if (!itemsToCreate.isEmpty()) {
             CreateMonitoredItemsResponse response = client.createMonitoredItems(
-                subscriptionId,
+                serverState.getSubscriptionId(),
                 TimestampsToReturn.Both,
                 itemsToCreate.stream()
                     .map(OpcUaMonitoredItem::newCreateRequest)
@@ -384,12 +351,12 @@ public class OpcUaSubscription {
     List<OpcUaMonitoredItem> modifyMonitoredItems() throws UaException {
         List<OpcUaMonitoredItem> itemsToModify = monitoredItems.values()
             .stream()
-            .filter(item -> item.getState() == OpcUaMonitoredItem.State.UNSYNCHRONIZED)
+            .filter(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.UNSYNCHRONIZED)
             .collect(Collectors.toList());
 
         if (!itemsToModify.isEmpty()) {
             ModifyMonitoredItemsResponse response = client.modifyMonitoredItems(
-                subscriptionId,
+                serverState.getSubscriptionId(),
                 TimestampsToReturn.Both,
                 itemsToModify.stream()
                     .map(OpcUaMonitoredItem::newModifyRequest)
@@ -424,7 +391,7 @@ public class OpcUaSubscription {
                 .collect(Collectors.toList());
 
             DeleteMonitoredItemsResponse response =
-                client.deleteMonitoredItems(subscriptionId, itemIds);
+                client.deleteMonitoredItems(serverState.getSubscriptionId(), itemIds);
 
             StatusCode[] results = requireNonNull(response.getResults());
 
@@ -441,88 +408,61 @@ public class OpcUaSubscription {
     //endregion
 
     public void setPublishingMode(boolean enabled) throws UaException {
-        try {
-            setPublishingModeAsync(enabled).get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
-    public CompletableFuture<Unit> setPublishingModeAsync(boolean enabled) {
-        if (state == State.INITIAL) {
-            return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_InvalidState));
+        if (syncState == SyncState.INITIAL) {
+            throw new UaException(StatusCodes.Bad_InvalidState);
         } else {
-            CompletableFuture<SetPublishingModeResponse> future = client.setPublishingModeAsync(
+            SetPublishingModeResponse response = client.setPublishingMode(
                 enabled,
-                List.of(subscriptionId)
+                List.of(serverState.getSubscriptionId())
             );
 
-            return future.thenCompose(response -> CompletableFuture.completedFuture(Unit.VALUE));
+            StatusCode result = requireNonNull(response.getResults())[0];
+
+            if (result.isGood()) {
+                serverState = new ServerState(
+                    serverState.getSubscriptionId(),
+                    serverState.getPublishingInterval(),
+                    serverState.getLifetimeCount(),
+                    serverState.getMaxKeepAliveCount(),
+                    maxNotificationsPerPublish,
+                    priority,
+                    enabled
+                );
+            } else {
+                throw new UaException(result);
+            }
         }
     }
 
-    public State getState() {
-        return state;
+    public CompletionStage<Unit> setPublishingModeAsync(boolean enabled) {
+        return supplyAsyncCompose(() -> {
+            try {
+                setPublishingMode(enabled);
+                return CompletableFuture.completedFuture(Unit.VALUE);
+            } catch (UaException e) {
+                return CompletableFuture.failedFuture(e);
+            }
+        }, client.getTransport().getConfig().getExecutor());
     }
 
-    public Double getRequestedPublishingInterval() {
-        return requestedPublishingInterval;
+    public SyncState getSyncState() {
+        return syncState;
     }
 
-    public UInteger getRequestedLifetimeCount() {
-        return requestedLifetimeCount;
+    public Optional<ServerState> getServerState() {
+        return Optional.ofNullable(serverState);
     }
 
-    public UInteger getRequestedMaxKeepAliveCount() {
-        return requestedMaxKeepAliveCount;
+    public Double getPublishingInterval() {
+        return publishingInterval;
     }
 
-    /**
-     * Get the SubscriptionId assigned to this Subscription by the Server.
-     * <p>
-     * The SubscriptionId is available only after the Subscription has been created.
-     *
-     * @return the SubscriptionId assigned to this Subscription by the Server.
-     */
-    public Optional<UInteger> getSubscriptionId() {
-        return Optional.ofNullable(subscriptionId);
+    public UInteger getLifetimeCount() {
+        return lifetimeCount;
     }
 
-    /**
-     * Get the revised PublishingInterval from the most recent create or modify operation.
-     * <p>
-     * The revised PublishingInterval is available only after the Subscription has been created
-     * or modified.
-     *
-     * @return the revised PublishingInterval from the most recent create or modify operation.
-     */
-    public Optional<Double> getRevisedPublishingInterval() {
-        return Optional.ofNullable(revisedPublishingInterval);
-    }
-
-    /**
-     * Get the revised LifetimeCount from the most recent create or modify operation.
-     * <p>
-     * The revised LifetimeCount is available only after the Subscription has been created or
-     * modified.
-     *
-     * @return the revised LifetimeCount from the most recent create or modify operation.
-     */
-    public Optional<UInteger> getRevisedLifetimeCount() {
-        return Optional.ofNullable(revisedLifetimeCount);
-    }
-
-    /**
-     * Get the revised MaxKeepAliveCount from the most recent create or modify operation.
-     * <p>
-     * The revised MaxKeepAliveCount is available only after the Subscription has been created
-     * or modified.
-     *
-     * @return the revised MaxKeepAliveCount from the most recent create or modify operation.
-     */
-    public Optional<UInteger> getRevisedMaxKeepAliveCount() {
-        return Optional.ofNullable(revisedMaxKeepAliveCount);
+    public UInteger getMaxKeepAliveCount() {
+        return maxKeepAliveCount;
     }
 
     /**
@@ -549,6 +489,57 @@ public class OpcUaSubscription {
         return maxNotificationsPerPublish;
     }
 
+    public Optional<Boolean> isPublishingEnabled() {
+        return getServerState().map(ServerState::isPublishingEnabled);
+    }
+
+    /**
+     * Get the SubscriptionId assigned to this Subscription by the Server.
+     * <p>
+     * The SubscriptionId is available only after the Subscription has been created.
+     *
+     * @return the SubscriptionId assigned to this Subscription by the Server.
+     */
+    public Optional<UInteger> getSubscriptionId() {
+        return getServerState().map(ServerState::getSubscriptionId);
+    }
+
+    /**
+     * Get the revised PublishingInterval from the most recent create or modify operation.
+     * <p>
+     * The revised PublishingInterval is available only after the Subscription has been created
+     * or modified.
+     *
+     * @return the revised PublishingInterval from the most recent create or modify operation.
+     */
+    public Optional<Double> getRevisedPublishingInterval() {
+        return getServerState().map(ServerState::getPublishingInterval);
+    }
+
+    /**
+     * Get the revised LifetimeCount from the most recent create or modify operation.
+     * <p>
+     * The revised LifetimeCount is available only after the Subscription has been created or
+     * modified.
+     *
+     * @return the revised LifetimeCount from the most recent create or modify operation.
+     */
+    public Optional<UInteger> getRevisedLifetimeCount() {
+        return getServerState().map(ServerState::getLifetimeCount);
+    }
+
+    /**
+     * Get the revised MaxKeepAliveCount from the most recent create or modify operation.
+     * <p>
+     * The revised MaxKeepAliveCount is available only after the Subscription has been created
+     * or modified.
+     *
+     * @return the revised MaxKeepAliveCount from the most recent create or modify operation.
+     */
+    public Optional<UInteger> getRevisedMaxKeepAliveCount() {
+        return getServerState().map(ServerState::getMaxKeepAliveCount);
+    }
+
     /**
      * Set a new PublishingInterval for this Subscription.
      * <p>
@@ -556,7 +547,7 @@ public class OpcUaSubscription {
      * during the create service call.
      * <p>
      * If the Subscription has already been created, this will be the PublishingInterval used
-     * during the next modify service call. {@link #getRequestedPublishingInterval()} will not
+     * during the next modify service call. {@link #getPublishingInterval()} will not
      * reflect this change until the modify service call has completed.
      *
      * @param publishingInterval the new PublishingInterval.
@@ -566,28 +557,23 @@ public class OpcUaSubscription {
      * @see #modifyAsync()
      */
     public void setPublishingInterval(Double publishingInterval) {
-        try {
-            lock.lock();
+        this.publishingInterval = publishingInterval;
 
-            if (state == State.INITIAL) {
-                this.requestedPublishingInterval = publishingInterval;
-            } else {
-                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
+        Modifications diff = modifications.updateAndGet(
+            d ->
+                Objects.requireNonNullElseGet(d, Modifications::new)
+        );
 
-                diff.requestedPublishingInterval = publishingInterval;
+        diff.publishingInterval = publishingInterval;
 
-                state = State.UNSYNCHRONIZED;
-            }
+        syncState = SyncState.UNSYNCHRONIZED;
 
-            if (lifetimeAndKeepAliveCalculated) {
-                UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
-                UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
+        if (lifetimeAndKeepAliveCalculated) {
+            UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
+            UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
 
-                setMaxKeepAliveCount(maxKeepAliveCount);
-                setLifetimeCount(lifetimeCount);
-            }
-        } finally {
-            lock.unlock();
+            setMaxKeepAliveCount(maxKeepAliveCount);
+            setLifetimeCount(lifetimeCount);
         }
     }
 
@@ -598,7 +584,7 @@ public class OpcUaSubscription {
      * the create service call.
      * <p>
      * If the Subscription has already been created, this will be the LifetimeCount used during
-     * the next modify service call. {@link #getRequestedLifetimeCount()}} will not reflect this
+     * the next modify service call. {@link #getLifetimeCount()}} will not reflect this
      * change until the modify service call has completed.
      *
      * @param lifetimeCount the new LifetimeCount.
@@ -608,20 +594,16 @@ public class OpcUaSubscription {
      * @see #modifyAsync()
      */
     public void setLifetimeCount(UInteger lifetimeCount) {
-        try {
-            lock.lock();
+        this.lifetimeCount = lifetimeCount;
 
-            if (state == State.INITIAL) {
-                this.requestedLifetimeCount = lifetimeCount;
-            } else {
-                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
-                diff.requestedLifetimeCount = lifetimeCount;
+        Modifications diff = modifications.updateAndGet(
+            d ->
+                Objects.requireNonNullElseGet(d, Modifications::new)
+        );
 
-                state = State.UNSYNCHRONIZED;
-            }
-        } finally {
-            lock.unlock();
-        }
+        diff.lifetimeCount = lifetimeCount;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -631,7 +613,7 @@ public class OpcUaSubscription {
      * the create service call.
      * <p>
      * If the Subscription has already been created, this will be the MaxKeepAliveCount used during
-     * the next modify service call. {@link #getRequestedMaxKeepAliveCount()}} will not reflect
+     * the next modify service call. {@link #getMaxKeepAliveCount()}} will not reflect
      * this change until the modify service call has completed.
      *
      * @param maxKeepAliveCount the new MaxKeepAliveCount.
@@ -641,20 +623,16 @@ public class OpcUaSubscription {
      * @see #modifyAsync()
      */
     public void setMaxKeepAliveCount(UInteger maxKeepAliveCount) {
-        try {
-            lock.lock();
+        this.maxKeepAliveCount = maxKeepAliveCount;
 
-            if (state == State.INITIAL) {
-                this.requestedMaxKeepAliveCount = maxKeepAliveCount;
-            } else {
-                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
-                diff.requestedMaxKeepAliveCount = maxKeepAliveCount;
+        Modifications diff = modifications.updateAndGet(
+            d ->
+                Objects.requireNonNullElseGet(d, Modifications::new)
+        );
 
-                state = State.UNSYNCHRONIZED;
-            }
-        } finally {
-            lock.unlock();
-        }
+        diff.maxKeepAliveCount = maxKeepAliveCount;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -674,20 +652,16 @@ public class OpcUaSubscription {
      * @see #modifyAsync()
      */
     public void setPriority(UByte priority) {
-        try {
-            lock.lock();
+        this.priority = priority;
 
-            if (state == State.INITIAL) {
-                this.priority = priority;
-            } else {
-                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
-                diff.priority = priority;
+        Modifications diff = modifications.updateAndGet(
+            d ->
+                Objects.requireNonNullElseGet(d, Modifications::new)
+        );
 
-                state = State.UNSYNCHRONIZED;
-            }
-        } finally {
-            lock.unlock();
-        }
+        diff.priority = priority;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -707,20 +681,16 @@ public class OpcUaSubscription {
      * @see #modifyAsync()
      */
     public void setMaxNotificationsPerPublish(UInteger maxNotificationsPerPublish) {
-        try {
-            lock.lock();
+        this.maxNotificationsPerPublish = maxNotificationsPerPublish;
 
-            if (state == State.INITIAL) {
-                this.maxNotificationsPerPublish = maxNotificationsPerPublish;
-            } else {
-                ModificationDiff diff = pendingModification.updateAndGet(d -> Objects.requireNonNullElseGet(d, ModificationDiff::new));
-                diff.maxNotificationsPerPublish = maxNotificationsPerPublish;
+        Modifications diff = modifications.updateAndGet(
+            d ->
+                Objects.requireNonNullElseGet(d, Modifications::new)
+        );
 
-                state = State.UNSYNCHRONIZED;
-            }
-        } finally {
-            lock.unlock();
-        }
+        diff.maxNotificationsPerPublish = maxNotificationsPerPublish;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -732,12 +702,7 @@ public class OpcUaSubscription {
      * @see #isLifetimeAndKeepAliveCalculated()
      */
     public void setLifetimeAndKeepAliveCalculated(boolean lifetimeAndKeepAliveCalculated) {
-        try {
-            lock.lock();
-            this.lifetimeAndKeepAliveCalculated = lifetimeAndKeepAliveCalculated;
-        } finally {
-            lock.unlock();
-        }
+        this.lifetimeAndKeepAliveCalculated = lifetimeAndKeepAliveCalculated;
     }
 
     /**
@@ -746,17 +711,7 @@ public class OpcUaSubscription {
      * @see #setLifetimeAndKeepAliveCalculated(boolean)
      */
     public boolean isLifetimeAndKeepAliveCalculated() {
-        try {
-            lock.lock();
-
-            return lifetimeAndKeepAliveCalculated;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    UInteger nextClientHandle() {
-        return clientHandleSequence.nextClientHandle();
+        return lifetimeAndKeepAliveCalculated;
     }
 
     private static UInteger calculateMaxKeepAliveCount(double publishingInterval) {
@@ -779,28 +734,29 @@ public class OpcUaSubscription {
     @Override
     public String toString() {
         return new StringJoiner(", ", OpcUaSubscription.class.getSimpleName() + "[", "]")
-            .add("subscriptionId=" + subscriptionId)
-            .add("state=" + state)
+            .add("subscriptionId=" + getSubscriptionId().orElse(null))
+            .add("state=" + syncState)
             .toString();
     }
 
-    private static class ModificationDiff {
-        private @Nullable Double requestedPublishingInterval;
-        private @Nullable UInteger requestedLifetimeCount;
-        private @Nullable UInteger requestedMaxKeepAliveCount;
+    private static class Modifications {
+
+        private @Nullable Double publishingInterval;
+        private @Nullable UInteger lifetimeCount;
+        private @Nullable UInteger maxKeepAliveCount;
         private @Nullable UInteger maxNotificationsPerPublish;
         private @Nullable UByte priority;
 
-        private Optional<Double> requestedPublishingInterval() {
-            return Optional.ofNullable(requestedPublishingInterval);
+        private Optional<Double> publishingInterval() {
+            return Optional.ofNullable(publishingInterval);
         }
 
-        private Optional<UInteger> requestedLifetimeCount() {
-            return Optional.ofNullable(requestedLifetimeCount);
+        private Optional<UInteger> lifetimeCount() {
+            return Optional.ofNullable(lifetimeCount);
         }
 
-        private Optional<UInteger> requestedMaxKeepAliveCount() {
-            return Optional.ofNullable(requestedMaxKeepAliveCount);
+        private Optional<UInteger> maxKeepAliveCount() {
+            return Optional.ofNullable(maxKeepAliveCount);
         }
 
         private Optional<UInteger> maxNotificationsPerPublish() {
@@ -810,9 +766,73 @@ public class OpcUaSubscription {
         private Optional<UByte> priority() {
             return Optional.ofNullable(priority);
         }
+
     }
 
-    public enum State {
+    /**
+     * The state of the Subscription as it exists on the server (based on the most recent,
+     * successful, create or modify operations).
+     */
+    public static class ServerState {
+
+        private final UInteger subscriptionId;
+        private final Double publishingInterval;
+        private final UInteger lifetimeCount;
+        private final UInteger maxKeepAliveCount;
+        private final UInteger maxNotificationsPerPublish;
+        private final UByte priority;
+        private final boolean publishingEnabled;
+
+        public ServerState(
+            UInteger subscriptionId,
+            Double publishingInterval,
+            UInteger lifetimeCount,
+            UInteger maxKeepAliveCount,
+            UInteger maxNotificationsPerPublish,
+            UByte priority,
+            boolean publishingEnabled
+        ) {
+
+            this.subscriptionId = subscriptionId;
+            this.publishingInterval = publishingInterval;
+            this.lifetimeCount = lifetimeCount;
+            this.maxKeepAliveCount = maxKeepAliveCount;
+            this.maxNotificationsPerPublish = maxNotificationsPerPublish;
+            this.priority = priority;
+            this.publishingEnabled = publishingEnabled;
+        }
+
+        public UInteger getSubscriptionId() {
+            return subscriptionId;
+        }
+
+        public Double getPublishingInterval() {
+            return publishingInterval;
+        }
+
+        public UInteger getLifetimeCount() {
+            return lifetimeCount;
+        }
+
+        public UInteger getMaxKeepAliveCount() {
+            return maxKeepAliveCount;
+        }
+
+        public UInteger getMaxNotificationsPerPublish() {
+            return maxNotificationsPerPublish;
+        }
+
+        public UByte getPriority() {
+            return priority;
+        }
+
+        public boolean isPublishingEnabled() {
+            return publishingEnabled;
+        }
+
+    }
+
+    public enum SyncState {
 
         /**
          * The Subscription has been instantiated but does not exist on the server.

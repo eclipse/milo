@@ -50,7 +50,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
         assertEquals(1, created.size());
         assertEquals(monitoredItem, created.get(0));
-        assertEquals(OpcUaMonitoredItem.State.SYNCHRONIZED, monitoredItem.getState());
+        assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
     }
 
     @Test
@@ -63,13 +63,13 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         List<OpcUaMonitoredItem> created = subscription.createMonitoredItems();
         assertEquals(1, created.size());
         assertEquals(monitoredItem, created.get(0));
-        assertEquals(OpcUaMonitoredItem.State.SYNCHRONIZED, monitoredItem.getState());
+        assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
 
         subscription.removeMonitoredItem(monitoredItem);
         List<OpcUaMonitoredItem> deleted = subscription.deleteMonitoredItems();
         assertEquals(1, deleted.size());
         assertEquals(monitoredItem, deleted.get(0));
-        assertEquals(OpcUaMonitoredItem.State.INITIAL, monitoredItem.getState());
+        assertEquals(OpcUaMonitoredItem.SyncState.INITIAL, monitoredItem.getSyncState());
     }
 
     @Test

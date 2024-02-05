@@ -37,7 +37,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaMonitoredItem {
 
-    private State state = State.INITIAL;
+    private SyncState syncState = SyncState.INITIAL;
     private Modifications modifications;
 
     private @Nullable DataValueListener dataValueListener;
@@ -62,6 +62,7 @@ public class OpcUaMonitoredItem {
     private @Nullable StatusCode createResult;
     private @Nullable StatusCode modifyResult;
     private @Nullable StatusCode deleteResult;
+    private @Nullable StatusCode setMonitoringModeResult;
 
     private @Nullable UInteger clientHandle;
     private @Nullable OpcUaSubscription subscription;
@@ -78,59 +79,51 @@ public class OpcUaMonitoredItem {
     }
 
     public void setSamplingInterval(double samplingInterval) {
-        if (state == State.INITIAL) {
-            this.samplingInterval = samplingInterval;
-        } else {
-            if (modifications == null) {
-                modifications = new Modifications();
-            }
+        this.samplingInterval = samplingInterval;
 
-            modifications.samplingInterval = samplingInterval;
-
-            state = State.UNSYNCHRONIZED;
+        if (modifications == null) {
+            modifications = new Modifications();
         }
+
+        modifications.samplingInterval = samplingInterval;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     public void setQueueSize(UInteger queueSize) {
-        if (state == State.INITIAL) {
-            this.queueSize = queueSize;
-        } else {
-            if (modifications == null) {
-                modifications = new Modifications();
-            }
+        this.queueSize = queueSize;
 
-            modifications.queueSize = queueSize;
-
-            state = State.UNSYNCHRONIZED;
+        if (modifications == null) {
+            modifications = new Modifications();
         }
+
+        modifications.queueSize = queueSize;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     public void setDiscardOldest(boolean discardOldest) {
-        if (state == State.INITIAL) {
-            this.discardOldest = discardOldest;
-        } else {
-            if (modifications == null) {
-                modifications = new Modifications();
-            }
+        this.discardOldest = discardOldest;
 
-            modifications.discardOldest = discardOldest;
-
-            state = State.UNSYNCHRONIZED;
+        if (modifications == null) {
+            modifications = new Modifications();
         }
+
+        modifications.discardOldest = discardOldest;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     public void setFilter(@Nullable MonitoringFilter filter) {
-        if (state == State.INITIAL) {
-            this.filter = filter;
-        } else {
-            if (modifications == null) {
-                modifications = new Modifications();
-            }
+        this.filter = filter;
 
-            modifications.filter = filter;
-
-            state = State.UNSYNCHRONIZED;
+        if (modifications == null) {
+            modifications = new Modifications();
         }
+
+        modifications.filter = filter;
+
+        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -247,14 +240,14 @@ public class OpcUaMonitoredItem {
         this.monitoringMode = monitoringMode;
     }
 
-    State getState() {
-        return state;
+    SyncState getSyncState() {
+        return syncState;
     }
 
     void reset() {
         // TODO reset to initial state
         monitoredItemId = null;
-        state = State.INITIAL;
+        syncState = SyncState.INITIAL;
     }
 
     MonitoredItemCreateRequest newCreateRequest() {
@@ -324,9 +317,9 @@ public class OpcUaMonitoredItem {
             revisedQueueSize = result.getRevisedQueueSize();
             revisedSamplingInterval = result.getRevisedSamplingInterval();
 
-            state = State.SYNCHRONIZED;
+            syncState = SyncState.SYNCHRONIZED;
         } else {
-            state = State.INITIAL;
+            syncState = SyncState.INITIAL;
         }
 
         this.lastOperationResult = statusCode;
@@ -346,9 +339,9 @@ public class OpcUaMonitoredItem {
             revisedQueueSize = result.getRevisedQueueSize();
             revisedSamplingInterval = result.getRevisedSamplingInterval();
 
-            state = State.SYNCHRONIZED;
+            syncState = SyncState.SYNCHRONIZED;
         } else {
-            state = State.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
         }
 
         lastOperationResult = statusCode;
@@ -360,7 +353,12 @@ public class OpcUaMonitoredItem {
         monitoredItemId = null;
         lastOperationResult = statusCode;
 
-        state = State.INITIAL;
+        syncState = SyncState.INITIAL;
+    }
+
+    void applySetMonitoringModeResult(StatusCode statusCode) {
+        // TODO
+        this.setMonitoringModeResult = statusCode;
     }
 
     /**
@@ -429,7 +427,59 @@ public class OpcUaMonitoredItem {
 
     }
 
-    enum State {
+    public static class ServerState {
+
+        private final UInteger monitoredItemId;
+        private final MonitoringMode monitoringMode;
+        private final double samplingInterval;
+        private final @Nullable MonitoringFilter filter;
+        private final UInteger queueSize;
+        private final boolean discardOldest;
+
+        public ServerState(
+            UInteger monitoredItemId,
+            MonitoringMode monitoringMode,
+            double samplingInterval,
+            @Nullable MonitoringFilter filter,
+            UInteger queueSize,
+            boolean discardOldest
+        ) {
+
+            this.monitoredItemId = monitoredItemId;
+            this.monitoringMode = monitoringMode;
+            this.samplingInterval = samplingInterval;
+            this.filter = filter;
+            this.queueSize = queueSize;
+            this.discardOldest = discardOldest;
+        }
+
+        public UInteger getMonitoredItemId() {
+            return monitoredItemId;
+        }
+
+        public MonitoringMode getMonitoringMode() {
+            return monitoringMode;
+        }
+
+        public double getSamplingInterval() {
+            return samplingInterval;
+        }
+
+        public @Nullable MonitoringFilter getFilter() {
+            return filter;
+        }
+
+        public UInteger getQueueSize() {
+            return queueSize;
+        }
+
+        public boolean getDiscardOldest() {
+            return discardOldest;
+        }
+
+    }
+
+    enum SyncState {
         INITIAL,
 
         SYNCHRONIZED,
