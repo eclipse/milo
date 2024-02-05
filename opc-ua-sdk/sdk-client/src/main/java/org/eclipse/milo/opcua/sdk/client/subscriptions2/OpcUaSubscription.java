@@ -294,10 +294,13 @@ public class OpcUaSubscription {
     //region Monitored Item Management
 
     public void addMonitoredItem(OpcUaMonitoredItem item) {
-        UInteger clientHandle = clientHandleSequence.nextClientHandle();
-        item.setClientHandle(clientHandle);
-        item.setSubscription(this);
-        monitoredItems.put(clientHandle, item);
+        if (!monitoredItems.containsValue(item)) {
+            UInteger clientHandle = clientHandleSequence.nextClientHandle();
+            item.setClientHandle(clientHandle);
+            item.setSubscription(this);
+
+            monitoredItems.put(clientHandle, item);
+        }
     }
 
     public void addMonitoredItems(List<OpcUaMonitoredItem> items) {
