@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -35,10 +37,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRe
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -82,6 +86,8 @@ public class OpcUaSubscription {
     private UByte priority = DEFAULT_PRIORITY;
 
     private boolean lifetimeAndKeepAliveCalculated = true;
+
+    private @Nullable SubscriptionListener listener;
 
     private final OpcUaClient client;
 
@@ -135,12 +141,7 @@ public class OpcUaSubscription {
                 true
             );
 
-            client.getPublishingManager().addSubscription(
-                this,
-                notificationMessage -> {
-                    // TODO
-                }
-            );
+            client.getPublishingManager().addSubscription(this);
         } else {
             throw new UaException(StatusCodes.Bad_InvalidState);
         }
@@ -747,6 +748,63 @@ public class OpcUaSubscription {
             .toString();
     }
 
+
+    void notifyDataReceived(MonitoredItemNotification[] notifications) {
+        var items = new ArrayList<OpcUaMonitoredItem>(notifications.length);
+        var values = new ArrayList<DataValue>(notifications.length);
+
+        for (MonitoredItemNotification notification : notifications) {
+            UInteger clientHandle = notification.getClientHandle();
+            OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
+            items.add(item);
+            values.add(notification.getValue());
+        }
+
+        if (listener != null) {
+            listener.onDataReceived(this, items, values);
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            OpcUaMonitoredItem item = items.get(i);
+            DataValue value = values.get(i);
+            item.notifyDataValueReceived(value);
+        }
+    }
+
+    void notifyEventsReceived(EventFieldList[] events) {
+        var items = new ArrayList<OpcUaMonitoredItem>(events.length);
+        var eventValuesList = new ArrayList<Variant[]>(events.length);
+
+        for (EventFieldList event : events) {
+            UInteger clientHandle = event.getClientHandle();
+            OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
+            items.add(item);
+            eventValuesList.add(event.getEventFields());
+        }
+
+        if (listener != null) {
+            listener.onEventReceived(this, items, eventValuesList);
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            OpcUaMonitoredItem item = items.get(i);
+            Variant[] eventValues = eventValuesList.get(i);
+            item.notifyEventValuesReceived(eventValues);
+        }
+    }
+
+    void notifyKeepAliveReceived() {
+        if (listener != null) {
+            listener.onKeepAliveReceived(this);
+        }
+    }
+
+    void notifyStatusChanged(StatusCode status) {
+        if (listener != null) {
+            listener.onStatusChanged(this, status);
+        }
+    }
+
     private static class Modifications {
 
         private @Nullable Double publishingInterval;
@@ -858,6 +916,24 @@ public class OpcUaSubscription {
          * synchronize.
          */
         UNSYNCHRONIZED
+
+    }
+
+    public interface SubscriptionListener {
+
+        void onDataReceived(OpcUaSubscription subscription, List<OpcUaMonitoredItem> items, List<DataValue> values);
+
+        void onEventReceived(OpcUaSubscription subscription, List<OpcUaMonitoredItem> items, List<Variant[]> fields);
+
+        void onKeepAliveReceived(OpcUaSubscription subscription);
+
+        void onNotificationDataLost(OpcUaSubscription subscription);
+
+        void onWatchdogTimerElapsed(OpcUaSubscription subscription);
+
+        void onStatusChanged(OpcUaSubscription subscription, StatusCode status);
+
+        void onTransferFailed(OpcUaSubscription subscription, StatusCode status);
 
     }
 

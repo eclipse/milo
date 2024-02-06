@@ -16,33 +16,16 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class Playground {
 
-    public static void main(String[] args) throws UaException {
+    public static void main(String[] args) throws UaException, InterruptedException {
         var client = OpcUaClient.create("opc.tcp://milo.digitalpetri.com:62541/milo");
         client.connect();
 
         var subscription = new OpcUaSubscription(client);
-        System.out.println(subscription);
-
-        subscription.setPublishingInterval(250.0);
         subscription.create();
-
-        System.out.println("Created subscription: " + subscription.getSubscriptionId().orElseThrow());
-
-        subscription.setPublishingInterval(750.0);
-        subscription.setPriority(ubyte(1));
-        subscription.setMaxNotificationsPerPublish(uint(1 << 17));
-        subscription.modify();
-
-        System.out.printf("Modified subscription: publishingInterval=%s, priority=%s, maxNotificationsPerPublish=%s%n",
-            subscription.getRevisedPublishingInterval().orElseThrow(),
-            subscription.getPriority(),
-            subscription.getMaxNotificationsPerPublish()
-        );
 
         System.out.println(subscription);
 
@@ -52,16 +35,18 @@ public class Playground {
 
         monitoredItem.setDataValueListener(
             (item, value) ->
-                System.out.printf("[%s] Received value: %s%n", item.getMonitoredItemId(), value)
+                System.out.printf(
+                    "[id=%s] received value: %s%n",
+                    item.getMonitoredItemId().orElse(null), value
+                )
         );
 
         subscription.addMonitoredItem(monitoredItem);
         subscription.synchronizeMonitoredItems();
 
+        Thread.sleep(10_000);
+
         subscription.delete();
-
-        System.out.println(subscription);
-
         client.disconnect();
     }
 

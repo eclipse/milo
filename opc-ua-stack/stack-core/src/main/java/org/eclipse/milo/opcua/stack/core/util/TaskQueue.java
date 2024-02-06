@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -327,7 +327,7 @@ public final class TaskQueue {
 
     }
 
-    interface Task {
+    public interface Task {
 
         /**
          * Execute this {@link Task}.
@@ -345,7 +345,7 @@ public final class TaskQueue {
 
     }
 
-    enum TaskPriority {
+    public enum TaskPriority {
 
         /**
          * The default priority for a task. No special treatment.

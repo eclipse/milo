@@ -361,6 +361,18 @@ public class OpcUaMonitoredItem {
         this.setMonitoringModeResult = statusCode;
     }
 
+    void notifyDataValueReceived(DataValue value) {
+        if (dataValueListener != null) {
+            dataValueListener.onDataReceived(this, value);
+        }
+    }
+
+    void notifyEventValuesReceived(Variant[] eventValues) {
+        if (eventValueListener != null) {
+            eventValueListener.onEventReceived(this, eventValues);
+        }
+    }
+
     /**
      * A callback that receives notification of new values for a {@link ManagedDataItem}.
      */
@@ -377,7 +389,7 @@ public class OpcUaMonitoredItem {
          * @param item the {@link OpcUaMonitoredItem} for which a new value has arrived.
          * @param value the new {@link DataValue}.
          */
-        void onDataValueReceived(OpcUaMonitoredItem item, DataValue value);
+        void onDataReceived(OpcUaMonitoredItem item, DataValue value);
 
     }
 
@@ -397,7 +409,7 @@ public class OpcUaMonitoredItem {
          * @param item the {@link OpcUaMonitoredItem} for which a new event has arrived.
          * @param eventValues the new event field values.
          */
-        void onEventValueReceived(OpcUaMonitoredItem item, Variant[] eventValues);
+        void onEventReceived(OpcUaMonitoredItem item, Variant[] eventValues);
 
     }
 
