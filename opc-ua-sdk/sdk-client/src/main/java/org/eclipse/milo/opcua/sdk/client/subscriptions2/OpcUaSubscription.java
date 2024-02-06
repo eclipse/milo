@@ -723,6 +723,10 @@ public class OpcUaSubscription {
         return lifetimeAndKeepAliveCalculated;
     }
 
+    public void setSubscriptionListener(@Nullable SubscriptionListener listener) {
+        this.listener = listener;
+    }
+
     private static UInteger calculateMaxKeepAliveCount(double publishingInterval) {
         // Send a keep-alive every 10 seconds if the publishing interval is faster than
         // 10 seconds, or every publishing interval otherwise.
@@ -744,7 +748,7 @@ public class OpcUaSubscription {
     public String toString() {
         return new StringJoiner(", ", OpcUaSubscription.class.getSimpleName() + "[", "]")
             .add("subscriptionId=" + getSubscriptionId().orElse(null))
-            .add("state=" + syncState)
+            .add("syncState=" + syncState)
             .toString();
     }
 
@@ -802,6 +806,12 @@ public class OpcUaSubscription {
     void notifyStatusChanged(StatusCode status) {
         if (listener != null) {
             listener.onStatusChanged(this, status);
+        }
+    }
+
+    void notifyNotificationDataLost() {
+        if (listener != null) {
+            listener.onNotificationDataLost(this);
         }
     }
 
@@ -921,19 +931,25 @@ public class OpcUaSubscription {
 
     public interface SubscriptionListener {
 
-        void onDataReceived(OpcUaSubscription subscription, List<OpcUaMonitoredItem> items, List<DataValue> values);
+        default void onDataReceived(
+            OpcUaSubscription subscription,
+            List<OpcUaMonitoredItem> items, List<DataValue> values
+        ) {}
 
-        void onEventReceived(OpcUaSubscription subscription, List<OpcUaMonitoredItem> items, List<Variant[]> fields);
+        default void onEventReceived(
+            OpcUaSubscription subscription,
+            List<OpcUaMonitoredItem> items, List<Variant[]> fields
+        ) {}
 
-        void onKeepAliveReceived(OpcUaSubscription subscription);
+        default void onKeepAliveReceived(OpcUaSubscription subscription) {}
 
-        void onNotificationDataLost(OpcUaSubscription subscription);
+        default void onNotificationDataLost(OpcUaSubscription subscription) {}
 
-        void onWatchdogTimerElapsed(OpcUaSubscription subscription);
+        default void onWatchdogTimerElapsed(OpcUaSubscription subscription) {}
 
-        void onStatusChanged(OpcUaSubscription subscription, StatusCode status);
+        default void onStatusChanged(OpcUaSubscription subscription, StatusCode status) {}
 
-        void onTransferFailed(OpcUaSubscription subscription, StatusCode status);
+        default void onTransferFailed(OpcUaSubscription subscription, StatusCode status) {}
 
     }
 

@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemNotificat
 import org.eclipse.milo.opcua.stack.core.types.structured.NotificationMessage;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusChangeNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
@@ -167,18 +168,17 @@ public class PublishingManager {
                     .map(UaException::getStatusCode)
                     .orElse(StatusCode.BAD);
 
-                logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
-
                 pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
 
                 if (statusCode.getValue() != StatusCodes.Bad_NoSubscription &&
                     statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
 
-                    maybeSendPublishRequests();
-                }
+                    logger.warn("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
 
-                UaException uax = UaException.extract(ex).orElse(new UaException(ex));
-                // TODO subscriptionListeners.forEach(l -> l.onPublishFailure(uax));
+                    maybeSendPublishRequests();
+                } else {
+                    logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
+                }
             }
         });
     }
@@ -197,47 +197,70 @@ public class PublishingManager {
         }
 
         NotificationMessage notificationMessage = response.getNotificationMessage();
-        long sequenceNumber = notificationMessage.getSequenceNumber().longValue();
+        long receivedSequenceNumber = notificationMessage.getSequenceNumber().longValue();
         long expectedSequenceNumber = details.lastSequenceNumber + 1;
 
-        if (sequenceNumber > expectedSequenceNumber) {
-            // TODO Call Republish for missing sequence numbers
-        } else {
-            if (notificationMessage.getNotificationData() != null &&
-                notificationMessage.getNotificationData().length > 0) {
+        if (receivedSequenceNumber > expectedSequenceNumber) {
+            boolean republishSuccess = true;
 
-                // Set last sequence number only if this isn't a keep-alive
-                details.lastSequenceNumber = sequenceNumber;
-            }
+            for (long sequenceNumber = expectedSequenceNumber;
+                 sequenceNumber < receivedSequenceNumber; sequenceNumber++) {
 
-            UInteger[] availableSequenceNumbers = response.getAvailableSequenceNumbers();
-            if (availableSequenceNumbers != null && availableSequenceNumbers.length > 0) {
-                synchronized (details.availableAcknowledgements) {
-                    details.availableAcknowledgements.clear();
+                try {
+                    RepublishResponse republishResponse =
+                        client.republish(subscriptionId, uint(sequenceNumber));
 
-                    Collections.addAll(details.availableAcknowledgements, availableSequenceNumbers);
+                    NotificationMessage republishNotificationMessage = republishResponse.getNotificationMessage();
+
+                    deliveryQueue.submit(() -> deliverNotificationMessage(details, republishNotificationMessage));
+                } catch (UaException e) {
+                    logger.warn("Republish service failure, sequenceNumber={}", sequenceNumber, e);
+
+                    republishSuccess = false;
                 }
             }
 
-            CompletionStage<Unit> callback = deliveryQueue.submit(
-                () ->
-                    deliverNotificationMessage(details, notificationMessage)
-            );
-
-            if (callback != null) {
-                // Once delivery of notifications is complete we can consider sending another
-                // PublishRequest. Waiting until the client has finished receiving notifications
-                // is the backpressure mechanism that prevents the server from flooding the client
-                // with data change notifications faster than it can process them.
-                callback.thenRunAsync(
-                    () -> {
-                        pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
-
-                        maybeSendPublishRequests();
-                    },
-                    client.getTransport().getConfig().getExecutor()
-                );
+            if (!republishSuccess) {
+                deliveryQueue.submit(details.subscription::notifyNotificationDataLost);
             }
+
+            details.lastSequenceNumber = expectedSequenceNumber;
+        }
+
+        if (notificationMessage.getNotificationData() != null &&
+            notificationMessage.getNotificationData().length > 0) {
+
+            // Set last sequence number only if this isn't a keep-alive
+            details.lastSequenceNumber = receivedSequenceNumber;
+        }
+
+        UInteger[] availableSequenceNumbers = response.getAvailableSequenceNumbers();
+        if (availableSequenceNumbers != null && availableSequenceNumbers.length > 0) {
+            synchronized (details.availableAcknowledgements) {
+                details.availableAcknowledgements.clear();
+
+                Collections.addAll(details.availableAcknowledgements, availableSequenceNumbers);
+            }
+        }
+
+        CompletionStage<Unit> callback = deliveryQueue.submit(
+            () ->
+                deliverNotificationMessage(details, notificationMessage)
+        );
+
+        if (callback != null) {
+            // Once delivery of notifications is complete we can consider sending another
+            // PublishRequest. Waiting until the client has finished receiving notifications
+            // is the backpressure mechanism that prevents the server from flooding the client
+            // with data change notifications faster than it can process them.
+            callback.thenRunAsync(
+                () -> {
+                    pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
+
+                    maybeSendPublishRequests();
+                },
+                client.getTransport().getConfig().getExecutor()
+            );
         }
     }
 
