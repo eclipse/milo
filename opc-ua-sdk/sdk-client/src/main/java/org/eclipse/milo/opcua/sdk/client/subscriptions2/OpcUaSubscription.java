@@ -407,6 +407,12 @@ public class OpcUaSubscription {
 
     //endregion
 
+    /**
+     * Set the publishing mode, i.e. enable or disable publishing, for this Subscription.
+     *
+     * @param enabled {@code true} to enable publishing, {@code false} to disable publishing.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
     public void setPublishingMode(boolean enabled) throws UaException {
         if (syncState == SyncState.INITIAL) {
             throw new UaException(StatusCodes.Bad_InvalidState);
@@ -489,6 +495,13 @@ public class OpcUaSubscription {
         return maxNotificationsPerPublish;
     }
 
+    /**
+     * Get whether publishing is enabled for this Subscription.
+     * <p>
+     * This is available only after the Subscription has been created.
+     *
+     * @return {@code true} if publishing is enabled for this Subscription.
+     */
     public Optional<Boolean> isPublishingEnabled() {
         return getServerState().map(ServerState::isPublishingEnabled);
     }
@@ -547,8 +560,7 @@ public class OpcUaSubscription {
      * during the create service call.
      * <p>
      * If the Subscription has already been created, this will be the PublishingInterval used
-     * during the next modify service call. {@link #getPublishingInterval()} will not
-     * reflect this change until the modify service call has completed.
+     * during the next modify service call.
      *
      * @param publishingInterval the new PublishingInterval.
      * @see #create()
@@ -584,8 +596,7 @@ public class OpcUaSubscription {
      * the create service call.
      * <p>
      * If the Subscription has already been created, this will be the LifetimeCount used during
-     * the next modify service call. {@link #getLifetimeCount()}} will not reflect this
-     * change until the modify service call has completed.
+     * the next modify service call.
      *
      * @param lifetimeCount the new LifetimeCount.
      * @see #create()
@@ -613,8 +624,7 @@ public class OpcUaSubscription {
      * the create service call.
      * <p>
      * If the Subscription has already been created, this will be the MaxKeepAliveCount used during
-     * the next modify service call. {@link #getMaxKeepAliveCount()}} will not reflect
-     * this change until the modify service call has completed.
+     * the next modify service call.
      *
      * @param maxKeepAliveCount the new MaxKeepAliveCount.
      * @see #create()
@@ -642,8 +652,7 @@ public class OpcUaSubscription {
      * create service call.
      * <p>
      * If the Subscription has already been created, this will be the Priority used during the
-     * next modify service call. {@link #getPriority()} will not reflect this change until the
-     * modify service call has completed.
+     * next modify service call.
      *
      * @param priority the new Priority.
      * @see #create()
@@ -671,8 +680,7 @@ public class OpcUaSubscription {
      * used during the create service call.
      * <p>
      * If the Subscription has already been created, this will be the MaxNotificationsPerPublish
-     * used during the next modify service call. {@link #getMaxNotificationsPerPublish()} will
-     * not reflect this change until the modify service call has completed.
+     * used during the next modify service call.
      *
      * @param maxNotificationsPerPublish the new MaxNotificationsPerPublish.
      * @see #create()
