@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
@@ -51,11 +52,13 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
         assertEquals(1, created.size());
         assertEquals(monitoredItem, created.get(0).monitoredItem());
+        assertTrue(created.get(0).serviceResult().isGood());
+        assertTrue(created.get(0).operationResult().orElseThrow().isGood());
         assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
     }
 
     @Test
-    void deleteMonitoredItem() throws UaException {
+    void deleteMonitoredItem() {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
             NodeIds.Server_ServerStatus_CurrentTime
         );
@@ -67,29 +70,36 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
 
         subscription.removeMonitoredItem(monitoredItem);
-        List<OpcUaMonitoredItem> deleted = subscription.deleteMonitoredItems();
+        List<MonitoredItemOperationResult> deleted = subscription.deleteMonitoredItems();
         assertEquals(1, deleted.size());
-        assertEquals(monitoredItem, deleted.get(0));
+        assertEquals(monitoredItem, deleted.get(0).monitoredItem());
+        assertTrue(deleted.get(0).serviceResult().isGood());
+        assertTrue(deleted.get(0).operationResult().orElseThrow().isGood());
         assertEquals(OpcUaMonitoredItem.SyncState.INITIAL, monitoredItem.getSyncState());
     }
 
     @Test
-    void modifyMonitoredItem_SamplingInterval() throws UaException {
+    void modifyMonitoredItem_SamplingInterval() {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
         subscription.addMonitoredItem(monitoredItem);
-        subscription.synchronizeMonitoredItems();
+        subscription.createMonitoredItems();
 
         monitoredItem.setSamplingInterval(5000.0);
-        assertEquals(1, subscription.synchronizeMonitoredItems());
+        List<MonitoredItemOperationResult> modified = subscription.modifyMonitoredItems();
+
+        assertEquals(1, modified.size());
+        assertEquals(monitoredItem, modified.get(0).monitoredItem());
+        assertTrue(modified.get(0).serviceResult().isGood());
+        assertTrue(modified.get(0).operationResult().orElseThrow().isGood());
         assertEquals(5000.0, monitoredItem.getSamplingInterval());
         assertEquals(5000.0, monitoredItem.getRevisedSamplingInterval().orElseThrow());
     }
 
     @Test
-    void modifyMonitoredItem_QueueSize() throws UaException {
+    void modifyMonitoredItem_QueueSize() {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
             NodeIds.Server_ServerStatus_CurrentTime
         );
@@ -98,16 +108,18 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.createMonitoredItems();
 
         monitoredItem.setQueueSize(uint(10));
-        List<OpcUaMonitoredItem> modified = subscription.modifyMonitoredItems();
+        List<MonitoredItemOperationResult> modified = subscription.modifyMonitoredItems();
 
         assertEquals(1, modified.size());
-        assertEquals(monitoredItem, modified.get(0));
+        assertEquals(monitoredItem, modified.get(0).monitoredItem());
+        assertTrue(modified.get(0).serviceResult().isGood());
+        assertTrue(modified.get(0).operationResult().orElseThrow().isGood());
         assertEquals(uint(10), monitoredItem.getQueueSize());
         assertEquals(uint(10), monitoredItem.getRevisedQueueSize().orElseThrow());
     }
 
     @Test
-    void modifyMonitoredItem_DiscardOldest() throws UaException {
+    void modifyMonitoredItem_DiscardOldest() {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
             NodeIds.Server_ServerStatus_CurrentTime
         );
@@ -116,15 +128,17 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.createMonitoredItems();
 
         monitoredItem.setDiscardOldest(false);
-        List<OpcUaMonitoredItem> modified = subscription.modifyMonitoredItems();
+        List<MonitoredItemOperationResult> modified = subscription.modifyMonitoredItems();
 
         assertEquals(1, modified.size());
-        assertEquals(monitoredItem, modified.get(0));
+        assertTrue(modified.get(0).serviceResult().isGood());
+        assertTrue(modified.get(0).operationResult().orElseThrow().isGood());
+        assertEquals(monitoredItem, modified.get(0).monitoredItem());
         assertFalse(monitoredItem.getDiscardOldest());
     }
 
     @Test
-    void synchronizeMonitoredItems() throws UaException {
+    void synchronizeMonitoredItems() {
         var monitoredItems = new LinkedList<OpcUaMonitoredItem>();
 
         // Create 10 and expect 10 affected during synchronization

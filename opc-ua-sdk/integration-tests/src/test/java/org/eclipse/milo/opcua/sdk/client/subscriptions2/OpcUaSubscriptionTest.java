@@ -10,13 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.List;
+
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.MonitoredItemOperationResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.SyncState;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.junit.jupiter.api.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -239,6 +244,41 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
             subscription.delete();
             assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
+    }
+
+    @Test
+    void maxMonitoredItemsPerCall() throws UaException {
+        var subscription = new OpcUaSubscription(client);
+        subscription.setMaxMonitoredItemsPerCall(uint(3));
+        subscription.create();
+
+        for (int i = 0; i < 10; i++) {
+            var monitoredItem = OpcUaMonitoredItem.newDataItem(
+                NodeIds.Server_ServerStatus_CurrentTime
+            );
+            subscription.addMonitoredItem(monitoredItem);
+        }
+
+        List<MonitoredItemOperationResult> createResults = subscription.createMonitoredItems();
+        assertEquals(10, createResults.size());
+        assertTrue(createResults.stream().allMatch(r -> r.serviceResult().isGood()));
+        assertTrue(createResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
+
+        subscription.getMonitoredItems().forEach(item -> {
+            item.setSamplingInterval(100.0);
+            item.setQueueSize(uint(2));
+        });
+
+        List<MonitoredItemOperationResult> modifyResults = subscription.modifyMonitoredItems();
+        assertEquals(10, modifyResults.size());
+        assertTrue(modifyResults.stream().allMatch(r -> r.serviceResult().isGood()));
+        assertTrue(modifyResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
+
+        subscription.removeMonitoredItems(subscription.getMonitoredItems());
+        List<MonitoredItemOperationResult> deleteResults = subscription.deleteMonitoredItems();
+        assertEquals(10, deleteResults.size());
+        assertTrue(deleteResults.stream().allMatch(r -> r.serviceResult().isGood()));
+        assertTrue(deleteResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
     }
 
 }

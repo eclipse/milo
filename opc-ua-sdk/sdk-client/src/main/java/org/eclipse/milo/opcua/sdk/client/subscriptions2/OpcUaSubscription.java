@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,10 +23,10 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.model.objects.OperationLimitsTypeNode;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -48,8 +49,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRes
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
+import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -62,6 +67,8 @@ public class OpcUaSubscription {
     private static final UInteger DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH = uint(65535);
     private static final UByte DEFAULT_PRIORITY = ubyte(0);
     private static final double DEFAULT_TARGET_KEEP_ALIVE_INTERVAL = 10000.0;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private SyncState syncState = SyncState.INITIAL;
 
@@ -93,6 +100,9 @@ public class OpcUaSubscription {
     private UByte priority = DEFAULT_PRIORITY;
 
     private boolean lifetimeAndKeepAliveCalculated = true;
+
+    private UInteger maxMonitoredItemsPerCall = uint(10_000);
+    private final Lazy<UInteger> monitoredItemPartitionSize = new Lazy<>();
 
     private @Nullable SubscriptionListener listener;
 
@@ -309,15 +319,21 @@ public class OpcUaSubscription {
      * any new MonitoredItems that have been added but not yet created on the Server.
      *
      * @return the total number of MonitoredItems that were deleted, modified, or created.
-     * @throws UaException if any of the service calls fail.
      */
-    public int synchronizeMonitoredItems() throws UaException {
-        List<OpcUaMonitoredItem> deletedItems = deleteMonitoredItems();
-        List<OpcUaMonitoredItem> modifiedItems = modifyMonitoredItems();
-        List<MonitoredItemOperationResult> createdItems = createMonitoredItems();
+    public long synchronizeMonitoredItems() {
+        List<MonitoredItemOperationResult> deleteResults = deleteMonitoredItems();
+        List<MonitoredItemOperationResult> modifyResults = modifyMonitoredItems();
+        List<MonitoredItemOperationResult> createResults = createMonitoredItems();
 
-        // TODO this count is no longer accurate; need to check results
-        return deletedItems.size() + modifiedItems.size() + createdItems.size();
+        // TODO throw some kind of SynchronizationException instead?
+        //  This way we can report the operation results associated with create, modify, and delete
+        //  service calls.
+
+        // sum of deleted, modified, and created items where the operation result is good
+        return Stream.of(deleteResults, modifyResults, createResults)
+            .flatMap(List::stream)
+            .filter(r -> r.serviceResult().isGood() && r.operationResult().orElseThrow().isGood())
+            .count();
     }
 
     /**
@@ -327,13 +343,17 @@ public class OpcUaSubscription {
      * @return a List of {@link MonitoredItemOperationResult}s that contain the MonitoredItem and
      *     the service- and operation-level results associated with the attempt to create it.
      */
-    List<MonitoredItemOperationResult> createMonitoredItems() {
+    public List<MonitoredItemOperationResult> createMonitoredItems() {
         List<OpcUaMonitoredItem> itemsToCreate = monitoredItems.values()
             .stream()
             .filter(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.INITIAL)
             .collect(Collectors.toList());
 
-        return createMonitoredItems(itemsToCreate);
+        if (!itemsToCreate.isEmpty()) {
+            return createMonitoredItems(itemsToCreate);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private List<MonitoredItemOperationResult> createMonitoredItems(List<OpcUaMonitoredItem> itemsToCreate) {
@@ -342,10 +362,13 @@ public class OpcUaSubscription {
         UInteger partitionSize = getMonitoredItemPartitionSize();
 
         List<List<OpcUaMonitoredItem>> partitions =
-            Lists.partition(itemsToCreate, partitionSize.intValue());
+            Lists.partition(itemsToCreate, partitionSize.intValue())
+                .collect(Collectors.toList());
 
         for (List<OpcUaMonitoredItem> partition : partitions) {
             try {
+                logger.debug("createMonitoredItems partition.size(): {}", partition.size());
+
                 CreateMonitoredItemsResponse response = client.createMonitoredItems(
                     serverState.getSubscriptionId(),
                     TimestampsToReturn.Both,
@@ -378,132 +401,156 @@ public class OpcUaSubscription {
         return serviceOperationsResults;
     }
 
-    private UInteger getMonitoredItemPartitionSize() {
-        // TODO cache result in Lazy
-        try {
-            OperationLimitsTypeNode operationLimits =
-                (OperationLimitsTypeNode) client.getAddressSpace()
-                    .getObjectNode(NodeIds.Server_ServerCapabilities_OperationLimits);
-
-            return operationLimits.getMaxMonitoredItemsPerCall();
-        } catch (UaException e) {
-            // TODO configurable default
-            return uint(1000);
-        }
-    }
-
-    interface ServiceOperationsResult {
-
-        /**
-         * The StatusCode associated with the service call this operation was a part of.
-         *
-         * @return the StatusCode associated with the service call this operation was a part of.
-         */
-        StatusCode serviceResult();
-
-        /**
-         * The StatusCode associated with the operation-level result.
-         *
-         * @return the StatusCode associated with the operation-level result.
-         */
-        Optional<StatusCode> operationResult();
-
-    }
-
-    public static class MonitoredItemOperationResult implements ServiceOperationsResult {
-
-        private final OpcUaMonitoredItem monitoredItem;
-        private final StatusCode serviceResult;
-        private final @Nullable StatusCode operationResult;
-
-        public MonitoredItemOperationResult(
-            OpcUaMonitoredItem monitoredItem,
-            StatusCode serviceResult,
-            @Nullable StatusCode operationResult
-        ) {
-
-            this.monitoredItem = monitoredItem;
-            this.serviceResult = serviceResult;
-            this.operationResult = operationResult;
-        }
-
-        public OpcUaMonitoredItem monitoredItem() {
-            return monitoredItem;
-        }
-
-        @Override
-        public StatusCode serviceResult() {
-            return serviceResult;
-        }
-
-        @Override
-        public Optional<StatusCode> operationResult() {
-            return Optional.ofNullable(operationResult);
-        }
-
-    }
-
     /**
      * Modify any MonitoredItems that have been changed.
      *
      * @return a List of the MonitoredItems that were modified.
-     * @throws UaException if the modify service call fails.
      */
-    List<OpcUaMonitoredItem> modifyMonitoredItems() throws UaException {
+    public List<MonitoredItemOperationResult> modifyMonitoredItems() {
         List<OpcUaMonitoredItem> itemsToModify = monitoredItems.values()
             .stream()
             .filter(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.UNSYNCHRONIZED)
             .collect(Collectors.toList());
 
         if (!itemsToModify.isEmpty()) {
-            ModifyMonitoredItemsResponse response = client.modifyMonitoredItems(
-                serverState.getSubscriptionId(),
-                TimestampsToReturn.Both,
-                itemsToModify.stream()
-                    .map(OpcUaMonitoredItem::newModifyRequest)
-                    .collect(Collectors.toList())
-            );
+            return modifyMonitoredItems(itemsToModify);
+        } else {
+            return Collections.emptyList();
+        }
+    }
 
-            MonitoredItemModifyResult[] results = requireNonNull(response.getResults());
+    private List<MonitoredItemOperationResult> modifyMonitoredItems(List<OpcUaMonitoredItem> itemsToModify) {
+        var serviceOperationsResults = new ArrayList<MonitoredItemOperationResult>(itemsToModify.size());
 
-            for (int i = 0; i < results.length; i++) {
-                MonitoredItemModifyResult result = results[i];
+        UInteger partitionSize = getMonitoredItemPartitionSize();
 
-                itemsToModify.get(i).applyModifyResult(result);
+        List<List<OpcUaMonitoredItem>> partitions =
+            Lists.partition(itemsToModify, partitionSize.intValue())
+                .collect(Collectors.toList());
+
+        for (List<OpcUaMonitoredItem> partition : partitions) {
+            try {
+                logger.debug("modifyMonitoredItems partition.size(): {}", partition.size());
+
+                ModifyMonitoredItemsResponse response = client.modifyMonitoredItems(
+                    serverState.getSubscriptionId(),
+                    TimestampsToReturn.Both,
+                    partition.stream()
+                        .map(OpcUaMonitoredItem::newModifyRequest)
+                        .collect(Collectors.toList())
+                );
+
+                MonitoredItemModifyResult[] results = requireNonNull(response.getResults());
+
+                for (int i = 0; i < results.length; i++) {
+                    MonitoredItemModifyResult result = results[i];
+                    OpcUaMonitoredItem monitoredItem = partition.get(i);
+
+                    monitoredItem.applyModifyResult(result);
+
+                    serviceOperationsResults.add(
+                        new MonitoredItemOperationResult(monitoredItem, StatusCode.GOOD, result.getStatusCode())
+                    );
+                }
+            } catch (UaException e) {
+                for (OpcUaMonitoredItem item : partition) {
+                    serviceOperationsResults.add(
+                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                    );
+                }
             }
         }
 
-        return itemsToModify;
+        return serviceOperationsResults;
     }
 
     /**
      * Delete any MonitoredItems that have been removed from the Subscription.
      *
      * @return a List of the MonitoredItems that were deleted.
-     * @throws UaException if the delete service call fails.
      */
-    List<OpcUaMonitoredItem> deleteMonitoredItems() throws UaException {
+    public List<MonitoredItemOperationResult> deleteMonitoredItems() {
         List<OpcUaMonitoredItem> itemsToDelete = this.itemsToDelete;
         this.itemsToDelete = new ArrayList<>();
 
         if (!itemsToDelete.isEmpty()) {
-            List<UInteger> itemIds = itemsToDelete.stream()
-                .map(item -> item.getMonitoredItemId().orElseThrow())
+            return deleteMonitoredItems(itemsToDelete);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<MonitoredItemOperationResult> deleteMonitoredItems(List<OpcUaMonitoredItem> itemsToDelete) {
+        var serviceOperationsResults = new ArrayList<MonitoredItemOperationResult>(itemsToDelete.size());
+
+        UInteger partitionSize = getMonitoredItemPartitionSize();
+
+        List<List<OpcUaMonitoredItem>> partitions =
+            Lists.partition(itemsToDelete, partitionSize.intValue())
                 .collect(Collectors.toList());
 
-            DeleteMonitoredItemsResponse response =
-                client.deleteMonitoredItems(serverState.getSubscriptionId(), itemIds);
+        for (List<OpcUaMonitoredItem> partition : partitions) {
+            try {
+                logger.debug("deleteMonitoredItems partition.size(): {}", partition.size());
 
-            StatusCode[] results = requireNonNull(response.getResults());
+                DeleteMonitoredItemsResponse response = client.deleteMonitoredItems(
+                    serverState.getSubscriptionId(),
+                    partition.stream()
+                        .map(item -> item.getMonitoredItemId().orElseThrow())
+                        .collect(Collectors.toList())
+                );
 
-            for (int i = 0; i < results.length; i++) {
-                StatusCode result = results[i];
+                StatusCode[] results = requireNonNull(response.getResults());
 
-                itemsToDelete.get(i).applyDeleteResult(result);
+                for (int i = 0; i < results.length; i++) {
+                    StatusCode result = results[i];
+
+                    partition.get(i).applyDeleteResult(result);
+
+                    serviceOperationsResults.add(
+                        new MonitoredItemOperationResult(partition.get(i), StatusCode.GOOD, result)
+                    );
+                }
+            } catch (UaException e) {
+                for (OpcUaMonitoredItem item : partition) {
+                    serviceOperationsResults.add(
+                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                    );
+                }
             }
         }
 
-        return itemsToDelete;
+        return serviceOperationsResults;
+    }
+
+    private UInteger getMonitoredItemPartitionSize() {
+        return monitoredItemPartitionSize.getOrCompute(() -> {
+            UInteger serverMaxMonitoredItemsPerCall = null;
+
+            try {
+                List<DataValue> values = client.readValues(
+                    0.0,
+                    TimestampsToReturn.Neither,
+                    List.of(NodeIds.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall)
+                );
+
+                Object value = values.get(0).getValue().getValue();
+                if (value instanceof UInteger) {
+                    serverMaxMonitoredItemsPerCall = (UInteger) value;
+                }
+            } catch (UaException e) {
+                logger.warn("Failed to read MaxMonitoredItemsPerCall from Server", e);
+            }
+
+            if (serverMaxMonitoredItemsPerCall == null) {
+                serverMaxMonitoredItemsPerCall = maxMonitoredItemsPerCall;
+            }
+
+            int configuredMax = Ints.saturatedCast(maxMonitoredItemsPerCall.longValue());
+            int serverMax = Ints.saturatedCast(serverMaxMonitoredItemsPerCall.longValue());
+
+            return uint(Math.min(configuredMax, serverMax));
+        });
     }
 
     //endregion
@@ -857,6 +904,23 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Set the maximum number of MonitoredItems that can be created/modified/deleted in a single
+     * service call.
+     * <p>
+     * This value is compared against the value read from the Server's OperationLimits object, and
+     * the smaller of the two is used.
+     *
+     * @param maxMonitoredItemsPerCall the maximum number of MonitoredItems that can be
+     *     created/modified/deleted in a single service call.
+     */
+    public void setMaxMonitoredItemsPerCall(UInteger maxMonitoredItemsPerCall) {
+        this.maxMonitoredItemsPerCall = maxMonitoredItemsPerCall;
+
+        // next service call will re-calculate the partition size
+        monitoredItemPartitionSize.reset();
+    }
+
     public void setSubscriptionListener(@Nullable SubscriptionListener listener) {
         this.listener = listener;
     }
@@ -1060,6 +1124,58 @@ public class OpcUaSubscription {
          * synchronize.
          */
         UNSYNCHRONIZED
+
+    }
+
+
+    interface ServiceOperationsResult {
+
+        /**
+         * The StatusCode associated with the service call this operation was a part of.
+         *
+         * @return the StatusCode associated with the service call this operation was a part of.
+         */
+        StatusCode serviceResult();
+
+        /**
+         * The StatusCode associated with the operation-level result.
+         *
+         * @return the StatusCode associated with the operation-level result.
+         */
+        Optional<StatusCode> operationResult();
+
+    }
+
+    public static class MonitoredItemOperationResult implements ServiceOperationsResult {
+
+        private final OpcUaMonitoredItem monitoredItem;
+        private final StatusCode serviceResult;
+        private final @Nullable StatusCode operationResult;
+
+        public MonitoredItemOperationResult(
+            OpcUaMonitoredItem monitoredItem,
+            StatusCode serviceResult,
+            @Nullable StatusCode operationResult
+        ) {
+
+            this.monitoredItem = monitoredItem;
+            this.serviceResult = serviceResult;
+            this.operationResult = operationResult;
+        }
+
+        public OpcUaMonitoredItem monitoredItem() {
+            return monitoredItem;
+        }
+
+        @Override
+        public StatusCode serviceResult() {
+            return serviceResult;
+        }
+
+        @Override
+        public Optional<StatusCode> operationResult() {
+            return Optional.ofNullable(operationResult);
+        }
 
     }
 
