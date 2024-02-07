@@ -292,7 +292,8 @@ public class PublishingManager {
                     StatusCode status = scn.getStatus();
 
                     if (status.getValue() == StatusCodes.Bad_Timeout) {
-                        // TODO remove from local bookkeeping
+                        details.subscription.getSubscriptionId()
+                            .ifPresent(subscriptionDetails::remove);
                     }
 
                     details.subscription.notifyStatusChanged(status);
