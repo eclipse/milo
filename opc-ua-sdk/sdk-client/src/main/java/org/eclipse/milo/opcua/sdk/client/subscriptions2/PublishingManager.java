@@ -158,7 +158,8 @@ public class PublishingManager {
                 PublishResponse publishResponse = (PublishResponse) response;
 
                 logger.debug(
-                    "Received PublishResponse, sequenceNumber={}",
+                    "Received PublishResponse, requestHandle={}, sequenceNumber={}",
+                    publishResponse.getResponseHeader().getRequestHandle(),
                     publishResponse.getNotificationMessage().getSequenceNumber()
                 );
 
@@ -190,9 +191,7 @@ public class PublishingManager {
     private void processPublishResponse(PublishResponse response, AtomicLong pendingCount) {
         UInteger subscriptionId = response.getSubscriptionId();
 
-        SubscriptionDetails details = subscriptionId != null ?
-            subscriptionDetails.get(subscriptionId) :
-            null;
+        SubscriptionDetails details = subscriptionDetails.get(subscriptionId);
 
         if (details == null) {
             pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
@@ -347,7 +346,8 @@ public class PublishingManager {
 
         logger.debug(
             "getTimeoutHint() maxKeepAlive={} maxPendingPublishes={} timeoutHint={}",
-            maxKeepAlive, maxPendingPublishes, timeoutHint);
+            maxKeepAlive, maxPendingPublishes, timeoutHint
+        );
 
         return uint((long) timeoutHint);
     }

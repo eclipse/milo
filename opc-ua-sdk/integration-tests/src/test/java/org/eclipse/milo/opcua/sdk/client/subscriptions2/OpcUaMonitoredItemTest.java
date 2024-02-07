@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.MonitoredItemOperationResult;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -138,7 +137,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
     }
 
     @Test
-    void synchronizeMonitoredItems() {
+    void synchronizeMonitoredItems() throws MonitoredItemSynchronizationException {
         var monitoredItems = new LinkedList<OpcUaMonitoredItem>();
 
         // Create 10 and expect 10 affected during synchronization

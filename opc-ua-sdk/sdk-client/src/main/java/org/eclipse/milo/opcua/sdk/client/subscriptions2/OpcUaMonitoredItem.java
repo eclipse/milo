@@ -88,13 +88,15 @@ public class OpcUaMonitoredItem {
     public void setSamplingInterval(double samplingInterval) {
         this.samplingInterval = samplingInterval;
 
-        if (modifications == null) {
-            modifications = new Modifications();
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.samplingInterval = samplingInterval;
+
+            syncState = SyncState.UNSYNCHRONIZED;
         }
-
-        modifications.samplingInterval = samplingInterval;
-
-        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -108,13 +110,15 @@ public class OpcUaMonitoredItem {
     public void setQueueSize(UInteger queueSize) {
         this.queueSize = queueSize;
 
-        if (modifications == null) {
-            modifications = new Modifications();
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.queueSize = queueSize;
+
+            syncState = SyncState.UNSYNCHRONIZED;
         }
-
-        modifications.queueSize = queueSize;
-
-        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -127,13 +131,15 @@ public class OpcUaMonitoredItem {
     public void setDiscardOldest(boolean discardOldest) {
         this.discardOldest = discardOldest;
 
-        if (modifications == null) {
-            modifications = new Modifications();
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.discardOldest = discardOldest;
+
+            syncState = SyncState.UNSYNCHRONIZED;
         }
-
-        modifications.discardOldest = discardOldest;
-
-        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -147,13 +153,15 @@ public class OpcUaMonitoredItem {
     public void setFilter(@Nullable MonitoringFilter filter) {
         this.filter = filter;
 
-        if (modifications == null) {
-            modifications = new Modifications();
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.filter = filter;
+
+            syncState = SyncState.UNSYNCHRONIZED;
         }
-
-        modifications.filter = filter;
-
-        syncState = SyncState.UNSYNCHRONIZED;
     }
 
     /**
@@ -470,14 +478,18 @@ public class OpcUaMonitoredItem {
     }
 
     void notifyDataValueReceived(DataValue value) {
-        if (dataValueListener != null) {
-            dataValueListener.onDataReceived(this, value);
+        DataValueListener listener = dataValueListener;
+
+        if (listener != null) {
+            listener.onDataReceived(this, value);
         }
     }
 
     void notifyEventValuesReceived(Variant[] eventValues) {
-        if (eventValueListener != null) {
-            eventValueListener.onEventReceived(this, eventValues);
+        EventValueListener listener = eventValueListener;
+
+        if (listener != null) {
+            listener.onEventReceived(this, eventValues);
         }
     }
 

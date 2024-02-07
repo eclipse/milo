@@ -21,10 +21,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SubscriptionExample implements ClientExample {
+public class SubscriptionDataExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        var example = new SubscriptionExample();
+        var example = new SubscriptionDataExample();
 
         new ClientExampleRunner(example).run();
     }
@@ -47,7 +47,7 @@ public class SubscriptionExample implements ClientExample {
 
                 for (int i = 0; i < items.size(); i++) {
                     logger.info(
-                        "subscription onDataReceived: item={}, value={}",
+                        "subscription onDataReceived: nodeId={}, value={}",
                         items.get(i).getReadValueId().getNodeId(), values.get(i).getValue()
                     );
                 }
@@ -63,7 +63,7 @@ public class SubscriptionExample implements ClientExample {
         monitoredItem.setDataValueListener(
             (item, value) ->
                 logger.info(
-                    "monitoredItem onDataReceived: item={}, value={}",
+                    "monitoredItem onDataReceived: nodeId={}, value={}",
                     item.getReadValueId().getNodeId(), value.getValue()
                 )
         );

@@ -63,9 +63,10 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.supplyAsyncComp
 
 public class OpcUaSubscription {
 
-    private static final double DEFAULT_PUBLISHING_INTERVAL = 1000.0;
+    private static final int DEFAULT_MAX_MONITORED_ITEMS_PER_CALL = 10000;
     private static final UInteger DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH = uint(65535);
     private static final UByte DEFAULT_PRIORITY = ubyte(0);
+    private static final double DEFAULT_PUBLISHING_INTERVAL = 1000.0;
     private static final double DEFAULT_TARGET_KEEP_ALIVE_INTERVAL = 10000.0;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -101,7 +102,7 @@ public class OpcUaSubscription {
 
     private boolean lifetimeAndKeepAliveCalculated = true;
 
-    private UInteger maxMonitoredItemsPerCall = uint(10_000);
+    private UInteger maxMonitoredItemsPerCall = uint(DEFAULT_MAX_MONITORED_ITEMS_PER_CALL);
     private final Lazy<UInteger> monitoredItemPartitionSize = new Lazy<>();
 
     private @Nullable SubscriptionListener listener;
@@ -254,32 +255,7 @@ public class OpcUaSubscription {
 
     //endregion
 
-    //region MonitoredMode Management
-
-    public void setMonitoringMode(
-        MonitoringMode monitoringMode,
-        List<OpcUaMonitoredItem> monitoredItems
-    ) throws UaException {
-
-        List<UInteger> monitoredItemIds = monitoredItems.stream()
-            .map(item -> item.getMonitoredItemId().orElseThrow())
-            .collect(Collectors.toList());
-
-        SetMonitoringModeResponse response =
-            client.setMonitoringMode(serverState.getSubscriptionId(), monitoringMode, monitoredItemIds);
-
-        StatusCode[] results = requireNonNull(response.getResults());
-
-        for (int i = 0; i < results.length; i++) {
-            StatusCode result = results[i];
-
-            monitoredItems.get(i).applySetMonitoringModeResult(result);
-        }
-    }
-
-    //endregion
-
-    //region Monitored Item Management
+    //region MonitoredItem Management
 
     public void addMonitoredItem(OpcUaMonitoredItem item) {
         if (!monitoredItems.containsValue(item)) {
@@ -319,21 +295,28 @@ public class OpcUaSubscription {
      * any new MonitoredItems that have been added but not yet created on the Server.
      *
      * @return the total number of MonitoredItems that were deleted, modified, or created.
+     * @throws MonitoredItemSynchronizationException if one or more MonitoredItems failed to
+     *     synchronize for any reason. This could be a service-level failure or an operation-level
+     *     failure. Check the {@link MonitoredItemOperationResult}s for details.
      */
-    public long synchronizeMonitoredItems() {
+    public long synchronizeMonitoredItems() throws MonitoredItemSynchronizationException {
         List<MonitoredItemOperationResult> deleteResults = deleteMonitoredItems();
         List<MonitoredItemOperationResult> modifyResults = modifyMonitoredItems();
         List<MonitoredItemOperationResult> createResults = createMonitoredItems();
 
-        // TODO throw some kind of SynchronizationException instead?
-        //  This way we can report the operation results associated with create, modify, and delete
-        //  service calls.
-
-        // sum of deleted, modified, and created items where the operation result is good
-        return Stream.of(deleteResults, modifyResults, createResults)
+        if (Stream.of(deleteResults, modifyResults, createResults)
             .flatMap(List::stream)
-            .filter(r -> r.serviceResult().isGood() && r.operationResult().orElseThrow().isGood())
-            .count();
+            .anyMatch(r -> !r.serviceResult().isGood() || !r.operationResult().orElseThrow().isGood())) {
+
+            throw new MonitoredItemSynchronizationException(
+                "failed to synchronize one or more MonitoredItems",
+                createResults,
+                modifyResults,
+                deleteResults
+            );
+        }
+
+        return deleteResults.size() + modifyResults.size() + createResults.size();
     }
 
     /**
@@ -555,6 +538,79 @@ public class OpcUaSubscription {
 
     //endregion
 
+    //region MonitoringMode Management
+
+    /**
+     * Set the {@link MonitoringMode} for a group of MonitoredItems.
+     *
+     * @param monitoringMode the MonitoringMode to set.
+     * @param monitoredItems the MonitoredItems to set the MonitoringMode for.
+     * @return a List of {@link MonitoredItemOperationResult}s that contain the MonitoredItem and
+     *     the service- and operation-level results associated with the attempt to set the
+     *     MonitoringMode.
+     */
+    public List<MonitoredItemOperationResult> setMonitoringMode(
+        MonitoringMode monitoringMode,
+        List<OpcUaMonitoredItem> monitoredItems
+    ) {
+
+        if (monitoredItems.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        var serviceOperationResults = new ArrayList<MonitoredItemOperationResult>(monitoredItems.size());
+
+        UInteger partitionSize = getMonitoredItemPartitionSize();
+
+        List<List<OpcUaMonitoredItem>> partitions =
+            Lists.partition(monitoredItems, partitionSize.intValue())
+                .collect(Collectors.toList());
+
+        for (List<OpcUaMonitoredItem> partition : partitions) {
+            try {
+                logger.debug("setMonitoringMode partition.size(): {}", partition.size());
+
+                SetMonitoringModeResponse response = client.setMonitoringMode(
+                    serverState.getSubscriptionId(),
+                    monitoringMode,
+                    partition.stream()
+                        .map(item -> item.getMonitoredItemId().orElseThrow())
+                        .collect(Collectors.toList())
+                );
+
+                StatusCode[] results = requireNonNull(response.getResults());
+
+                for (int i = 0; i < results.length; i++) {
+                    StatusCode result = results[i];
+
+                    OpcUaMonitoredItem item = partition.get(i);
+
+                    item.applySetMonitoringModeResult(result);
+                    if (result.isGood()) {
+                        item.setMonitoringMode(monitoringMode);
+                    }
+                    serviceOperationResults.add(
+                        new MonitoredItemOperationResult(item, StatusCode.GOOD, result)
+                    );
+                }
+            } catch (UaException e) {
+                for (OpcUaMonitoredItem item : partition) {
+                    item.applySetMonitoringModeResult(e.getStatusCode());
+
+                    serviceOperationResults.add(
+                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                    );
+                }
+            }
+        }
+
+        return serviceOperationResults;
+    }
+
+    //endregion
+
+    //region Publishing Management
+
     /**
      * Set the publishing mode, i.e. enable or disable publishing, for this Subscription.
      *
@@ -598,6 +654,8 @@ public class OpcUaSubscription {
             }
         }, client.getTransport().getConfig().getExecutor());
     }
+
+    //endregion
 
     public SyncState getSyncState() {
         return syncState;
@@ -967,6 +1025,7 @@ public class OpcUaSubscription {
             }
         }
 
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onDataReceived(this, items, values);
         }
@@ -994,6 +1053,7 @@ public class OpcUaSubscription {
             }
         }
 
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onEventReceived(this, items, eventValuesList);
         }
@@ -1006,18 +1066,21 @@ public class OpcUaSubscription {
     }
 
     void notifyKeepAliveReceived() {
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onKeepAliveReceived(this);
         }
     }
 
     void notifyStatusChanged(StatusCode status) {
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onStatusChanged(this, status);
         }
     }
 
     void notifyNotificationDataLost() {
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onNotificationDataLost(this);
         }
@@ -1137,57 +1200,6 @@ public class OpcUaSubscription {
 
     }
 
-
-    interface ServiceOperationsResult {
-
-        /**
-         * The StatusCode associated with the service call this operation was a part of.
-         *
-         * @return the StatusCode associated with the service call this operation was a part of.
-         */
-        StatusCode serviceResult();
-
-        /**
-         * The StatusCode associated with the operation-level result.
-         *
-         * @return the StatusCode associated with the operation-level result.
-         */
-        Optional<StatusCode> operationResult();
-
-    }
-
-    public static class MonitoredItemOperationResult implements ServiceOperationsResult {
-
-        private final OpcUaMonitoredItem monitoredItem;
-        private final StatusCode serviceResult;
-        private final @Nullable StatusCode operationResult;
-
-        public MonitoredItemOperationResult(
-            OpcUaMonitoredItem monitoredItem,
-            StatusCode serviceResult,
-            @Nullable StatusCode operationResult
-        ) {
-
-            this.monitoredItem = monitoredItem;
-            this.serviceResult = serviceResult;
-            this.operationResult = operationResult;
-        }
-
-        public OpcUaMonitoredItem monitoredItem() {
-            return monitoredItem;
-        }
-
-        @Override
-        public StatusCode serviceResult() {
-            return serviceResult;
-        }
-
-        @Override
-        public Optional<StatusCode> operationResult() {
-            return Optional.ofNullable(operationResult);
-        }
-
-    }
 
     public interface SubscriptionListener {
 

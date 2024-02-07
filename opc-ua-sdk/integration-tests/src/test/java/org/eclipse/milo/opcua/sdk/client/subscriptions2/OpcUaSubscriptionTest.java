@@ -10,15 +10,17 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.MonitoredItemOperationResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.SyncState;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -226,6 +228,39 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
             subscription.delete();
             assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
+    }
+
+    @Test
+    void setMonitoringMode() throws UaException {
+        var subscription = new OpcUaSubscription(client);
+        subscription.create();
+
+        for (int i = 0; i < 3; i++) {
+            var monitoredItem = OpcUaMonitoredItem.newDataItem(
+                NodeIds.Server_ServerStatus_CurrentTime
+            );
+            subscription.addMonitoredItem(monitoredItem);
+        }
+
+        subscription.synchronizeMonitoredItems();
+
+        Consumer<List<MonitoredItemOperationResult>> assertGood = results -> {
+            assertEquals(3, results.size());
+            assertTrue(results.stream().allMatch(r -> r.serviceResult().isGood()));
+            assertTrue(results.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
+        };
+
+        assertGood.accept(subscription.setMonitoringMode(MonitoringMode.Disabled, subscription.getMonitoredItems()));
+        assertGood.accept(subscription.setMonitoringMode(MonitoringMode.Sampling, subscription.getMonitoredItems()));
+        assertGood.accept(subscription.setMonitoringMode(MonitoringMode.Reporting, subscription.getMonitoredItems()));
+
+        subscription.setMaxMonitoredItemsPerCall(uint(2));
+
+        assertGood.accept(subscription.setMonitoringMode(MonitoringMode.Disabled, subscription.getMonitoredItems()));
+        assertGood.accept(subscription.setMonitoringMode(MonitoringMode.Sampling, subscription.getMonitoredItems()));
+        assertGood.accept(subscription.setMonitoringMode(MonitoringMode.Reporting, subscription.getMonitoredItems()));
+
+        subscription.delete();
     }
 
     @Test
