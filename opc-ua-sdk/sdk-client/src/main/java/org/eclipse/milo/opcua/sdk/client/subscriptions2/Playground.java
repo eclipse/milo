@@ -53,7 +53,7 @@ public class Playground {
         System.out.println(subscription);
 
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
-            NodeIds.Server_ServerStatus_State
+            NodeIds.Server_ServerStatus_CurrentTime
         );
 
         monitoredItem.setDataValueListener(
@@ -65,6 +65,11 @@ public class Playground {
         );
 
         subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
+
+        Thread.sleep(5_000);
+
+        subscription.removeMonitoredItem(monitoredItem);
         subscription.synchronizeMonitoredItems();
 
         Thread.sleep(30_000);

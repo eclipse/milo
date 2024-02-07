@@ -58,6 +58,7 @@ public class OpcUaSubscription {
     private static final double DEFAULT_PUBLISHING_INTERVAL = 1000.0;
     private static final UInteger DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH = uint(65535);
     private static final UByte DEFAULT_PRIORITY = ubyte(0);
+    private static final double DEFAULT_TARGET_KEEP_ALIVE_INTERVAL = 10000.0;
 
     private SyncState syncState = SyncState.INITIAL;
 
@@ -80,7 +81,10 @@ public class OpcUaSubscription {
         new ClientHandleSequence(monitoredItems::containsKey);
 
     private Double publishingInterval = DEFAULT_PUBLISHING_INTERVAL;
-    private UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
+    private UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(
+        publishingInterval,
+        DEFAULT_TARGET_KEEP_ALIVE_INTERVAL
+    );
     private UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
     private UInteger maxNotificationsPerPublish = DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH;
     private UByte priority = DEFAULT_PRIORITY;
@@ -114,7 +118,10 @@ public class OpcUaSubscription {
     public void create() throws UaException {
         if (syncState == SyncState.INITIAL) {
             if (maxKeepAliveCount == null) {
-                maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
+                maxKeepAliveCount = calculateMaxKeepAliveCount(
+                    publishingInterval,
+                    DEFAULT_TARGET_KEEP_ALIVE_INTERVAL
+                );
             }
             if (lifetimeCount == null) {
                 lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
@@ -582,7 +589,10 @@ public class OpcUaSubscription {
         syncState = SyncState.UNSYNCHRONIZED;
 
         if (lifetimeAndKeepAliveCalculated) {
-            UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(publishingInterval);
+            UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(
+                publishingInterval,
+                DEFAULT_TARGET_KEEP_ALIVE_INTERVAL
+            );
             UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
 
             setMaxKeepAliveCount(maxKeepAliveCount);
@@ -723,14 +733,33 @@ public class OpcUaSubscription {
         return lifetimeAndKeepAliveCalculated;
     }
 
+    /**
+     * Set the target keep-alive interval, in milliseconds, for this Subscription.
+     * <p>
+     * The Subscription must be configured to automatically calculate the Lifetime and KeepAlive
+     * for this to have any effect. MaxKeepAliveCount and LifetimeCount will be recalculated based
+     * on the target value. The Subscription settings must be synchronized before this change
+     * takes effect.
+     *
+     * @param targetKeepAliveInterval the target keep-alive interval, in milliseconds.
+     * @see #isLifetimeAndKeepAliveCalculated()
+     * @see #setLifetimeAndKeepAliveCalculated(boolean)
+     */
+    public void setTargetKeepAliveInterval(double targetKeepAliveInterval) {
+        if (isLifetimeAndKeepAliveCalculated()) {
+            setMaxKeepAliveCount(calculateMaxKeepAliveCount(publishingInterval, targetKeepAliveInterval));
+            setLifetimeCount(calculateLifetimeCount(maxKeepAliveCount));
+        }
+    }
+
     public void setSubscriptionListener(@Nullable SubscriptionListener listener) {
         this.listener = listener;
     }
 
-    private static UInteger calculateMaxKeepAliveCount(double publishingInterval) {
-        // Send a keep-alive every 10 seconds if the publishing interval is faster than
-        // 10 seconds, or every publishing interval otherwise.
-        int count = (int) Math.ceil(10000.0 / Math.max(1, publishingInterval));
+    private static UInteger calculateMaxKeepAliveCount(double publishingInterval, double targetKeepAliveInterval) {
+        // Send a keep-alive every targetKeepAliveInterval milliseconds if the publishing
+        // interval is faster, or every publishing interval otherwise.
+        int count = (int) Math.ceil(targetKeepAliveInterval / Math.max(1, publishingInterval));
 
         return uint(Math.max(1, count));
     }
