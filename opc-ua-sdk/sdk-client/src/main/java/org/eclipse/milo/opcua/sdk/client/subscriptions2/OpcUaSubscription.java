@@ -542,6 +542,8 @@ public class OpcUaSubscription {
 
     /**
      * Set the {@link MonitoringMode} for a group of MonitoredItems.
+     * <p>
+     * These MonitoredItems must exist on the Server before setting the MonitoringMode.
      *
      * @param monitoringMode the MonitoringMode to set.
      * @param monitoredItems the MonitoredItems to set the MonitoringMode for.
@@ -556,6 +558,12 @@ public class OpcUaSubscription {
 
         if (monitoredItems.isEmpty()) {
             return Collections.emptyList();
+        }
+
+        if (monitoredItems.stream()
+            .anyMatch(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.INITIAL)) {
+
+            throw new IllegalArgumentException("MonitoredItems must exist before setting MonitoringMode");
         }
 
         var serviceOperationResults = new ArrayList<MonitoredItemOperationResult>(monitoredItems.size());
