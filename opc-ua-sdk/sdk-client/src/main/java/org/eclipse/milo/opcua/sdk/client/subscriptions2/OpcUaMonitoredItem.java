@@ -157,6 +157,15 @@ public class OpcUaMonitoredItem {
     }
 
     /**
+     * Get the {@link ReadValueId} for this MonitoredItem.
+     *
+     * @return the {@link ReadValueId} for this MonitoredItem.
+     */
+    public ReadValueId getReadValueId() {
+        return readValueId;
+    }
+
+    /**
      * Get the Client-assigned id for this MonitoredItem.
      * <p>
      * Present only if the MonitoredItem has been added to a Subscription, see

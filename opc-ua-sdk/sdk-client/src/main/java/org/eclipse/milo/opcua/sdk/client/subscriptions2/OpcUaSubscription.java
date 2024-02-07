@@ -958,8 +958,13 @@ public class OpcUaSubscription {
         for (MonitoredItemNotification notification : notifications) {
             UInteger clientHandle = notification.getClientHandle();
             OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
-            items.add(item);
-            values.add(notification.getValue());
+            if (item != null) {
+                items.add(item);
+                values.add(notification.getValue());
+            } else {
+                // This can happen if an item is deleted while a notification is in-flight.
+                logger.debug("Received data for unknown ClientHandle: {}", clientHandle);
+            }
         }
 
         if (listener != null) {
@@ -980,8 +985,13 @@ public class OpcUaSubscription {
         for (EventFieldList event : events) {
             UInteger clientHandle = event.getClientHandle();
             OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
-            items.add(item);
-            eventValuesList.add(event.getEventFields());
+            if (item != null) {
+                items.add(item);
+                eventValuesList.add(event.getEventFields());
+            } else {
+                // This can happen if an item is deleted while a notification is in-flight.
+                logger.debug("Received event for unknown ClientHandle: {}", clientHandle);
+            }
         }
 
         if (listener != null) {
