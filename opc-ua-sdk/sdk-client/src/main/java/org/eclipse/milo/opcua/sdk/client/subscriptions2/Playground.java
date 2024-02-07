@@ -10,15 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class Playground {
 
@@ -76,48 +73,6 @@ public class Playground {
 
         subscription.delete();
         client.disconnect();
-    }
-
-    private static void monitoredItems(OpcUaSubscription subscription) throws UaException {
-        // bulk create, modify, delete monitored items, via subscription
-        {
-            var monitoredItems = new ArrayList<OpcUaMonitoredItem>();
-
-            for (int i = 0; i < 10; i++) {
-                var monitoredItem = OpcUaMonitoredItem.newDataItem(
-                    NodeIds.Server_ServerStatus_CurrentTime
-                );
-
-                monitoredItems.add(monitoredItem);
-
-                monitoredItem.setDataValueListener(
-                    (item, value) ->
-                        System.out.printf(
-                            "[%s] Received value: %s%n",
-                            item.getMonitoredItemId(), value)
-                );
-
-                subscription.addMonitoredItem(monitoredItem);
-            }
-
-            subscription.synchronizeMonitoredItems();
-
-
-            for (OpcUaMonitoredItem monitoredItem : monitoredItems) {
-                monitoredItem.setSamplingInterval(100.0);
-                monitoredItem.setQueueSize(uint(10));
-            }
-
-            subscription.synchronizeMonitoredItems();
-
-            for (int i = 0; i < monitoredItems.size(); i += 2) {
-                subscription.removeMonitoredItem(monitoredItems.get(i));
-            }
-
-            subscription.synchronizeMonitoredItems();
-        }
-
-
     }
 
 }

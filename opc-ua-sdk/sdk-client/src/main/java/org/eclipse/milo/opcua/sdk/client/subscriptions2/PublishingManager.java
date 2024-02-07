@@ -162,6 +162,10 @@ public class PublishingManager {
                     publishResponse.getNotificationMessage().getSequenceNumber()
                 );
 
+                // TODO this would be a good place to "kick" the subscription watchdog timer,
+                //  before it gets put into a processing queue that could potentially delay the
+                //  kick.
+
                 processingQueue.execute(() -> processPublishResponse(publishResponse, pendingCount));
             } else {
                 StatusCode statusCode = UaException.extract(ex)

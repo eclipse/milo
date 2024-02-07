@@ -58,7 +58,6 @@ public class OpcUaMonitoredItem {
     private @Nullable UInteger revisedQueueSize;
     private @Nullable ExtensionObject filterResult;
 
-    private @Nullable StatusCode lastOperationResult;
     private @Nullable StatusCode createResult;
     private @Nullable StatusCode modifyResult;
     private @Nullable StatusCode deleteResult;
@@ -78,6 +77,14 @@ public class OpcUaMonitoredItem {
         this.monitoringMode = monitoringMode;
     }
 
+    /**
+     * Set the SamplingInterval parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param samplingInterval the new SamplingInterval parameter value.
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public void setSamplingInterval(double samplingInterval) {
         this.samplingInterval = samplingInterval;
 
@@ -90,6 +97,14 @@ public class OpcUaMonitoredItem {
         syncState = SyncState.UNSYNCHRONIZED;
     }
 
+    /**
+     * Modify the QueueSize parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param queueSize the new QueueSize parameter value.
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public void setQueueSize(UInteger queueSize) {
         this.queueSize = queueSize;
 
@@ -102,6 +117,13 @@ public class OpcUaMonitoredItem {
         syncState = SyncState.UNSYNCHRONIZED;
     }
 
+    /**
+     * Modify the DiscardOldest parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param discardOldest the new DiscardOldest parameter value.
+     */
     public void setDiscardOldest(boolean discardOldest) {
         this.discardOldest = discardOldest;
 
@@ -114,6 +136,14 @@ public class OpcUaMonitoredItem {
         syncState = SyncState.UNSYNCHRONIZED;
     }
 
+    /**
+     * Modify the Filter parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param filter the new Filter parameter value.
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public void setFilter(@Nullable MonitoringFilter filter) {
         this.filter = filter;
 
@@ -173,10 +203,20 @@ public class OpcUaMonitoredItem {
         return queueSize;
     }
 
+    /**
+     * Get the most recent DiscardOldest this MonitoredItem was configured with.
+     *
+     * @return the most recent DiscardOldest this MonitoredItem was configured with.
+     */
     public boolean getDiscardOldest() {
         return discardOldest;
     }
 
+    /**
+     * Get the most recent Filter this MonitoredItem was configured with.
+     *
+     * @return the most recent Filter this MonitoredItem was configured with.
+     */
     public @Nullable MonitoringFilter getFilter() {
         return filter;
     }
@@ -203,38 +243,86 @@ public class OpcUaMonitoredItem {
         return Optional.ofNullable(revisedQueueSize);
     }
 
+    /**
+     * Get the filter result structure for the most recently configured monitoring filter.
+     *
+     * @return the filter result structure for the most recently configured monitoring filter.
+     */
     public Optional<ExtensionObject> getFilterResult() {
         return Optional.ofNullable(filterResult);
     }
 
+    /**
+     * Get the current MonitoringMode for this MonitoredItem.
+     *
+     * @return the current MonitoringMode for this MonitoredItem.
+     */
     public MonitoringMode getMonitoringMode() {
         return monitoringMode;
     }
 
+    /**
+     * Get the result of the most recent CreateMonitoredItems service call, if one has been made.
+     *
+     * @return the result of the most recent CreateMonitoredItems service call, if one has been
+     *     made.
+     */
     public Optional<StatusCode> getCreateResult() {
         return Optional.ofNullable(createResult);
     }
 
+    /**
+     * Get the result of the most recent ModifyMonitoredItems service call, if one has been made.
+     *
+     * @return the result of the most recent ModifyMonitoredItems service call, if one has been
+     *     made.
+     */
     public Optional<StatusCode> getModifyResult() {
         return Optional.ofNullable(modifyResult);
     }
 
+    /**
+     * Get the result of the most recent DeleteMonitoredItems service call, if one has been made.
+     *
+     * @return the result of the most recent DeleteMonitoredItems service call, if one has been
+     *     made.
+     */
     public Optional<StatusCode> getDeleteResult() {
         return Optional.ofNullable(deleteResult);
     }
 
+    /**
+     * Get the result of the most recent SetMonitoringMode service call, if one has been made.
+     *
+     * @return the result of the most recent SetMonitoringMode service call, if one has been made.
+     */
     public Optional<StatusCode> getSetMonitoringModeResult() {
         return Optional.ofNullable(setMonitoringModeResult);
     }
 
+    /**
+     * Set the {@link DataValueListener} for this MonitoredItem.
+     *
+     * @param listener the {@link DataValueListener} for this MonitoredItem.
+     */
     public void setDataValueListener(@Nullable DataValueListener listener) {
         this.dataValueListener = listener;
     }
 
+    /**
+     * Set the {@link EventValueListener} for this MonitoredItem.
+     *
+     * @param listener the {@link EventValueListener} for this MonitoredItem.
+     */
     public void setEventValueListener(@Nullable EventValueListener listener) {
         this.eventValueListener = listener;
     }
 
+    /**
+     * Set the Subscription that this MonitoredItem belongs to.
+     *
+     * @param subscription the Subscription that this MonitoredItem belongs to.
+     */
     void setSubscription(@Nullable OpcUaSubscription subscription) {
         this.subscription = subscription;
     }
@@ -248,6 +336,11 @@ public class OpcUaMonitoredItem {
         this.clientHandle = clientHandle;
     }
 
+    /**
+     * Set the current MonitoringMode for this MonitoredItem.
+     *
+     * @param monitoringMode the current MonitoringMode for this MonitoredItem.
+     */
     void setMonitoringMode(MonitoringMode monitoringMode) {
         this.monitoringMode = monitoringMode;
     }
@@ -328,7 +421,7 @@ public class OpcUaMonitoredItem {
             syncState = SyncState.INITIAL;
         }
 
-        this.lastOperationResult = statusCode;
+        this.createResult = statusCode;
     }
 
     void applyModifyResult(MonitoredItemModifyResult result) {
@@ -350,14 +443,14 @@ public class OpcUaMonitoredItem {
             syncState = SyncState.UNSYNCHRONIZED;
         }
 
-        lastOperationResult = statusCode;
+        this.modifyResult = statusCode;
     }
 
     void applyDeleteResult(StatusCode statusCode) {
         // TODO
         clientHandle = null;
         monitoredItemId = null;
-        lastOperationResult = statusCode;
+        deleteResult = statusCode;
 
         syncState = SyncState.INITIAL;
     }
@@ -509,6 +602,19 @@ public class OpcUaMonitoredItem {
         UNSYNCHRONIZED
     }
 
+    /**
+     * Create a new MonitoredItem for the Value attribute of the Node identified by
+     * {@code nodeId}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @return a new MonitoredItem for the Value attribute of the Node identified by
+     *     {@code nodeId}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public static OpcUaMonitoredItem newDataItem(NodeId nodeId) {
         var readValueId = new ReadValueId(
             nodeId,
@@ -520,6 +626,20 @@ public class OpcUaMonitoredItem {
         return new OpcUaMonitoredItem(readValueId);
     }
 
+    /**
+     * Create a new MonitoredItem for the Value attribute of the Node identified by
+     * {@code nodeId}, with the specified {@code samplingInterval}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @param samplingInterval the sampling interval for the MonitoredItem.
+     * @return a new MonitoredItem for the Value attribute of the Node identified by
+     *     {@code nodeId}, with the specified {@code samplingInterval}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public static OpcUaMonitoredItem newDataItem(NodeId nodeId, double samplingInterval) {
         var readValueId = new ReadValueId(
             nodeId,
@@ -534,11 +654,37 @@ public class OpcUaMonitoredItem {
         return item;
     }
 
-
+    /**
+     * Create a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     * {@code nodeId}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @return a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     *     {@code nodeId}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public static OpcUaMonitoredItem newEventItem(NodeId nodeId) {
         return newEventItem(nodeId, null);
     }
 
+    /**
+     * Create a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     * {@code nodeId}, with the specified {@code eventFilter}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @param eventFilter the {@link EventFilter} to use for the MonitoredItem.
+     * @return a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     *     {@code nodeId}, with the specified {@code eventFilter}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
     public static OpcUaMonitoredItem newEventItem(NodeId nodeId, @Nullable EventFilter eventFilter) {
         var readValueId = new ReadValueId(
             nodeId,
