@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.MonitoredItemOperationResult;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -40,16 +41,16 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
     }
 
     @Test
-    void createMonitoredItem() throws UaException {
+    void createMonitoredItem() {
         var monitoredItem = OpcUaMonitoredItem.newDataItem(
             NodeIds.Server_ServerStatus_CurrentTime
         );
 
         subscription.addMonitoredItem(monitoredItem);
-        List<OpcUaMonitoredItem> created = subscription.createMonitoredItems();
+        List<MonitoredItemOperationResult> created = subscription.createMonitoredItems();
 
         assertEquals(1, created.size());
-        assertEquals(monitoredItem, created.get(0));
+        assertEquals(monitoredItem, created.get(0).monitoredItem());
         assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
     }
 
@@ -60,9 +61,9 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         );
 
         subscription.addMonitoredItem(monitoredItem);
-        List<OpcUaMonitoredItem> created = subscription.createMonitoredItems();
+        List<MonitoredItemOperationResult> created = subscription.createMonitoredItems();
         assertEquals(1, created.size());
-        assertEquals(monitoredItem, created.get(0));
+        assertEquals(monitoredItem, created.get(0).monitoredItem());
         assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
 
         subscription.removeMonitoredItem(monitoredItem);
