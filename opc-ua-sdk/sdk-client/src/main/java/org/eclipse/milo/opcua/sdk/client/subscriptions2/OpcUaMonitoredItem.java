@@ -211,8 +211,20 @@ public class OpcUaMonitoredItem {
         return monitoringMode;
     }
 
-    public Optional<StatusCode> getLastOperationResult() {
-        return Optional.ofNullable(lastOperationResult);
+    public Optional<StatusCode> getCreateResult() {
+        return Optional.ofNullable(createResult);
+    }
+
+    public Optional<StatusCode> getModifyResult() {
+        return Optional.ofNullable(modifyResult);
+    }
+
+    public Optional<StatusCode> getDeleteResult() {
+        return Optional.ofNullable(deleteResult);
+    }
+
+    public Optional<StatusCode> getSetMonitoringModeResult() {
+        return Optional.ofNullable(setMonitoringModeResult);
     }
 
     public void setDataValueListener(@Nullable DataValueListener listener) {
@@ -242,12 +254,6 @@ public class OpcUaMonitoredItem {
 
     SyncState getSyncState() {
         return syncState;
-    }
-
-    void reset() {
-        // TODO reset to initial state
-        monitoredItemId = null;
-        syncState = SyncState.INITIAL;
     }
 
     MonitoredItemCreateRequest newCreateRequest() {
@@ -439,6 +445,10 @@ public class OpcUaMonitoredItem {
 
     }
 
+    /**
+     * The state of the MonitoredItem as it exists on the server, after the recent successful
+     * operation.
+     */
     public static class ServerState {
 
         private final UInteger monitoredItemId;
@@ -448,7 +458,7 @@ public class OpcUaMonitoredItem {
         private final UInteger queueSize;
         private final boolean discardOldest;
 
-        public ServerState(
+        private ServerState(
             UInteger monitoredItemId,
             MonitoringMode monitoringMode,
             double samplingInterval,

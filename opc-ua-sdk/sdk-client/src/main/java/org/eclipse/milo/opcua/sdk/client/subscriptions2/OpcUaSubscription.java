@@ -875,8 +875,8 @@ public class OpcUaSubscription {
     }
 
     /**
-     * The state of the Subscription as it exists on the server (based on the most recent,
-     * successful, create or modify operations).
+     * The state of the Subscription as it exists on the server, after the most recent successful
+     * operation.
      */
     public static class ServerState {
 
@@ -888,7 +888,7 @@ public class OpcUaSubscription {
         private final UByte priority;
         private final boolean publishingEnabled;
 
-        public ServerState(
+        private ServerState(
             UInteger subscriptionId,
             Double publishingInterval,
             UInteger lifetimeCount,
