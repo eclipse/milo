@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,9 +14,11 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -30,6 +32,7 @@ import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.PublishingManager;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -306,7 +309,9 @@ public class OpcUaClient {
     private final EncodingContext dynamicEncodingContext;
 
     private final OpcUaSubscriptionManager subscriptionManager;
+
     private final PublishingManager publishingManager;
+    private final Map<UInteger, OpcUaSubscription> subscriptions = new ConcurrentHashMap<>();
 
     private final SessionFsm sessionFsm;
 
@@ -584,6 +589,18 @@ public class OpcUaClient {
 
     public OpcUaSubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
+    }
+
+    public void addSubscription(OpcUaSubscription subscription) {
+        subscription.getSubscriptionId().ifPresent(id -> subscriptions.put(id, subscription));
+    }
+
+    public void removeSubscription(OpcUaSubscription subscription) {
+        subscription.getSubscriptionId().ifPresent(subscriptions::remove);
+    }
+
+    public List<OpcUaSubscription> getSubscriptions() {
+        return List.copyOf(subscriptions.values());
     }
 
     public PublishingManager getPublishingManager() {

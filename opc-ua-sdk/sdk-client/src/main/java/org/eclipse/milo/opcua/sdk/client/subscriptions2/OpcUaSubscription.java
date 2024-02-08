@@ -176,6 +176,7 @@ public class OpcUaSubscription {
             watchdogTimer = new WatchdogTimer(client.getConfig().getSubscriptionWatchdogMultiplier());
             kickWatchdogTimer();
 
+            client.addSubscription(this);
             client.getPublishingManager().addSubscription(this);
         } else {
             throw new UaException(StatusCodes.Bad_InvalidState);
@@ -248,8 +249,8 @@ public class OpcUaSubscription {
             StatusCode[] results = requireNonNull(response.getResults());
 
             if (results[0].isGood()) {
-                serverState = null;
-                syncState = SyncState.INITIAL;
+                client.removeSubscription(this);
+                client.getPublishingManager().removeSubscription(this);
 
                 WatchdogTimer watchdog = this.watchdogTimer;
                 if (watchdog != null) {
@@ -257,7 +258,8 @@ public class OpcUaSubscription {
                     this.watchdogTimer = null;
                 }
 
-                client.getPublishingManager().removeSubscription(this);
+                serverState = null;
+                syncState = SyncState.INITIAL;
             } else {
                 throw new UaException(results[0]);
             }
@@ -279,6 +281,14 @@ public class OpcUaSubscription {
 
     //region MonitoredItem Management
 
+    /**
+     * Add a MonitoredItem to this Subscription.
+     * <p>
+     * This item will not be created on the server until {@link #synchronizeMonitoredItems()} is
+     * called.
+     *
+     * @param item the MonitoredItem to add.
+     */
     public void addMonitoredItem(OpcUaMonitoredItem item) {
         if (!monitoredItems.containsValue(item)) {
             UInteger clientHandle = clientHandleSequence.nextClientHandle();
@@ -289,10 +299,26 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Add a group of MonitoredItems to this Subscription.
+     * <p>
+     * These items will not be created on the server until {@link #synchronizeMonitoredItems()} is
+     * called.
+     *
+     * @param items the MonitoredItems to add.
+     */
     public void addMonitoredItems(List<OpcUaMonitoredItem> items) {
         items.forEach(this::addMonitoredItem);
     }
 
+    /**
+     * Remove a MonitoredItem from this Subscription.
+     * <p>
+     * This item will not be deleted from the server until {@link #synchronizeMonitoredItems()} is
+     * called
+     *
+     * @param item the MonitoredItem to remove.
+     */
     public void removeMonitoredItem(OpcUaMonitoredItem item) {
         OpcUaMonitoredItem removedItem =
             item.getClientHandle().map(monitoredItems::remove).orElse(null);
@@ -305,6 +331,14 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Remove a group of MonitoredItems from this Subscription.
+     * <p>
+     * These items will not be deleted from the server until {@link #synchronizeMonitoredItems()}
+     * is called.
+     *
+     * @param items the MonitoredItems to remove.
+     */
     public void removeMonitoredItems(List<OpcUaMonitoredItem> items) {
         items.forEach(this::removeMonitoredItem);
     }
@@ -1017,6 +1051,14 @@ public class OpcUaSubscription {
         return deliveryQueue;
     }
 
+    public void cancelWatchdogTimer() {
+        WatchdogTimer watchdog = this.watchdogTimer;
+        if (watchdog != null) {
+            watchdog.cancel();
+            this.watchdogTimer = null;
+        }
+    }
+
     void kickWatchdogTimer() {
         WatchdogTimer watchdog = this.watchdogTimer;
         if (watchdog != null) {
@@ -1125,6 +1167,18 @@ public class OpcUaSubscription {
         if (listener != null) {
             listener.onNotificationDataLost(this);
         }
+    }
+
+    public void notifyTransferFailed(StatusCode status) {
+        SubscriptionListener listener = this.listener;
+        if (listener != null) {
+            deliveryQueue.execute(
+                () ->
+                    listener.onTransferFailed(this, status)
+            );
+        }
+        client.removeSubscription(this);
+        client.getPublishingManager().removeSubscription(this);
     }
 
     private static class Modifications {

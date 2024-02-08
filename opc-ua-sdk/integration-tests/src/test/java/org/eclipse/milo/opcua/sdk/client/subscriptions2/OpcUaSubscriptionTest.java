@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -199,6 +200,21 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
     }
 
     @Test
+    void modifyAsync() throws UaException, ExecutionException, InterruptedException {
+        var subscription = new OpcUaSubscription(client);
+
+        subscription.create();
+        subscription.setPublishingInterval(100.0);
+        subscription.modifyAsync().toCompletableFuture().get();
+
+        assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+        assertEquals(100.0, subscription.getPublishingInterval());
+        assertEquals(100.0, subscription.getRevisedPublishingInterval().orElseThrow());
+
+        subscription.delete();
+    }
+
+    @Test
     void lifetimeAndKeepAliveCalculation() throws UaException {
         var subscription = new OpcUaSubscription(client);
 
@@ -287,7 +303,27 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
             subscription.setPublishingMode(false);
             assertFalse(subscription.isPublishingEnabled().orElseThrow());
+            
             subscription.setPublishingMode(true);
+            assertTrue(subscription.isPublishingEnabled().orElseThrow());
+        } finally {
+            subscription.delete();
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
+        }
+    }
+
+    @Test
+    void setPublishingModeAsync() throws UaException, ExecutionException, InterruptedException {
+        var subscription = new OpcUaSubscription(client);
+
+        try {
+            subscription.create();
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+
+            subscription.setPublishingModeAsync(false).toCompletableFuture().get();
+            assertFalse(subscription.isPublishingEnabled().orElseThrow());
+
+            subscription.setPublishingModeAsync(true).toCompletableFuture().get();
             assertTrue(subscription.isPublishingEnabled().orElseThrow());
         } finally {
             subscription.delete();
@@ -301,12 +337,16 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
         subscription.setMaxMonitoredItemsPerCall(uint(3));
         subscription.create();
 
+        var monitoredItems = new ArrayList<OpcUaMonitoredItem>();
+
         for (int i = 0; i < 10; i++) {
             var monitoredItem = OpcUaMonitoredItem.newDataItem(
                 NodeIds.Server_ServerStatus_CurrentTime
             );
-            subscription.addMonitoredItem(monitoredItem);
+            monitoredItems.add(monitoredItem);
         }
+
+        subscription.addMonitoredItems(monitoredItems);
 
         List<MonitoredItemOperationResult> createResults = subscription.createMonitoredItems();
         assertEquals(10, createResults.size());
@@ -323,7 +363,7 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
         assertTrue(modifyResults.stream().allMatch(r -> r.serviceResult().isGood()));
         assertTrue(modifyResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
 
-        subscription.removeMonitoredItems(subscription.getMonitoredItems());
+        subscription.removeMonitoredItems(monitoredItems);
         List<MonitoredItemOperationResult> deleteResults = subscription.deleteMonitoredItems();
         assertEquals(10, deleteResults.size());
         assertTrue(deleteResults.stream().allMatch(r -> r.serviceResult().isGood()));
