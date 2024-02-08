@@ -21,6 +21,8 @@ import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,6 +53,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
+import org.eclipse.milo.opcua.stack.core.util.TaskQueue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -74,6 +77,8 @@ public class OpcUaSubscription {
     private SyncState syncState = SyncState.INITIAL;
 
     private ServerState serverState;
+
+    private WatchdogTimer watchdogTimer;
 
     private final AtomicReference<Modifications> modifications = new AtomicReference<>(null);
 
@@ -107,15 +112,21 @@ public class OpcUaSubscription {
 
     private @Nullable SubscriptionListener listener;
 
+    private final TaskQueue deliveryQueue;
+
     private final OpcUaClient client;
 
     public OpcUaSubscription(OpcUaClient client) {
         this.client = client;
+
+        deliveryQueue = new TaskQueue(client.getTransport().getConfig().getExecutor());
     }
 
     public OpcUaSubscription(OpcUaClient client, double publishingInterval) {
         this.client = client;
         this.publishingInterval = publishingInterval;
+
+        deliveryQueue = new TaskQueue(client.getTransport().getConfig().getExecutor());
     }
 
     /**
@@ -162,6 +173,9 @@ public class OpcUaSubscription {
                 true
             );
 
+            watchdogTimer = new WatchdogTimer(client.getConfig().getSubscriptionWatchdogMultiplier());
+            kickWatchdogTimer();
+
             client.getPublishingManager().addSubscription(this);
         } else {
             throw new UaException(StatusCodes.Bad_InvalidState);
@@ -194,6 +208,8 @@ public class OpcUaSubscription {
                 diff.maxNotificationsPerPublish().orElse(maxNotificationsPerPublish),
                 diff.priority().orElse(priority)
             );
+
+            kickWatchdogTimer();
 
             serverState = new ServerState(
                 serverState.getSubscriptionId(),
@@ -234,6 +250,12 @@ public class OpcUaSubscription {
             if (results[0].isGood()) {
                 serverState = null;
                 syncState = SyncState.INITIAL;
+
+                WatchdogTimer watchdog = this.watchdogTimer;
+                if (watchdog != null) {
+                    watchdog.cancel();
+                    this.watchdogTimer = null;
+                }
 
                 client.getPublishingManager().removeSubscription(this);
             } else {
@@ -991,6 +1013,17 @@ public class OpcUaSubscription {
         this.listener = listener;
     }
 
+    TaskQueue getDeliveryQueue() {
+        return deliveryQueue;
+    }
+
+    void kickWatchdogTimer() {
+        WatchdogTimer watchdog = this.watchdogTimer;
+        if (watchdog != null) {
+            watchdog.kick();
+        }
+    }
+
     private static UInteger calculateMaxKeepAliveCount(double publishingInterval, double targetKeepAliveInterval) {
         // Send a keep-alive every targetKeepAliveInterval milliseconds if the publishing
         // interval is faster, or every publishing interval otherwise.
@@ -1120,6 +1153,56 @@ public class OpcUaSubscription {
 
         private Optional<UByte> priority() {
             return Optional.ofNullable(priority);
+        }
+
+    }
+
+    private class WatchdogTimer {
+
+        private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
+
+        private final double multiplier;
+
+        WatchdogTimer(double multiplier) {
+            this.multiplier = Math.max(1.0, multiplier);
+        }
+
+        void kick() {
+            ScheduledFuture<?> sf = scheduledFuture.get();
+            if (sf != null) sf.cancel(false);
+
+            scheduleNext();
+        }
+
+        void cancel() {
+            ScheduledFuture<?> sf = scheduledFuture.getAndSet(null);
+            if (sf != null) sf.cancel(false);
+        }
+
+        private void scheduleNext() {
+            getServerState().ifPresent(state -> {
+                long delay = Math.round(
+                    state.publishingInterval *
+                        state.maxKeepAliveCount.longValue() * multiplier
+                );
+
+                ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
+                    () -> client.getTransport().getConfig().getExecutor().execute(() -> {
+                        SubscriptionListener listener = OpcUaSubscription.this.listener;
+
+                        if (listener != null) {
+                            deliveryQueue.execute(
+                                () ->
+                                    listener.onWatchdogTimerElapsed(OpcUaSubscription.this)
+                            );
+                        }
+                    }),
+                    delay,
+                    TimeUnit.MILLISECONDS
+                );
+
+                scheduledFuture.set(nextSf);
+            });
         }
 
     }

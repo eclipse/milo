@@ -55,7 +55,6 @@ public class PublishingManager {
 
     private final Map<UInteger, SubscriptionDetails> subscriptionDetails = new ConcurrentHashMap<>();
 
-    private final TaskQueue deliveryQueue;
     private final TaskQueue processingQueue;
 
     private final OpcUaClient client;
@@ -63,7 +62,6 @@ public class PublishingManager {
     public PublishingManager(OpcUaClient client) {
         this.client = client;
 
-        deliveryQueue = new TaskQueue(client.getTransport().getConfig().getExecutor());
         processingQueue = new TaskQueue(client.getTransport().getConfig().getExecutor());
     }
 
@@ -163,9 +161,12 @@ public class PublishingManager {
                     publishResponse.getNotificationMessage().getSequenceNumber()
                 );
 
-                // TODO this would be a good place to "kick" the subscription watchdog timer,
-                //  before it gets put into a processing queue that could potentially delay the
-                //  kick.
+                UInteger subscriptionId = publishResponse.getSubscriptionId();
+                SubscriptionDetails details = subscriptionDetails.get(subscriptionId);
+
+                if (details != null) {
+                    details.subscription.kickWatchdogTimer();
+                }
 
                 processingQueue.execute(() -> processPublishResponse(publishResponse, pendingCount));
             } else {
@@ -215,7 +216,10 @@ public class PublishingManager {
 
                     NotificationMessage republishNotificationMessage = republishResponse.getNotificationMessage();
 
-                    deliveryQueue.submit(() -> deliverNotificationMessage(details, republishNotificationMessage));
+                    details.subscription.getDeliveryQueue().execute(
+                        () ->
+                            deliverNotificationMessage(details, republishNotificationMessage)
+                    );
                 } catch (UaException e) {
                     logger.warn("Republish service failure, sequenceNumber={}", sequenceNumber, e);
 
@@ -224,7 +228,8 @@ public class PublishingManager {
             }
 
             if (!republishSuccess) {
-                deliveryQueue.submit(details.subscription::notifyNotificationDataLost);
+                details.subscription.getDeliveryQueue()
+                    .execute(details.subscription::notifyNotificationDataLost);
             }
 
             details.lastSequenceNumber = expectedSequenceNumber;
@@ -246,7 +251,7 @@ public class PublishingManager {
             }
         }
 
-        CompletionStage<Unit> callback = deliveryQueue.submit(
+        CompletionStage<Unit> callback = details.subscription.getDeliveryQueue().submit(
             () ->
                 deliverNotificationMessage(details, notificationMessage)
         );
