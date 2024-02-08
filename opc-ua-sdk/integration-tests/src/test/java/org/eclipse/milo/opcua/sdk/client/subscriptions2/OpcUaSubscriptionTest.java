@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions2;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.SyncState;
@@ -35,8 +35,9 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
     void createSubscription() throws UaException {
         var subscription = new OpcUaSubscription(client);
 
+        subscription.create();
+
         try {
-            subscription.create();
             assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
 
             assertTrue(subscription.getSubscriptionId().isPresent());
@@ -62,6 +63,19 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
             assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
         } finally {
             subscription.delete();
+            assertEquals(SyncState.INITIAL, subscription.getSyncState());
+        }
+    }
+
+    @Test
+    void createDeleteSubscriptionAsync() throws ExecutionException, InterruptedException {
+        var subscription = new OpcUaSubscription(client);
+
+        try {
+            subscription.createAsync().toCompletableFuture().get();
+            assertEquals(SyncState.SYNCHRONIZED, subscription.getSyncState());
+        } finally {
+            subscription.deleteAsync().toCompletableFuture().get();
             assertEquals(SyncState.INITIAL, subscription.getSyncState());
         }
     }
