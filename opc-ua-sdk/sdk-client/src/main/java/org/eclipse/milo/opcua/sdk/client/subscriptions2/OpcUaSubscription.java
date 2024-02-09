@@ -853,14 +853,16 @@ public class OpcUaSubscription {
     public void setPublishingInterval(Double publishingInterval) {
         this.publishingInterval = publishingInterval;
 
-        Modifications diff = modifications.updateAndGet(
-            d ->
-                Objects.requireNonNullElseGet(d, Modifications::new)
-        );
+        if (syncState != SyncState.INITIAL) {
+            Modifications diff = modifications.updateAndGet(
+                d ->
+                    Objects.requireNonNullElseGet(d, Modifications::new)
+            );
 
-        diff.publishingInterval = publishingInterval;
+            diff.publishingInterval = publishingInterval;
 
-        syncState = SyncState.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
 
         if (lifetimeAndKeepAliveCalculated) {
             UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(
@@ -892,14 +894,16 @@ public class OpcUaSubscription {
     public void setLifetimeCount(UInteger lifetimeCount) {
         this.lifetimeCount = lifetimeCount;
 
-        Modifications diff = modifications.updateAndGet(
-            d ->
-                Objects.requireNonNullElseGet(d, Modifications::new)
-        );
+        if (syncState != SyncState.INITIAL) {
+            Modifications diff = modifications.updateAndGet(
+                d ->
+                    Objects.requireNonNullElseGet(d, Modifications::new)
+            );
 
-        diff.lifetimeCount = lifetimeCount;
+            diff.lifetimeCount = lifetimeCount;
 
-        syncState = SyncState.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
     }
 
     /**
@@ -920,14 +924,16 @@ public class OpcUaSubscription {
     public void setMaxKeepAliveCount(UInteger maxKeepAliveCount) {
         this.maxKeepAliveCount = maxKeepAliveCount;
 
-        Modifications diff = modifications.updateAndGet(
-            d ->
-                Objects.requireNonNullElseGet(d, Modifications::new)
-        );
+        if (syncState != SyncState.INITIAL) {
+            Modifications diff = modifications.updateAndGet(
+                d ->
+                    Objects.requireNonNullElseGet(d, Modifications::new)
+            );
 
-        diff.maxKeepAliveCount = maxKeepAliveCount;
+            diff.maxKeepAliveCount = maxKeepAliveCount;
 
-        syncState = SyncState.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
     }
 
     /**
@@ -948,14 +954,16 @@ public class OpcUaSubscription {
     public void setPriority(UByte priority) {
         this.priority = priority;
 
-        Modifications diff = modifications.updateAndGet(
-            d ->
-                Objects.requireNonNullElseGet(d, Modifications::new)
-        );
+        if (syncState != SyncState.INITIAL) {
+            Modifications diff = modifications.updateAndGet(
+                d ->
+                    Objects.requireNonNullElseGet(d, Modifications::new)
+            );
 
-        diff.priority = priority;
+            diff.priority = priority;
 
-        syncState = SyncState.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
     }
 
     /**
@@ -976,14 +984,16 @@ public class OpcUaSubscription {
     public void setMaxNotificationsPerPublish(UInteger maxNotificationsPerPublish) {
         this.maxNotificationsPerPublish = maxNotificationsPerPublish;
 
-        Modifications diff = modifications.updateAndGet(
-            d ->
-                Objects.requireNonNullElseGet(d, Modifications::new)
-        );
+        if (syncState != SyncState.INITIAL) {
+            Modifications diff = modifications.updateAndGet(
+                d ->
+                    Objects.requireNonNullElseGet(d, Modifications::new)
+            );
 
-        diff.maxNotificationsPerPublish = maxNotificationsPerPublish;
+            diff.maxNotificationsPerPublish = maxNotificationsPerPublish;
 
-        syncState = SyncState.UNSYNCHRONIZED;
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
     }
 
     /**
@@ -1246,8 +1256,14 @@ public class OpcUaSubscription {
 
                         if (listener != null) {
                             deliveryQueue.execute(
-                                () ->
-                                    listener.onWatchdogTimerElapsed(OpcUaSubscription.this)
+                                () -> {
+                                    logger.debug(
+                                        "Watchdog expired after {}ms, subscriptionId={}",
+                                        delay, getSubscriptionId().orElse(null)
+                                    );
+
+                                    listener.onWatchdogTimerElapsed(OpcUaSubscription.this);
+                                }
                             );
                         }
                     }),
