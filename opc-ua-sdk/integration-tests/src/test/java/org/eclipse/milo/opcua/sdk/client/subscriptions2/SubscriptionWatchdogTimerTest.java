@@ -51,6 +51,8 @@ public class SubscriptionWatchdogTimerTest extends AbstractClientServerTest {
         server.getSubscriptions().get(subscriptionId).deleteSubscription();
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
+
+        subscription.delete();
     }
 
 }

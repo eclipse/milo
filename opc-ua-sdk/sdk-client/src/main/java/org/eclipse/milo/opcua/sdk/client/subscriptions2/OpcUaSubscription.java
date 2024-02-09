@@ -406,7 +406,10 @@ public class OpcUaSubscription {
 
         for (List<OpcUaMonitoredItem> partition : partitions) {
             try {
-                logger.debug("createMonitoredItems partition.size(): {}", partition.size());
+                logger.debug(
+                    "id={}, createMonitoredItems partition.size(): {}",
+                    serverState.subscriptionId, partition.size()
+                );
 
                 CreateMonitoredItemsResponse response = client.createMonitoredItems(
                     serverState.getSubscriptionId(),
@@ -469,7 +472,10 @@ public class OpcUaSubscription {
 
         for (List<OpcUaMonitoredItem> partition : partitions) {
             try {
-                logger.debug("modifyMonitoredItems partition.size(): {}", partition.size());
+                logger.debug(
+                    "id={}, modifyMonitoredItems partition.size(): {}",
+                    serverState.subscriptionId, partition.size()
+                );
 
                 ModifyMonitoredItemsResponse response = client.modifyMonitoredItems(
                     serverState.getSubscriptionId(),
@@ -530,7 +536,10 @@ public class OpcUaSubscription {
 
         for (List<OpcUaMonitoredItem> partition : partitions) {
             try {
-                logger.debug("deleteMonitoredItems partition.size(): {}", partition.size());
+                logger.debug(
+                    "id={}, deleteMonitoredItems partition.size(): {}",
+                    serverState.subscriptionId, partition.size()
+                );
 
                 DeleteMonitoredItemsResponse response = client.deleteMonitoredItems(
                     serverState.getSubscriptionId(),
@@ -578,7 +587,10 @@ public class OpcUaSubscription {
                     serverMaxMonitoredItemsPerCall = (UInteger) value;
                 }
             } catch (UaException e) {
-                logger.warn("Failed to read MaxMonitoredItemsPerCall from Server", e);
+                logger.warn(
+                    "id={}, failed to read MaxMonitoredItemsPerCall from Server",
+                    serverState.subscriptionId, e
+                );
             }
 
             if (serverMaxMonitoredItemsPerCall == null) {
@@ -632,7 +644,10 @@ public class OpcUaSubscription {
 
         for (List<OpcUaMonitoredItem> partition : partitions) {
             try {
-                logger.debug("setMonitoringMode partition.size(): {}", partition.size());
+                logger.debug(
+                    "id={}, setMonitoringMode partition.size(): {}",
+                    serverState.subscriptionId, partition.size()
+                );
 
                 SetMonitoringModeResponse response = client.setMonitoringMode(
                     serverState.getSubscriptionId(),
@@ -1114,7 +1129,10 @@ public class OpcUaSubscription {
                 values.add(notification.getValue());
             } else {
                 // This can happen if an item is deleted while a notification is in-flight.
-                logger.debug("Received data for unknown ClientHandle: {}", clientHandle);
+                logger.debug(
+                    "id={}, received data for unknown ClientHandle: {}",
+                    serverState.subscriptionId, clientHandle
+                );
             }
         }
 
@@ -1142,7 +1160,10 @@ public class OpcUaSubscription {
                 eventValuesList.add(event.getEventFields());
             } else {
                 // This can happen if an item is deleted while a notification is in-flight.
-                logger.debug("Received event for unknown ClientHandle: {}", clientHandle);
+                logger.debug(
+                    "id={}, received event for unknown ClientHandle: {}",
+                    serverState.subscriptionId, clientHandle
+                );
             }
         }
 
@@ -1251,28 +1272,30 @@ public class OpcUaSubscription {
                 );
 
                 ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
-                    () -> client.getTransport().getConfig().getExecutor().execute(() -> {
-                        SubscriptionListener listener = OpcUaSubscription.this.listener;
-
-                        if (listener != null) {
-                            deliveryQueue.execute(
-                                () -> {
-                                    logger.debug(
-                                        "Watchdog expired after {}ms, subscriptionId={}",
-                                        delay, getSubscriptionId().orElse(null)
-                                    );
-
-                                    listener.onWatchdogTimerElapsed(OpcUaSubscription.this);
-                                }
-                            );
-                        }
-                    }),
+                    () -> notifyWatchdogTimerElapsed(delay),
                     delay,
                     TimeUnit.MILLISECONDS
                 );
 
                 scheduledFuture.set(nextSf);
             });
+        }
+
+        private void notifyWatchdogTimerElapsed(long delay) {
+            SubscriptionListener listener = OpcUaSubscription.this.listener;
+
+            if (listener != null) {
+                deliveryQueue.execute(
+                    () -> {
+                        logger.debug(
+                            "id={}, watchdog timer expired after {}ms",
+                            serverState.subscriptionId, delay
+                        );
+
+                        listener.onWatchdogTimerElapsed(OpcUaSubscription.this);
+                    }
+                );
+            }
         }
 
     }

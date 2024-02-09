@@ -368,6 +368,8 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
         assertEquals(10, deleteResults.size());
         assertTrue(deleteResults.stream().allMatch(r -> r.serviceResult().isGood()));
         assertTrue(deleteResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
+
+        subscription.delete();
     }
 
 }
