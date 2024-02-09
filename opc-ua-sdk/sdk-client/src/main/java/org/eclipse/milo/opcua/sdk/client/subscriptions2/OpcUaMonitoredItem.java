@@ -38,6 +38,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 public class OpcUaMonitoredItem {
 
     private SyncState syncState = SyncState.INITIAL;
+    private ServerState serverState;
     private Modifications modifications;
 
     private @Nullable DataValueListener dataValueListener;
@@ -51,12 +52,6 @@ public class OpcUaMonitoredItem {
     private @Nullable MonitoringFilter filter;
     private UInteger queueSize = uint(1);
     private boolean discardOldest = true;
-
-    // MonitoredItem parameters that are returned from the server:
-    private @Nullable UInteger monitoredItemId;
-    private @Nullable Double revisedSamplingInterval;
-    private @Nullable UInteger revisedQueueSize;
-    private @Nullable ExtensionObject filterResult;
 
     private @Nullable StatusCode createResult;
     private @Nullable StatusCode modifyResult;
@@ -193,7 +188,7 @@ public class OpcUaMonitoredItem {
      * @return the Server-assigned id for this MonitoredItem.
      */
     public Optional<UInteger> getMonitoredItemId() {
-        return Optional.ofNullable(monitoredItemId);
+        return getServerState().map(ServerState::getMonitoredItemId);
     }
 
     /**
@@ -246,7 +241,7 @@ public class OpcUaMonitoredItem {
      * @return the revised SamplingInterval that the server is using for this MonitoredItem.
      */
     public Optional<Double> getRevisedSamplingInterval() {
-        return Optional.ofNullable(revisedSamplingInterval);
+        return getServerState().map(ServerState::getSamplingInterval);
     }
 
     /**
@@ -257,7 +252,7 @@ public class OpcUaMonitoredItem {
      * @return the revised QueueSize that the server is using for this MonitoredItem.
      */
     public Optional<UInteger> getRevisedQueueSize() {
-        return Optional.ofNullable(revisedQueueSize);
+        return getServerState().map(ServerState::getQueueSize);
     }
 
     /**
@@ -266,7 +261,7 @@ public class OpcUaMonitoredItem {
      * @return the filter result structure for the most recently configured monitoring filter.
      */
     public Optional<ExtensionObject> getFilterResult() {
-        return Optional.ofNullable(filterResult);
+        return getServerState().map(ServerState::getFilterResult);
     }
 
     /**
@@ -362,8 +357,12 @@ public class OpcUaMonitoredItem {
         this.monitoringMode = monitoringMode;
     }
 
-    SyncState getSyncState() {
+    public SyncState getSyncState() {
         return syncState;
+    }
+
+    public Optional<ServerState> getServerState() {
+        return Optional.ofNullable(serverState);
     }
 
     MonitoredItemCreateRequest newCreateRequest() {
@@ -394,8 +393,8 @@ public class OpcUaMonitoredItem {
         if (subscription == null) {
             throw new IllegalStateException("no subscription");
         }
-        if (monitoredItemId == null) {
-            throw new IllegalStateException("no monitoredItemId");
+        if (serverState == null) {
+            throw new IllegalStateException("no ServerState");
         }
         if (modifications == null) {
             throw new IllegalStateException("no pending modification");
@@ -413,7 +412,7 @@ public class OpcUaMonitoredItem {
         }
 
         return new MonitoredItemModifyRequest(
-            monitoredItemId,
+            serverState.monitoredItemId,
             new MonitoringParameters(
                 clientHandle,
                 newRequestedSamplingInterval,
@@ -428,10 +427,14 @@ public class OpcUaMonitoredItem {
         StatusCode statusCode = result.getStatusCode();
 
         if (statusCode.isGood()) {
-            monitoredItemId = result.getMonitoredItemId();
-            filterResult = result.getFilterResult();
-            revisedQueueSize = result.getRevisedQueueSize();
-            revisedSamplingInterval = result.getRevisedSamplingInterval();
+            serverState = new ServerState(
+                result.getMonitoredItemId(),
+                monitoringMode,
+                result.getRevisedSamplingInterval(),
+                result.getFilterResult(),
+                result.getRevisedQueueSize(),
+                discardOldest
+            );
 
             syncState = SyncState.SYNCHRONIZED;
         } else {
@@ -445,15 +448,16 @@ public class OpcUaMonitoredItem {
         StatusCode statusCode = result.getStatusCode();
 
         if (statusCode.isGood()) {
-            samplingInterval = modifications.samplingInterval().orElse(samplingInterval);
-            filter = modifications.filter().orElse(filter);
-            queueSize = modifications.queueSize().orElse(queueSize);
-            discardOldest = modifications.discardOldest().orElse(discardOldest);
             modifications = null;
 
-            filterResult = result.getFilterResult();
-            revisedQueueSize = result.getRevisedQueueSize();
-            revisedSamplingInterval = result.getRevisedSamplingInterval();
+            serverState = new ServerState(
+                serverState.monitoredItemId,
+                monitoringMode,
+                result.getRevisedSamplingInterval(),
+                result.getFilterResult(),
+                result.getRevisedQueueSize(),
+                discardOldest
+            );
 
             syncState = SyncState.SYNCHRONIZED;
         } else {
@@ -466,7 +470,6 @@ public class OpcUaMonitoredItem {
     void applyDeleteResult(StatusCode statusCode) {
         // TODO
         clientHandle = null;
-        monitoredItemId = null;
         deleteResult = statusCode;
 
         syncState = SyncState.INITIAL;
@@ -568,7 +571,7 @@ public class OpcUaMonitoredItem {
         private final UInteger monitoredItemId;
         private final MonitoringMode monitoringMode;
         private final double samplingInterval;
-        private final @Nullable MonitoringFilter filter;
+        private final @Nullable ExtensionObject filterResult;
         private final UInteger queueSize;
         private final boolean discardOldest;
 
@@ -576,7 +579,7 @@ public class OpcUaMonitoredItem {
             UInteger monitoredItemId,
             MonitoringMode monitoringMode,
             double samplingInterval,
-            @Nullable MonitoringFilter filter,
+            @Nullable ExtensionObject filterResult,
             UInteger queueSize,
             boolean discardOldest
         ) {
@@ -584,7 +587,7 @@ public class OpcUaMonitoredItem {
             this.monitoredItemId = monitoredItemId;
             this.monitoringMode = monitoringMode;
             this.samplingInterval = samplingInterval;
-            this.filter = filter;
+            this.filterResult = filterResult;
             this.queueSize = queueSize;
             this.discardOldest = discardOldest;
         }
@@ -601,8 +604,8 @@ public class OpcUaMonitoredItem {
             return samplingInterval;
         }
 
-        public @Nullable MonitoringFilter getFilter() {
-            return filter;
+        public @Nullable ExtensionObject getFilterResult() {
+            return filterResult;
         }
 
         public UInteger getQueueSize() {
@@ -615,7 +618,7 @@ public class OpcUaMonitoredItem {
 
     }
 
-    enum SyncState {
+    public enum SyncState {
         INITIAL,
 
         SYNCHRONIZED,

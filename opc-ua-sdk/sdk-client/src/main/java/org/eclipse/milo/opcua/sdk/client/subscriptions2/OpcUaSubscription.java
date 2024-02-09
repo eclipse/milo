@@ -75,12 +75,10 @@ public class OpcUaSubscription {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private SyncState syncState = SyncState.INITIAL;
-
     private ServerState serverState;
+    private final AtomicReference<Modifications> modifications = new AtomicReference<>(null);
 
     private WatchdogTimer watchdogTimer;
-
-    private final AtomicReference<Modifications> modifications = new AtomicReference<>(null);
 
     /**
      * MonitoredItems added to this Subscription, by ClientHandle.
@@ -106,6 +104,7 @@ public class OpcUaSubscription {
     private UByte priority = DEFAULT_PRIORITY;
 
     private boolean lifetimeAndKeepAliveCalculated = true;
+    private double watchdogMultiplier = 2.0;
 
     private UInteger maxMonitoredItemsPerCall = uint(DEFAULT_MAX_MONITORED_ITEMS_PER_CALL);
     private final Lazy<UInteger> monitoredItemPartitionSize = new Lazy<>();
@@ -173,7 +172,7 @@ public class OpcUaSubscription {
                 true
             );
 
-            watchdogTimer = new WatchdogTimer(client.getConfig().getSubscriptionWatchdogMultiplier());
+            watchdogTimer = new WatchdogTimer();
             kickWatchdogTimer();
 
             client.addSubscription(this);
@@ -1068,6 +1067,21 @@ public class OpcUaSubscription {
         monitoredItemPartitionSize.reset();
     }
 
+    /**
+     * Set the multiplier used to calculate the watchdog timeout. The multiplier is applied to the
+     * keep-alive interval.
+     *
+     * @param watchdogMultiplier the watchdog multiplier.
+     */
+    public void setWatchdogMultiplier(double watchdogMultiplier) {
+        this.watchdogMultiplier = Math.max(1.0, watchdogMultiplier);
+    }
+
+    /**
+     * Set the {@link SubscriptionListener} for this Subscription.
+     *
+     * @param listener the {@link SubscriptionListener} for this Subscription.
+     */
     public void setSubscriptionListener(@Nullable SubscriptionListener listener) {
         this.listener = listener;
     }
@@ -1246,12 +1260,6 @@ public class OpcUaSubscription {
 
         private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
 
-        private final double multiplier;
-
-        WatchdogTimer(double multiplier) {
-            this.multiplier = Math.max(1.0, multiplier);
-        }
-
         void kick() {
             ScheduledFuture<?> sf = scheduledFuture.get();
             if (sf != null) sf.cancel(false);
@@ -1268,7 +1276,7 @@ public class OpcUaSubscription {
             getServerState().ifPresent(state -> {
                 long delay = Math.round(
                     state.publishingInterval *
-                        state.maxKeepAliveCount.longValue() * multiplier
+                        state.maxKeepAliveCount.longValue() * watchdogMultiplier
                 );
 
                 ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
@@ -1387,24 +1395,91 @@ public class OpcUaSubscription {
 
     public interface SubscriptionListener {
 
+        /**
+         * Called when a Subscription receives a data change notification from the Server.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications
+         * are processed synchronously as a backpressure mechanism. Blocking inside this callback
+         * will prevent subsequent notifications from being processed and new PublishRequests from
+         * being sent.
+         *
+         * @param subscription the Subscription that received the data change notification.
+         * @param items the List of MonitoredItems targeted by the data change notification.
+         * @param values the corresponding List of DataValues for the MonitoredItems.
+         */
         default void onDataReceived(
             OpcUaSubscription subscription,
             List<OpcUaMonitoredItem> items, List<DataValue> values
         ) {}
 
+        /**
+         * Called when a Subscription receives an event notification from the Server.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications
+         * are processed synchronously as a backpressure mechanism. Blocking inside this callback
+         * will prevent subsequent notifications from being processed and new PublishRequests from
+         * being sent.
+         *
+         * @param subscription the Subscription that received the event notification.
+         * @param items the List of MonitoredItems targeted by the event notification.
+         * @param fields the corresponding List of EventFields for the MonitoredItems.
+         */
         default void onEventReceived(
             OpcUaSubscription subscription,
             List<OpcUaMonitoredItem> items, List<Variant[]> fields
         ) {}
 
+        /**
+         * Called when a Subscription receives a keep-alive notification from the Server.
+         *
+         * @param subscription the Subscription that received the keep-alive notification.
+         */
         default void onKeepAliveReceived(OpcUaSubscription subscription) {}
 
+        /**
+         * Called when attempts to recover missed data notifications have failed, i.e. the
+         * Republish service was called for one or more missing sequence numbers but the Server
+         * was unable to fulfill the requests.
+         *
+         * @param subscription the Subscription that missed data notifications.
+         */
         default void onNotificationDataLost(OpcUaSubscription subscription) {}
 
+        /**
+         * The Subscription's watchdog timer has elapsed.
+         * <p>
+         * The timer elapses when the configurable multiplier applied to the keep-alive interval
+         * has elapsed without receiving a PublishResponse for this Subscription.
+         * <p>
+         * This is an indication that the Server may be experiencing problems servicing this
+         * Subscription and the absence of data change notifications no longer implies that values
+         * are not changing. Consider deleting and creating a new Subscription.
+         *
+         * @param subscription the Subscription whose watchdog timer has elapsed.
+         */
         default void onWatchdogTimerElapsed(OpcUaSubscription subscription) {}
 
+        /**
+         * Called when the status of the Subscription has changed.
+         * <p>
+         * Expected status updates include:
+         * <ul>
+         *     <li>Bad_Timeout: the Subscription has timed out and no longer exists on the
+         *     Server.
+         *     <li>Good_Transferred: the Subscription was transferred to another Session.
+         *
+         * @param subscription the Subscription whose status has changed.
+         * @param status the new status of the Subscription.
+         */
         default void onStatusChanged(OpcUaSubscription subscription, StatusCode status) {}
 
+        /**
+         * Called when a new Session is established after reconnecting but transferring this
+         * Subscription to the new Session was unsuccessful.
+         *
+         * @param subscription the Subscription that failed to transfer to the new Session.
+         * @param status the {@link StatusCode} for the transfer failure.
+         */
         default void onTransferFailed(OpcUaSubscription subscription, StatusCode status) {}
 
     }
