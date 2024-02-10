@@ -51,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
@@ -893,6 +894,22 @@ public class OpcUaClient {
                 "tree for NodeIds.Structure not found; is the server DataType hierarchy sane?"
             );
         }
+    }
+
+    /**
+     * Register codecs from a legacy binary {@link DataTypeDictionary} with the dynamic
+     * {@link DataTypeManager}.
+     *
+     * @param dictionary the binary {@link DataTypeDictionary}.
+     */
+    public void registerLegacyDataTypeDictionary(DataTypeDictionary dictionary) {
+        dictionary.getTypes().forEach(type ->
+            dynamicDataTypeManager.registerType(
+                type.getDataTypeId(),
+                type.getCodec(),
+                type.getEncodingId(), null, null
+            )
+        );
     }
 
     /**
