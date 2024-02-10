@@ -755,14 +755,38 @@ public class OpcUaSubscription {
         return List.copyOf(monitoredItems.values());
     }
 
+    /**
+     * Get the current PublishingInterval for this Subscription.
+     * <p>
+     * The server may have revised it upon creation or modification.
+     *
+     * @return the current PublishingInterval for this Subscription.
+     * @see #getRevisedPublishingInterval()
+     */
     public Double getPublishingInterval() {
         return publishingInterval;
     }
 
+    /**
+     * Get the current LifetimeCount for this Subscription.
+     * <p>
+     * The server may have revised it upon creation or modification.
+     *
+     * @return the current LifetimeCount for this Subscription.
+     * @see #getRevisedLifetimeCount()
+     */
     public UInteger getLifetimeCount() {
         return lifetimeCount;
     }
 
+    /**
+     * Get the current MaxKeepAliveCount for this Subscription.
+     * <p>
+     * The server may have revised it upon creation or modification.
+     *
+     * @return the current MaxKeepAliveCount for this Subscription.
+     * @see #getRevisedMaxKeepAliveCount()
+     */
     public UInteger getMaxKeepAliveCount() {
         return maxKeepAliveCount;
     }
