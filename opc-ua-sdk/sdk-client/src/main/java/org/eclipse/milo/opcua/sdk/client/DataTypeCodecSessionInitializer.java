@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -93,19 +93,6 @@ public class DataTypeCodecSessionInitializer implements SessionFsm.SessionInitia
             LoggerFactory.getLogger(DataTypeTreeSessionInitializer.class)
                 .warn("Tree for NodeIds.Structure not found; is the server DataType hierarchy sane?");
         }
-    }
-
-    public interface CodecFactory {
-
-        /**
-         * Create a {@link DataTypeCodec} instance for {@code dataType}.
-         *
-         * @param dataType     the {@link DataType} to create the codec for.
-         * @param dataTypeTree the {@link DataTypeTree}.
-         * @return a {@link DataTypeCodec} for {@code dataType}.
-         */
-        DataTypeCodec create(DataType dataType, DataTypeTree dataTypeTree);
-
     }
 
 }

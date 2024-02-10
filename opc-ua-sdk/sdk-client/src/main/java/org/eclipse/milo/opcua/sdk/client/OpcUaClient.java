@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -30,6 +32,10 @@ import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
+import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicCodecFactory;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -39,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
@@ -142,10 +149,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
@@ -300,6 +309,8 @@ public class OpcUaClient {
 
     private final DataTypeManager dynamicDataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
+
+    private final Lazy<DataTypeTree> dataTypeTree = new Lazy<>();
 
     private final EncodingContext staticEncodingContext;
     private final EncodingContext dynamicEncodingContext;
@@ -787,6 +798,101 @@ public class OpcUaClient {
                 serverTable.add(uri);
             }
         });
+    }
+
+    /**
+     * Get the {@link DataTypeTree}, reading it from the server if necessary.
+     *
+     * @return the {@link DataTypeTree}.
+     * @throws UaException if an error occurs while reading the DataTypes.
+     */
+    public DataTypeTree getDataTypeTree() throws UaException {
+        try {
+            return dataTypeTree.getOrThrow(
+                () ->
+                    DataTypeTreeBuilder.build(this)
+            );
+        } catch (Exception e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Read the {@link DataTypeTree} from the server and update the local copy.
+     *
+     * @return the updated {@link DataTypeTree}.
+     * @throws UaException if an error occurs while reading the DataTypes.
+     */
+    public DataTypeTree readDataTypeTree() throws UaException {
+        dataTypeTree.reset();
+
+        return getDataTypeTree();
+    }
+
+    /**
+     * Read the {@link DataTypeTree} from the server and update the local copy.
+     *
+     * @return a {@link CompletionStage} that completes successfully with the updated
+     *     {@link DataTypeTree}, or completes exceptionally if an error occurs while reading
+     *     the DataTypes.
+     */
+    public CompletionStage<DataTypeTree> readDataTypeTreeAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return readDataTypeTree();
+            } catch (UaException e) {
+                throw new CompletionException(e);
+            }
+        }, transport.getConfig().getExecutor());
+    }
+
+    /**
+     * Read the {@link DataTypeTree} and then register structured types with the client's dynamic
+     * {@link DataTypeManager}, using the default {@link DynamicCodecFactory}.
+     *
+     * @throws UaException if an error occurs.
+     */
+    public void registerDataTypeCodecs() throws UaException {
+        registerDataTypeCodecs(DynamicCodecFactory::create);
+    }
+
+    /**
+     * Read the {@link DataTypeTree} and then register structured types with the client's dynamic
+     * {@link DataTypeManager}, using the provided {@link CodecFactory} to create
+     * {@link DataTypeCodec}s as necessary.
+     *
+     * @param factory the {@link CodecFactory} to use to create {@link DataTypeCodec}s.
+     * @throws UaException if an error occurs.
+     */
+    public void registerDataTypeCodecs(CodecFactory factory) throws UaException {
+        DataTypeTree dataTypeTree = getDataTypeTree();
+
+        Tree<DataType> structureNode = dataTypeTree.getTreeNode(NodeIds.Structure);
+
+        if (structureNode != null) {
+            structureNode.traverse(dataType -> {
+                if (dataType.getDataTypeDefinition() != null) {
+                    logger.debug(
+                        "Registering type: name={}, dataTypeId={}",
+                        dataType.getBrowseName(), dataType.getNodeId()
+                    );
+
+                    dynamicDataTypeManager.registerType(
+                        dataType.getNodeId(),
+                        factory.create(dataType, dataTypeTree),
+                        dataType.getBinaryEncodingId(),
+                        dataType.getXmlEncodingId(),
+                        dataType.getJsonEncodingId()
+                    );
+                }
+            });
+        } else {
+            throw new UaException(
+                StatusCodes.Bad_UnexpectedError,
+                "tree for NodeIds.Structure not found; is the server DataType hierarchy sane?"
+            );
+        }
     }
 
     /**

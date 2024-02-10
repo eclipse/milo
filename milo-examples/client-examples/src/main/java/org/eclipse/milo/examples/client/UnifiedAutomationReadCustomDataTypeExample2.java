@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,8 +15,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeCodecSessionInitializer;
-import org.eclipse.milo.opcua.sdk.client.DataTypeTreeSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicEnum;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicOptionSet;
@@ -52,12 +50,10 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // DataTypeTree reads DataTypeDefinition attributes while traversing the type hierarchy
-        // and, by default, registers codecs with the client's dynamic DataTypeManager.
-        client.addSessionInitializer(new DataTypeTreeSessionInitializer());
-        client.addSessionInitializer(new DataTypeCodecSessionInitializer());
-
         client.connect();
+
+        // Read datatype information and register codecs needed to decode/encode custom types.
+        client.registerDataTypeCodecs();
 
         readWriteReadPerson(client);
         readWriteReadWorkOrder(client);
