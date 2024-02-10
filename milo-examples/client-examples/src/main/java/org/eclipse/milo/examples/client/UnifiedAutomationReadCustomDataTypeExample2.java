@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -58,6 +59,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         readWriteReadPerson(client);
         readWriteReadWorkOrder(client);
         readWriteCarExtras(client);
+        readWorkOrderArray(client);
 
         future.complete(client);
     }
@@ -65,7 +67,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     private void readWriteReadPerson(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Person1");
 
-        DynamicStruct value = readValue(client, nodeId);
+        DynamicStruct value = readScalarValue(client, nodeId);
         logger.info("Person1: {}", value);
 
         Random r = new Random();
@@ -76,14 +78,14 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         StatusCode status = writeValue(client, nodeId, value);
         System.out.println("write status: " + status);
 
-        value = readValue(client, nodeId);
+        value = readScalarValue(client, nodeId);
         logger.info("Person1': {}", value);
     }
 
     private void readWriteReadWorkOrder(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Scalar.WorkOrder");
 
-        DynamicStruct value = readValue(client, nodeId);
+        DynamicStruct value = readScalarValue(client, nodeId);
         logger.info("WorkOrder: {}", value);
 
         value.getMembers().put("ID", UUID.randomUUID());
@@ -91,14 +93,14 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         StatusCode status = writeValue(client, nodeId, value);
         System.out.println("write status: " + status);
 
-        value = readValue(client, nodeId);
+        value = readScalarValue(client, nodeId);
         logger.info("WorkOrder': {}", value);
     }
 
     private void readWriteCarExtras(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Scalar.CarExtras");
 
-        DynamicOptionSet value = (DynamicOptionSet) readValue(client, nodeId);
+        DynamicOptionSet value = (DynamicOptionSet) readScalarValue(client, nodeId);
         logger.info("CarExtras: {}", value);
 
         byte b = requireNonNull(value.getValue().bytes())[0];
@@ -107,11 +109,22 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         StatusCode status = writeValue(client, nodeId, value);
         System.out.println("write status: " + status);
 
-        value = (DynamicOptionSet) readValue(client, nodeId);
+        value = (DynamicOptionSet) readScalarValue(client, nodeId);
         logger.info("CarExtras': {}", value);
     }
 
-    private static DynamicStruct readValue(OpcUaClient client, NodeId nodeId) throws Exception {
+    private void readWorkOrderArray(OpcUaClient client) throws Exception {
+        NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Arrays.WorkOrder");
+
+        DynamicStruct[] value = readArrayValue(client, nodeId);
+
+        logger.info("WorkOrderArray:");
+        for (int i = 0; i < value.length; i++) {
+            logger.info("  WorkOrder[{}]: {}", i, value[i]);
+        }
+    }
+
+    private static DynamicStruct readScalarValue(OpcUaClient client, NodeId nodeId) throws Exception {
         DataValue dataValue = client.readValues(
             0.0,
             TimestampsToReturn.Neither,
@@ -122,6 +135,22 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         assert xo != null;
 
         return (DynamicStruct) xo.decode(client.getDynamicEncodingContext());
+    }
+
+    private static DynamicStruct[] readArrayValue(OpcUaClient client, NodeId nodeId) throws Exception {
+        DataValue dataValue = client.readValues(
+            0.0,
+            TimestampsToReturn.Neither,
+            List.of(nodeId)
+        ).get(0);
+
+
+        ExtensionObject[] xos = (ExtensionObject[]) dataValue.getValue().getValue();
+        assert xos != null;
+
+        return Arrays.stream(xos)
+            .map(xo -> (DynamicStruct) xo.decode(client.getDynamicEncodingContext()))
+            .toArray(DynamicStruct[]::new);
     }
 
     private static StatusCode writeValue(OpcUaClient client, NodeId nodeId, DynamicStruct value) throws Exception {
