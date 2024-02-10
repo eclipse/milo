@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -142,6 +142,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
@@ -287,6 +288,8 @@ public class OpcUaClient {
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
+
+    private final Lazy<OperationLimits> operationLimits = new Lazy<>();
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
 
@@ -790,6 +793,40 @@ public class OpcUaClient {
     }
 
     /**
+     * Get the local copy of the server's {@link OperationLimits}, or read them from the server
+     * if they have not been read.
+     *
+     * @return the server's {@link OperationLimits}.
+     * @throws UaException if an error occurs reading the operation limits.
+     */
+    public OperationLimits getOperationLimits() throws UaException {
+        try {
+            return operationLimits.getOrCompute(() -> {
+                try {
+                    return OperationLimits.read(this);
+                } catch (UaException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (RuntimeException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Read the server's OperationLimits and update the local copy.
+     *
+     * @return the server's {@link OperationLimits}.
+     * @throws UaException if an error occurs reading the operation limits.
+     */
+    public OperationLimits readOperationLimits() throws UaException {
+        operationLimits.reset();
+
+        return getOperationLimits();
+    }
+
+    /**
      * Create a new {@link RequestHeader} with a null authentication token.
      * <p>
      * A unique request handle will be automatically assigned to the header.
@@ -862,6 +899,29 @@ public class OpcUaClient {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
+    }
+
+    /**
+     * Read the Value attribute of a Node.
+     *
+     * @param maxAge the requested max age of the value, in milliseconds. If maxAge is set to 0,
+     *     the Server shall attempt to read a new value from the data source. If maxAge is set to
+     *     the max Int32 value or greater, the Server shall attempt to get a cached value. Negative
+     *     values are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param nodeId the {@link NodeId}s identifying the Node to read.
+     * @return the {@link DataValue}.
+     * @throws UaException if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2</a>
+     */
+    public DataValue readValue(
+        double maxAge,
+        TimestampsToReturn timestampsToReturn,
+        NodeId nodeId
+    ) throws UaException {
+
+        return readValues(maxAge, timestampsToReturn, List.of(nodeId)).get(0);
     }
 
     /**
