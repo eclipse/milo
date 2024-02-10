@@ -1110,7 +1110,7 @@ public class OpcUaSubscription {
         this.listener = listener;
     }
 
-    TaskQueue getDeliveryQueue() {
+    public TaskQueue getDeliveryQueue() {
         return deliveryQueue;
     }
 

@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-interface ServiceOperationResult {
+interface ServiceOperationResult<T> {
 
     /**
      * The StatusCode associated with the service call this operation was a part of.
@@ -24,10 +24,10 @@ interface ServiceOperationResult {
     StatusCode serviceResult();
 
     /**
-     * The StatusCode associated with the operation-level result.
+     * The operation-level result.
      *
-     * @return the StatusCode associated with the operation-level result.
+     * @return the operation-level result.
      */
-    Optional<StatusCode> operationResult();
+    Optional<T> operationResult();
 
 }
