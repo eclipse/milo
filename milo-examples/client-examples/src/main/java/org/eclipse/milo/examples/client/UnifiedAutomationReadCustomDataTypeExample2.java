@@ -63,7 +63,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     }
 
     private void readWriteReadPerson(OpcUaClient client) throws Exception {
-        NodeId nodeId = NodeId.parse("ns=2;s=Person1");
+        NodeId nodeId = NodeId.parse("ns=3;s=Person1");
 
         DynamicStruct value = readValue(client, nodeId);
         logger.info("Person1: {}", value);
@@ -81,7 +81,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     }
 
     private void readWriteReadWorkOrder(OpcUaClient client) throws Exception {
-        NodeId nodeId = NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder");
+        NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Scalar.WorkOrder");
 
         DynamicStruct value = readValue(client, nodeId);
         logger.info("WorkOrder: {}", value);
@@ -96,7 +96,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     }
 
     private void readWriteCarExtras(OpcUaClient client) throws Exception {
-        NodeId nodeId = NodeId.parse("ns=2;s=Demo.Static.Scalar.CarExtras");
+        NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Scalar.CarExtras");
 
         DynamicOptionSet value = (DynamicOptionSet) readValue(client, nodeId);
         logger.info("CarExtras: {}", value);
