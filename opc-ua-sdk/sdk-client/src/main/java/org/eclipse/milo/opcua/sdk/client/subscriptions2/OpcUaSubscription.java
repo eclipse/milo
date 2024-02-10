@@ -251,11 +251,7 @@ public class OpcUaSubscription {
                 client.removeSubscription(this);
                 client.getPublishingManager().removeSubscription(this);
 
-                WatchdogTimer watchdog = this.watchdogTimer;
-                if (watchdog != null) {
-                    watchdog.cancel();
-                    this.watchdogTimer = null;
-                }
+                cancelWatchdogTimer();
 
                 serverState = null;
                 syncState = SyncState.INITIAL;
@@ -1246,6 +1242,8 @@ public class OpcUaSubscription {
                     listener.onTransferFailed(this, status)
             );
         }
+
+        cancelWatchdogTimer();
         client.removeSubscription(this);
         client.getPublishingManager().removeSubscription(this);
     }
