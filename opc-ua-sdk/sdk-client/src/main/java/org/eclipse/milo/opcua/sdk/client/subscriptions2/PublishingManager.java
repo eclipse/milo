@@ -84,26 +84,32 @@ public class PublishingManager {
         long maxPendingPublishes = getMaxPendingPublishes();
 
         if (maxPendingPublishes > 0) {
-            client.getSessionAsync().thenAccept(session -> {
-                AtomicLong pendingCount = pendingCountMap.computeIfAbsent(
-                    session.getSessionId(),
-                    id -> new AtomicLong(0L)
-                );
-
-                for (long i = pendingCount.get(); i < maxPendingPublishes; i++) {
-                    if (pendingCount.incrementAndGet() <= maxPendingPublishes) {
-                        sendPublishRequest(session, pendingCount);
-                    } else {
-                        pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
-                    }
-                }
-
-                if (pendingCountMap.size() > 1) {
-                    // Prune any old sessions...
-                    pendingCountMap.entrySet().removeIf(
-                        e ->
-                            !e.getKey().equals(session.getSessionId())
+            client.getSessionAsync().whenComplete((session, ex) -> {
+                if (session != null) {
+                    AtomicLong pendingCount = pendingCountMap.computeIfAbsent(
+                        session.getSessionId(),
+                        id -> new AtomicLong(0L)
                     );
+
+                    for (long i = pendingCount.get(); i < maxPendingPublishes; i++) {
+                        if (pendingCount.incrementAndGet() <= maxPendingPublishes) {
+                            sendPublishRequest(session, pendingCount);
+                        } else {
+                            pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
+                        }
+                    }
+
+                    if (pendingCountMap.size() > 1) {
+                        // Prune any old sessions...
+                        pendingCountMap.entrySet().removeIf(
+                            e ->
+                                !e.getKey().equals(session.getSessionId())
+                        );
+                    }
+                } else {
+                    logger.debug("Session not available", ex);
+
+                    pendingCountMap.clear();
                 }
             });
         }
