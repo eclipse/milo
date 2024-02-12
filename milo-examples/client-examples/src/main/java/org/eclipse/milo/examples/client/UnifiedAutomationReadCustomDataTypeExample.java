@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionaryReader;
 import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -43,14 +44,17 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
+        client.connect();
+
         // Decoding a struct with custom DataType requires a DataTypeManager
         // that has the codec registered with it.
-        // Add a SessionInitializer that will read any DataTypeDictionary
-        // nodes present in the server every time the session is activated
-        // and dynamically generate codecs for custom structures.
-        client.addSessionInitializer(new BinaryDataTypeDictionarySessionInitializer(StructCodec::new));
+        // Read any DataTypeDictionary nodes present in the server and dynamically generate codecs
+        // for custom structures.
+        List<DataTypeDictionary> dataTypeDictionaries =
+            new BinaryDataTypeDictionaryReader(client)
+                .readDataTypeDictionaries(StructCodec::new).get();
 
-        client.connect();
+        dataTypeDictionaries.forEach(client::registerLegacyDataTypeDictionary);
 
         readPerson(client);
         readWorkOrder(client);
@@ -62,7 +66,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         DataValue dataValue = client.readValues(
             0.0,
             TimestampsToReturn.Neither,
-            List.of(NodeId.parse("ns=2;s=Person1"))
+            List.of(NodeId.parse("ns=3;s=Person1"))
         ).get(0);
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
@@ -77,7 +81,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         DataValue dataValue = client.readValues(
             0.0,
             TimestampsToReturn.Neither,
-            List.of(NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder"))
+            List.of(NodeId.parse("ns=3;s=Demo.Static.Scalar.WorkOrder"))
         ).get(0);
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();

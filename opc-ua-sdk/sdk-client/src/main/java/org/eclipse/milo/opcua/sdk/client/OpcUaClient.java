@@ -903,6 +903,8 @@ public class OpcUaClient {
      * @param dictionary the binary {@link DataTypeDictionary}.
      */
     public void registerLegacyDataTypeDictionary(DataTypeDictionary dictionary) {
+        dynamicDataTypeManager.registerTypeDictionary(dictionary);
+
         dictionary.getTypes().forEach(type ->
             dynamicDataTypeManager.registerType(
                 type.getDataTypeId(),

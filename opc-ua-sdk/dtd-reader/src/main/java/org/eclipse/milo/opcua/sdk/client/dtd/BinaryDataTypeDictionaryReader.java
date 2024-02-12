@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.dtd;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,14 +34,15 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import jakarta.xml.bind.JAXBException;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
+import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
+import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.sdk.core.dtd.BsdParser;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -51,17 +52,13 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
@@ -85,14 +82,12 @@ public class BinaryDataTypeDictionaryReader {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final OpcUaClient client;
-    private final OpcUaSession session;
 
-    public BinaryDataTypeDictionaryReader(OpcUaClient client, OpcUaSession session) {
+    public BinaryDataTypeDictionaryReader(OpcUaClient client) {
         this.client = client;
-        this.session = session;
     }
 
-    public CompletableFuture<List<TypeDictionaryInfo>> readDataTypeDictionaries() {
+    public CompletableFuture<List<DataTypeDictionary>> readDataTypeDictionaries(BinaryCodecFactory codecFactory) {
         CompletableFuture<List<ReferenceDescription>> browseFuture = browseNode(new BrowseDescription(
             NodeIds.OPCBinarySchema_TypeSystem,
             BrowseDirection.Forward,
@@ -113,12 +108,52 @@ public class BinaryDataTypeDictionaryReader {
             .thenApply(nodeIds ->
                 nodeIds
                     .map(this::readDataTypeDictionary)
-                    .collect(Collectors.toList()))
+                    .collect(Collectors.toList())
+            )
             .thenCompose(FutureUtils::sequence)
             .thenApply(list ->
                 list.stream()
                     .filter(Objects::nonNull)
-                    .collect(Collectors.toList()));
+                    .map(info -> createDataTypeDictionary(info, codecFactory))
+                    .collect(Collectors.toList())
+            );
+    }
+
+    private DataTypeDictionary createDataTypeDictionary(TypeDictionaryInfo info, BinaryCodecFactory codecFactory) {
+        var dictionary = new BinaryDataTypeDictionary(info.typeDictionary);
+
+        Map<String, StructuredType> structuredTypes = new HashMap<>();
+
+        info.typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType()
+            .stream()
+            .filter(typeDescription -> typeDescription instanceof StructuredType)
+            .map(StructuredType.class::cast)
+            .forEach(structuredType -> structuredTypes.put(structuredType.getName(), structuredType));
+
+        info.structEncodingInfos.forEach(structEncodingInfo -> {
+            if (structEncodingInfo == null) {
+                System.out.println("sei null");
+                return;
+            }
+            if (structEncodingInfo.description == null) {
+                System.out.println("sei desc null");
+                return;
+            }
+            StructuredType structuredType = structuredTypes.get(structEncodingInfo.description);
+
+            BinaryDataTypeCodec codec = codecFactory.createCodec(structuredType);
+
+            BinaryDataTypeDictionary.BinaryType binaryType = new BinaryDataTypeDictionary.BinaryType(
+                structEncodingInfo.description,
+                structEncodingInfo.dataTypeId,
+                structEncodingInfo.encodingId,
+                codec
+            );
+
+            dictionary.registerType(binaryType);
+        });
+
+        return dictionary;
     }
 
     private CompletableFuture<TypeDictionaryInfo> readDataTypeDictionary(NodeId nodeId) {
@@ -403,6 +438,7 @@ public class BinaryDataTypeDictionaryReader {
                                     return new StructEncodingInfo(description, dataTypeId, encodingId);
                                 }
                             })
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
                     }
                 )
@@ -525,28 +561,8 @@ public class BinaryDataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<ReferenceDescription>> browseNode(BrowseDescription browseDescription) {
-        RequestHeader requestHeader = client.newRequestHeader(
-            session.getAuthenticationToken(),
-            client.getConfig().getRequestTimeout()
-        );
-
-        BrowseRequest browseRequest = new BrowseRequest(
-            requestHeader,
-            new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0)),
-            uint(0),
-            new BrowseDescription[]{browseDescription}
-        );
-
-        return client.getTransport()
-            .sendRequestMessage(browseRequest)
-            .thenApply(BrowseResponse.class::cast)
-            .thenApply(r -> requireNonNull(r.getResults())[0])
-            .thenCompose(result -> {
-                List<ReferenceDescription> references =
-                    Collections.synchronizedList(new ArrayList<>());
-
-                return maybeBrowseNext(result, references);
-            });
+        return client.browseAsync(browseDescription)
+            .thenApply(result -> Arrays.asList(requireNonNull(result.getReferences())));
     }
 
     private CompletionStage<List<ReferenceDescription>> maybeBrowseNext(
@@ -575,27 +591,12 @@ public class BinaryDataTypeDictionaryReader {
 
     private CompletableFuture<List<ReferenceDescription>> browseNextAsync(
         ByteString continuationPoint,
-        List<ReferenceDescription> references) {
+        List<ReferenceDescription> references
+    ) {
 
-        RequestHeader requestHeader = client.newRequestHeader(
-            session.getAuthenticationToken(),
-            client.getConfig().getRequestTimeout()
-        );
-
-        BrowseNextRequest request = new BrowseNextRequest(
-            requestHeader,
-            false,
-            new ByteString[]{continuationPoint}
-        );
-
-        return client.getTransport()
-            .sendRequestMessage(request)
-            .thenApply(BrowseNextResponse.class::cast)
-            .thenCompose(response -> {
-                BrowseResult result = requireNonNull(response.getResults())[0];
-
-                return maybeBrowseNext(result, references);
-            });
+        return client.browseNextAsync(false, List.of(continuationPoint))
+            .thenApply(BrowseNextResponse::getResults)
+            .thenCompose(result -> maybeBrowseNext(result[0], references));
     }
 
     private CompletableFuture<DataValue> readNode(ReadValueId readValueId) {
@@ -603,22 +604,24 @@ public class BinaryDataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<DataValue>> readNodes(List<ReadValueId> readValueIds) {
-        RequestHeader requestHeader = client.newRequestHeader(
-            session.getAuthenticationToken(),
-            client.getConfig().getRequestTimeout()
-        );
+        return client.getSessionAsync().thenCompose(session -> {
+            RequestHeader requestHeader = client.newRequestHeader(
+                session.getAuthenticationToken(),
+                client.getConfig().getRequestTimeout()
+            );
 
-        ReadRequest readRequest = new ReadRequest(
-            requestHeader,
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds.toArray(new ReadValueId[0])
-        );
+            ReadRequest readRequest = new ReadRequest(
+                requestHeader,
+                0.0,
+                TimestampsToReturn.Neither,
+                readValueIds.toArray(new ReadValueId[0])
+            );
 
-        return client.getTransport()
-            .sendRequestMessage(readRequest)
-            .thenApply(ReadResponse.class::cast)
-            .thenApply(r -> org.eclipse.milo.opcua.stack.core.util.Lists.ofNullable(r.getResults()));
+            return client.getTransport()
+                .sendRequestMessage(readRequest)
+                .thenApply(ReadResponse.class::cast)
+                .thenApply(r -> org.eclipse.milo.opcua.stack.core.util.Lists.ofNullable(r.getResults()));
+        });
     }
 
     public static class TypeDictionaryInfo {
