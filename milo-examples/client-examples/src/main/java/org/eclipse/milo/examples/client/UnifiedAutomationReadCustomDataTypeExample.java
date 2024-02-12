@@ -48,11 +48,11 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
         // Decoding a struct with custom DataType requires a DataTypeManager
         // that has the codec registered with it.
-        // Read any DataTypeDictionary nodes present in the server and dynamically generate codecs
-        // for custom structures.
+        // Read any DataTypeDictionary nodes present in the server and dynamically
+        // generate codecs for custom structures.
         List<DataTypeDictionary> dataTypeDictionaries =
             new BinaryDataTypeDictionaryReader(client)
-                .readDataTypeDictionaries(StructCodec::new).get();
+                .readDataTypeDictionaries(StructCodec::new);
 
         dataTypeDictionaries.forEach(client::registerLegacyDataTypeDictionary);
 

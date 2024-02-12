@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +41,7 @@ import org.eclipse.milo.opcua.sdk.core.dtd.BsdParser;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -87,7 +89,19 @@ public class BinaryDataTypeDictionaryReader {
         this.client = client;
     }
 
-    public CompletableFuture<List<DataTypeDictionary>> readDataTypeDictionaries(BinaryCodecFactory codecFactory) {
+    public List<DataTypeDictionary> readDataTypeDictionaries(BinaryCodecFactory codecFactory) throws UaException {
+        try {
+            return readDataTypeDictionariesAsync(codecFactory).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<List<DataTypeDictionary>> readDataTypeDictionariesAsync(BinaryCodecFactory codecFactory) {
         CompletableFuture<List<ReferenceDescription>> browseFuture = browseNode(new BrowseDescription(
             NodeIds.OPCBinarySchema_TypeSystem,
             BrowseDirection.Forward,
