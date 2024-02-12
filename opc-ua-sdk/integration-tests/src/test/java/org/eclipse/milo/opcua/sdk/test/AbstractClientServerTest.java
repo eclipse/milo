@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.test;
 
 import java.util.concurrent.ExecutionException;
 
-import org.eclipse.milo.opcua.sdk.client.DataTypeCodecSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -38,7 +37,6 @@ public abstract class AbstractClientServerTest {
         server.startup().get();
 
         client = TestClient.create(server);
-        client.addSessionInitializer(new DataTypeCodecSessionInitializer());
 
         client.connect();
     }

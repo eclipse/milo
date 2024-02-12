@@ -55,7 +55,7 @@ public final class Lazy<T> {
      * @return the lazily computed value.
      * @throws Exception if the supplier throws an exception.
      */
-    public T getOrThrow(ThrowingSupplier<T> supplier) throws Exception {
+    public <E extends Exception> T getOrThrow(ThrowingSupplier<E, T> supplier) throws E {
         final T v = value;
 
         if (v == null) {
@@ -91,8 +91,8 @@ public final class Lazy<T> {
      *
      * @param <T> the type of value supplied.
      */
-    public interface ThrowingSupplier<T> {
-        T get() throws Exception;
+    public interface ThrowingSupplier<E extends Exception, T> {
+        T get() throws E;
     }
 
 }

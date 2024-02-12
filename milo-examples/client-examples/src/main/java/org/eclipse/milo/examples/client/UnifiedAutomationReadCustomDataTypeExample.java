@@ -14,11 +14,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.BinaryDataTypeDictionaryReader;
-import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
+import org.eclipse.milo.opcua.sdk.client.dtd.LegacyDataTypeManagerInitializer;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -34,8 +32,7 @@ import org.slf4j.LoggerFactory;
 public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        UnifiedAutomationReadCustomDataTypeExample example =
-            new UnifiedAutomationReadCustomDataTypeExample();
+        var example = new UnifiedAutomationReadCustomDataTypeExample();
 
         new ClientExampleRunner(example, false).run();
     }
@@ -48,13 +45,9 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
         // Decoding a struct with custom DataType requires a DataTypeManager
         // that has the codec registered with it.
-        // Read any DataTypeDictionary nodes present in the server and dynamically
-        // generate codecs for custom structures.
-        List<DataTypeDictionary> dataTypeDictionaries =
-            new BinaryDataTypeDictionaryReader(client)
-                .readDataTypeDictionaries(StructCodec::new);
-
-        dataTypeDictionaries.forEach(client::registerLegacyDataTypeDictionary);
+        // LegacyDataTypeManagerInitializer will read any DataTypeDictionary nodes present in the
+        // server then dynamically generate and register codecs for custom structures.
+        client.setDataTypeManagerInitializer(new LegacyDataTypeManagerInitializer(client));
 
         readPerson(client);
         readWorkOrder(client);

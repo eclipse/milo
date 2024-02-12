@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicEnum;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicOptionSet;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicStruct;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -41,8 +42,7 @@ import static java.util.Objects.requireNonNull;
 public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        UnifiedAutomationReadCustomDataTypeExample2 example =
-            new UnifiedAutomationReadCustomDataTypeExample2();
+        var example = new UnifiedAutomationReadCustomDataTypeExample2();
 
         new ClientExampleRunner(example, false).run();
     }
@@ -52,9 +52,6 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         client.connect();
-
-        // Read datatype information and register codecs needed to decode/encode custom types.
-        client.registerDataTypeCodecs();
 
         readWriteReadPerson(client);
         readWriteReadWorkOrder(client);
@@ -148,8 +145,10 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
         ExtensionObject[] xos = (ExtensionObject[]) dataValue.getValue().getValue();
         assert xos != null;
 
+        EncodingContext ctx = client.getDynamicEncodingContext();
+
         return Arrays.stream(xos)
-            .map(xo -> (DynamicStruct) xo.decode(client.getDynamicEncodingContext()))
+            .map(xo -> (DynamicStruct) xo.decode(ctx))
             .toArray(DynamicStruct[]::new);
     }
 
