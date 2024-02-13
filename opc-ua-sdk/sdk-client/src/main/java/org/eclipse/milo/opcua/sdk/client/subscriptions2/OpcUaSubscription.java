@@ -564,7 +564,7 @@ public class OpcUaSubscription {
     }
 
     private UInteger getMonitoredItemPartitionSize() {
-        return monitoredItemPartitionSize.getOrCompute(() -> {
+        return monitoredItemPartitionSize.get(() -> {
             UInteger serverMaxMonitoredItemsPerCall = null;
 
             try {
