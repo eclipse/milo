@@ -173,7 +173,7 @@ public class OpcUaSubscription {
             );
 
             watchdogTimer = new WatchdogTimer();
-            kickWatchdogTimer();
+            resetWatchdogTimer();
 
             client.addSubscription(this);
             client.getPublishingManager().addSubscription(this);
@@ -209,7 +209,7 @@ public class OpcUaSubscription {
                 diff.priority().orElse(priority)
             );
 
-            kickWatchdogTimer();
+            resetWatchdogTimer();
 
             serverState = new ServerState(
                 serverState.getSubscriptionId(),
@@ -1115,10 +1115,10 @@ public class OpcUaSubscription {
         }
     }
 
-    void kickWatchdogTimer() {
+    void resetWatchdogTimer() {
         WatchdogTimer watchdog = this.watchdogTimer;
         if (watchdog != null) {
-            watchdog.kick();
+            watchdog.reset();
         }
     }
 
@@ -1279,7 +1279,7 @@ public class OpcUaSubscription {
 
         private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
 
-        void kick() {
+        void reset() {
             ScheduledFuture<?> sf = scheduledFuture.get();
             if (sf != null) sf.cancel(false);
 

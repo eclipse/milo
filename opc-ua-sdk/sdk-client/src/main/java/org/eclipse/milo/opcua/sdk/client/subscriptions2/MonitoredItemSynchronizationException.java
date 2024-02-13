@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class MonitoredItemSynchronizationException extends UaException {
 
@@ -36,14 +35,29 @@ public class MonitoredItemSynchronizationException extends UaException {
         this.deleteResults = deleteResults;
     }
 
+    /**
+     * Get the results for any create operations that were part of the synchronization.
+     *
+     * @return the results for any create operations that were part of the synchronization.
+     */
     public List<MonitoredItemOperationResult> getCreateResults() {
         return createResults;
     }
 
+    /**
+     * Get the results for any modify operations that were part of the synchronization.
+     *
+     * @return the results for any modify operations that were part of the synchronization.
+     */
     public List<MonitoredItemOperationResult> getModifyResults() {
         return modifyResults;
     }
 
+    /**
+     * Get the results for any delete operations that were part of the synchronization.
+     *
+     * @return the results for any delete operations that were part of the synchronization.
+     */
     public List<MonitoredItemOperationResult> getDeleteResults() {
         return deleteResults;
     }

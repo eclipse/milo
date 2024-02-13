@@ -171,7 +171,7 @@ public class PublishingManager {
                 SubscriptionDetails details = subscriptionDetails.get(subscriptionId);
 
                 if (details != null) {
-                    details.subscription.kickWatchdogTimer();
+                    details.subscription.resetWatchdogTimer();
                 }
 
                 processingQueue.execute(() -> processPublishResponse(publishResponse, pendingCount));
