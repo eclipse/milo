@@ -22,16 +22,22 @@ import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 public class LegacyDataTypeManagerInitializer implements OpcUaClient.DataTypeManagerInitializer {
 
     private final OpcUaClient client;
+    private final BinaryCodecFactory codecFactory;
 
     public LegacyDataTypeManagerInitializer(OpcUaClient client) {
+        this(client, StructCodec::new);
+    }
+
+    public LegacyDataTypeManagerInitializer(OpcUaClient client, BinaryCodecFactory codecFactory) {
         this.client = client;
+        this.codecFactory = codecFactory;
     }
 
     @Override
     public void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) throws UaException {
         List<DataTypeDictionary> dataTypeDictionaries =
             new BinaryDataTypeDictionaryReader(client)
-                .readDataTypeDictionaries(StructCodec::new);
+                .readDataTypeDictionaries(codecFactory);
 
         for (DataTypeDictionary dictionary : dataTypeDictionaries) {
             dataTypeManager.registerTypeDictionary(dictionary);
