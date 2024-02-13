@@ -15,13 +15,13 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.jetbrains.annotations.Nullable;
 
-public class MonitoredItemOperationResult implements ServiceOperationResult<StatusCode> {
+public class MonitoredItemServiceOperationResult implements ServiceOperationResult<StatusCode> {
 
     private final OpcUaMonitoredItem monitoredItem;
     private final StatusCode serviceResult;
     private final @Nullable StatusCode operationResult;
 
-    public MonitoredItemOperationResult(
+    public MonitoredItemServiceOperationResult(
         OpcUaMonitoredItem monitoredItem,
         StatusCode serviceResult,
         @Nullable StatusCode operationResult

@@ -347,12 +347,12 @@ public class OpcUaSubscription {
      *
      * @throws MonitoredItemSynchronizationException if one or more MonitoredItems failed to
      *     synchronize for any reason. This could be a service-level failure or an operation-level
-     *     failure. Check the {@link MonitoredItemOperationResult}s for details.
+     *     failure. Check the {@link MonitoredItemServiceOperationResult}s for details.
      */
     public void synchronizeMonitoredItems() throws MonitoredItemSynchronizationException {
-        List<MonitoredItemOperationResult> deleteResults = deleteMonitoredItems();
-        List<MonitoredItemOperationResult> modifyResults = modifyMonitoredItems();
-        List<MonitoredItemOperationResult> createResults = createMonitoredItems();
+        List<MonitoredItemServiceOperationResult> deleteResults = deleteMonitoredItems();
+        List<MonitoredItemServiceOperationResult> modifyResults = modifyMonitoredItems();
+        List<MonitoredItemServiceOperationResult> createResults = createMonitoredItems();
 
         if (Stream.of(deleteResults, modifyResults, createResults)
             .flatMap(List::stream)
@@ -371,10 +371,10 @@ public class OpcUaSubscription {
      * Create any MonitoredItems that have been added to the Subscription but not yet created on
      * the Server.
      *
-     * @return a List of {@link MonitoredItemOperationResult}s that contain the MonitoredItem and
+     * @return a List of {@link MonitoredItemServiceOperationResult}s that contain the MonitoredItem and
      *     the service- and operation-level results associated with the attempt to create it.
      */
-    public List<MonitoredItemOperationResult> createMonitoredItems() {
+    public List<MonitoredItemServiceOperationResult> createMonitoredItems() {
         List<OpcUaMonitoredItem> itemsToCreate = monitoredItems.values()
             .stream()
             .filter(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.INITIAL)
@@ -387,8 +387,8 @@ public class OpcUaSubscription {
         }
     }
 
-    private List<MonitoredItemOperationResult> createMonitoredItems(List<OpcUaMonitoredItem> itemsToCreate) {
-        var serviceOperationsResults = new ArrayList<MonitoredItemOperationResult>(itemsToCreate.size());
+    private List<MonitoredItemServiceOperationResult> createMonitoredItems(List<OpcUaMonitoredItem> itemsToCreate) {
+        var serviceOperationsResults = new ArrayList<MonitoredItemServiceOperationResult>(itemsToCreate.size());
 
         UInteger partitionSize = getMonitoredItemPartitionSize();
 
@@ -420,13 +420,13 @@ public class OpcUaSubscription {
                     monitoredItem.applyCreateResult(result);
 
                     serviceOperationsResults.add(
-                        new MonitoredItemOperationResult(monitoredItem, StatusCode.GOOD, result.getStatusCode())
+                        new MonitoredItemServiceOperationResult(monitoredItem, StatusCode.GOOD, result.getStatusCode())
                     );
                 }
             } catch (UaException e) {
                 for (OpcUaMonitoredItem item : partition) {
                     serviceOperationsResults.add(
-                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                        new MonitoredItemServiceOperationResult(item, e.getStatusCode(), null)
                     );
                 }
             }
@@ -440,7 +440,7 @@ public class OpcUaSubscription {
      *
      * @return a List of the MonitoredItems that were modified.
      */
-    public List<MonitoredItemOperationResult> modifyMonitoredItems() {
+    public List<MonitoredItemServiceOperationResult> modifyMonitoredItems() {
         List<OpcUaMonitoredItem> itemsToModify = monitoredItems.values()
             .stream()
             .filter(item -> item.getSyncState() == OpcUaMonitoredItem.SyncState.UNSYNCHRONIZED)
@@ -453,8 +453,8 @@ public class OpcUaSubscription {
         }
     }
 
-    private List<MonitoredItemOperationResult> modifyMonitoredItems(List<OpcUaMonitoredItem> itemsToModify) {
-        var serviceOperationsResults = new ArrayList<MonitoredItemOperationResult>(itemsToModify.size());
+    private List<MonitoredItemServiceOperationResult> modifyMonitoredItems(List<OpcUaMonitoredItem> itemsToModify) {
+        var serviceOperationsResults = new ArrayList<MonitoredItemServiceOperationResult>(itemsToModify.size());
 
         UInteger partitionSize = getMonitoredItemPartitionSize();
 
@@ -486,13 +486,13 @@ public class OpcUaSubscription {
                     monitoredItem.applyModifyResult(result);
 
                     serviceOperationsResults.add(
-                        new MonitoredItemOperationResult(monitoredItem, StatusCode.GOOD, result.getStatusCode())
+                        new MonitoredItemServiceOperationResult(monitoredItem, StatusCode.GOOD, result.getStatusCode())
                     );
                 }
             } catch (UaException e) {
                 for (OpcUaMonitoredItem item : partition) {
                     serviceOperationsResults.add(
-                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                        new MonitoredItemServiceOperationResult(item, e.getStatusCode(), null)
                     );
                 }
             }
@@ -506,7 +506,7 @@ public class OpcUaSubscription {
      *
      * @return a List of the MonitoredItems that were deleted.
      */
-    public List<MonitoredItemOperationResult> deleteMonitoredItems() {
+    public List<MonitoredItemServiceOperationResult> deleteMonitoredItems() {
         List<OpcUaMonitoredItem> itemsToDelete = this.itemsToDelete;
         this.itemsToDelete = new ArrayList<>();
 
@@ -517,8 +517,8 @@ public class OpcUaSubscription {
         }
     }
 
-    private List<MonitoredItemOperationResult> deleteMonitoredItems(List<OpcUaMonitoredItem> itemsToDelete) {
-        var serviceOperationsResults = new ArrayList<MonitoredItemOperationResult>(itemsToDelete.size());
+    private List<MonitoredItemServiceOperationResult> deleteMonitoredItems(List<OpcUaMonitoredItem> itemsToDelete) {
+        var serviceOperationsResults = new ArrayList<MonitoredItemServiceOperationResult>(itemsToDelete.size());
 
         UInteger partitionSize = getMonitoredItemPartitionSize();
 
@@ -548,13 +548,13 @@ public class OpcUaSubscription {
                     partition.get(i).applyDeleteResult(result);
 
                     serviceOperationsResults.add(
-                        new MonitoredItemOperationResult(partition.get(i), StatusCode.GOOD, result)
+                        new MonitoredItemServiceOperationResult(partition.get(i), StatusCode.GOOD, result)
                     );
                 }
             } catch (UaException e) {
                 for (OpcUaMonitoredItem item : partition) {
                     serviceOperationsResults.add(
-                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                        new MonitoredItemServiceOperationResult(item, e.getStatusCode(), null)
                     );
                 }
             }
@@ -607,11 +607,11 @@ public class OpcUaSubscription {
      *
      * @param monitoringMode the MonitoringMode to set.
      * @param monitoredItems the MonitoredItems to set the MonitoringMode for.
-     * @return a List of {@link MonitoredItemOperationResult}s that contain the MonitoredItem and
+     * @return a List of {@link MonitoredItemServiceOperationResult}s that contain the MonitoredItem and
      *     the service- and operation-level results associated with the attempt to set the
      *     MonitoringMode.
      */
-    public List<MonitoredItemOperationResult> setMonitoringMode(
+    public List<MonitoredItemServiceOperationResult> setMonitoringMode(
         MonitoringMode monitoringMode,
         List<OpcUaMonitoredItem> monitoredItems
     ) {
@@ -626,7 +626,7 @@ public class OpcUaSubscription {
             throw new IllegalArgumentException("MonitoredItems must exist before setting MonitoringMode");
         }
 
-        var serviceOperationResults = new ArrayList<MonitoredItemOperationResult>(monitoredItems.size());
+        var serviceOperationResults = new ArrayList<MonitoredItemServiceOperationResult>(monitoredItems.size());
 
         UInteger partitionSize = getMonitoredItemPartitionSize();
 
@@ -661,7 +661,7 @@ public class OpcUaSubscription {
                         item.setMonitoringMode(monitoringMode);
                     }
                     serviceOperationResults.add(
-                        new MonitoredItemOperationResult(item, StatusCode.GOOD, result)
+                        new MonitoredItemServiceOperationResult(item, StatusCode.GOOD, result)
                     );
                 }
             } catch (UaException e) {
@@ -669,7 +669,7 @@ public class OpcUaSubscription {
                     item.applySetMonitoringModeResult(e.getStatusCode());
 
                     serviceOperationResults.add(
-                        new MonitoredItemOperationResult(item, e.getStatusCode(), null)
+                        new MonitoredItemServiceOperationResult(item, e.getStatusCode(), null)
                     );
                 }
             }

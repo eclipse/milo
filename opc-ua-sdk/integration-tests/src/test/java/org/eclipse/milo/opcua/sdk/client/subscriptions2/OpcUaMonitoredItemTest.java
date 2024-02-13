@@ -47,7 +47,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         );
 
         subscription.addMonitoredItem(monitoredItem);
-        List<MonitoredItemOperationResult> created = subscription.createMonitoredItems();
+        List<MonitoredItemServiceOperationResult> created = subscription.createMonitoredItems();
 
         assertEquals(1, created.size());
         assertEquals(monitoredItem, created.get(0).monitoredItem());
@@ -63,13 +63,13 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         );
 
         subscription.addMonitoredItem(monitoredItem);
-        List<MonitoredItemOperationResult> created = subscription.createMonitoredItems();
+        List<MonitoredItemServiceOperationResult> created = subscription.createMonitoredItems();
         assertEquals(1, created.size());
         assertEquals(monitoredItem, created.get(0).monitoredItem());
         assertEquals(OpcUaMonitoredItem.SyncState.SYNCHRONIZED, monitoredItem.getSyncState());
 
         subscription.removeMonitoredItem(monitoredItem);
-        List<MonitoredItemOperationResult> deleted = subscription.deleteMonitoredItems();
+        List<MonitoredItemServiceOperationResult> deleted = subscription.deleteMonitoredItems();
         assertEquals(1, deleted.size());
         assertEquals(monitoredItem, deleted.get(0).monitoredItem());
         assertTrue(deleted.get(0).serviceResult().isGood());
@@ -87,7 +87,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.createMonitoredItems();
 
         monitoredItem.setSamplingInterval(5000.0);
-        List<MonitoredItemOperationResult> modified = subscription.modifyMonitoredItems();
+        List<MonitoredItemServiceOperationResult> modified = subscription.modifyMonitoredItems();
 
         assertEquals(1, modified.size());
         assertEquals(monitoredItem, modified.get(0).monitoredItem());
@@ -107,7 +107,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.createMonitoredItems();
 
         monitoredItem.setQueueSize(uint(10));
-        List<MonitoredItemOperationResult> modified = subscription.modifyMonitoredItems();
+        List<MonitoredItemServiceOperationResult> modified = subscription.modifyMonitoredItems();
 
         assertEquals(1, modified.size());
         assertEquals(monitoredItem, modified.get(0).monitoredItem());
@@ -127,7 +127,7 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
         subscription.createMonitoredItems();
 
         monitoredItem.setDiscardOldest(false);
-        List<MonitoredItemOperationResult> modified = subscription.modifyMonitoredItems();
+        List<MonitoredItemServiceOperationResult> modified = subscription.modifyMonitoredItems();
 
         assertEquals(1, modified.size());
         assertTrue(modified.get(0).serviceResult().isGood());

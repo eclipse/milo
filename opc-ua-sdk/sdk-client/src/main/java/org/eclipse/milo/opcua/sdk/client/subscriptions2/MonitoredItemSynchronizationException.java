@@ -17,15 +17,15 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 
 public class MonitoredItemSynchronizationException extends UaException {
 
-    private final List<MonitoredItemOperationResult> createResults;
-    private final List<MonitoredItemOperationResult> modifyResults;
-    private final List<MonitoredItemOperationResult> deleteResults;
+    private final List<MonitoredItemServiceOperationResult> createResults;
+    private final List<MonitoredItemServiceOperationResult> modifyResults;
+    private final List<MonitoredItemServiceOperationResult> deleteResults;
 
     public MonitoredItemSynchronizationException(
         String message,
-        List<MonitoredItemOperationResult> createResults,
-        List<MonitoredItemOperationResult> modifyResults,
-        List<MonitoredItemOperationResult> deleteResults
+        List<MonitoredItemServiceOperationResult> createResults,
+        List<MonitoredItemServiceOperationResult> modifyResults,
+        List<MonitoredItemServiceOperationResult> deleteResults
     ) {
 
         super(StatusCodes.Bad_UnexpectedError, message);
@@ -40,7 +40,7 @@ public class MonitoredItemSynchronizationException extends UaException {
      *
      * @return the results for any create operations that were part of the synchronization.
      */
-    public List<MonitoredItemOperationResult> getCreateResults() {
+    public List<MonitoredItemServiceOperationResult> getCreateResults() {
         return createResults;
     }
 
@@ -49,7 +49,7 @@ public class MonitoredItemSynchronizationException extends UaException {
      *
      * @return the results for any modify operations that were part of the synchronization.
      */
-    public List<MonitoredItemOperationResult> getModifyResults() {
+    public List<MonitoredItemServiceOperationResult> getModifyResults() {
         return modifyResults;
     }
 
@@ -58,7 +58,7 @@ public class MonitoredItemSynchronizationException extends UaException {
      *
      * @return the results for any delete operations that were part of the synchronization.
      */
-    public List<MonitoredItemOperationResult> getDeleteResults() {
+    public List<MonitoredItemServiceOperationResult> getDeleteResults() {
         return deleteResults;
     }
 

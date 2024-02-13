@@ -274,7 +274,7 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         subscription.synchronizeMonitoredItems();
 
-        Consumer<List<MonitoredItemOperationResult>> assertGood = results -> {
+        Consumer<List<MonitoredItemServiceOperationResult>> assertGood = results -> {
             assertEquals(3, results.size());
             assertTrue(results.stream().allMatch(r -> r.serviceResult().isGood()));
             assertTrue(results.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
@@ -348,7 +348,7 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
 
         subscription.addMonitoredItems(monitoredItems);
 
-        List<MonitoredItemOperationResult> createResults = subscription.createMonitoredItems();
+        List<MonitoredItemServiceOperationResult> createResults = subscription.createMonitoredItems();
         assertEquals(10, createResults.size());
         assertTrue(createResults.stream().allMatch(r -> r.serviceResult().isGood()));
         assertTrue(createResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
@@ -358,13 +358,13 @@ public class OpcUaSubscriptionTest extends AbstractClientServerTest {
             item.setQueueSize(uint(2));
         });
 
-        List<MonitoredItemOperationResult> modifyResults = subscription.modifyMonitoredItems();
+        List<MonitoredItemServiceOperationResult> modifyResults = subscription.modifyMonitoredItems();
         assertEquals(10, modifyResults.size());
         assertTrue(modifyResults.stream().allMatch(r -> r.serviceResult().isGood()));
         assertTrue(modifyResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
 
         subscription.removeMonitoredItems(monitoredItems);
-        List<MonitoredItemOperationResult> deleteResults = subscription.deleteMonitoredItems();
+        List<MonitoredItemServiceOperationResult> deleteResults = subscription.deleteMonitoredItems();
         assertEquals(10, deleteResults.size());
         assertTrue(deleteResults.stream().allMatch(r -> r.serviceResult().isGood()));
         assertTrue(deleteResults.stream().allMatch(r -> r.operationResult().orElseThrow().isGood()));
