@@ -901,12 +901,18 @@ public class OpcUaClient {
     /**
      * Set the {@link DataTypeManagerInitializer} that called to register codecs with the client's
      * dynamic {@link DataTypeManager}.
+     * <p>
+     * This resets the client's dynamic {@link DataTypeManager} and {@link EncodingContext}. They
+     * will be built or rebuilt the next time they are accessed.
      *
      * @param dataTypeManagerInitializer the {@link DataTypeManagerInitializer} to set.
      * @see #getDynamicDataTypeManager()
      */
     public void setDataTypeManagerInitializer(DataTypeManagerInitializer dataTypeManagerInitializer) {
         this.dataTypeManagerInitializer = dataTypeManagerInitializer;
+
+        dynamicDataTypeManager.reset();
+        dynamicEncodingContext.reset();
     }
 
     //region Attribute Services
