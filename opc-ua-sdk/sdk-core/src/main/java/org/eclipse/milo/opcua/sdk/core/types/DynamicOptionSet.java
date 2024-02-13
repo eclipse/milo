@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -61,7 +61,7 @@ public class DynamicOptionSet extends DynamicStruct {
     }
 
     private Map<Integer, EnumField> getFieldMap() {
-        return lazyFieldMap.getOrCompute(() -> {
+        return lazyFieldMap.get(() -> {
             Map<Integer, EnumField> fieldMap = Collections.synchronizedMap(new HashMap<>());
 
             EnumDefinition definition = (EnumDefinition) getDataType().getDataTypeDefinition();

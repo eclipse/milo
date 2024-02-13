@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -163,7 +163,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
 
         @Override
         public Argument[] getInputArguments() {
-            return inputArguments.getOrCompute(() -> {
+            return inputArguments.get(() -> {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
@@ -174,7 +174,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
 
         @Override
         public Argument[] getOutputArguments() {
-            return outputArguments.getOrCompute(() -> {
+            return outputArguments.get(() -> {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
@@ -207,7 +207,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
 
         @Override
         public Argument[] getInputArguments() {
-            return inputArguments.getOrCompute(() -> {
+            return inputArguments.get(() -> {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
@@ -218,7 +218,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
 
         @Override
         public Argument[] getOutputArguments() {
-            return outputArguments.getOrCompute(() -> {
+            return outputArguments.get(() -> {
                 NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
 
                 return new Argument[]{
