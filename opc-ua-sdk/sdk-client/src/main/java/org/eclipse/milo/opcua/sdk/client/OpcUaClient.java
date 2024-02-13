@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
@@ -897,6 +898,13 @@ public class OpcUaClient {
         );
     }
 
+    /**
+     * Set the {@link DataTypeManagerInitializer} that called to register codecs with the client's
+     * dynamic {@link DataTypeManager}.
+     *
+     * @param dataTypeManagerInitializer the {@link DataTypeManagerInitializer} to set.
+     * @see #getDynamicDataTypeManager()
+     */
     public void setDataTypeManagerInitializer(DataTypeManagerInitializer dataTypeManagerInitializer) {
         this.dataTypeManagerInitializer = dataTypeManagerInitializer;
     }
@@ -2767,10 +2775,21 @@ public class OpcUaClient {
 
         private final CodecFactory codecFactory;
 
+        /**
+         * Create a new {@link DefaultDataTypeManagerInitializer} that uses
+         * {@link DynamicCodecFactory}.
+         */
         public DefaultDataTypeManagerInitializer() {
             this(DynamicCodecFactory::create);
         }
 
+        /**
+         * Create a new {@link DefaultDataTypeManagerInitializer} using the provided
+         * {@link CodecFactory}.
+         *
+         * @param codecFactory the {@link CodecFactory} to use when creating
+         *     {@link DataTypeCodec}s.
+         */
         public DefaultDataTypeManagerInitializer(CodecFactory codecFactory) {
             this.codecFactory = codecFactory;
         }
