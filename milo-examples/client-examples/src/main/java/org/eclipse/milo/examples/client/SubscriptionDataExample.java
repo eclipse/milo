@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.subscriptions2.MonitoredItemSynchronizationException;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -73,30 +74,21 @@ public class SubscriptionDataExample implements ClientExample {
 
         // Synchronize the MonitoredItems with the server.
         // This will create, modify, and delete items as necessary.
-        subscription.synchronizeMonitoredItems();
-
-        if (monitoredItem.getCreateResult().orElseThrow().isGood()) {
-            logger.info("item created for nodeId={}", monitoredItem.getReadValueId().getNodeId());
-
-            // Let the example run for 5 seconds before completing.
-            Thread.sleep(5000);
-
-            // Remove the MonitoredItem from the Subscription.
-            subscription.removeMonitoredItem(monitoredItem);
-
-            // Synchronize the MonitoredItems with the server.
-            // This will create, modify, and delete items as necessary.
+        try {
             subscription.synchronizeMonitoredItems();
-
-            // Delete the Subscription from the server.
-            subscription.delete();
-        } else {
-            logger.warn(
-                "failed to create item for nodeId={}: {}",
-                monitoredItem.getReadValueId().getNodeId(),
-                monitoredItem.getCreateResult().orElseThrow()
+        } catch (MonitoredItemSynchronizationException e) {
+            e.getCreateResults().forEach(result ->
+                logger.warn(
+                    "failed to create item: nodeId={}, serviceResult={}, operationResult={}",
+                    result.monitoredItem().getReadValueId().getNodeId(),
+                    result.serviceResult(), result.operationResult()
+                )
             );
         }
+
+        Thread.sleep(5000);
+
+        subscription.delete();
 
         future.complete(client);
     }
