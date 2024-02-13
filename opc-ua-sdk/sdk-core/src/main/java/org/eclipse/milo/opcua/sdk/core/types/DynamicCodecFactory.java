@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 
+/**
+ * A {@link DataTypeCodec} factory that creates codecs that decodes and encodes types based on
+ * {@link DynamicStruct}.
+ */
 public class DynamicCodecFactory {
 
     public static DataTypeCodec create(DataType dataType, DataTypeTree dataTypeTree) {

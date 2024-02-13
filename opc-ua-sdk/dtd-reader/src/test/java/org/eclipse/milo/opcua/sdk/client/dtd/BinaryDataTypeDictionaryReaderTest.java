@@ -53,8 +53,7 @@ class BinaryDataTypeDictionaryReaderTest {
 
     private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
 
-    private final BinaryDataTypeDictionaryReader dictionaryReader =
-        new BinaryDataTypeDictionaryReader(client, session);
+    private final BinaryDataTypeDictionaryReader dictionaryReader = new BinaryDataTypeDictionaryReader(client);
 
     @BeforeEach
     void setUp() {
@@ -63,6 +62,7 @@ class BinaryDataTypeDictionaryReaderTest {
         Mockito.when(client.getTransport()).thenReturn(transport);
         Mockito.when(client.getTransport().getConfig()).thenReturn(transportConfig);
         Mockito.when(client.getTransport().getConfig().getExecutor()).thenReturn(Stack.sharedExecutor());
+        Mockito.when(client.getSessionAsync()).thenReturn(completedFuture(session));
     }
 
     @Test
