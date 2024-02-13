@@ -297,6 +297,8 @@ public class OpcUaClient {
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
 
+    private final Lazy<OperationLimits> operationLimits = new Lazy<>();
+
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
 
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
@@ -854,6 +856,29 @@ public class OpcUaClient {
     }
 
     /**
+     * Get the local copy of the server's {@link OperationLimits}, or read them from the server
+     * if they have not been read.
+     *
+     * @return the server's {@link OperationLimits}.
+     * @throws UaException if an error occurs reading the operation limits.
+     */
+    public OperationLimits getOperationLimits() throws UaException {
+        return operationLimits.getOrThrow(() -> OperationLimits.read(this));
+    }
+
+    /**
+     * Read the server's OperationLimits and update the local copy.
+     *
+     * @return the server's {@link OperationLimits}.
+     * @throws UaException if an error occurs reading the operation limits.
+     */
+    public OperationLimits readOperationLimits() throws UaException {
+        operationLimits.reset();
+
+        return getOperationLimits();
+    }
+
+    /**
      * Create a new {@link RequestHeader} with a null authentication token.
      * <p>
      * A unique request handle will be automatically assigned to the header.
@@ -943,6 +968,29 @@ public class OpcUaClient {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
+    }
+
+    /**
+     * Read the Value attribute of a Node.
+     *
+     * @param maxAge the requested max age of the value, in milliseconds. If maxAge is set to 0,
+     *     the Server shall attempt to read a new value from the data source. If maxAge is set to
+     *     the max Int32 value or greater, the Server shall attempt to get a cached value. Negative
+     *     values are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param nodeId the {@link NodeId}s identifying the Node to read.
+     * @return the {@link DataValue}.
+     * @throws UaException if an error occurs.
+     * @see <a href="https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2">
+     *     https://reference.opcfoundation.org/Core/Part4/v105/docs/5.10.2</a>
+     */
+    public DataValue readValue(
+        double maxAge,
+        TimestampsToReturn timestampsToReturn,
+        NodeId nodeId
+    ) throws UaException {
+
+        return readValues(maxAge, timestampsToReturn, List.of(nodeId)).get(0);
     }
 
     /**
