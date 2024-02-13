@@ -150,12 +150,12 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
             monitoredItems.add(monitoredItem);
         }
-        assertEquals(10, subscription.synchronizeMonitoredItems());
+        subscription.synchronizeMonitoredItems();
 
         // Modify 2 and expect 2 affected during synchronization
         monitoredItems.get(0).setSamplingInterval(100.0);
         monitoredItems.get(1).setSamplingInterval(100.0);
-        assertEquals(2, subscription.synchronizeMonitoredItems());
+        subscription.synchronizeMonitoredItems();
 
         // Delete 2, modify 2, and create 3. Expect 7 affected during synchronization
         subscription.removeMonitoredItem(monitoredItems.removeLast());
@@ -171,17 +171,17 @@ public class OpcUaMonitoredItemTest extends AbstractClientServerTest {
 
             monitoredItems.add(monitoredItem);
         }
-        assertEquals(7, subscription.synchronizeMonitoredItems());
+        subscription.synchronizeMonitoredItems();
 
         // Nothing changed, expect 0 affected during synchronization
-        assertEquals(0, subscription.synchronizeMonitoredItems());
+        subscription.synchronizeMonitoredItems();
 
         // Remove the same item 3 times, expect only 1 affected during synchronization
         OpcUaMonitoredItem toRemove = monitoredItems.removeLast();
         subscription.removeMonitoredItem(toRemove);
         subscription.removeMonitoredItem(toRemove);
         subscription.removeMonitoredItem(toRemove);
-        assertEquals(1, subscription.synchronizeMonitoredItems());
+        subscription.synchronizeMonitoredItems();
     }
 
 }

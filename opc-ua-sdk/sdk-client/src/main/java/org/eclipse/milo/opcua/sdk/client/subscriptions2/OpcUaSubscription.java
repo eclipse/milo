@@ -345,12 +345,11 @@ public class OpcUaSubscription {
      * the Subscription, modifies any existing MonitoredItems that have been changed, and creates
      * any new MonitoredItems that have been added but not yet created on the Server.
      *
-     * @return the total number of MonitoredItems that were deleted, modified, or created.
      * @throws MonitoredItemSynchronizationException if one or more MonitoredItems failed to
      *     synchronize for any reason. This could be a service-level failure or an operation-level
      *     failure. Check the {@link MonitoredItemOperationResult}s for details.
      */
-    public long synchronizeMonitoredItems() throws MonitoredItemSynchronizationException {
+    public void synchronizeMonitoredItems() throws MonitoredItemSynchronizationException {
         List<MonitoredItemOperationResult> deleteResults = deleteMonitoredItems();
         List<MonitoredItemOperationResult> modifyResults = modifyMonitoredItems();
         List<MonitoredItemOperationResult> createResults = createMonitoredItems();
@@ -366,8 +365,6 @@ public class OpcUaSubscription {
                 deleteResults
             );
         }
-
-        return deleteResults.size() + modifyResults.size() + createResults.size();
     }
 
     /**
