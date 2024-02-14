@@ -496,6 +496,17 @@ public class OpcUaMonitoredItem {
         }
     }
 
+    void resetInternalState() {
+        syncState = SyncState.INITIAL;
+        serverState = null;
+        modifications = null;
+
+        createResult = null;
+        modifyResult = null;
+        deleteResult = null;
+        setMonitoringModeResult = null;
+    }
+
     /**
      * A callback that receives notification of new values for a {@link ManagedDataItem}.
      */

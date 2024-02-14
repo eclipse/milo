@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -565,28 +564,17 @@ public class OpcUaSubscription {
 
     private UInteger getMonitoredItemPartitionSize() {
         return monitoredItemPartitionSize.get(() -> {
-            UInteger serverMaxMonitoredItemsPerCall = null;
-
+            UInteger serverMaxMonitoredItemsPerCall;
             try {
-                List<DataValue> values = client.readValues(
-                    0.0,
-                    TimestampsToReturn.Neither,
-                    List.of(NodeIds.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall)
-                );
+                serverMaxMonitoredItemsPerCall = client.getOperationLimits()
+                    .maxMonitoredItemsPerCall()
+                    .orElse(UInteger.MAX);
 
-                Object value = values.get(0).getValue().getValue();
-                if (value instanceof UInteger) {
-                    serverMaxMonitoredItemsPerCall = (UInteger) value;
+                if (serverMaxMonitoredItemsPerCall.intValue() == 0) {
+                    serverMaxMonitoredItemsPerCall = UInteger.MAX;
                 }
             } catch (UaException e) {
-                logger.warn(
-                    "id={}, failed to read MaxMonitoredItemsPerCall from Server",
-                    serverState.subscriptionId, e
-                );
-            }
-
-            if (serverMaxMonitoredItemsPerCall == null) {
-                serverMaxMonitoredItemsPerCall = maxMonitoredItemsPerCall;
+                serverMaxMonitoredItemsPerCall = UInteger.MAX;
             }
 
             int configuredMax = Ints.saturatedCast(maxMonitoredItemsPerCall.longValue());
@@ -1232,6 +1220,13 @@ public class OpcUaSubscription {
     }
 
     public void notifyTransferFailed(StatusCode status) {
+        cancelWatchdogTimer();
+        client.removeSubscription(this);
+        client.getPublishingManager().removeSubscription(this);
+
+        resetInternalState();
+        monitoredItems.values().forEach(OpcUaMonitoredItem::resetInternalState);
+
         SubscriptionListener listener = this.listener;
         if (listener != null) {
             deliveryQueue.execute(
@@ -1239,10 +1234,14 @@ public class OpcUaSubscription {
                     listener.onTransferFailed(this, status)
             );
         }
+    }
 
-        cancelWatchdogTimer();
-        client.removeSubscription(this);
-        client.getPublishingManager().removeSubscription(this);
+    void resetInternalState() {
+        serverState = null;
+        syncState = SyncState.INITIAL;
+        modifications.set(null);
+
+        monitoredItemPartitionSize.reset();
     }
 
     private static class Modifications {
