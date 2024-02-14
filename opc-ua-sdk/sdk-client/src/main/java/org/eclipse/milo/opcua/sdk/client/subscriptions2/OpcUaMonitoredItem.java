@@ -485,15 +485,16 @@ public class OpcUaMonitoredItem {
     }
 
     void applyDeleteResult(StatusCode statusCode) {
-        // TODO
-        clientHandle = null;
-        deleteResult = statusCode;
-
         syncState = SyncState.INITIAL;
+        serverState = null;
+        modifications = null;
+        clientHandle = null;
+        subscription = null;
+
+        deleteResult = statusCode;
     }
 
     void applySetMonitoringModeResult(StatusCode statusCode) {
-        // TODO
         this.setMonitoringModeResult = statusCode;
     }
 
@@ -513,7 +514,7 @@ public class OpcUaMonitoredItem {
         }
     }
 
-    void resetInternalState() {
+    void notifyTransferFailed() {
         syncState = SyncState.INITIAL;
         serverState = null;
         modifications = null;

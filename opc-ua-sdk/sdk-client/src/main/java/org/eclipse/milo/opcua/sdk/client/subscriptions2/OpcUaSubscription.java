@@ -88,7 +88,7 @@ public class OpcUaSubscription {
      * MonitoredItems that have been removed from the Subscription and are pending deletion on the
      * Server.
      */
-    private List<OpcUaMonitoredItem> itemsToDelete = new ArrayList<>();
+    private final List<OpcUaMonitoredItem> itemsToDelete = new ArrayList<>();
 
     private final ClientHandleSequence clientHandleSequence =
         new ClientHandleSequence(monitoredItems::containsKey);
@@ -285,11 +285,17 @@ public class OpcUaSubscription {
      */
     public void addMonitoredItem(OpcUaMonitoredItem item) {
         if (!monitoredItems.containsValue(item)) {
-            UInteger clientHandle = clientHandleSequence.nextClientHandle();
-            item.setClientHandle(clientHandle);
-            item.setSubscription(this);
+            if (itemsToDelete.remove(item)) {
+                monitoredItems.put(item.getClientHandle().orElseThrow(), item);
+            } else {
+                UInteger clientHandle = clientHandleSequence.nextClientHandle();
+                item.setClientHandle(clientHandle);
+                item.setSubscription(this);
 
-            monitoredItems.put(clientHandle, item);
+                monitoredItems.put(clientHandle, item);
+
+                syncState = SyncState.UNSYNCHRONIZED;
+            }
         }
     }
 
@@ -318,8 +324,6 @@ public class OpcUaSubscription {
             item.getClientHandle().map(monitoredItems::remove).orElse(null);
 
         if (removedItem != null) {
-            removedItem.setSubscription(null);
-            removedItem.setClientHandle(null);
             itemsToDelete.add(removedItem);
             syncState = SyncState.UNSYNCHRONIZED;
         }
@@ -1227,8 +1231,13 @@ public class OpcUaSubscription {
         client.removeSubscription(this);
         client.getPublishingManager().removeSubscription(this);
 
-        resetInternalState();
-        monitoredItems.values().forEach(OpcUaMonitoredItem::resetInternalState);
+        serverState = null;
+        syncState = SyncState.INITIAL;
+        modifications.set(null);
+
+        monitoredItemPartitionSize.reset();
+
+        monitoredItems.values().forEach(OpcUaMonitoredItem::notifyTransferFailed);
 
         SubscriptionListener listener = this.listener;
         if (listener != null) {
@@ -1237,14 +1246,6 @@ public class OpcUaSubscription {
                     listener.onTransferFailed(this, status)
             );
         }
-    }
-
-    void resetInternalState() {
-        serverState = null;
-        syncState = SyncState.INITIAL;
-        modifications.set(null);
-
-        monitoredItemPartitionSize.reset();
     }
 
     private static class Modifications {
