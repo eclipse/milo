@@ -506,8 +506,11 @@ public class OpcUaSubscription {
      * @return a List of the MonitoredItems that were deleted.
      */
     public List<MonitoredItemServiceOperationResult> deleteMonitoredItems() {
-        List<OpcUaMonitoredItem> itemsToDelete = this.itemsToDelete;
-        this.itemsToDelete = new ArrayList<>();
+        List<OpcUaMonitoredItem> itemsToDelete = this.itemsToDelete.stream()
+            .filter(item -> item.getSyncState() != OpcUaMonitoredItem.SyncState.INITIAL)
+            .collect(Collectors.toList());
+
+        this.itemsToDelete.clear();
 
         if (!itemsToDelete.isEmpty()) {
             return deleteMonitoredItems(itemsToDelete);

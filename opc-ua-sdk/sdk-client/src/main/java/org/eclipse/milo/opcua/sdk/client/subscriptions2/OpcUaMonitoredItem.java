@@ -41,6 +41,7 @@ public class OpcUaMonitoredItem {
     private ServerState serverState;
     private Modifications modifications;
 
+    private @Nullable Object userObject;
     private @Nullable DataValueListener dataValueListener;
     private @Nullable EventValueListener eventValueListener;
 
@@ -328,6 +329,22 @@ public class OpcUaMonitoredItem {
      */
     public void setEventValueListener(@Nullable EventValueListener listener) {
         this.eventValueListener = listener;
+    }
+
+    /**
+     * Associate an arbitrary user object with this MonitoredItem.
+     *
+     * @param userObject the user object to associate with this MonitoredItem.
+     */
+    public void setUserObject(@Nullable Object userObject) {
+        this.userObject = userObject;
+    }
+
+    /**
+     * @return the user object associated with this MonitoredItem.
+     */
+    public Optional<Object> getUserObject() {
+        return Optional.ofNullable(userObject);
     }
 
     /**
