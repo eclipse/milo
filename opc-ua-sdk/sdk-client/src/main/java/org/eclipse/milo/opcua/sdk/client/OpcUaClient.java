@@ -33,9 +33,8 @@ import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.PublishingManager;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.PublishingManager;
 import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicCodecFactory;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
@@ -321,8 +320,6 @@ public class OpcUaClient {
 
     private final Lazy<DataTypeTree> dataTypeTree = new Lazy<>();
 
-    private final OpcUaSubscriptionManager subscriptionManager;
-
     private final PublishingManager publishingManager;
     private final Map<UInteger, OpcUaSubscription> subscriptions = new ConcurrentHashMap<>();
 
@@ -451,7 +448,6 @@ public class OpcUaClient {
         faultNotificationQueue = new ExecutionQueue(transport.getConfig().getExecutor());
 
         addressSpace = new AddressSpace(this);
-        subscriptionManager = new OpcUaSubscriptionManager(this);
         publishingManager = new PublishingManager(this);
 
         ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);
@@ -571,10 +567,6 @@ public class OpcUaClient {
 
     public VariableTypeManager getVariableTypeManager() {
         return variableTypeManager;
-    }
-
-    public OpcUaSubscriptionManager getSubscriptionManager() {
-        return subscriptionManager;
     }
 
     public void addSubscription(OpcUaSubscription subscription) {
