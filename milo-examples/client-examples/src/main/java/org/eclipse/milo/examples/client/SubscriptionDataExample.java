@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.MonitoredItemSynchronizationException;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaMonitoredItem;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.MonitoredItemSynchronizationException;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.slf4j.Logger;

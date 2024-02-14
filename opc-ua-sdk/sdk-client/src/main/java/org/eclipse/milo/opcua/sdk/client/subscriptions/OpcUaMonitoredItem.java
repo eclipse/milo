@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,210 +10,746 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
-import java.util.function.Consumer;
+import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcUaMonitoredItem implements UaMonitoredItem {
+public class OpcUaMonitoredItem {
 
-    private final OpcUaClient client;
+    private SyncState syncState = SyncState.INITIAL;
+    private ServerState serverState;
+    private Modifications modifications;
 
-    private volatile ValueConsumer valueConsumer;
-    private volatile EventConsumer eventConsumer;
+    private @Nullable Object userObject;
+    private @Nullable DataValueListener dataValueListener;
+    private @Nullable EventValueListener eventValueListener;
 
-    private volatile double requestedSamplingInterval = 0.0;
-    private volatile UInteger requestedQueueSize = uint(0);
+    // MonitoredItem parameters that a user might modify via SetMonitoringMode:
+    private MonitoringMode monitoringMode = MonitoringMode.Reporting;
 
-    private volatile StatusCode statusCode;
-    private volatile double revisedSamplingInterval = 0.0;
-    private volatile UInteger revisedQueueSize = uint(0);
-    private volatile ExtensionObject filterResult;
-    private volatile MonitoringMode monitoringMode = MonitoringMode.Disabled;
-    private volatile ExtensionObject monitoringFilter;
-    private volatile boolean discardOldest;
-    private volatile TimestampsToReturn timestamps;
+    // MonitoredItem parameters that a user might modify via ModifyMonitoredItem:
+    private Double samplingInterval = 1000.0;
+    private @Nullable MonitoringFilter filter;
+    private UInteger queueSize = uint(1);
+    private boolean discardOldest = true;
 
-    private final UInteger clientHandle;
+    private @Nullable StatusCode createResult;
+    private @Nullable StatusCode modifyResult;
+    private @Nullable StatusCode deleteResult;
+    private @Nullable StatusCode setMonitoringModeResult;
+
+    private @Nullable UInteger clientHandle;
+    private @Nullable OpcUaSubscription subscription;
+
     private final ReadValueId readValueId;
-    private final UInteger monitoredItemId;
 
-    public OpcUaMonitoredItem(
-        OpcUaClient client,
-        UInteger clientHandle,
-        ReadValueId readValueId,
-        UInteger monitoredItemId,
-        StatusCode statusCode,
-        double revisedSamplingInterval,
-        UInteger revisedQueueSize,
-        ExtensionObject filterResult,
-        MonitoringMode monitoringMode,
-        ExtensionObject monitoringFilter,
-        boolean discardOldest,
-        TimestampsToReturn timestamps
-    ) {
-
-        this.client = client;
-        this.clientHandle = clientHandle;
+    public OpcUaMonitoredItem(ReadValueId readValueId) {
         this.readValueId = readValueId;
-        this.monitoredItemId = monitoredItemId;
-        this.statusCode = statusCode;
-        this.revisedSamplingInterval = revisedSamplingInterval;
-        this.revisedQueueSize = revisedQueueSize;
-        this.filterResult = filterResult;
+    }
+
+    public OpcUaMonitoredItem(ReadValueId readValueId, MonitoringMode monitoringMode) {
+        this.readValueId = readValueId;
         this.monitoringMode = monitoringMode;
-        this.monitoringFilter = monitoringFilter;
+    }
+
+    /**
+     * Set the SamplingInterval parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param samplingInterval the new SamplingInterval parameter value.
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public void setSamplingInterval(double samplingInterval) {
+        this.samplingInterval = samplingInterval;
+
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.samplingInterval = samplingInterval;
+
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
+    }
+
+    /**
+     * Modify the QueueSize parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param queueSize the new QueueSize parameter value.
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public void setQueueSize(UInteger queueSize) {
+        this.queueSize = queueSize;
+
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.queueSize = queueSize;
+
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
+    }
+
+    /**
+     * Modify the DiscardOldest parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param discardOldest the new DiscardOldest parameter value.
+     */
+    public void setDiscardOldest(boolean discardOldest) {
         this.discardOldest = discardOldest;
-        this.timestamps = timestamps;
+
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.discardOldest = discardOldest;
+
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
     }
 
-    @Override
-    public OpcUaClient getClient() {
-        return client;
+    /**
+     * Modify the Filter parameter for this MonitoredItem.
+     * <p>
+     * This change must be synchronized to the server before it takes effect.
+     *
+     * @param filter the new Filter parameter value.
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public void setFilter(@Nullable MonitoringFilter filter) {
+        this.filter = filter;
+
+        if (syncState != SyncState.INITIAL) {
+            if (modifications == null) {
+                modifications = new Modifications();
+            }
+
+            modifications.filter = filter;
+
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
     }
 
-    @Override
-    public UInteger getClientHandle() {
-        return clientHandle;
-    }
-
-    @Override
+    /**
+     * Get the {@link ReadValueId} for this MonitoredItem.
+     *
+     * @return the {@link ReadValueId} for this MonitoredItem.
+     */
     public ReadValueId getReadValueId() {
         return readValueId;
     }
 
-    @Override
-    public UInteger getMonitoredItemId() {
-        return monitoredItemId;
+    /**
+     * Get the Client-assigned id for this MonitoredItem.
+     * <p>
+     * Present only if the MonitoredItem has been added to a Subscription, see
+     * {@link OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)}.
+     *
+     * @return the Client-assigned id for this MonitoredItem.
+     */
+    public Optional<UInteger> getClientHandle() {
+        return Optional.ofNullable(clientHandle);
     }
 
-    @Override
-    public StatusCode getStatusCode() {
-        return statusCode;
+    /**
+     * Get the Server-assigned id for this MonitoredItem.
+     * <p>
+     * Present only if the MonitoredItem has been created.
+     *
+     * @return the Server-assigned id for this MonitoredItem.
+     */
+    public Optional<UInteger> getMonitoredItemId() {
+        return getServerState().map(ServerState::getMonitoredItemId);
     }
 
-    @Override
-    public double getRequestedSamplingInterval() {
-        return requestedSamplingInterval;
+    /**
+     * Get the most recent SamplingInterval this MonitoredItem was configured with.
+     * <p>
+     * It may differ from the actual SamplingInterval that the server is using, see
+     * {@link #getRevisedSamplingInterval()}.
+     *
+     * @return the most recent SamplingInterval this MonitoredItem was configured with.
+     */
+    public Double getSamplingInterval() {
+        return samplingInterval;
     }
 
-    @Override
-    public double getRevisedSamplingInterval() {
-        return revisedSamplingInterval;
+    /**
+     * Get the most recent QueueSize this MonitoredItem was configured with.
+     * <p>
+     * It may differ from the actual QueueSize that the server is using, see
+     * {@link #getRevisedQueueSize()}.
+     *
+     * @return the most recent QueueSize this MonitoredItem was configured with.
+     */
+    public UInteger getQueueSize() {
+        return queueSize;
     }
 
-    @Override
-    public UInteger getRequestedQueueSize() {
-        return requestedQueueSize;
-    }
-
-    @Override
-    public UInteger getRevisedQueueSize() {
-        return revisedQueueSize;
-    }
-
-    @Override
-    public ExtensionObject getFilterResult() {
-        return filterResult;
-    }
-
-    @Override
-    public MonitoringMode getMonitoringMode() {
-        return monitoringMode;
-    }
-
-    @Override
-    public ExtensionObject getMonitoringFilter() {
-        return monitoringFilter;
-    }
-
-    @Override
+    /**
+     * Get the most recent DiscardOldest this MonitoredItem was configured with.
+     *
+     * @return the most recent DiscardOldest this MonitoredItem was configured with.
+     */
     public boolean getDiscardOldest() {
         return discardOldest;
     }
 
-    @Override
-    public TimestampsToReturn getTimestamps() {
-        return timestamps;
+    /**
+     * Get the most recent Filter this MonitoredItem was configured with.
+     *
+     * @return the most recent Filter this MonitoredItem was configured with.
+     */
+    public @Nullable MonitoringFilter getFilter() {
+        return filter;
     }
 
-    @Override
-    public void setValueConsumer(Consumer<DataValue> consumer) {
-        this.valueConsumer = (item, value) -> consumer.accept(value);
+    /**
+     * Get the revised SamplingInterval that the server is using for this MonitoredItem.
+     * <p>
+     * Present only if the MonitoredItem has been created or modified.
+     *
+     * @return the revised SamplingInterval that the server is using for this MonitoredItem.
+     */
+    public Optional<Double> getRevisedSamplingInterval() {
+        return getServerState().map(ServerState::getSamplingInterval);
     }
 
-    @Override
-    public void setValueConsumer(ValueConsumer valueConsumer) {
-        this.valueConsumer = valueConsumer;
+    /**
+     * Get the revised QueueSize that the server is using for this MonitoredItem.
+     * <p>
+     * Present only if the MonitoredItem has been created or modified.
+     *
+     * @return the revised QueueSize that the server is using for this MonitoredItem.
+     */
+    public Optional<UInteger> getRevisedQueueSize() {
+        return getServerState().map(ServerState::getQueueSize);
     }
 
-    @Override
-    public void setEventConsumer(Consumer<Variant[]> consumer) {
-        this.eventConsumer = (item, values) -> consumer.accept(values);
+    /**
+     * Get the filter result structure for the most recently configured monitoring filter.
+     *
+     * @return the filter result structure for the most recently configured monitoring filter.
+     */
+    public Optional<ExtensionObject> getFilterResult() {
+        return getServerState().map(ServerState::getFilterResult);
     }
 
-    @Override
-    public void setEventConsumer(EventConsumer eventConsumer) {
-        this.eventConsumer = eventConsumer;
+    /**
+     * Get the current MonitoringMode for this MonitoredItem.
+     *
+     * @return the current MonitoringMode for this MonitoredItem.
+     */
+    public MonitoringMode getMonitoringMode() {
+        return monitoringMode;
     }
 
-    void setStatusCode(StatusCode statusCode) {
-        this.statusCode = statusCode;
+    /**
+     * Get the result of the most recent CreateMonitoredItems service call, if one has been made.
+     *
+     * @return the result of the most recent CreateMonitoredItems service call, if one has been
+     *     made.
+     */
+    public Optional<StatusCode> getCreateResult() {
+        return Optional.ofNullable(createResult);
     }
 
-    void setFilterResult(ExtensionObject filterResult) {
-        this.filterResult = filterResult;
+    /**
+     * Get the result of the most recent ModifyMonitoredItems service call, if one has been made.
+     *
+     * @return the result of the most recent ModifyMonitoredItems service call, if one has been
+     *     made.
+     */
+    public Optional<StatusCode> getModifyResult() {
+        return Optional.ofNullable(modifyResult);
     }
 
-    void setRequestedFilter(ExtensionObject filter) {
-        this.monitoringFilter = filter;
+    /**
+     * Get the result of the most recent DeleteMonitoredItems service call, if one has been made.
+     *
+     * @return the result of the most recent DeleteMonitoredItems service call, if one has been
+     *     made.
+     */
+    public Optional<StatusCode> getDeleteResult() {
+        return Optional.ofNullable(deleteResult);
     }
 
-    void setRequestedSamplingInterval(double requestedSamplingInterval) {
-        this.requestedSamplingInterval = requestedSamplingInterval;
+    /**
+     * Get the result of the most recent SetMonitoringMode service call, if one has been made.
+     *
+     * @return the result of the most recent SetMonitoringMode service call, if one has been made.
+     */
+    public Optional<StatusCode> getSetMonitoringModeResult() {
+        return Optional.ofNullable(setMonitoringModeResult);
     }
 
-    void setRevisedSamplingInterval(double revisedSamplingInterval) {
-        this.revisedSamplingInterval = revisedSamplingInterval;
+    /**
+     * Set the {@link DataValueListener} for this MonitoredItem.
+     *
+     * @param listener the {@link DataValueListener} for this MonitoredItem.
+     */
+    public void setDataValueListener(@Nullable DataValueListener listener) {
+        this.dataValueListener = listener;
     }
 
-    void setRequestedQueueSize(UInteger requestedQueueSize) {
-        this.requestedQueueSize = requestedQueueSize;
+    /**
+     * Set the {@link EventValueListener} for this MonitoredItem.
+     *
+     * @param listener the {@link EventValueListener} for this MonitoredItem.
+     */
+    public void setEventValueListener(@Nullable EventValueListener listener) {
+        this.eventValueListener = listener;
     }
 
-    void setRevisedQueueSize(UInteger revisedQueueSize) {
-        this.revisedQueueSize = revisedQueueSize;
+    /**
+     * Associate an arbitrary user object with this MonitoredItem.
+     *
+     * @param userObject the user object to associate with this MonitoredItem.
+     */
+    public void setUserObject(@Nullable Object userObject) {
+        this.userObject = userObject;
     }
 
+    /**
+     * @return the user object associated with this MonitoredItem.
+     */
+    public Optional<Object> getUserObject() {
+        return Optional.ofNullable(userObject);
+    }
+
+    /**
+     * Set the Subscription that this MonitoredItem belongs to.
+     *
+     * @param subscription the Subscription that this MonitoredItem belongs to.
+     */
+    void setSubscription(@Nullable OpcUaSubscription subscription) {
+        this.subscription = subscription;
+    }
+
+    /**
+     * Set the Client-assigned id for this MonitoredItem.
+     *
+     * @param clientHandle the Client-assigned id for this MonitoredItem.
+     */
+    void setClientHandle(@Nullable UInteger clientHandle) {
+        this.clientHandle = clientHandle;
+    }
+
+    /**
+     * Set the current MonitoringMode for this MonitoredItem.
+     *
+     * @param monitoringMode the current MonitoringMode for this MonitoredItem.
+     */
     void setMonitoringMode(MonitoringMode monitoringMode) {
         this.monitoringMode = monitoringMode;
     }
 
-    void setTimestamps(TimestampsToReturn timestamps) {
-        this.timestamps = timestamps;
+    public SyncState getSyncState() {
+        return syncState;
     }
 
-    void setDiscardOldest(boolean discardOldest) {
-        this.discardOldest = discardOldest;
+    public Optional<ServerState> getServerState() {
+        return Optional.ofNullable(serverState);
     }
 
-    void onValueArrived(DataValue value) {
-        ValueConsumer c = valueConsumer;
-        if (c != null) c.onValueArrived(this, value);
+    MonitoredItemCreateRequest newCreateRequest() {
+        if (subscription == null) {
+            throw new IllegalStateException("subscription is null");
+        }
+
+        ExtensionObject filterXo = null;
+        if (filter != null) {
+            EncodingContext ctx = subscription.getClient().getStaticEncodingContext();
+            filterXo = ExtensionObject.encode(ctx, filter);
+        }
+
+        return new MonitoredItemCreateRequest(
+            readValueId,
+            monitoringMode,
+            new MonitoringParameters(
+                clientHandle,
+                samplingInterval,
+                filterXo,
+                queueSize,
+                discardOldest
+            )
+        );
     }
 
-    void onEventArrived(Variant[] values) {
-        EventConsumer c = eventConsumer;
-        if (c != null) c.onEventArrived(this, values);
+    MonitoredItemModifyRequest newModifyRequest() {
+        if (subscription == null) {
+            throw new IllegalStateException("no subscription");
+        }
+        if (serverState == null) {
+            throw new IllegalStateException("no ServerState");
+        }
+        if (modifications == null) {
+            throw new IllegalStateException("no pending modification");
+        }
+
+        Double newRequestedSamplingInterval = modifications.samplingInterval().orElse(samplingInterval);
+        MonitoringFilter newFilter = modifications.filter().orElse(filter);
+        UInteger newRequestedQueueSize = modifications.queueSize().orElse(queueSize);
+        Boolean newDiscardOldest = modifications.discardOldest().orElse(discardOldest);
+
+        ExtensionObject newFilterXo = null;
+        if (newFilter != null) {
+            EncodingContext ctx = subscription.getClient().getStaticEncodingContext();
+            newFilterXo = ExtensionObject.encode(ctx, newFilter);
+        }
+
+        return new MonitoredItemModifyRequest(
+            serverState.monitoredItemId,
+            new MonitoringParameters(
+                clientHandle,
+                newRequestedSamplingInterval,
+                newFilterXo,
+                newRequestedQueueSize,
+                newDiscardOldest
+            )
+        );
+    }
+
+    void applyCreateResult(MonitoredItemCreateResult result) {
+        StatusCode statusCode = result.getStatusCode();
+
+        if (statusCode.isGood()) {
+            serverState = new ServerState(
+                result.getMonitoredItemId(),
+                monitoringMode,
+                result.getRevisedSamplingInterval(),
+                result.getFilterResult(),
+                result.getRevisedQueueSize(),
+                discardOldest
+            );
+
+            syncState = SyncState.SYNCHRONIZED;
+        } else {
+            syncState = SyncState.INITIAL;
+        }
+
+        this.createResult = statusCode;
+    }
+
+    void applyModifyResult(MonitoredItemModifyResult result) {
+        StatusCode statusCode = result.getStatusCode();
+
+        if (statusCode.isGood()) {
+            modifications = null;
+
+            serverState = new ServerState(
+                serverState.monitoredItemId,
+                monitoringMode,
+                result.getRevisedSamplingInterval(),
+                result.getFilterResult(),
+                result.getRevisedQueueSize(),
+                discardOldest
+            );
+
+            syncState = SyncState.SYNCHRONIZED;
+        } else {
+            syncState = SyncState.UNSYNCHRONIZED;
+        }
+
+        this.modifyResult = statusCode;
+    }
+
+    void applyDeleteResult(StatusCode statusCode) {
+        syncState = SyncState.INITIAL;
+        serverState = null;
+        modifications = null;
+        clientHandle = null;
+        subscription = null;
+
+        deleteResult = statusCode;
+    }
+
+    void applySetMonitoringModeResult(StatusCode statusCode) {
+        this.setMonitoringModeResult = statusCode;
+    }
+
+    void notifyDataValueReceived(DataValue value) {
+        DataValueListener listener = dataValueListener;
+
+        if (listener != null) {
+            listener.onDataReceived(this, value);
+        }
+    }
+
+    void notifyEventValuesReceived(Variant[] eventValues) {
+        EventValueListener listener = eventValueListener;
+
+        if (listener != null) {
+            listener.onEventReceived(this, eventValues);
+        }
+    }
+
+    void notifyTransferFailed() {
+        syncState = SyncState.INITIAL;
+        serverState = null;
+        modifications = null;
+
+        createResult = null;
+        modifyResult = null;
+        deleteResult = null;
+        setMonitoringModeResult = null;
+    }
+
+    /**
+     * A callback that receives notification of new values for an {@link OpcUaMonitoredItem}.
+     */
+    public interface DataValueListener {
+
+        /**
+         * A new {@link DataValue} for {@code item} has arrived.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications
+         * are processed synchronously as a backpressure mechanism. Blocking inside this callback
+         * will prevent subsequent notifications from being processed and new PublishRequests from
+         * being sent.
+         *
+         * @param item the {@link OpcUaMonitoredItem} for which a new value has arrived.
+         * @param value the new {@link DataValue}.
+         */
+        void onDataReceived(OpcUaMonitoredItem item, DataValue value);
+
+    }
+
+    /**
+     * A callback that receives notification of new events for an {@link OpcUaMonitoredItem}.
+     */
+    public interface EventValueListener {
+
+        /**
+         * A new event for {@code item} has arrived.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications
+         * are processed synchronously as a backpressure mechanism. Blocking inside this callback
+         * will prevent subsequent notifications from being processed and new PublishRequests from
+         * being sent.
+         *
+         * @param item the {@link OpcUaMonitoredItem} for which a new event has arrived.
+         * @param eventValues the new event field values.
+         */
+        void onEventReceived(OpcUaMonitoredItem item, Variant[] eventValues);
+
+    }
+
+    static class Modifications {
+
+        private @Nullable Double samplingInterval;
+        private @Nullable MonitoringFilter filter;
+        private @Nullable UInteger queueSize;
+        private @Nullable Boolean discardOldest;
+
+
+        Optional<Double> samplingInterval() {
+            return Optional.ofNullable(samplingInterval);
+        }
+
+        Optional<MonitoringFilter> filter() {
+            return Optional.ofNullable(filter);
+        }
+
+        Optional<UInteger> queueSize() {
+            return Optional.ofNullable(queueSize);
+        }
+
+        Optional<Boolean> discardOldest() {
+            return Optional.ofNullable(discardOldest);
+        }
+
+    }
+
+    /**
+     * The state of the MonitoredItem as it exists on the server, after the recent successful
+     * operation.
+     */
+    public static class ServerState {
+
+        private final UInteger monitoredItemId;
+        private final MonitoringMode monitoringMode;
+        private final double samplingInterval;
+        private final @Nullable ExtensionObject filterResult;
+        private final UInteger queueSize;
+        private final boolean discardOldest;
+
+        private ServerState(
+            UInteger monitoredItemId,
+            MonitoringMode monitoringMode,
+            double samplingInterval,
+            @Nullable ExtensionObject filterResult,
+            UInteger queueSize,
+            boolean discardOldest
+        ) {
+
+            this.monitoredItemId = monitoredItemId;
+            this.monitoringMode = monitoringMode;
+            this.samplingInterval = samplingInterval;
+            this.filterResult = filterResult;
+            this.queueSize = queueSize;
+            this.discardOldest = discardOldest;
+        }
+
+        public UInteger getMonitoredItemId() {
+            return monitoredItemId;
+        }
+
+        public MonitoringMode getMonitoringMode() {
+            return monitoringMode;
+        }
+
+        public double getSamplingInterval() {
+            return samplingInterval;
+        }
+
+        public @Nullable ExtensionObject getFilterResult() {
+            return filterResult;
+        }
+
+        public UInteger getQueueSize() {
+            return queueSize;
+        }
+
+        public boolean getDiscardOldest() {
+            return discardOldest;
+        }
+
+    }
+
+    public enum SyncState {
+        INITIAL,
+
+        SYNCHRONIZED,
+
+        UNSYNCHRONIZED
+    }
+
+    /**
+     * Create a new MonitoredItem for the Value attribute of the Node identified by
+     * {@code nodeId}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @return a new MonitoredItem for the Value attribute of the Node identified by
+     *     {@code nodeId}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public static OpcUaMonitoredItem newDataItem(NodeId nodeId) {
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.Value.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        return new OpcUaMonitoredItem(readValueId);
+    }
+
+    /**
+     * Create a new MonitoredItem for the Value attribute of the Node identified by
+     * {@code nodeId}, with the specified {@code samplingInterval}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @param samplingInterval the sampling interval for the MonitoredItem.
+     * @return a new MonitoredItem for the Value attribute of the Node identified by
+     *     {@code nodeId}, with the specified {@code samplingInterval}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public static OpcUaMonitoredItem newDataItem(NodeId nodeId, double samplingInterval) {
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.Value.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        var item = new OpcUaMonitoredItem(readValueId);
+        item.setSamplingInterval(samplingInterval);
+
+        return item;
+    }
+
+    /**
+     * Create a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     * {@code nodeId}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @return a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     *     {@code nodeId}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public static OpcUaMonitoredItem newEventItem(NodeId nodeId) {
+        return newEventItem(nodeId, null);
+    }
+
+    /**
+     * Create a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     * {@code nodeId}, with the specified {@code eventFilter}.
+     * <p>
+     * This item will not exist on the server until it has been added to an
+     * {@link OpcUaSubscription} and the subscription has been synchronized.
+     *
+     * @param nodeId the {@link NodeId} of the Node to monitor.
+     * @param eventFilter the {@link EventFilter} to use for the MonitoredItem.
+     * @return a new MonitoredItem for the EventNotifier attribute of the Node identified by
+     *     {@code nodeId}, with the specified {@code eventFilter}.
+     * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
+     * @see OpcUaSubscription#synchronizeMonitoredItems()
+     */
+    public static OpcUaMonitoredItem newEventItem(NodeId nodeId, @Nullable EventFilter eventFilter) {
+        var readValueId = new ReadValueId(
+            nodeId,
+            AttributeId.EventNotifier.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        var item = new OpcUaMonitoredItem(readValueId);
+        item.setSamplingInterval(0.0);
+        item.setFilter(eventFilter);
+
+        return item;
     }
 
 }

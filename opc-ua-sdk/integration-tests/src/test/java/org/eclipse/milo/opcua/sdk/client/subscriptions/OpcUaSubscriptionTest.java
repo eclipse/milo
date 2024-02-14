@@ -8,14 +8,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client.subscriptions2;
+package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription.SyncState;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription.SyncState;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;

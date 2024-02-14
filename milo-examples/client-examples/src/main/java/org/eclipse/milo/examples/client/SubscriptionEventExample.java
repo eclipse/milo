@@ -16,8 +16,8 @@ import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.EventFilterBuilder;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaMonitoredItem;
-import org.eclipse.milo.opcua.sdk.client.subscriptions2.OpcUaSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;

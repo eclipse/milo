@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client.subscriptions2;
+package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.util.List;
 
