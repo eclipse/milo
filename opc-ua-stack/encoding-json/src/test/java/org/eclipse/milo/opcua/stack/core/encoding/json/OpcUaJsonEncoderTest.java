@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -54,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OpcUaJsonEncoderTest {
 
-    private final EncodingContext context = new TestEncodingContext();
+    private final EncodingContext context = DefaultEncodingContext.INSTANCE;
 
     @Test
     void writeBoolean() throws IOException {
@@ -534,7 +535,7 @@ class OpcUaJsonEncoderTest {
         assertEquals("{\"IdType\":3,\"Id\":\"" + Base64.getEncoder().encodeToString(bs.bytesOrEmpty()) + "\",\"Namespace\":1}", writer.toString());
 
         encoder.reversible = false;
-        encoder.encodingContext = new TestEncodingContext();
+        encoder.encodingContext = new DefaultEncodingContext();
         encoder.encodingContext.getNamespaceTable().add("urn:eclipse:milo:test1");
         encoder.encodingContext.getNamespaceTable().add("urn:eclipse:milo:test2");
 
@@ -586,7 +587,7 @@ class OpcUaJsonEncoderTest {
 
         // non-reversible, remote server index
         encoder.reversible = false;
-        encoder.encodingContext = new TestEncodingContext();
+        encoder.encodingContext = new DefaultEncodingContext();
         encoder.encodingContext.getServerTable().add("urn:server:local");
         encoder.encodingContext.getServerTable().add("urn:server:remote");
         encoder.reset(writer = new StringWriter());
@@ -682,7 +683,7 @@ class OpcUaJsonEncoderTest {
         assertEquals("{\"Name\":\"foo\",\"Uri\":1}", writer.toString());
 
         encoder.reversible = false;
-        encoder.encodingContext = new TestEncodingContext();
+        encoder.encodingContext = new DefaultEncodingContext();
         encoder.encodingContext.getNamespaceTable().add("urn:eclipse:milo:test1");
         encoder.encodingContext.getNamespaceTable().add("urn:eclipse:milo:test2");
 

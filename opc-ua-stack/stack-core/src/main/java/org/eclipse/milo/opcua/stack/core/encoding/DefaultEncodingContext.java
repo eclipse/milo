@@ -20,7 +20,7 @@ public class DefaultEncodingContext implements EncodingContext {
 
     public final static EncodingContext INSTANCE = new DefaultEncodingContext();
 
-    private DefaultEncodingContext() {}
+    public DefaultEncodingContext() {}
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
