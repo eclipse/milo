@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,20 +19,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -95,7 +89,7 @@ public class DiscoveryClient {
 
             @Override
             public EncodingContext getEncodingContext() {
-                return new DefaultEncodingContext();
+                return DefaultEncodingContext.INSTANCE;
             }
 
             @Override
@@ -138,12 +132,12 @@ public class DiscoveryClient {
      * {@link #getEndpoints(String)} call to discover the endpoints for that server.
      *
      * @param endpointUrl the endpoint URL to find servers at.
-     * @param localeIds   list of locales to use. The server should return the applicationName in the
-     *                    ApplicationDescription using one of locales specified. If the server supports more than one of
-     *                    the requested locales then the server shall use the locale that appears first in this list. If
-     *                    the server does not support any of the requested locales it chooses an appropriate default
-     *                    locale. The server chooses an appropriate default locale if this list is empty.
-     * @param serverUris  list of servers to return. All known servers are returned if the list is empty.
+     * @param localeIds list of locales to use. The server should return the applicationName in the
+     *     ApplicationDescription using one of locales specified. If the server supports more than one of
+     *     the requested locales then the server shall use the locale that appears first in this list. If
+     *     the server does not support any of the requested locales it chooses an appropriate default
+     *     locale. The server chooses an appropriate default locale if this list is empty.
+     * @param serverUris list of servers to return. All known servers are returned if the list is empty.
      * @return the {@link FindServersResponse}s returned by the FindServers service.
      */
     public CompletableFuture<FindServersResponse> findServers(
@@ -172,9 +166,9 @@ public class DiscoveryClient {
      * Query the GetEndpoints service at {@code endpointUrl}.
      *
      * @param endpointUrl the endpoint URL to get endpoints from.
-     * @param localeIds   list of locales to use. Specifies the locale to use when returning human-readable strings.
+     * @param localeIds list of locales to use. Specifies the locale to use when returning human-readable strings.
      * @param profileUris list of Transport Profile that the returned Endpoints shall support. All Endpoints are
-     *                    returned if the list is empty.
+     *     returned if the list is empty.
      * @return the {@link GetEndpointsResponse} returned by the GetEndpoints service.
      */
     public CompletableFuture<GetEndpointsResponse> getEndpoints(
@@ -249,8 +243,8 @@ public class DiscoveryClient {
      * {@link #getEndpoints(String)} call to discover the endpoints for that server.
      *
      * @param endpointUrl the endpoint URL to find servers at.
-     * @param customizer  a {@link Consumer} that accepts a
-     *                    {@link OpcTcpClientTransportConfigBuilder} for customization.
+     * @param customizer a {@link Consumer} that accepts a
+     *     {@link OpcTcpClientTransportConfigBuilder} for customization.
      * @return a List of {@link ApplicationDescription}s returned by the FindServers service.
      */
     public static CompletableFuture<List<ApplicationDescription>> findServers(
@@ -297,8 +291,8 @@ public class DiscoveryClient {
      * Query the GetEndpoints service at {@code endpointUrl}.
      *
      * @param endpointUrl the endpoint URL to get endpoints from.
-     * @param customizer  a {@link Consumer} that accepts a
-     *                    {@link OpcTcpClientTransportConfigBuilder} for customization.
+     * @param customizer a {@link Consumer} that accepts a
+     *     {@link OpcTcpClientTransportConfigBuilder} for customization.
      * @return a List of {@link EndpointDescription}s returned by the GetEndpoints service.
      */
     public static CompletableFuture<List<EndpointDescription>> getEndpoints(
@@ -367,38 +361,6 @@ public class DiscoveryClient {
             .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
             .whenComplete((e, ex) -> discoveryClient.disconnectAsync())
             .thenApply(response -> Lists.ofNullable(response.getEndpoints()));
-    }
-
-    private static class DefaultEncodingContext implements EncodingContext {
-
-        private final NamespaceTable namespaceTable = new NamespaceTable();
-        private final ServerTable serverTable = new ServerTable();
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return OpcUaEncodingManager.getInstance();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return EncodingLimits.DEFAULT;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceTable;
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return serverTable;
-        }
-
     }
 
 }

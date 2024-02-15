@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -59,7 +59,6 @@ public class OpcUaMonitoredItem {
     private @Nullable StatusCode setMonitoringModeResult;
 
     private @Nullable UInteger clientHandle;
-    private @Nullable OpcUaSubscription subscription;
 
     private final ReadValueId readValueId;
 
@@ -347,15 +346,6 @@ public class OpcUaMonitoredItem {
     }
 
     /**
-     * Set the Subscription that this MonitoredItem belongs to.
-     *
-     * @param subscription the Subscription that this MonitoredItem belongs to.
-     */
-    void setSubscription(@Nullable OpcUaSubscription subscription) {
-        this.subscription = subscription;
-    }
-
-    /**
      * Set the Client-assigned id for this MonitoredItem.
      *
      * @param clientHandle the Client-assigned id for this MonitoredItem.
@@ -382,14 +372,13 @@ public class OpcUaMonitoredItem {
     }
 
     MonitoredItemCreateRequest newCreateRequest() {
-        if (subscription == null) {
-            throw new IllegalStateException("subscription is null");
+        if (clientHandle == null) {
+            throw new IllegalStateException("no clientHandle");
         }
 
         ExtensionObject filterXo = null;
         if (filter != null) {
-            EncodingContext ctx = subscription.getClient().getStaticEncodingContext();
-            filterXo = ExtensionObject.encode(ctx, filter);
+            filterXo = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, filter);
         }
 
         return new MonitoredItemCreateRequest(
@@ -406,9 +395,6 @@ public class OpcUaMonitoredItem {
     }
 
     MonitoredItemModifyRequest newModifyRequest() {
-        if (subscription == null) {
-            throw new IllegalStateException("no subscription");
-        }
         if (serverState == null) {
             throw new IllegalStateException("no ServerState");
         }
@@ -423,8 +409,7 @@ public class OpcUaMonitoredItem {
 
         ExtensionObject newFilterXo = null;
         if (newFilter != null) {
-            EncodingContext ctx = subscription.getClient().getStaticEncodingContext();
-            newFilterXo = ExtensionObject.encode(ctx, newFilter);
+            newFilterXo = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, newFilter);
         }
 
         return new MonitoredItemModifyRequest(
@@ -488,7 +473,6 @@ public class OpcUaMonitoredItem {
         serverState = null;
         modifications = null;
         clientHandle = null;
-        subscription = null;
 
         deleteResult = statusCode;
     }

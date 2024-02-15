@@ -289,7 +289,6 @@ public class OpcUaSubscription {
             } else {
                 UInteger clientHandle = clientHandleSequence.nextClientHandle();
                 item.setClientHandle(clientHandle);
-                item.setSubscription(this);
 
                 monitoredItems.put(clientHandle, item);
 
