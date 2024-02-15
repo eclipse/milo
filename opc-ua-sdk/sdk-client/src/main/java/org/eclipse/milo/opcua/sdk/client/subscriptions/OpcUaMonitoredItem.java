@@ -664,19 +664,20 @@ public class OpcUaMonitoredItem {
 
     /**
      * Create a new MonitoredItem for the Value attribute of the Node identified by
-     * {@code nodeId}, with the specified {@code samplingInterval}.
+     * {@code nodeId}, with the specified {@code monitoringMode}.
      * <p>
      * This item will not exist on the server until it has been added to an
      * {@link OpcUaSubscription} and the subscription has been synchronized.
      *
      * @param nodeId the {@link NodeId} of the Node to monitor.
-     * @param samplingInterval the sampling interval for the MonitoredItem.
+     * @param monitoringMode the initial {@link MonitoringMode} to use when the MonitoredItem
+     *     is created.
      * @return a new MonitoredItem for the Value attribute of the Node identified by
-     *     {@code nodeId}, with the specified {@code samplingInterval}.
+     *     {@code nodeId}, with the specified {@code monitoringMode}.
      * @see OpcUaSubscription#addMonitoredItem(OpcUaMonitoredItem)
      * @see OpcUaSubscription#synchronizeMonitoredItems()
      */
-    public static OpcUaMonitoredItem newDataItem(NodeId nodeId, double samplingInterval) {
+    public static OpcUaMonitoredItem newDataItem(NodeId nodeId, MonitoringMode monitoringMode) {
         var readValueId = new ReadValueId(
             nodeId,
             AttributeId.Value.uid(),
@@ -684,8 +685,7 @@ public class OpcUaMonitoredItem {
             QualifiedName.NULL_VALUE
         );
 
-        var item = new OpcUaMonitoredItem(readValueId);
-        item.setSamplingInterval(samplingInterval);
+        var item = new OpcUaMonitoredItem(readValueId, monitoringMode);
 
         return item;
     }
