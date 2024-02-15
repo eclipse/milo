@@ -107,6 +107,8 @@ public class OpcUaSubscription {
     private UInteger maxMonitoredItemsPerCall = uint(DEFAULT_MAX_MONITORED_ITEMS_PER_CALL);
     private final Lazy<UInteger> monitoredItemPartitionSize = new Lazy<>();
 
+    private @Nullable Object userObject;
+
     private @Nullable SubscriptionListener listener;
 
     private final TaskQueue deliveryQueue;
@@ -1089,6 +1091,22 @@ public class OpcUaSubscription {
      */
     public void setSubscriptionListener(@Nullable SubscriptionListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Associate an arbitrary user object with this Subscription.
+     *
+     * @param userObject the user object to associate with this Subscription.
+     */
+    public void setUserObject(@Nullable Object userObject) {
+        this.userObject = userObject;
+    }
+
+    /**
+     * @return the user object associated with this Subscription.
+     */
+    public Optional<Object> getUserObject() {
+        return Optional.ofNullable(userObject);
     }
 
     public TaskQueue getDeliveryQueue() {
