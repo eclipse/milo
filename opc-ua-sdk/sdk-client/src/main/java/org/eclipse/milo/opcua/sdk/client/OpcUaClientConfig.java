@@ -138,14 +138,6 @@ public interface OpcUaClientConfig {
     UInteger getKeepAliveTimeout();
 
     /**
-     * The multiplier applied to a subscription's expected keep-alive interval, used by the
-     * watchdog timer to determine how "late" a keep-alive can arrive before it fires.
-     *
-     * @return the multiplier applied to a subscription's expected keep-alive interval.
-     */
-    double getSubscriptionWatchdogMultiplier();
-
-    /**
      * @return a new {@link OpcUaClientConfigBuilder}.
      */
     static OpcUaClientConfigBuilder builder() {
@@ -180,7 +172,6 @@ public interface OpcUaClientConfig {
         builder.setKeepAliveInterval(config.getKeepAliveInterval());
         builder.setKeepAliveTimeout(config.getKeepAliveTimeout());
         builder.setSessionLocaleIds(config.getSessionLocaleIds());
-        builder.setSubscriptionWatchdogMultiplier(config.getSubscriptionWatchdogMultiplier());
 
         return builder;
     }
