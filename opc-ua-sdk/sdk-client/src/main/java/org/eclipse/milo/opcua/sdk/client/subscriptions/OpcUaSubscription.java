@@ -1113,11 +1113,12 @@ public class OpcUaSubscription {
         return deliveryQueue;
     }
 
-    public void cancelWatchdogTimer() {
+    void cancelWatchdogTimer() {
         WatchdogTimer watchdog = this.watchdogTimer;
         if (watchdog != null) {
             watchdog.cancel();
             this.watchdogTimer = null;
+            logger.debug("id={}, watchdog timer cancelled", serverState.subscriptionId);
         }
     }
 
@@ -1125,6 +1126,7 @@ public class OpcUaSubscription {
         WatchdogTimer watchdog = this.watchdogTimer;
         if (watchdog != null) {
             watchdog.reset();
+            logger.trace("id={}, watchdog timer reset", serverState.subscriptionId);
         }
     }
 

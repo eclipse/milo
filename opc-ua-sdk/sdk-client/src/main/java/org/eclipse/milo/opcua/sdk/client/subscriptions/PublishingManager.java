@@ -182,15 +182,15 @@ public class PublishingManager {
 
                 pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
 
-                if (statusCode.getValue() != StatusCodes.Bad_NoSubscription &&
-                    statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
+                long code = statusCode.getValue();
 
-                    logger.warn("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
-
+                if (code == StatusCodes.Bad_SessionClosed || code == StatusCodes.Bad_SessionIdInvalid) {
+                    subscriptionDetails.values().forEach(d -> d.subscription.cancelWatchdogTimer());
+                } else if (code != StatusCodes.Bad_NoSubscription && code != StatusCodes.Bad_TooManyPublishRequests) {
                     maybeSendPublishRequests();
-                } else {
-                    logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
                 }
+
+                logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
             }
         });
     }

@@ -781,11 +781,7 @@ public class SessionFsmFactory {
         LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
 
         client.getTransport().sendRequestMessage(request).whenCompleteAsync(
-            (csr, ex2) -> {
-                client.getSubscriptions().forEach(OpcUaSubscription::cancelWatchdogTimer);
-
-                closeFuture.complete(Unit.VALUE);
-            },
+            (csr, ex2) -> closeFuture.complete(Unit.VALUE),
             client.getTransport().getConfig().getExecutor()
         );
 
