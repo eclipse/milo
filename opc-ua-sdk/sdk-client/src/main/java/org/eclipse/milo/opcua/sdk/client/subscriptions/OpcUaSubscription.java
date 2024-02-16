@@ -72,11 +72,11 @@ public class OpcUaSubscription {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private SyncState syncState = SyncState.INITIAL;
-    private ServerState serverState;
-    private Modifications modifications;
+    private volatile SyncState syncState = SyncState.INITIAL;
+    private volatile ServerState serverState;
+    private volatile Modifications modifications;
 
-    private WatchdogTimer watchdogTimer;
+    private volatile WatchdogTimer watchdogTimer;
 
     /**
      * MonitoredItems added to this Subscription, by ClientHandle.
@@ -92,24 +92,24 @@ public class OpcUaSubscription {
     private final ClientHandleSequence clientHandleSequence =
         new ClientHandleSequence(monitoredItems::containsKey);
 
-    private Double publishingInterval = DEFAULT_PUBLISHING_INTERVAL;
-    private UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(
+    private volatile Double publishingInterval = DEFAULT_PUBLISHING_INTERVAL;
+    private volatile UInteger maxKeepAliveCount = calculateMaxKeepAliveCount(
         publishingInterval,
         DEFAULT_TARGET_KEEP_ALIVE_INTERVAL
     );
-    private UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
-    private UInteger maxNotificationsPerPublish = DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH;
-    private UByte priority = DEFAULT_PRIORITY;
+    private volatile UInteger lifetimeCount = calculateLifetimeCount(maxKeepAliveCount);
+    private volatile UInteger maxNotificationsPerPublish = DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH;
+    private volatile UByte priority = DEFAULT_PRIORITY;
 
-    private boolean lifetimeAndKeepAliveCalculated = true;
-    private double watchdogMultiplier = 2.0;
+    private volatile boolean lifetimeAndKeepAliveCalculated = true;
+    private volatile double watchdogMultiplier = 2.0;
 
-    private UInteger maxMonitoredItemsPerCall = uint(DEFAULT_MAX_MONITORED_ITEMS_PER_CALL);
+    private volatile UInteger maxMonitoredItemsPerCall = uint(DEFAULT_MAX_MONITORED_ITEMS_PER_CALL);
     private final Lazy<UInteger> monitoredItemPartitionSize = new Lazy<>();
 
-    private @Nullable Object userObject;
+    private volatile @Nullable Object userObject;
 
-    private @Nullable SubscriptionListener listener;
+    private volatile @Nullable SubscriptionListener listener;
 
     private final TaskQueue deliveryQueue;
 
@@ -1263,11 +1263,11 @@ public class OpcUaSubscription {
 
     private static class Modifications {
 
-        private @Nullable Double publishingInterval;
-        private @Nullable UInteger lifetimeCount;
-        private @Nullable UInteger maxKeepAliveCount;
-        private @Nullable UInteger maxNotificationsPerPublish;
-        private @Nullable UByte priority;
+        private volatile @Nullable Double publishingInterval;
+        private volatile @Nullable UInteger lifetimeCount;
+        private volatile @Nullable UInteger maxKeepAliveCount;
+        private volatile @Nullable UInteger maxNotificationsPerPublish;
+        private volatile @Nullable UByte priority;
 
         private Optional<Double> publishingInterval() {
             return Optional.ofNullable(publishingInterval);

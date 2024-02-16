@@ -36,29 +36,29 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaMonitoredItem {
 
-    private SyncState syncState = SyncState.INITIAL;
-    private ServerState serverState;
-    private Modifications modifications;
+    private volatile SyncState syncState = SyncState.INITIAL;
+    private volatile ServerState serverState;
+    private volatile Modifications modifications;
 
-    private @Nullable Object userObject;
-    private @Nullable DataValueListener dataValueListener;
-    private @Nullable EventValueListener eventValueListener;
+    private volatile @Nullable Object userObject;
+    private volatile @Nullable DataValueListener dataValueListener;
+    private volatile @Nullable EventValueListener eventValueListener;
 
     // MonitoredItem parameters that a user might modify via SetMonitoringMode:
-    private MonitoringMode monitoringMode = MonitoringMode.Reporting;
+    private volatile MonitoringMode monitoringMode = MonitoringMode.Reporting;
 
     // MonitoredItem parameters that a user might modify via ModifyMonitoredItem:
-    private Double samplingInterval = 1000.0;
-    private @Nullable MonitoringFilter filter;
-    private UInteger queueSize = uint(1);
-    private boolean discardOldest = true;
+    private volatile Double samplingInterval = 1000.0;
+    private volatile @Nullable MonitoringFilter filter;
+    private volatile UInteger queueSize = uint(1);
+    private volatile boolean discardOldest = true;
 
-    private @Nullable StatusCode createResult;
-    private @Nullable StatusCode modifyResult;
-    private @Nullable StatusCode deleteResult;
-    private @Nullable StatusCode setMonitoringModeResult;
+    private volatile @Nullable StatusCode createResult;
+    private volatile @Nullable StatusCode modifyResult;
+    private volatile @Nullable StatusCode deleteResult;
+    private volatile @Nullable StatusCode setMonitoringModeResult;
 
-    private @Nullable UInteger clientHandle;
+    private volatile @Nullable UInteger clientHandle;
 
     private final ReadValueId readValueId;
 
@@ -550,10 +550,10 @@ public class OpcUaMonitoredItem {
 
     static class Modifications {
 
-        private @Nullable Double samplingInterval;
-        private @Nullable MonitoringFilter filter;
-        private @Nullable UInteger queueSize;
-        private @Nullable Boolean discardOldest;
+        private volatile @Nullable Double samplingInterval;
+        private volatile @Nullable MonitoringFilter filter;
+        private volatile @Nullable UInteger queueSize;
+        private volatile @Nullable Boolean discardOldest;
 
 
         Optional<Double> samplingInterval() {
