@@ -284,7 +284,7 @@ public class OpcUaSubscription {
      *
      * @param item the MonitoredItem to add.
      */
-    public synchronized void addMonitoredItem(OpcUaMonitoredItem item) {
+    public void addMonitoredItem(OpcUaMonitoredItem item) {
         if (!monitoredItems.containsValue(item)) {
             if (itemsToDelete.remove(item)) {
                 monitoredItems.put(item.getClientHandle().orElseThrow(), item);
@@ -307,7 +307,7 @@ public class OpcUaSubscription {
      *
      * @param items the MonitoredItems to add.
      */
-    public synchronized void addMonitoredItems(List<OpcUaMonitoredItem> items) {
+    public void addMonitoredItems(List<OpcUaMonitoredItem> items) {
         items.forEach(this::addMonitoredItem);
     }
 
@@ -319,7 +319,7 @@ public class OpcUaSubscription {
      *
      * @param item the MonitoredItem to remove.
      */
-    public synchronized void removeMonitoredItem(OpcUaMonitoredItem item) {
+    public void removeMonitoredItem(OpcUaMonitoredItem item) {
         OpcUaMonitoredItem removedItem =
             item.getClientHandle().map(monitoredItems::remove).orElse(null);
 
@@ -337,7 +337,7 @@ public class OpcUaSubscription {
      *
      * @param items the MonitoredItems to remove.
      */
-    public synchronized void removeMonitoredItems(List<OpcUaMonitoredItem> items) {
+    public void removeMonitoredItems(List<OpcUaMonitoredItem> items) {
         items.forEach(this::removeMonitoredItem);
     }
 
@@ -723,17 +723,11 @@ public class OpcUaSubscription {
 
     //endregion
 
-    /**
-     * @return the current {@link SyncState}.
-     */
-    public synchronized SyncState getSyncState() {
+    public SyncState getSyncState() {
         return syncState;
     }
 
-    /**
-     * @return the current {@link ServerState}, if the Subscription has been created.
-     */
-    public synchronized Optional<ServerState> getServerState() {
+    public Optional<ServerState> getServerState() {
         return Optional.ofNullable(serverState);
     }
 
@@ -745,7 +739,7 @@ public class OpcUaSubscription {
      *
      * @return a List of the MonitoredItems belonging to this Subscription.
      */
-    public synchronized List<OpcUaMonitoredItem> getMonitoredItems() {
+    public List<OpcUaMonitoredItem> getMonitoredItems() {
         return List.copyOf(monitoredItems.values());
     }
 
@@ -757,7 +751,7 @@ public class OpcUaSubscription {
      * @return the current PublishingInterval for this Subscription.
      * @see #getRevisedPublishingInterval()
      */
-    public synchronized Double getPublishingInterval() {
+    public Double getPublishingInterval() {
         return publishingInterval;
     }
 
@@ -769,7 +763,7 @@ public class OpcUaSubscription {
      * @return the current LifetimeCount for this Subscription.
      * @see #getRevisedLifetimeCount()
      */
-    public synchronized UInteger getLifetimeCount() {
+    public UInteger getLifetimeCount() {
         return lifetimeCount;
     }
 
@@ -781,7 +775,7 @@ public class OpcUaSubscription {
      * @return the current MaxKeepAliveCount for this Subscription.
      * @see #getRevisedMaxKeepAliveCount()
      */
-    public synchronized UInteger getMaxKeepAliveCount() {
+    public UInteger getMaxKeepAliveCount() {
         return maxKeepAliveCount;
     }
 
@@ -793,7 +787,7 @@ public class OpcUaSubscription {
      *
      * @return the Subscription's Priority setting.
      */
-    public synchronized UByte getPriority() {
+    public UByte getPriority() {
         return priority;
     }
 
@@ -805,7 +799,7 @@ public class OpcUaSubscription {
      *
      * @return the Subscription's MaxNotificationsPerPublish setting.
      */
-    public synchronized UInteger getMaxNotificationsPerPublish() {
+    public UInteger getMaxNotificationsPerPublish() {
         return maxNotificationsPerPublish;
     }
 
@@ -816,7 +810,7 @@ public class OpcUaSubscription {
      *
      * @return {@code true} if publishing is enabled for this Subscription.
      */
-    public synchronized Optional<Boolean> isPublishingEnabled() {
+    public Optional<Boolean> isPublishingEnabled() {
         return getServerState().map(ServerState::isPublishingEnabled);
     }
 
@@ -827,7 +821,7 @@ public class OpcUaSubscription {
      *
      * @return the SubscriptionId assigned to this Subscription by the Server.
      */
-    public synchronized Optional<UInteger> getSubscriptionId() {
+    public Optional<UInteger> getSubscriptionId() {
         return getServerState().map(ServerState::getSubscriptionId);
     }
 
@@ -839,7 +833,7 @@ public class OpcUaSubscription {
      *
      * @return the revised PublishingInterval from the most recent create or modify operation.
      */
-    public synchronized Optional<Double> getRevisedPublishingInterval() {
+    public Optional<Double> getRevisedPublishingInterval() {
         return getServerState().map(ServerState::getPublishingInterval);
     }
 
@@ -851,7 +845,7 @@ public class OpcUaSubscription {
      *
      * @return the revised LifetimeCount from the most recent create or modify operation.
      */
-    public synchronized Optional<UInteger> getRevisedLifetimeCount() {
+    public Optional<UInteger> getRevisedLifetimeCount() {
         return getServerState().map(ServerState::getLifetimeCount);
     }
 
@@ -863,7 +857,7 @@ public class OpcUaSubscription {
      *
      * @return the revised MaxKeepAliveCount from the most recent create or modify operation.
      */
-    public synchronized Optional<UInteger> getRevisedMaxKeepAliveCount() {
+    public Optional<UInteger> getRevisedMaxKeepAliveCount() {
         return getServerState().map(ServerState::getMaxKeepAliveCount);
     }
 
@@ -882,7 +876,7 @@ public class OpcUaSubscription {
      * @see #modify()
      * @see #modifyAsync()
      */
-    public synchronized void setPublishingInterval(Double publishingInterval) {
+    public void setPublishingInterval(Double publishingInterval) {
         this.publishingInterval = publishingInterval;
 
         if (syncState != SyncState.INITIAL) {
@@ -922,7 +916,7 @@ public class OpcUaSubscription {
      * @see #modify()
      * @see #modifyAsync()
      */
-    public synchronized void setLifetimeCount(UInteger lifetimeCount) {
+    public void setLifetimeCount(UInteger lifetimeCount) {
         this.lifetimeCount = lifetimeCount;
 
         if (syncState != SyncState.INITIAL) {
@@ -951,7 +945,7 @@ public class OpcUaSubscription {
      * @see #modify()
      * @see #modifyAsync()
      */
-    public synchronized void setMaxKeepAliveCount(UInteger maxKeepAliveCount) {
+    public void setMaxKeepAliveCount(UInteger maxKeepAliveCount) {
         this.maxKeepAliveCount = maxKeepAliveCount;
 
         if (syncState != SyncState.INITIAL) {
@@ -980,7 +974,7 @@ public class OpcUaSubscription {
      * @see #modify()
      * @see #modifyAsync()
      */
-    public synchronized void setPriority(UByte priority) {
+    public void setPriority(UByte priority) {
         this.priority = priority;
 
         if (syncState != SyncState.INITIAL) {
@@ -1009,7 +1003,7 @@ public class OpcUaSubscription {
      * @see #modify()
      * @see #modifyAsync()
      */
-    public synchronized void setMaxNotificationsPerPublish(UInteger maxNotificationsPerPublish) {
+    public void setMaxNotificationsPerPublish(UInteger maxNotificationsPerPublish) {
         this.maxNotificationsPerPublish = maxNotificationsPerPublish;
 
         if (syncState != SyncState.INITIAL) {
@@ -1031,7 +1025,7 @@ public class OpcUaSubscription {
      *     MaxKeepAliveCount should be calculated automatically.
      * @see #isLifetimeAndKeepAliveCalculated()
      */
-    public synchronized void setLifetimeAndKeepAliveCalculated(boolean lifetimeAndKeepAliveCalculated) {
+    public void setLifetimeAndKeepAliveCalculated(boolean lifetimeAndKeepAliveCalculated) {
         this.lifetimeAndKeepAliveCalculated = lifetimeAndKeepAliveCalculated;
     }
 
@@ -1040,7 +1034,7 @@ public class OpcUaSubscription {
      *     automatically any time the Publishing Interval is set.
      * @see #setLifetimeAndKeepAliveCalculated(boolean)
      */
-    public synchronized boolean isLifetimeAndKeepAliveCalculated() {
+    public boolean isLifetimeAndKeepAliveCalculated() {
         return lifetimeAndKeepAliveCalculated;
     }
 
@@ -1056,7 +1050,7 @@ public class OpcUaSubscription {
      * @see #isLifetimeAndKeepAliveCalculated()
      * @see #setLifetimeAndKeepAliveCalculated(boolean)
      */
-    public synchronized void setTargetKeepAliveInterval(double targetKeepAliveInterval) {
+    public void setTargetKeepAliveInterval(double targetKeepAliveInterval) {
         if (isLifetimeAndKeepAliveCalculated()) {
             setMaxKeepAliveCount(calculateMaxKeepAliveCount(publishingInterval, targetKeepAliveInterval));
             setLifetimeCount(calculateLifetimeCount(maxKeepAliveCount));
@@ -1073,7 +1067,7 @@ public class OpcUaSubscription {
      * @param maxMonitoredItemsPerCall the maximum number of MonitoredItems that can be
      *     created/modified/deleted in a single service call.
      */
-    public synchronized void setMaxMonitoredItemsPerCall(UInteger maxMonitoredItemsPerCall) {
+    public void setMaxMonitoredItemsPerCall(UInteger maxMonitoredItemsPerCall) {
         this.maxMonitoredItemsPerCall = maxMonitoredItemsPerCall;
 
         // next service call will re-calculate the partition size
@@ -1086,7 +1080,7 @@ public class OpcUaSubscription {
      *
      * @param watchdogMultiplier the watchdog multiplier.
      */
-    public synchronized void setWatchdogMultiplier(double watchdogMultiplier) {
+    public void setWatchdogMultiplier(double watchdogMultiplier) {
         this.watchdogMultiplier = Math.max(1.0, watchdogMultiplier);
     }
 
@@ -1095,7 +1089,7 @@ public class OpcUaSubscription {
      *
      * @param listener the {@link SubscriptionListener} for this Subscription.
      */
-    public synchronized void setSubscriptionListener(@Nullable SubscriptionListener listener) {
+    public void setSubscriptionListener(@Nullable SubscriptionListener listener) {
         this.listener = listener;
     }
 
@@ -1104,27 +1098,22 @@ public class OpcUaSubscription {
      *
      * @param userObject the user object to associate with this Subscription.
      */
-    public synchronized void setUserObject(@Nullable Object userObject) {
+    public void setUserObject(@Nullable Object userObject) {
         this.userObject = userObject;
     }
 
     /**
      * @return the user object associated with this Subscription.
      */
-    public synchronized Optional<Object> getUserObject() {
+    public Optional<Object> getUserObject() {
         return Optional.ofNullable(userObject);
     }
 
-    /**
-     * Get the {@link TaskQueue} used to deliver callbacks to the {@link SubscriptionListener}.
-     *
-     * @return the {@link TaskQueue} used to deliver callbacks to the {@link SubscriptionListener}.
-     */
     public TaskQueue getDeliveryQueue() {
         return deliveryQueue;
     }
 
-    synchronized void cancelWatchdogTimer() {
+    void cancelWatchdogTimer() {
         WatchdogTimer watchdog = this.watchdogTimer;
         if (watchdog != null) {
             watchdog.cancel();
@@ -1133,7 +1122,7 @@ public class OpcUaSubscription {
         }
     }
 
-    synchronized void resetWatchdogTimer() {
+    void resetWatchdogTimer() {
         WatchdogTimer watchdog = this.watchdogTimer;
         if (watchdog != null) {
             watchdog.reset();
@@ -1159,7 +1148,7 @@ public class OpcUaSubscription {
     }
 
     @Override
-    public synchronized String toString() {
+    public String toString() {
         return new StringJoiner(", ", OpcUaSubscription.class.getSimpleName() + "[", "]")
             .add("subscriptionId=" + getSubscriptionId().orElse(null))
             .add("syncState=" + syncState)
@@ -1170,27 +1159,23 @@ public class OpcUaSubscription {
     void notifyDataReceived(MonitoredItemNotification[] notifications) {
         var items = new ArrayList<OpcUaMonitoredItem>(notifications.length);
         var values = new ArrayList<DataValue>(notifications.length);
-        SubscriptionListener listener;
 
-        synchronized (this) {
-            for (MonitoredItemNotification notification : notifications) {
-                UInteger clientHandle = notification.getClientHandle();
-                OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
-                if (item != null) {
-                    items.add(item);
-                    values.add(notification.getValue());
-                } else {
-                    // This can happen if an item is deleted while a notification is in-flight.
-                    logger.debug(
-                        "id={}, received data for unknown ClientHandle: {}",
-                        serverState.subscriptionId, clientHandle
-                    );
-                }
+        for (MonitoredItemNotification notification : notifications) {
+            UInteger clientHandle = notification.getClientHandle();
+            OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
+            if (item != null) {
+                items.add(item);
+                values.add(notification.getValue());
+            } else {
+                // This can happen if an item is deleted while a notification is in-flight.
+                logger.debug(
+                    "id={}, received data for unknown ClientHandle: {}",
+                    serverState.subscriptionId, clientHandle
+                );
             }
-
-            listener = this.listener;
         }
 
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onDataReceived(this, items, values);
         }
@@ -1205,27 +1190,23 @@ public class OpcUaSubscription {
     void notifyEventsReceived(EventFieldList[] events) {
         var items = new ArrayList<OpcUaMonitoredItem>(events.length);
         var eventValuesList = new ArrayList<Variant[]>(events.length);
-        SubscriptionListener listener;
 
-        synchronized (this) {
-            for (EventFieldList event : events) {
-                UInteger clientHandle = event.getClientHandle();
-                OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
-                if (item != null) {
-                    items.add(item);
-                    eventValuesList.add(event.getEventFields());
-                } else {
-                    // This can happen if an item is deleted while a notification is in-flight.
-                    logger.debug(
-                        "id={}, received event for unknown ClientHandle: {}",
-                        serverState.subscriptionId, clientHandle
-                    );
-                }
+        for (EventFieldList event : events) {
+            UInteger clientHandle = event.getClientHandle();
+            OpcUaMonitoredItem item = monitoredItems.get(clientHandle);
+            if (item != null) {
+                items.add(item);
+                eventValuesList.add(event.getEventFields());
+            } else {
+                // This can happen if an item is deleted while a notification is in-flight.
+                logger.debug(
+                    "id={}, received event for unknown ClientHandle: {}",
+                    serverState.subscriptionId, clientHandle
+                );
             }
-
-            listener = this.listener;
         }
 
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onEventReceived(this, items, eventValuesList);
         }
@@ -1238,54 +1219,40 @@ public class OpcUaSubscription {
     }
 
     void notifyKeepAliveReceived() {
-        SubscriptionListener listener;
-        synchronized (this) {
-            listener = this.listener;
-        }
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onKeepAliveReceived(this);
         }
     }
 
     void notifyStatusChanged(StatusCode status) {
-        SubscriptionListener listener;
-        synchronized (this) {
-            listener = this.listener;
-        }
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onStatusChanged(this, status);
         }
     }
 
     void notifyNotificationDataLost() {
-        SubscriptionListener listener;
-        synchronized (this) {
-            listener = this.listener;
-        }
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             listener.onNotificationDataLost(this);
         }
     }
 
     public void notifyTransferFailed(StatusCode status) {
-        SubscriptionListener listener;
+        cancelWatchdogTimer();
+        client.removeSubscription(this);
+        client.getPublishingManager().removeSubscription(this);
 
-        synchronized (this) {
-            cancelWatchdogTimer();
-            client.removeSubscription(this);
-            client.getPublishingManager().removeSubscription(this);
+        syncState = SyncState.INITIAL;
+        serverState = null;
+        modifications = null;
 
-            syncState = SyncState.INITIAL;
-            serverState = null;
-            modifications = null;
-
-            monitoredItemPartitionSize.reset();
-
-            listener = this.listener;
-        }
+        monitoredItemPartitionSize.reset();
 
         monitoredItems.values().forEach(OpcUaMonitoredItem::notifyTransferFailed);
 
+        SubscriptionListener listener = this.listener;
         if (listener != null) {
             deliveryQueue.execute(
                 () ->
