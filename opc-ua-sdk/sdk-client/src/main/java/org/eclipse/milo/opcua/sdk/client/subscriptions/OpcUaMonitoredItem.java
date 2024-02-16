@@ -79,7 +79,7 @@ public class OpcUaMonitoredItem {
      * @param samplingInterval the new SamplingInterval parameter value.
      * @see OpcUaSubscription#synchronizeMonitoredItems()
      */
-    public void setSamplingInterval(double samplingInterval) {
+    public synchronized void setSamplingInterval(double samplingInterval) {
         this.samplingInterval = samplingInterval;
 
         if (syncState != SyncState.INITIAL) {
@@ -101,7 +101,7 @@ public class OpcUaMonitoredItem {
      * @param queueSize the new QueueSize parameter value.
      * @see OpcUaSubscription#synchronizeMonitoredItems()
      */
-    public void setQueueSize(UInteger queueSize) {
+    public synchronized void setQueueSize(UInteger queueSize) {
         this.queueSize = queueSize;
 
         if (syncState != SyncState.INITIAL) {
@@ -122,7 +122,7 @@ public class OpcUaMonitoredItem {
      *
      * @param discardOldest the new DiscardOldest parameter value.
      */
-    public void setDiscardOldest(boolean discardOldest) {
+    public synchronized void setDiscardOldest(boolean discardOldest) {
         this.discardOldest = discardOldest;
 
         if (syncState != SyncState.INITIAL) {
@@ -144,7 +144,7 @@ public class OpcUaMonitoredItem {
      * @param filter the new Filter parameter value.
      * @see OpcUaSubscription#synchronizeMonitoredItems()
      */
-    public void setFilter(@Nullable MonitoringFilter filter) {
+    public synchronized void setFilter(@Nullable MonitoringFilter filter) {
         this.filter = filter;
 
         if (syncState != SyncState.INITIAL) {
@@ -175,7 +175,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the Client-assigned id for this MonitoredItem.
      */
-    public Optional<UInteger> getClientHandle() {
+    public synchronized Optional<UInteger> getClientHandle() {
         return Optional.ofNullable(clientHandle);
     }
 
@@ -186,7 +186,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the Server-assigned id for this MonitoredItem.
      */
-    public Optional<UInteger> getMonitoredItemId() {
+    public synchronized Optional<UInteger> getMonitoredItemId() {
         return getServerState().map(ServerState::getMonitoredItemId);
     }
 
@@ -198,7 +198,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the most recent SamplingInterval this MonitoredItem was configured with.
      */
-    public Double getSamplingInterval() {
+    public synchronized Double getSamplingInterval() {
         return samplingInterval;
     }
 
@@ -210,7 +210,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the most recent QueueSize this MonitoredItem was configured with.
      */
-    public UInteger getQueueSize() {
+    public synchronized UInteger getQueueSize() {
         return queueSize;
     }
 
@@ -219,7 +219,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the most recent DiscardOldest this MonitoredItem was configured with.
      */
-    public boolean getDiscardOldest() {
+    public synchronized boolean getDiscardOldest() {
         return discardOldest;
     }
 
@@ -228,7 +228,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the most recent Filter this MonitoredItem was configured with.
      */
-    public @Nullable MonitoringFilter getFilter() {
+    public synchronized @Nullable MonitoringFilter getFilter() {
         return filter;
     }
 
@@ -239,7 +239,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the revised SamplingInterval that the server is using for this MonitoredItem.
      */
-    public Optional<Double> getRevisedSamplingInterval() {
+    public synchronized Optional<Double> getRevisedSamplingInterval() {
         return getServerState().map(ServerState::getSamplingInterval);
     }
 
@@ -250,7 +250,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the revised QueueSize that the server is using for this MonitoredItem.
      */
-    public Optional<UInteger> getRevisedQueueSize() {
+    public synchronized Optional<UInteger> getRevisedQueueSize() {
         return getServerState().map(ServerState::getQueueSize);
     }
 
@@ -259,7 +259,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the filter result structure for the most recently configured monitoring filter.
      */
-    public Optional<ExtensionObject> getFilterResult() {
+    public synchronized Optional<ExtensionObject> getFilterResult() {
         return getServerState().map(ServerState::getFilterResult);
     }
 
@@ -268,7 +268,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the current MonitoringMode for this MonitoredItem.
      */
-    public MonitoringMode getMonitoringMode() {
+    public synchronized MonitoringMode getMonitoringMode() {
         return monitoringMode;
     }
 
@@ -278,7 +278,7 @@ public class OpcUaMonitoredItem {
      * @return the result of the most recent CreateMonitoredItems service call, if one has been
      *     made.
      */
-    public Optional<StatusCode> getCreateResult() {
+    public synchronized Optional<StatusCode> getCreateResult() {
         return Optional.ofNullable(createResult);
     }
 
@@ -288,7 +288,7 @@ public class OpcUaMonitoredItem {
      * @return the result of the most recent ModifyMonitoredItems service call, if one has been
      *     made.
      */
-    public Optional<StatusCode> getModifyResult() {
+    public synchronized Optional<StatusCode> getModifyResult() {
         return Optional.ofNullable(modifyResult);
     }
 
@@ -298,7 +298,7 @@ public class OpcUaMonitoredItem {
      * @return the result of the most recent DeleteMonitoredItems service call, if one has been
      *     made.
      */
-    public Optional<StatusCode> getDeleteResult() {
+    public synchronized Optional<StatusCode> getDeleteResult() {
         return Optional.ofNullable(deleteResult);
     }
 
@@ -307,7 +307,7 @@ public class OpcUaMonitoredItem {
      *
      * @return the result of the most recent SetMonitoringMode service call, if one has been made.
      */
-    public Optional<StatusCode> getSetMonitoringModeResult() {
+    public synchronized Optional<StatusCode> getSetMonitoringModeResult() {
         return Optional.ofNullable(setMonitoringModeResult);
     }
 
@@ -316,7 +316,7 @@ public class OpcUaMonitoredItem {
      *
      * @param listener the {@link DataValueListener} for this MonitoredItem.
      */
-    public void setDataValueListener(@Nullable DataValueListener listener) {
+    public synchronized void setDataValueListener(@Nullable DataValueListener listener) {
         this.dataValueListener = listener;
     }
 
@@ -325,7 +325,7 @@ public class OpcUaMonitoredItem {
      *
      * @param listener the {@link EventValueListener} for this MonitoredItem.
      */
-    public void setEventValueListener(@Nullable EventValueListener listener) {
+    public synchronized void setEventValueListener(@Nullable EventValueListener listener) {
         this.eventValueListener = listener;
     }
 
@@ -334,14 +334,14 @@ public class OpcUaMonitoredItem {
      *
      * @param userObject the user object to associate with this MonitoredItem.
      */
-    public void setUserObject(@Nullable Object userObject) {
+    public synchronized void setUserObject(@Nullable Object userObject) {
         this.userObject = userObject;
     }
 
     /**
      * @return the user object associated with this MonitoredItem.
      */
-    public Optional<Object> getUserObject() {
+    public synchronized Optional<Object> getUserObject() {
         return Optional.ofNullable(userObject);
     }
 
@@ -350,7 +350,7 @@ public class OpcUaMonitoredItem {
      *
      * @param clientHandle the Client-assigned id for this MonitoredItem.
      */
-    void setClientHandle(@Nullable UInteger clientHandle) {
+    synchronized void setClientHandle(@Nullable UInteger clientHandle) {
         this.clientHandle = clientHandle;
     }
 
@@ -359,19 +359,25 @@ public class OpcUaMonitoredItem {
      *
      * @param monitoringMode the current MonitoringMode for this MonitoredItem.
      */
-    void setMonitoringMode(MonitoringMode monitoringMode) {
+    synchronized void setMonitoringMode(MonitoringMode monitoringMode) {
         this.monitoringMode = monitoringMode;
     }
 
-    public SyncState getSyncState() {
+    /**
+     * @return the current {@link SyncState}.
+     */
+    public synchronized SyncState getSyncState() {
         return syncState;
     }
 
-    public Optional<ServerState> getServerState() {
+    /**
+     * @return the current {@link ServerState}, if the MonitoredItem has been created.
+     */
+    public synchronized Optional<ServerState> getServerState() {
         return Optional.ofNullable(serverState);
     }
 
-    MonitoredItemCreateRequest newCreateRequest() {
+    synchronized MonitoredItemCreateRequest newCreateRequest() {
         if (clientHandle == null) {
             throw new IllegalStateException("no clientHandle");
         }
@@ -394,7 +400,7 @@ public class OpcUaMonitoredItem {
         );
     }
 
-    MonitoredItemModifyRequest newModifyRequest() {
+    synchronized MonitoredItemModifyRequest newModifyRequest() {
         if (serverState == null) {
             throw new IllegalStateException("no ServerState");
         }
@@ -424,7 +430,7 @@ public class OpcUaMonitoredItem {
         );
     }
 
-    void applyCreateResult(MonitoredItemCreateResult result) {
+    synchronized void applyCreateResult(MonitoredItemCreateResult result) {
         StatusCode statusCode = result.getStatusCode();
 
         if (statusCode.isGood()) {
@@ -445,7 +451,7 @@ public class OpcUaMonitoredItem {
         this.createResult = statusCode;
     }
 
-    void applyModifyResult(MonitoredItemModifyResult result) {
+    synchronized void applyModifyResult(MonitoredItemModifyResult result) {
         StatusCode statusCode = result.getStatusCode();
 
         if (statusCode.isGood()) {
@@ -468,7 +474,7 @@ public class OpcUaMonitoredItem {
         this.modifyResult = statusCode;
     }
 
-    void applyDeleteResult(StatusCode statusCode) {
+    synchronized void applyDeleteResult(StatusCode statusCode) {
         syncState = SyncState.INITIAL;
         serverState = null;
         modifications = null;
@@ -477,27 +483,32 @@ public class OpcUaMonitoredItem {
         deleteResult = statusCode;
     }
 
-    void applySetMonitoringModeResult(StatusCode statusCode) {
+    synchronized void applySetMonitoringModeResult(StatusCode statusCode) {
         this.setMonitoringModeResult = statusCode;
     }
 
     void notifyDataValueReceived(DataValue value) {
-        DataValueListener listener = dataValueListener;
-
+        DataValueListener listener;
+        synchronized (this) {
+            listener = dataValueListener;
+        }
         if (listener != null) {
             listener.onDataReceived(this, value);
         }
     }
 
     void notifyEventValuesReceived(Variant[] eventValues) {
-        EventValueListener listener = eventValueListener;
+        EventValueListener listener;
+        synchronized (this) {
+            listener = eventValueListener;
+        }
 
         if (listener != null) {
             listener.onEventReceived(this, eventValues);
         }
     }
 
-    void notifyTransferFailed() {
+    synchronized void notifyTransferFailed() {
         syncState = SyncState.INITIAL;
         serverState = null;
         modifications = null;
