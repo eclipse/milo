@@ -355,6 +355,15 @@ public class OpcUaMonitoredItem {
     }
 
     /**
+     * Set the current MonitoringMode for this MonitoredItem.
+     *
+     * @param monitoringMode the current MonitoringMode for this MonitoredItem.
+     */
+    synchronized void setMonitoringMode(MonitoringMode monitoringMode) {
+        this.monitoringMode = monitoringMode;
+    }
+
+    /**
      * @return the current {@link SyncState}.
      */
     public synchronized SyncState getSyncState() {
@@ -474,11 +483,8 @@ public class OpcUaMonitoredItem {
         deleteResult = statusCode;
     }
 
-    synchronized void applySetMonitoringModeResult(MonitoringMode monitoringMode, StatusCode statusCode) {
+    synchronized void applySetMonitoringModeResult(StatusCode statusCode) {
         this.setMonitoringModeResult = statusCode;
-        if (statusCode.isGood()) {
-            this.monitoringMode = monitoringMode;
-        }
     }
 
     void notifyDataValueReceived(DataValue value) {

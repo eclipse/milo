@@ -651,15 +651,17 @@ public class OpcUaSubscription {
 
                     OpcUaMonitoredItem item = partition.get(i);
 
-                    item.applySetMonitoringModeResult(monitoringMode, result);
-
+                    item.applySetMonitoringModeResult(result);
+                    if (result.isGood()) {
+                        item.setMonitoringMode(monitoringMode);
+                    }
                     serviceOperationResults.add(
                         new MonitoredItemServiceOperationResult(item, StatusCode.GOOD, result)
                     );
                 }
             } catch (UaException e) {
                 for (OpcUaMonitoredItem item : partition) {
-                    item.applySetMonitoringModeResult(monitoringMode, e.getStatusCode());
+                    item.applySetMonitoringModeResult(e.getStatusCode());
 
                     serviceOperationResults.add(
                         new MonitoredItemServiceOperationResult(item, e.getStatusCode(), null)
