@@ -1310,8 +1310,8 @@ public class OpcUaSubscription {
         private void scheduleNext() {
             getServerState().ifPresent(state -> {
                 long delay = Math.round(
-                    ((state.publishingInterval * 2) *
-                        state.maxKeepAliveCount.longValue()) * watchdogMultiplier
+                    (state.publishingInterval *
+                        (state.maxKeepAliveCount.longValue() + 1)) * watchdogMultiplier
                 );
 
                 ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
