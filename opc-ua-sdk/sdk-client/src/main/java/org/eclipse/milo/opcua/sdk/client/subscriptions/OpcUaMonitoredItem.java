@@ -363,10 +363,16 @@ public class OpcUaMonitoredItem {
         this.monitoringMode = monitoringMode;
     }
 
+    /**
+     * @return the current {@link SyncState} of this MonitoredItem.
+     */
     public SyncState getSyncState() {
         return syncState;
     }
 
+    /**
+     * @return the current {@link ServerState} of this MonitoredItem, if it exists on the server.
+     */
     public Optional<ServerState> getServerState() {
         return Optional.ofNullable(serverState);
     }

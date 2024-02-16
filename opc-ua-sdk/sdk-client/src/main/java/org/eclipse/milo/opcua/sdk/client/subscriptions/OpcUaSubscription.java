@@ -723,10 +723,16 @@ public class OpcUaSubscription {
 
     //endregion
 
+    /**
+     * @return the current {@link SyncState} of this Subscription.
+     */
     public SyncState getSyncState() {
         return syncState;
     }
 
+    /**
+     * @return the current {@link ServerState} of this Subscription, if it has been created.
+     */
     public Optional<ServerState> getServerState() {
         return Optional.ofNullable(serverState);
     }
@@ -1109,6 +1115,11 @@ public class OpcUaSubscription {
         return Optional.ofNullable(userObject);
     }
 
+    /**
+     * Get the TaskQueue used to deliver notifications for this Subscription.
+     *
+     * @return the TaskQueue used to deliver notifications for this Subscription.
+     */
     public TaskQueue getDeliveryQueue() {
         return deliveryQueue;
     }
