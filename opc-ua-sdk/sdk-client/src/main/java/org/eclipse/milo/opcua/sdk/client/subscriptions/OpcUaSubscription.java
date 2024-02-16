@@ -102,7 +102,7 @@ public class OpcUaSubscription {
     private volatile UByte priority = DEFAULT_PRIORITY;
 
     private volatile boolean lifetimeAndKeepAliveCalculated = true;
-    private volatile double watchdogMultiplier = 2.0;
+    private volatile double watchdogMultiplier = 1.5;
 
     private volatile UInteger maxMonitoredItemsPerCall = uint(DEFAULT_MAX_MONITORED_ITEMS_PER_CALL);
     private final Lazy<UInteger> monitoredItemPartitionSize = new Lazy<>();
@@ -1310,8 +1310,8 @@ public class OpcUaSubscription {
         private void scheduleNext() {
             getServerState().ifPresent(state -> {
                 long delay = Math.round(
-                    state.publishingInterval *
-                        state.maxKeepAliveCount.longValue() * watchdogMultiplier
+                    ((state.publishingInterval * 2) *
+                        state.maxKeepAliveCount.longValue()) * watchdogMultiplier
                 );
 
                 ScheduledFuture<?> nextSf = client.getTransport().getConfig().getScheduledExecutor().schedule(
@@ -1321,6 +1321,8 @@ public class OpcUaSubscription {
                 );
 
                 scheduledFuture.set(nextSf);
+
+                logger.debug("id={} watchdog timer scheduled for +{}ms", state.subscriptionId, delay);
             });
         }
 
