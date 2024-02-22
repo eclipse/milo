@@ -46,4 +46,11 @@ public class MonitoredItemServiceOperationResult implements ServiceOperationResu
         return Optional.ofNullable(operationResult);
     }
 
+    /**
+     * @return {@code true} if both the service and operation result are good.
+     */
+    public boolean isGood() {
+        return serviceResult.isGood() && operationResult != null && operationResult.isGood();
+    }
+
 }
