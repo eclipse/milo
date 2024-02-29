@@ -29,10 +29,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Requires the Unified Automation CPP Demo server be running and the endpoint URL be pointing to it.
  */
-public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample {
+public class UnifiedAutomationReadCustomDataTypeExampleLegacy implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        var example = new UnifiedAutomationReadCustomDataTypeExample();
+        var example = new UnifiedAutomationReadCustomDataTypeExampleLegacy();
 
         new ClientExampleRunner(example, false).run();
     }

@@ -11,37 +11,38 @@
 package org.eclipse.milo.examples.client;
 
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import com.google.gson.JsonObject;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient.DefaultDataTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicEnum;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicOptionSet;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicStruct;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.sdk.core.types.json.JsonCodecFactory;
-import org.eclipse.milo.sdk.core.types.json.JsonStruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * An example that shows reading the value of a node whose DataType is a custom structure type.
  * <p>
  * Requires the Unified Automation CPP Demo server be running and the endpoint URL be pointing to it.
  */
-public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExample {
+public class UnifiedAutomationReadCustomDataTypeExample1 implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        var example = new UnifiedAutomationReadCustomDataTypeExample3();
+        var example = new UnifiedAutomationReadCustomDataTypeExample1();
 
         new ClientExampleRunner(example, false).run();
     }
@@ -50,8 +51,6 @@ public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExampl
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        client.setDataTypeManagerInitializer(new DefaultDataTypeManagerInitializer(JsonCodecFactory::create));
-
         client.connect();
 
         readWriteReadPerson(client);
@@ -65,71 +64,64 @@ public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExampl
     private void readWriteReadPerson(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Person1");
 
-        JsonStruct struct = readScalarValue(client, nodeId);
-        JsonObject value = struct.getJsonObject();
+        DynamicStruct value = readScalarValue(client, nodeId);
         logger.info("Person1: {}", value);
 
         Random r = new Random();
-        value.addProperty("Name", "Fat Boy" + r.nextInt(100));
-        value.addProperty("Gender", r.nextInt(2));
+        DynamicEnum gender = (DynamicEnum) value.getMembers().get("Gender");
+        value.getMembers().put("Name", "Fat Boy" + r.nextInt(100));
+        value.getMembers().put("Gender", new DynamicEnum(gender.getDataType(), r.nextInt(2)));
 
-        StatusCode status = writeValue(client, nodeId, new JsonStruct(struct.getDataType(), value));
+        StatusCode status = writeValue(client, nodeId, value);
         System.out.println("write status: " + status);
 
-        value = readScalarValue(client, nodeId).getJsonObject();
+        value = readScalarValue(client, nodeId);
         logger.info("Person1': {}", value);
     }
 
     private void readWriteReadWorkOrder(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Scalar.WorkOrder");
 
-        JsonStruct struct = readScalarValue(client, nodeId);
-        JsonObject value = struct.getJsonObject();
+        DynamicStruct value = readScalarValue(client, nodeId);
         logger.info("WorkOrder: {}", value);
 
-        value.addProperty("ID", UUID.randomUUID().toString());
+        value.getMembers().put("ID", UUID.randomUUID());
 
-        StatusCode status = writeValue(client, nodeId, new JsonStruct(struct.getDataType(), value));
+        StatusCode status = writeValue(client, nodeId, value);
         System.out.println("write status: " + status);
 
-        value = readScalarValue(client, nodeId).getJsonObject();
+        value = readScalarValue(client, nodeId);
         logger.info("WorkOrder': {}", value);
     }
 
     private void readWriteCarExtras(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Scalar.CarExtras");
 
-        JsonStruct struct = readScalarValue(client, nodeId);
-        JsonObject value = struct.getJsonObject();
+        DynamicOptionSet value = (DynamicOptionSet) readScalarValue(client, nodeId);
         logger.info("CarExtras: {}", value);
 
-        String b64 = value.get("Value").getAsString();
-        byte[] decoded = Base64.getDecoder().decode(b64);
-        decoded[0] = (byte) ~decoded[0];
-        value.addProperty("Value", Base64.getEncoder().encodeToString(decoded));
+        byte b = requireNonNull(value.getValue().bytes())[0];
+        value.setValue(ByteString.of(new byte[]{(byte) ~b}));
 
-        StatusCode status = writeValue(client, nodeId, new JsonStruct(struct.getDataType(), value));
+        StatusCode status = writeValue(client, nodeId, value);
         System.out.println("write status: " + status);
 
-        value = readScalarValue(client, nodeId).getJsonObject();
+        value = (DynamicOptionSet) readScalarValue(client, nodeId);
         logger.info("CarExtras': {}", value);
     }
 
     private void readWorkOrderArray(OpcUaClient client) throws Exception {
         NodeId nodeId = NodeId.parse("ns=3;s=Demo.Static.Arrays.WorkOrder");
 
-        JsonStruct[] structs = readArrayValue(client, nodeId);
-        JsonObject[] values = Arrays.stream(structs)
-            .map(JsonStruct::getJsonObject)
-            .toArray(JsonObject[]::new);
+        DynamicStruct[] value = readArrayValue(client, nodeId);
 
         logger.info("WorkOrderArray:");
-        for (int i = 0; i < values.length; i++) {
-            logger.info("  WorkOrder[{}]: {}", i, values[i]);
+        for (int i = 0; i < value.length; i++) {
+            logger.info("  WorkOrder[{}]: {}", i, value[i]);
         }
     }
 
-    private static JsonStruct readScalarValue(OpcUaClient client, NodeId nodeId) throws Exception {
+    private static DynamicStruct readScalarValue(OpcUaClient client, NodeId nodeId) throws Exception {
         DataValue dataValue = client.readValues(
             0.0,
             TimestampsToReturn.Neither,
@@ -139,10 +131,10 @@ public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExampl
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
         assert xo != null;
 
-        return (JsonStruct) xo.decode(client.getDynamicEncodingContext());
+        return (DynamicStruct) xo.decode(client.getDynamicEncodingContext());
     }
 
-    private static JsonStruct[] readArrayValue(OpcUaClient client, NodeId nodeId) throws Exception {
+    private static DynamicStruct[] readArrayValue(OpcUaClient client, NodeId nodeId) throws Exception {
         DataValue dataValue = client.readValues(
             0.0,
             TimestampsToReturn.Neither,
@@ -156,11 +148,11 @@ public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExampl
         EncodingContext ctx = client.getDynamicEncodingContext();
 
         return Arrays.stream(xos)
-            .map(xo -> (JsonStruct) xo.decode(ctx))
-            .toArray(JsonStruct[]::new);
+            .map(xo -> (DynamicStruct) xo.decode(ctx))
+            .toArray(DynamicStruct[]::new);
     }
 
-    private static StatusCode writeValue(OpcUaClient client, NodeId nodeId, JsonStruct value) throws Exception {
+    private static StatusCode writeValue(OpcUaClient client, NodeId nodeId, DynamicStruct value) throws Exception {
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
             client.getDynamicEncodingContext(),
             value,
