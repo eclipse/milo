@@ -22,6 +22,10 @@
 
     <artifactId>milo-codec-json</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.codec.json</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
