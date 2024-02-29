@@ -50,8 +50,8 @@ public class JsonOptionSetCodec extends GenericDataTypeCodec<JsonStruct> {
         JsonElement valueElement = value.getJsonObject().get("Value");
         JsonElement validBitsElement = value.getJsonObject().get("ValidBits");
 
-        encoder.encodeByteString("Value", null); // TODO valueElement to ByteString
-        encoder.encodeByteString("ValidBits", null); // TODO validBitsElement to ByteString
+        encoder.encodeByteString("Value", JsonConversions.toByteString(valueElement));
+        encoder.encodeByteString("ValidBits", JsonConversions.toByteString(validBitsElement));
     }
 
 }

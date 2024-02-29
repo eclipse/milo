@@ -11,8 +11,10 @@
 package org.eclipse.milo.examples.client;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;
@@ -85,13 +87,13 @@ public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExampl
         JsonObject value = struct.getJsonObject();
         logger.info("WorkOrder: {}", value);
 
-//        value.getMembers().put("ID", UUID.randomUUID());
-//
-//        StatusCode status = writeValue(client, nodeId, value);
-//        System.out.println("write status: " + status);
-//
-//        value = readScalarValue(client, nodeId);
-//        logger.info("WorkOrder': {}", value);
+        value.addProperty("ID", UUID.randomUUID().toString());
+
+        StatusCode status = writeValue(client, nodeId, new JsonStruct(struct.getDataType(), value));
+        System.out.println("write status: " + status);
+
+        value = readScalarValue(client, nodeId).getJsonObject();
+        logger.info("WorkOrder': {}", value);
     }
 
     private void readWriteCarExtras(OpcUaClient client) throws Exception {
@@ -101,14 +103,16 @@ public class UnifiedAutomationReadCustomDataTypeExample3 implements ClientExampl
         JsonObject value = struct.getJsonObject();
         logger.info("CarExtras: {}", value);
 
-//        byte b = requireNonNull(value.getValue().bytes())[0];
-//        value.setValue(ByteString.of(new byte[]{(byte) ~b}));
-//
-//        StatusCode status = writeValue(client, nodeId, value);
-//        System.out.println("write status: " + status);
-//
-//        value = (DynamicOptionSet) readScalarValue(client, nodeId);
-//        logger.info("CarExtras': {}", value);
+        String b64 = value.get("Value").getAsString();
+        byte[] decoded = Base64.getDecoder().decode(b64);
+        decoded[0] = (byte) ~decoded[0];
+        value.addProperty("Value", Base64.getEncoder().encodeToString(decoded));
+
+        StatusCode status = writeValue(client, nodeId, new JsonStruct(struct.getDataType(), value));
+        System.out.println("write status: " + status);
+
+        value = readScalarValue(client, nodeId).getJsonObject();
+        logger.info("CarExtras': {}", value);
     }
 
     private void readWorkOrderArray(OpcUaClient client) throws Exception {
