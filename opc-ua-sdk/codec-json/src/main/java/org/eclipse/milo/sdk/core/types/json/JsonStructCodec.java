@@ -114,7 +114,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             }
         }
 
-        return new JsonStruct(dataType, new JsonObject());
+        return new JsonStruct(dataType, jsonObject);
     }
 
     private JsonStruct decodeUnion(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
@@ -454,7 +454,29 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     private void encodeStruct(EncodingContext context, UaEncoder encoder, JsonStruct value) {
-        // TODO
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
+
+        var switchField = 0xFFFFFFFFL;
+        if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
+            switchField = 0L;
+            for (int i = 0; i < fields.length; i++) {
+                StructureField field = fields[i];
+                if (!field.getIsOptional() ||
+                    field.getIsOptional() && value.getJsonObject().has(requireNonNull(field.getName()))) {
+
+                    switchField = switchField | (1L << i);
+                }
+            }
+            encoder.encodeUInt32("SwitchField", UInteger.valueOf(switchField));
+        }
+
+        for (int i = 0; i < fields.length; i++) {
+            StructureField field = fields[i];
+            if (!field.getIsOptional() || (switchField >>> i & 1L) == 1L) {
+                JsonElement fieldValue = value.getJsonObject().get(requireNonNull(field.getName()));
+                encodeFieldValue(encoder, field, fieldValue);
+            }
+        }
     }
 
     private void encodeUnion(EncodingContext context, UaEncoder encoder, JsonStruct value) {
@@ -847,7 +869,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
         return hints.get(field);
     }
-
+    
     private static class EnumHint {}
 
     private static class StructHint {}

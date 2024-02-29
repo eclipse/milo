@@ -609,7 +609,7 @@ public class OpcUaClient {
     public DataTypeManager getDynamicDataTypeManager() throws UaException {
         return dynamicDataTypeManager.getOrThrow(() -> {
             DataTypeManager dataTypeManager = DefaultDataTypeManager.createAndInitialize(getNamespaceTable());
-            dataTypeManagerInitializer.initialize(getNamespaceTable(), dataTypeManager);
+            dataTypeManagerInitializer.initialize(getNamespaceTable(), getDataTypeTree(), dataTypeManager);
             return dataTypeManager;
         });
     }
@@ -2835,13 +2835,18 @@ public class OpcUaClient {
          * Register codecs for custom data types.
          *
          * @param namespaceTable the Server's {@link NamespaceTable}.
+         * @param dataTypeTree the Client's {@link DataTypeTree}.
          * @param dataTypeManager the {@link DataTypeManager} to register codecs with.
          */
-        void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) throws UaException;
+        void initialize(
+            NamespaceTable namespaceTable,
+            DataTypeTree dataTypeTree,
+            DataTypeManager dataTypeManager
+        ) throws UaException;
 
     }
 
-    public class DefaultDataTypeManagerInitializer implements DataTypeManagerInitializer {
+    public static class DefaultDataTypeManagerInitializer implements DataTypeManagerInitializer {
 
         private final CodecFactory codecFactory;
 
@@ -2865,15 +2870,18 @@ public class OpcUaClient {
         }
 
         @Override
-        public void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) throws UaException {
-            DataTypeTree dataTypeTree = getDataTypeTree();
+        public void initialize(
+            NamespaceTable namespaceTable,
+            DataTypeTree dataTypeTree,
+            DataTypeManager dataTypeManager
+        ) throws UaException {
 
             Tree<DataType> structureNode = dataTypeTree.getTreeNode(NodeIds.Structure);
 
             if (structureNode != null) {
                 structureNode.traverse(dataType -> {
                     if (dataType.getDataTypeDefinition() != null) {
-                        logger.debug(
+                        LoggerFactory.getLogger(getClass()).debug(
                             "Registering type: name={}, dataTypeId={}",
                             dataType.getBrowseName(), dataType.getNodeId()
                         );

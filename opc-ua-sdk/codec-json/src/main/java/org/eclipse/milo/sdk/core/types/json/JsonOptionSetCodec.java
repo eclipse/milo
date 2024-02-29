@@ -39,8 +39,8 @@ public class JsonOptionSetCodec extends GenericDataTypeCodec<JsonStruct> {
         ByteString validBits = decoder.decodeByteString("ValidBits");
 
         var jsonObject = new JsonObject();
-        jsonObject.add("Value", null); // TODO value to JsonElement
-        jsonObject.add("ValidBits", null); // TODO validBits to JsonElement
+        jsonObject.add("Value", JsonConversions.fromByteString(value));
+        jsonObject.add("ValidBits", JsonConversions.fromByteString(validBits));
 
         return new JsonStruct(dataType, jsonObject);
     }
