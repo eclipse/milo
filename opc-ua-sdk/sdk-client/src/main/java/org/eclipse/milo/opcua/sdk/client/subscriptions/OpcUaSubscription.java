@@ -139,6 +139,11 @@ public class OpcUaSubscription {
 
     //region Subscription Management
 
+    /**
+     * Create this Subscription on the Server.
+     *
+     * @throws UaException if a service- or operation-level error occurs.
+     */
     public void create() throws UaException {
         if (syncState == SyncState.INITIAL) {
             if (maxKeepAliveCount == null) {
@@ -182,6 +187,12 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Create this Subscription on the Server.
+     *
+     * @return a {@link CompletionStage} that completes successfully if the Subscription was
+     *     created, or completes exceptionally if there was a service- or operation-level error.
+     */
     public CompletionStage<Unit> createAsync() {
         return supplyAsyncCompose(() -> {
             try {
@@ -193,6 +204,11 @@ public class OpcUaSubscription {
         }, client.getTransport().getConfig().getExecutor());
     }
 
+    /**
+     * Call the ModifySubscription service to update the Subscription's parameters on the Server.
+     *
+     * @throws UaException if a service- or operation-level error occurs.
+     */
     public void modify() throws UaException {
         if (syncState == SyncState.INITIAL) {
             throw new UaException(StatusCodes.Bad_InvalidState);
@@ -229,6 +245,12 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Call the ModifySubscription service to update the Subscription's parameters on the Server.
+     *
+     * @return a {@link CompletionStage} that completes successfully if the Subscription was
+     *     modified, or completes exceptionally if there was a service- or operation-level error.
+     */
     public CompletionStage<Unit> modifyAsync() {
         return supplyAsyncCompose(() -> {
             try {
@@ -240,6 +262,11 @@ public class OpcUaSubscription {
         }, client.getTransport().getConfig().getExecutor());
     }
 
+    /**
+     * Delete this Subscription from the Server.
+     *
+     * @throws UaException if a service- or operation-level error occurs.
+     */
     public void delete() throws UaException {
         if (syncState != SyncState.INITIAL) {
             DeleteSubscriptionsResponse response =
@@ -261,6 +288,12 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Delete this Subscription from the Server.
+     *
+     * @return a {@link CompletionStage} that completes successfully if the Subscription was
+     *     deleted, or completes exceptionally if there was a service- or operation-level error.
+     */
     public CompletionStage<Unit> deleteAsync() {
         return supplyAsyncCompose(() -> {
             try {
@@ -710,6 +743,13 @@ public class OpcUaSubscription {
         }
     }
 
+    /**
+     * Set the publishing mode, i.e. enable or disable publishing, for this Subscription.
+     *
+     * @param enabled {@code true} to enable publishing, {@code false} to disable publishing.
+     * @return a {@link CompletionStage} that completes successfully if the operation was
+     *     successful, or completes exceptionally if there was a service- or operation-level error.
+     */
     public CompletionStage<Unit> setPublishingModeAsync(boolean enabled) {
         return supplyAsyncCompose(() -> {
             try {

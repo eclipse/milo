@@ -383,6 +383,8 @@ public class OpcUaMonitoredItem {
         }
 
         ExtensionObject filterXo = null;
+
+        MonitoringFilter filter = this.filter;
         if (filter != null) {
             filterXo = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, filter);
         }
@@ -457,8 +459,10 @@ public class OpcUaMonitoredItem {
         if (statusCode.isGood()) {
             modifications = null;
 
+            UInteger monitoredItemId = serverState.monitoredItemId;
+
             serverState = new ServerState(
-                serverState.monitoredItemId,
+                monitoredItemId,
                 monitoringMode,
                 result.getRevisedSamplingInterval(),
                 result.getFilterResult(),
@@ -691,9 +695,7 @@ public class OpcUaMonitoredItem {
             QualifiedName.NULL_VALUE
         );
 
-        var item = new OpcUaMonitoredItem(readValueId, monitoringMode);
-
-        return item;
+        return new OpcUaMonitoredItem(readValueId, monitoringMode);
     }
 
     /**
