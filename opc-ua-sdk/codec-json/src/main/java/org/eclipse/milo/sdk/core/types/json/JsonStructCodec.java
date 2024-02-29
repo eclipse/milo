@@ -512,9 +512,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             if (hint instanceof BuiltinDataType) {
                 encodeBuiltinDataType(encoder, fieldName, (BuiltinDataType) hint, value);
             } else if (hint instanceof EnumHint) {
-                // TODO JsonEnum should be a public class like DynamicEnum is, and then we just do a cast here.
-                //  That means the decoder needs to produce JsonEnum as well, when appropriate.
-                encoder.encodeEnum(fieldName, new JsonEnum(value.getAsInt(), dataTypeId.expanded()));
+                encoder.encodeEnum(fieldName, new JsonEnumWrapper(value.getAsInt(), dataTypeId.expanded()));
             } else if (hint instanceof StructHint) {
                 encoder.encodeStruct(fieldName, value, dataTypeId);
             } else {
@@ -527,9 +525,9 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             if (hint instanceof BuiltinDataType) {
                 encodeBuiltinDataTypeArray(encoder, fieldName, (BuiltinDataType) hint, jsonArray);
             } else if (hint instanceof EnumHint) {
-                JsonEnum[] enumValues = new JsonEnum[jsonArray.size()];
+                JsonEnumWrapper[] enumValues = new JsonEnumWrapper[jsonArray.size()];
                 for (int i = 0; i < jsonArray.size(); i++) {
-                    enumValues[i] = new JsonEnum(jsonArray.get(i).getAsInt(), dataTypeId.expanded());
+                    enumValues[i] = new JsonEnumWrapper(jsonArray.get(i).getAsInt(), dataTypeId.expanded());
                 }
                 encoder.encodeEnumArray(fieldName, enumValues);
             } else if (hint instanceof StructHint) {
@@ -874,11 +872,11 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
     private static class StructHint {}
 
-    private static class JsonEnum implements UaEnumeratedType {
+    private static class JsonEnumWrapper implements UaEnumeratedType {
         private final int value;
         private final ExpandedNodeId typeId;
 
-        JsonEnum(int value, ExpandedNodeId typeId) {
+        JsonEnumWrapper(int value, ExpandedNodeId typeId) {
             this.value = value;
             this.typeId = typeId;
         }
