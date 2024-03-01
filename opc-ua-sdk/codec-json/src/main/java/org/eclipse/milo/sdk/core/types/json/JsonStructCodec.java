@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.sdk.core.types.json;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -544,7 +547,9 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
             Object hint = getHint(field);
             if (hint instanceof BuiltinDataType) {
-                // TODO
+                Object[] flatArray = encodeBuiltinDataTypeMatrixFlat((BuiltinDataType) hint, jsonArray);
+                var matrix = new Matrix(flatArray, getDimensions(jsonArray), (BuiltinDataType) hint);
+                encoder.encodeMatrix(fieldName, matrix);
             } else if (hint instanceof EnumHint) {
                 // TODO
             } else if (hint instanceof StructHint) {
@@ -839,6 +844,46 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
+    static Object[] encodeBuiltinDataTypeMatrixFlat(BuiltinDataType dataType, JsonArray jsonArray) {
+        var elements = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            var element = jsonArray.get(i);
+            if (element.isJsonArray()) {
+                Collections.addAll(elements, encodeBuiltinDataTypeMatrixFlat(dataType, element.getAsJsonArray()));
+            } else {
+                elements.add(JsonConversions.to(element, dataType));
+            }
+        }
+
+        return elements.toArray();
+    }
+
+    static Object encodeBuiltinDataTypeMatrixNested(BuiltinDataType dataType, JsonArray jsonArray) {
+        Object javaArray = Array.newInstance(dataType.getBackingClass(), getDimensions(jsonArray));
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            var element = jsonArray.get(i);
+            if (element.isJsonArray()) {
+                Array.set(javaArray, i, encodeBuiltinDataTypeMatrixNested(dataType, element.getAsJsonArray()));
+            } else {
+                Array.set(javaArray, i, JsonConversions.to(element, dataType));
+            }
+        }
+
+        return javaArray;
+    }
+
+    static int[] getDimensions(JsonArray array) {
+        var dimensions = new ArrayList<Integer>();
+        dimensions.add(array.size());
+        while (!array.isEmpty() && array.get(0).isJsonArray()) {
+            array = array.get(0).getAsJsonArray();
+            dimensions.add(array.size());
+        }
+        return dimensions.stream().mapToInt(i -> i).toArray();
+    }
+
     //endregion
 
     private @Nullable Object getHint(StructureField field) {
@@ -867,7 +912,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
         return hints.get(field);
     }
-    
+
     private static class EnumHint {}
 
     private static class StructHint {}

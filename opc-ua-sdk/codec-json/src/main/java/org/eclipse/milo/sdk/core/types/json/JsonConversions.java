@@ -167,6 +167,75 @@ public class JsonConversions {
 
     //region JSON to OPC UA Conversions
 
+    /**
+     * Convert a {@link JsonElement} to a value of some OPC UA {@link BuiltinDataType}.
+     * <p>
+     * Converting to values of type {@link BuiltinDataType#DiagnosticInfo} is not supported.
+     *
+     * @param element the {@link JsonElement} to convert.
+     * @param dataType the OPC UA {@link BuiltinDataType} to convert to.
+     * @return the converted value.
+     * @throws IllegalArgumentException if the {@link BuiltinDataType} is not supported.
+     */
+    public static Object to(JsonElement element, BuiltinDataType dataType) {
+        switch (dataType) {
+            case Boolean:
+                return toBoolean(element);
+            case SByte:
+                return toSByte(element);
+            case Byte:
+                return toByte(element);
+            case Int16:
+                return toInt16(element);
+            case UInt16:
+                return toUInt16(element);
+            case Int32:
+                return toInt32(element);
+            case UInt32:
+                return toUInt32(element);
+            case Int64:
+                return toInt64(element);
+            case UInt64:
+                return toUInt64(element);
+            case Float:
+                return toFloat(element);
+            case Double:
+                return toDouble(element);
+            case String:
+                return toString(element);
+            case DateTime:
+                return toDateTime(element);
+            case Guid:
+                return toGuid(element);
+            case ByteString:
+                return toByteString(element);
+            case XmlElement:
+                return toXmlElement(element);
+            case NodeId:
+                return toNodeId(element);
+            case ExpandedNodeId:
+                return toExpandedNodeId(element);
+            case StatusCode:
+                return toStatusCode(element);
+            case QualifiedName:
+                return toQualifiedName(element);
+            case LocalizedText:
+                return toLocalizedText(element);
+            case ExtensionObject:
+                return toExtensionObject(element);
+            case DataValue:
+                return toDataValue(element);
+            case Variant:
+                return toVariant(element);
+            case DiagnosticInfo:
+            default:
+                // note: shouldn't be possible to get here.
+                // DiagnosticInfo is not allowed in Variant.
+                // All other types should be handled above.
+                throw new IllegalArgumentException("dataType: " + dataType);
+        }
+    }
+
     public static boolean toBoolean(JsonElement element) {
         return element.getAsBoolean();
     }
