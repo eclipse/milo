@@ -42,6 +42,72 @@ public class JsonConversions {
 
     //region OPC UA to JSON Conversions
 
+    /**
+     * Convert an OPC UA value of some {@link BuiltinDataType} to a {@link JsonElement}.
+     * <p>
+     * Converting from values of type {@link BuiltinDataType#DiagnosticInfo} is not supported.
+     *
+     * @param value the OPC UA value to convert.
+     * @param dataType the OPC UA {@link BuiltinDataType} of the value.
+     * @return the converted {@link JsonElement}.
+     * @throws IllegalArgumentException if the {@link BuiltinDataType} is not supported.
+     */
+    public static JsonElement from(Object value, BuiltinDataType dataType) {
+        switch (dataType) {
+            case Boolean:
+                return fromBoolean((Boolean) value);
+            case SByte:
+                return fromSByte((Byte) value);
+            case Byte:
+                return fromByte((UByte) value);
+            case Int16:
+                return fromInt16((Short) value);
+            case UInt16:
+                return fromUInt16((UShort) value);
+            case Int32:
+                return fromInt32((Integer) value);
+            case UInt32:
+                return fromUInt32((UInteger) value);
+            case Int64:
+                return fromInt64((Long) value);
+            case UInt64:
+                return fromUInt64((ULong) value);
+            case Float:
+                return fromFloat((Float) value);
+            case Double:
+                return fromDouble((Double) value);
+            case String:
+                return fromString((String) value);
+            case DateTime:
+                return fromDateTime((DateTime) value);
+            case Guid:
+                return fromGuid((UUID) value);
+            case ByteString:
+                return fromByteString((ByteString) value);
+            case XmlElement:
+                return fromXmlElement((XmlElement) value);
+            case NodeId:
+                return fromNodeId((NodeId) value);
+            case ExpandedNodeId:
+                return fromExpandedNodeId((ExpandedNodeId) value);
+            case StatusCode:
+                return fromStatusCode((StatusCode) value);
+            case QualifiedName:
+                return fromQualifiedName((QualifiedName) value);
+            case LocalizedText:
+                return fromLocalizedText((LocalizedText) value);
+            case ExtensionObject:
+                return fromExtensionObject((ExtensionObject) value);
+            case DataValue:
+                return fromDataValue((DataValue) value);
+            case Variant:
+                return fromVariant((Variant) value);
+            case DiagnosticInfo:
+            default:
+                throw new IllegalArgumentException("dataType: " + dataType);
+        }
+    }
+
     public static JsonElement fromBoolean(boolean value) {
         return new JsonPrimitive(value);
     }

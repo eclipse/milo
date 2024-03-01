@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.sdk.core.types.json;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
 import com.google.gson.JsonObject;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -36,6 +39,27 @@ public class JsonStruct implements UaStructuredType {
     @Override
     public ExpandedNodeId getTypeId() {
         return dataType.getNodeId().expanded();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        JsonStruct that = (JsonStruct) object;
+        return Objects.equals(getDataType(), that.getDataType()) && Objects.equals(getJsonObject(), that.getJsonObject());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDataType(), getJsonObject());
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", JsonStruct.class.getSimpleName() + "[", "]")
+            .add("dataType=" + dataType)
+            .add("jsonObject=" + jsonObject)
+            .toString();
     }
 
 }

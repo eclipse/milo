@@ -12,9 +12,12 @@ package org.eclipse.milo.sdk.core.types.json;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import com.google.gson.JsonArray;
@@ -184,13 +187,16 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             Object hint = getHint(field);
             if (hint instanceof BuiltinDataType) {
                 Matrix matrix = decoder.decodeMatrix(fieldName, (BuiltinDataType) hint);
-                return JsonNull.INSTANCE; // TODO
+
+                return decodeBuiltinDataTypeMatrix(matrix);
             } else if (hint instanceof EnumHint) {
                 Matrix matrix = decoder.decodeEnumMatrix(fieldName);
-                return JsonNull.INSTANCE; // TODO
+
+                return decodeEnumMatrix(matrix);
             } else if (hint instanceof StructHint) {
                 Matrix matrix = decoder.decodeStructMatrix(fieldName, dataTypeId);
-                return JsonNull.INSTANCE; // TODO
+
+                return decodeStructMatrix(matrix);
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -199,7 +205,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
-    private JsonElement decodeBuiltinDataType(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
+    private static JsonElement decodeBuiltinDataType(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
         switch (dataType) {
             case Boolean:
                 return JsonConversions.fromBoolean(decoder.decodeBoolean(fieldName));
@@ -256,7 +262,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
-    private JsonElement decodeBuiltinDataTypeArray(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
+    private static JsonElement decodeBuiltinDataTypeArray(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
         switch (dataType) {
             case Boolean: {
                 var array = new JsonArray();
@@ -432,6 +438,73 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
+    static JsonElement decodeBuiltinDataTypeMatrix(Matrix matrix) {
+        return matrix.getBuiltinDataType()
+            .map(dataType ->
+                decodeBuiltinDataTypeMatrix(matrix.getElements(), dataType, matrix.getDimensions(), 0)
+            )
+            .orElse(JsonNull.INSTANCE);
+    }
+
+    private static JsonElement decodeBuiltinDataTypeMatrix(Object flatArray, BuiltinDataType dataType, int[] dimensions, int offset) {
+        if (dimensions.length == 1) {
+            var jsonArray = new JsonArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                jsonArray.add(JsonConversions.from(Array.get(flatArray, offset + i), dataType));
+            }
+            return jsonArray;
+        } else {
+            var jsonArray = new JsonArray();
+            int[] dimensionsTail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+
+            for (int i = 0; i < dimensions[0]; i++) {
+                JsonElement e = decodeBuiltinDataTypeMatrix(
+                    flatArray,
+                    dataType,
+                    dimensionsTail,
+                    offset + i * Arrays.stream(dimensionsTail).reduce(1, (a, b) -> a * b)
+                );
+                jsonArray.add(e);
+            }
+
+            return jsonArray;
+        }
+    }
+
+    static JsonElement decodeEnumMatrix(Matrix matrix) {
+        return decodeBuiltinDataTypeMatrix(matrix.getElements(), BuiltinDataType.Int32, matrix.getDimensions(), 0);
+    }
+
+    static JsonElement decodeStructMatrix(Matrix matrix) {
+        return decodeStructMatrix(matrix.getElements(), matrix.getDimensions(), 0);
+    }
+
+    private static JsonElement decodeStructMatrix(Object flatArray, int[] dimensions, int offset) {
+        if (dimensions.length == 1) {
+            var jsonArray = new JsonArray();
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object value = Array.get(flatArray, offset + i);
+                JsonStruct struct = (JsonStruct) value;
+                jsonArray.add(struct.getJsonObject());
+            }
+            return jsonArray;
+        } else {
+            var jsonArray = new JsonArray();
+            int[] dimensionsTail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+
+            for (int i = 0; i < dimensions[0]; i++) {
+                JsonElement e = decodeStructMatrix(
+                    flatArray,
+                    dimensionsTail,
+                    offset + i * Arrays.stream(dimensionsTail).reduce(1, (a, b) -> a * b)
+                );
+                jsonArray.add(e);
+            }
+
+            return jsonArray;
+        }
+    }
+
     //endregion
 
     //region Encoding
@@ -551,9 +624,13 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 var matrix = new Matrix(flatArray, getDimensions(jsonArray), (BuiltinDataType) hint);
                 encoder.encodeMatrix(fieldName, matrix);
             } else if (hint instanceof EnumHint) {
-                // TODO
+                Object[] flatArray = encodeEnumMatrixFlat(dataTypeId.expanded(), jsonArray);
+                var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.Int32);
+                encoder.encodeEnumMatrix(fieldName, matrix);
             } else if (hint instanceof StructHint) {
-                // TODO
+                Object[] flatArray = encodeStructMatrixFlat(dataTypeTree.getDataType(dataTypeId), jsonArray);
+                var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
+                encoder.encodeStructMatrix(fieldName, matrix, dataTypeId);
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -859,6 +936,38 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         return elements.toArray();
     }
 
+    static Object[] encodeEnumMatrixFlat(ExpandedNodeId dataTypeId, JsonArray jsonArray) {
+        var elements = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            var element = jsonArray.get(i);
+            if (element.isJsonArray()) {
+                Collections.addAll(elements, encodeEnumMatrixFlat(dataTypeId, element.getAsJsonArray()));
+            } else {
+                var wrapper = new JsonEnumWrapper(element.getAsInt(), dataTypeId);
+                elements.add(wrapper);
+            }
+        }
+
+        return elements.toArray();
+    }
+
+    static Object[] encodeStructMatrixFlat(DataType dataType, JsonArray jsonArray) {
+        var elements = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            var element = jsonArray.get(i);
+            if (element.isJsonArray()) {
+                Collections.addAll(elements, encodeStructMatrixFlat(dataType, element.getAsJsonArray()));
+            } else {
+                var struct = new JsonStruct(dataType, element.getAsJsonObject());
+                elements.add(struct);
+            }
+        }
+
+        return elements.toArray();
+    }
+
     static Object encodeBuiltinDataTypeMatrixNested(BuiltinDataType dataType, JsonArray jsonArray) {
         Object javaArray = Array.newInstance(dataType.getBackingClass(), getDimensions(jsonArray));
 
@@ -935,6 +1044,28 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         public int getValue() {
             return value;
         }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (object == null || getClass() != object.getClass()) return false;
+            JsonEnumWrapper that = (JsonEnumWrapper) object;
+            return getValue() == that.getValue() && Objects.equals(getTypeId(), that.getTypeId());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getValue(), getTypeId());
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", JsonEnumWrapper.class.getSimpleName() + "[", "]")
+                .add("value=" + value)
+                .add("typeId=" + typeId)
+                .toString();
+        }
+
     }
 
 }
