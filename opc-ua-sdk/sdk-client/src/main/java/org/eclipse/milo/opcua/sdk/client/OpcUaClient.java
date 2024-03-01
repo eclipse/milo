@@ -14,11 +14,13 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -31,7 +33,8 @@ import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.PublishingManager;
 import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicCodecFactory;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
@@ -317,7 +320,8 @@ public class OpcUaClient {
 
     private final Lazy<DataTypeTree> dataTypeTree = new Lazy<>();
 
-    private final OpcUaSubscriptionManager subscriptionManager;
+    private final PublishingManager publishingManager;
+    private final Map<UInteger, OpcUaSubscription> subscriptions = new ConcurrentHashMap<>();
 
     private final SessionFsm sessionFsm;
 
@@ -444,7 +448,7 @@ public class OpcUaClient {
         faultNotificationQueue = new ExecutionQueue(transport.getConfig().getExecutor());
 
         addressSpace = new AddressSpace(this);
-        subscriptionManager = new OpcUaSubscriptionManager(this);
+        publishingManager = new PublishingManager(this);
 
         ObjectTypeInitializer.initialize(namespaceTable, objectTypeManager);
         VariableTypeInitializer.initialize(namespaceTable, variableTypeManager);
@@ -565,8 +569,20 @@ public class OpcUaClient {
         return variableTypeManager;
     }
 
-    public OpcUaSubscriptionManager getSubscriptionManager() {
-        return subscriptionManager;
+    public void addSubscription(OpcUaSubscription subscription) {
+        subscription.getSubscriptionId().ifPresent(id -> subscriptions.put(id, subscription));
+    }
+
+    public void removeSubscription(OpcUaSubscription subscription) {
+        subscription.getSubscriptionId().ifPresent(subscriptions::remove);
+    }
+
+    public List<OpcUaSubscription> getSubscriptions() {
+        return List.copyOf(subscriptions.values());
+    }
+
+    public PublishingManager getPublishingManager() {
+        return publishingManager;
     }
 
     /**

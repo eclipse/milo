@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,18 +8,22 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.nodes;
+package org.eclipse.milo.opcua.stack.core.encoding;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 
-public class TestEncodingContext implements EncodingContext {
+public class DefaultEncodingContext implements EncodingContext {
+
+    public final static EncodingContext INSTANCE = new DefaultEncodingContext();
+
+    public DefaultEncodingContext() {}
+
+    private final NamespaceTable namespaceTable = new NamespaceTable();
+    private final ServerTable serverTable = new ServerTable();
 
     @Override
     public DataTypeManager getDataTypeManager() {
@@ -38,12 +42,12 @@ public class TestEncodingContext implements EncodingContext {
 
     @Override
     public NamespaceTable getNamespaceTable() {
-        return new NamespaceTable();
+        return namespaceTable;
     }
 
     @Override
     public ServerTable getServerTable() {
-        return new ServerTable();
+        return serverTable;
     }
 
 }

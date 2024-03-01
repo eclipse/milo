@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -57,7 +58,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpcUaJsonDecoderTest {
 
-    private final EncodingContext context = new TestEncodingContext();
+    private final EncodingContext context = DefaultEncodingContext.INSTANCE;
 
     @Test
     void readBoolean() throws IOException {

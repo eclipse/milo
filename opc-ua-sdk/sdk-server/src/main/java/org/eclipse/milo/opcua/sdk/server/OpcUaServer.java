@@ -475,24 +475,39 @@ public class OpcUaServer extends AbstractServiceHandler {
             ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
 
             if (serviceHandler != null) {
-                logger.trace(
-                    "Service request received: path={} handle={} service={} remote={}",
-                    path,
-                    requestMessage.getRequestHeader().getRequestHandle(),
-                    service,
-                    context.getChannel().remoteAddress()
-                );
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                        "Service request received: path={} handle={} service={} remote={}",
+                        path,
+                        requestMessage.getRequestHeader().getRequestHandle(),
+                        service,
+                        context.getChannel().remoteAddress()
+                    );
+                }
 
                 return serviceHandler.handle(context, requestMessage).whenComplete(
-                    (r, ex) ->
-                        logger.trace(
-                            "Service request completed: path={} handle={} service={} remote={}",
-                            path,
-                            requestMessage.getRequestHeader().getRequestHandle(),
-                            service,
-                            context.getChannel().remoteAddress(),
-                            ex
-                        )
+                    (r, ex) -> {
+                        if (ex == null) {
+                            if (logger.isTraceEnabled()) {
+                                logger.trace(
+                                    "Service request completed: path={} handle={} service={} remote={}",
+                                    path,
+                                    requestMessage.getRequestHeader().getRequestHandle(),
+                                    service,
+                                    context.getChannel().remoteAddress()
+                                );
+                            }
+                        } else {
+                            logger.warn(
+                                "Service request completed exceptionally: path={} handle={} service={} remote={}",
+                                path,
+                                requestMessage.getRequestHeader().getRequestHandle(),
+                                service,
+                                context.getChannel().remoteAddress(),
+                                ex
+                            );
+                        }
+                    }
                 );
             } else {
                 logger.warn("No ServiceHandler registered for path={} service={}", path, service);

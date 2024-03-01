@@ -620,7 +620,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             if (typeId == -1) {
                 LoggerFactory.getLogger(getClass())
-                    .warn("Not a built-in type: {}", valueClass);
+                    .warn("Not a built-in type: value={}, valueClass={}", value, valueClass, new Exception());
             }
 
             if (value.getClass().isArray() || value instanceof Matrix) {

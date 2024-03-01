@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,8 +14,8 @@ import java.util.Arrays;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -23,6 +23,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -33,11 +35,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UaMethodTest extends AbstractClientServerTest {
 
+    OpcUaSubscription subscription;
+    OpcUaMonitoredItem monitoredItem;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        subscription = new OpcUaSubscription(client);
+        subscription.create();
+
+        monitoredItem = OpcUaMonitoredItem.newDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        subscription.delete();
+    }
+
     @Test
     public void findMethod() throws UaException {
-        ManagedSubscription subscription = ManagedSubscription.create(client);
-        ManagedDataItem dataItem = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
-
         AddressSpace addressSpace = client.getAddressSpace();
 
         UaObjectNode serverNode = addressSpace.getObjectNode(NodeIds.Server);
@@ -57,21 +74,18 @@ public class UaMethodTest extends AbstractClientServerTest {
 
         Variant[] outputs = getMonitoredItems.call(
             new Variant[]{
-                new Variant(subscription.getSubscription().getSubscriptionId())
+                new Variant(subscription.getSubscriptionId().orElseThrow())
             }
         );
 
-        UInteger[] expected0 = {dataItem.getMonitoredItem().getMonitoredItemId()};
-        UInteger[] expected1 = {dataItem.getMonitoredItem().getClientHandle()};
+        UInteger[] expected0 = {monitoredItem.getMonitoredItemId().orElseThrow()};
+        UInteger[] expected1 = {monitoredItem.getClientHandle().orElseThrow()};
         assertArrayEquals(expected0, (UInteger[]) outputs[0].getValue());
         assertArrayEquals(expected1, (UInteger[]) outputs[1].getValue());
     }
 
     @Test
     public void callMethod() throws UaException {
-        ManagedSubscription subscription = ManagedSubscription.create(client);
-        ManagedDataItem dataItem = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
-
         AddressSpace addressSpace = client.getAddressSpace();
 
         UaObjectNode serverNode = addressSpace.getObjectNode(NodeIds.Server);
@@ -79,12 +93,12 @@ public class UaMethodTest extends AbstractClientServerTest {
         Variant[] outputs = serverNode.callMethod(
             "GetMonitoredItems",
             new Variant[]{
-                new Variant(subscription.getSubscription().getSubscriptionId())
+                new Variant(subscription.getSubscriptionId().orElseThrow())
             }
         );
 
-        UInteger[] expected0 = {dataItem.getMonitoredItem().getMonitoredItemId()};
-        UInteger[] expected1 = {dataItem.getMonitoredItem().getClientHandle()};
+        UInteger[] expected0 = {monitoredItem.getMonitoredItemId().orElseThrow()};
+        UInteger[] expected1 = {monitoredItem.getClientHandle().orElseThrow()};
         assertArrayEquals(expected0, (UInteger[]) outputs[0].getValue());
         assertArrayEquals(expected1, (UInteger[]) outputs[1].getValue());
     }

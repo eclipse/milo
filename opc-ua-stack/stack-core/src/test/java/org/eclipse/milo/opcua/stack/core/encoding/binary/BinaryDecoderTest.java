@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.encoding.TestEncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
@@ -45,8 +45,8 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
 
         assertNotNull(codec);
 
-        codec.encode(new TestEncodingContext(), writer, argument);
-        Argument decoded = (Argument) codec.decode(new TestEncodingContext(), reader);
+        codec.encode(DefaultEncodingContext.INSTANCE, writer, argument);
+        Argument decoded = (Argument) codec.decode(DefaultEncodingContext.INSTANCE, reader);
 
         assertEquals(decoded.getName(), argument.getName());
 

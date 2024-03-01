@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.encoding.binary;
 
 import io.netty.buffer.ByteBuf;
-import org.eclipse.milo.opcua.stack.core.encoding.TestEncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -25,8 +25,8 @@ import static org.testng.Assert.assertEquals;
 
 public class DataValueSerializationTest {
 
-    private final OpcUaBinaryEncoder encoder = new OpcUaBinaryEncoder(new TestEncodingContext());
-    private final OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(new TestEncodingContext());
+    private final OpcUaBinaryEncoder encoder = new OpcUaBinaryEncoder(DefaultEncodingContext.INSTANCE);
+    private final OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(DefaultEncodingContext.INSTANCE);
 
     @Test(dataProvider = "getValues")
     public void testDataValueRoundTrip(DataValue value) {

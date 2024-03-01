@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -37,8 +37,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.identity.SignedIdentityToken;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionFuture;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.UaSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -782,11 +781,7 @@ public class SessionFsmFactory {
         LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
 
         client.getTransport().sendRequestMessage(request).whenCompleteAsync(
-            (csr, ex2) -> {
-                client.getSubscriptionManager().cancelWatchdogTimers();
-
-                closeFuture.complete(Unit.VALUE);
-            },
+            (csr, ex2) -> closeFuture.complete(Unit.VALUE),
             client.getTransport().getConfig().getExecutor()
         );
 
@@ -968,8 +963,7 @@ public class SessionFsmFactory {
         OpcUaSession session
     ) {
 
-        OpcUaSubscriptionManager subscriptionManager = client.getSubscriptionManager();
-        List<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
+        List<OpcUaSubscription> subscriptions = client.getSubscriptions();
 
         if (subscriptions.isEmpty()) {
             return completedFuture(Unit.VALUE);
@@ -978,7 +972,7 @@ public class SessionFsmFactory {
         CompletableFuture<Unit> transferFuture = new CompletableFuture<>();
 
         UInteger[] subscriptionIdsArray = subscriptions.stream()
-            .map(UaSubscription::getSubscriptionId)
+            .flatMap(s -> s.getSubscriptionId().stream())
             .toArray(UInteger[]::new);
 
         TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
@@ -1003,7 +997,7 @@ public class SessionFsmFactory {
                     if (LOGGER.isDebugEnabled()) {
                         try {
                             Stream<UInteger> subscriptionIds = subscriptions.stream()
-                                .map(UaSubscription::getSubscriptionId);
+                                .flatMap(s -> s.getSubscriptionId().stream());
                             Stream<StatusCode> statusCodes = Stream.of(results)
                                 .map(TransferResult::getStatusCode);
 
@@ -1029,12 +1023,9 @@ public class SessionFsmFactory {
                             TransferResult result = results[i];
 
                             if (!result.getStatusCode().isGood()) {
-                                UaSubscription subscription = subscriptions.get(i);
+                                OpcUaSubscription subscription = subscriptions.get(i);
 
-                                subscriptionManager.transferFailed(
-                                    subscription.getSubscriptionId(),
-                                    result.getStatusCode()
-                                );
+                                subscription.notifyTransferFailed(result.getStatusCode());
                             }
                         }
                     });
@@ -1048,11 +1039,8 @@ public class SessionFsmFactory {
                     LOGGER.debug("[{}] TransferSubscriptions not supported: {}", ctx.getInstanceId(), statusCode);
 
                     client.getTransport().getConfig().getExecutor().execute(() -> {
-                        // transferFailed() will remove the subscription, but that is okay
-                        // because the list from getSubscriptions() above is a copy.
-                        for (UaSubscription subscription : subscriptions) {
-                            subscriptionManager.transferFailed(
-                                subscription.getSubscriptionId(), statusCode);
+                        for (OpcUaSubscription subscription : subscriptions) {
+                            subscription.notifyTransferFailed(statusCode);
                         }
                     });
 

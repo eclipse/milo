@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,11 +13,16 @@ package org.eclipse.milo.opcua.stack.core.util;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,14 +75,14 @@ public final class TaskQueue {
     /**
      * Create a {@link TaskQueue} that executes {@link Task}s on the provided {@link Executor}.
      *
-     * @param executor           the {@link Executor} that {@link Task}s will use to execute.
+     * @param executor the {@link Executor} that {@link Task}s will use to execute.
      * @param maxConcurrentTasks the number of concurrently executing tasks allowed. When 1, the
-     *                           default value, submitted Tasks are guaranteed to execute serially.
-     * @param maxQueueSize       the maximum number of Tasks that can be queued before backpressure
-     *                           is applied and {@link #submit(Task)} starts returning false.
-     * @param priorityRatio      ratio of {@link TaskPriority#ELEVATED} tasks to
-     *                           {@link TaskPriority#REGULAR} tasks that will be executed when
-     *                           elevated tasks are continually being dequeued.
+     *     default value, submitted Tasks are guaranteed to execute serially.
+     * @param maxQueueSize the maximum number of Tasks that can be queued before backpressure
+     *     is applied and {@link #execute(Task)} starts returning false.
+     * @param priorityRatio ratio of {@link TaskPriority#ELEVATED} tasks to
+     *     {@link TaskPriority#REGULAR} tasks that will be executed when
+     *     elevated tasks are continually being dequeued.
      */
     public TaskQueue(Executor executor, int maxConcurrentTasks, int maxQueueSize, int priorityRatio) {
         this.executor = executor;
@@ -88,25 +93,56 @@ public final class TaskQueue {
     }
 
     /**
-     * Submit a {@link Task} to be executed.
+     * Queue a {@link Task} to be executed.
      *
      * @param task the {@link Task} to be executed.
      * @return {@code true} if {@code task} was queued for execution, or {@code false} if it was
-     * not queued, either because this {@link TaskQueue} is shut down, or because backpressure
-     * is being applied because the configured max queue size would be exceeded.
+     *     not queued, either because this {@link TaskQueue} is shut down, or because backpressure
+     *     is being applied because the configured max queue size would be exceeded.
      */
-    public boolean submit(Task task) {
+    public boolean execute(Task task) {
         taskQueueLock.lock();
         try {
             if (shutdown || taskQueue.size() >= maxQueueSize) {
                 return false;
             }
 
-            taskQueue.add(task);
+            taskQueue.add(new TaskWrapper(task));
 
             maybePollAndExecute();
 
             return true;
+        } finally {
+            taskQueueLock.unlock();
+        }
+    }
+
+    /**
+     * Queue a {@link Task} to be executed, returning a {@link CompletionStage} that will
+     * complete when the task has been executed.
+     * <p>
+     * The callback completes asynchronously, using the {@link TaskQueue}'s configured
+     * {@link Executor}, and does not block execution of any further queued tasks.
+     *
+     * @param task the {@link Task} to be executed.
+     * @return a {@link CompletionStage} that will complete when {@code task} has been executed,
+     *     or null if the task was not queued, either because this {@link TaskQueue} is shut down,
+     *     or because backpressure is being applied because the configured max queue size would be
+     *     exceeded.
+     */
+    public @Nullable CompletionStage<Unit> submit(Task task) {
+        taskQueueLock.lock();
+        try {
+            if (shutdown || taskQueue.size() >= maxQueueSize) {
+                return null;
+            }
+
+            var callback = new CompletableFuture<Unit>();
+            taskQueue.add(new TaskWrapper(task, callback));
+
+            maybePollAndExecute();
+
+            return callback;
         } finally {
             taskQueueLock.unlock();
         }
@@ -142,7 +178,7 @@ public final class TaskQueue {
      * Shut down this executor, optionally awaiting completion of any currently-executing tasks.
      *
      * @param awaitQuiescence {@code true} if this method should block awaiting completion of any
-     *                        currently-executing tasks.
+     *     currently-executing tasks.
      * @return a List of {@link Task}s that were queued and will not be executed.
      * @throws InterruptedException if the current Thread is interrupted while waiting.
      */
@@ -160,7 +196,10 @@ public final class TaskQueue {
                 shutdownLatch = new CountDownLatch(pending);
             } else {
                 // don't wait for pending to execute, just clear queue and return un-executed tasks
-                List<Task> tasks = taskQueue.getTasks();
+                List<Task> tasks = taskQueue.getTasks()
+                    .stream()
+                    .map(tw -> tw.task)
+                    .collect(Collectors.toList());
                 taskQueue.clear();
                 return tasks;
             }
@@ -174,7 +213,10 @@ public final class TaskQueue {
 
         taskQueueLock.lock();
         try {
-            List<Task> tasks = taskQueue.getTasks();
+            List<Task> tasks = taskQueue.getTasks()
+                .stream()
+                .map(tw -> tw.task)
+                .collect(Collectors.toList());
             taskQueue.clear();
             return tasks;
         } finally {
@@ -195,7 +237,7 @@ public final class TaskQueue {
         taskQueueLock.lock();
         try {
             if (pending < maxConcurrentTasks && !paused && !shutdown && !taskQueue.isEmpty()) {
-                executor.execute(new TaskWrapper(taskQueue.poll()));
+                executor.execute(Objects.requireNonNull(taskQueue.poll()));
                 pending++;
             }
         } finally {
@@ -213,20 +255,30 @@ public final class TaskQueue {
     private class TaskWrapper implements Runnable {
 
         private final Task task;
+        private final CompletableFuture<Unit> callback;
 
         private TaskWrapper(Task task) {
+            this(task, null);
+        }
+
+        private TaskWrapper(Task task, CompletableFuture<Unit> callback) {
             this.task = task;
+            this.callback = callback;
         }
 
         @Override
         public void run() {
             try {
                 task.execute();
+
+                if (callback != null) {
+                    executor.execute(() -> callback.complete(Unit.VALUE));
+                }
             } catch (Throwable throwable) {
                 logger.warn("Uncaught Throwable during Task execution.", throwable);
             }
 
-            Task inlineTask = null;
+            TaskWrapper inlineTask = null;
 
             taskQueueLock.lock();
             try {
@@ -246,7 +298,11 @@ public final class TaskQueue {
 
             if (inlineTask != null) {
                 try {
-                    inlineTask.execute();
+                    inlineTask.task.execute();
+                    if (inlineTask.callback != null) {
+                        CompletableFuture<Unit> callback = inlineTask.callback;
+                        executor.execute(() -> callback.complete(Unit.VALUE));
+                    }
                 } catch (Throwable throwable) {
                     logger.warn("Uncaught Throwable during Task execution.", throwable);
                 }
@@ -261,7 +317,7 @@ public final class TaskQueue {
                         }
                     } else {
                         // pending count remains the same
-                        executor.execute(new TaskWrapper(taskQueue.poll()));
+                        executor.execute(Objects.requireNonNull(taskQueue.poll()));
                     }
                 } finally {
                     taskQueueLock.unlock();
@@ -271,7 +327,7 @@ public final class TaskQueue {
 
     }
 
-    interface Task {
+    public interface Task {
 
         /**
          * Execute this {@link Task}.
@@ -289,7 +345,7 @@ public final class TaskQueue {
 
     }
 
-    enum TaskPriority {
+    public enum TaskPriority {
 
         /**
          * The default priority for a task. No special treatment.
@@ -346,7 +402,7 @@ public final class TaskQueue {
          * {@link #setExecutor(Executor)}.
          *
          * @return a new {@link TaskQueue} built using the parameters configured on this
-         * {@link Builder}.
+         *     {@link Builder}.
          */
         public TaskQueue build() {
             if (executor == null) {
@@ -363,9 +419,9 @@ public final class TaskQueue {
 
     private static final class PrioritizedTaskQueue {
 
-        private final ArrayDeque<Task> regular = new ArrayDeque<>();
-        private final ArrayDeque<Task> elevated = new ArrayDeque<>();
-        private final ArrayDeque<Task> critical = new ArrayDeque<>();
+        private final ArrayDeque<TaskWrapper> regular = new ArrayDeque<>();
+        private final ArrayDeque<TaskWrapper> elevated = new ArrayDeque<>();
+        private final ArrayDeque<TaskWrapper> critical = new ArrayDeque<>();
 
         private int consecutiveElevatedExecutions = 0;
         private final int priorityRatio;
@@ -374,8 +430,8 @@ public final class TaskQueue {
             this.priorityRatio = priorityRatio;
         }
 
-        void add(Task task) {
-            switch (task.getPriority()) {
+        void add(TaskWrapper task) {
+            switch (task.task.getPriority()) {
                 case REGULAR:
                     regular.add(task);
                     break;
@@ -392,7 +448,7 @@ public final class TaskQueue {
             return regular.isEmpty() && elevated.isEmpty() && critical.isEmpty();
         }
 
-        Task poll() {
+        TaskWrapper poll() {
             if (!critical.isEmpty()) {
                 return critical.poll();
             } else if (consecutiveElevatedExecutions >= priorityRatio) {
@@ -418,8 +474,8 @@ public final class TaskQueue {
             }
         }
 
-        List<Task> getTasks() {
-            var tasks = new ArrayList<Task>();
+        List<TaskWrapper> getTasks() {
+            var tasks = new ArrayList<TaskWrapper>();
             tasks.addAll(critical);
             tasks.addAll(elevated);
             tasks.addAll(regular);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand
 
 public class EventFilterBuilder {
 
-    private List<SimpleAttributeOperand> selectClauses = new ArrayList<>();
+    private final List<SimpleAttributeOperand> selectClauses = new ArrayList<>();
     private ContentFilter whereClause = new ContentFilter(null);
 
     public EventFilterBuilder select(NodeId typeDefinitionId, QualifiedName browseName) {

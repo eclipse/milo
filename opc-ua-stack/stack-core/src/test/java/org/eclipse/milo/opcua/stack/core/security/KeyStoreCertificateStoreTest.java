@@ -16,9 +16,14 @@ class KeyStoreCertificateStoreTest extends CertificateStoreTest {
     KeyStoreCertificateStoreTest() throws IOException {}
 
     @AfterEach
-    void deleteTestFiles() throws Exception {
-        assert Files.deleteIfExists(keyStorePath);
-        assert Files.deleteIfExists(testPath);
+    void deleteTestFiles() {
+        try {
+            Files.deleteIfExists(testPath);
+            Files.deleteIfExists(keyStorePath);
+        } catch (Exception ignored) {
+            testPath.toFile().deleteOnExit();
+            keyStorePath.toFile().deleteOnExit();
+        }
     }
 
     @Override

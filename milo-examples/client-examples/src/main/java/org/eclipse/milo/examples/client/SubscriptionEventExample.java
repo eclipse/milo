@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,13 +10,14 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.EventFilterBuilder;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedEventItem;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -24,11 +25,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-public class ManagedSubscriptionEventExample implements ClientExample {
+public class SubscriptionEventExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        ManagedSubscriptionEventExample example = new ManagedSubscriptionEventExample();
+        var example = new SubscriptionEventExample();
 
         new ClientExampleRunner(example).run();
     }
@@ -41,21 +41,33 @@ public class ManagedSubscriptionEventExample implements ClientExample {
 
         final CountDownLatch eventLatch = new CountDownLatch(3);
 
-        ManagedSubscription subscription = ManagedSubscription.create(client);
+        var subscription = new OpcUaSubscription(client);
 
-        subscription.addEventChangeListener((eventItems, variants) -> {
-            for (int i = 0; i < eventItems.size(); i++) {
-                ManagedEventItem eventItem = eventItems.get(i);
-                Variant[] eventFieldValues = variants.get(i);
+        // Set a listener for data changes at the subscription level.
+        subscription.setSubscriptionListener(new OpcUaSubscription.SubscriptionListener() {
+            @Override
+            public void onEventReceived(
+                OpcUaSubscription subscription,
+                List<OpcUaMonitoredItem> items, List<Variant[]> fields
+            ) {
 
-                logger.info("Event Received from {}", eventItem.getNodeId());
-                for (int j = 0; j < eventFieldValues.length; j++) {
-                    logger.info("\tvariant[{}]: {}", j, eventFieldValues[j].getValue());
+                for (int i = 0; i < items.size(); i++) {
+                    Variant[] variants = fields.get(i);
+
+                    for (int j = 0; j < variants.length; j++) {
+                        logger.info(
+                            "subscription onEventReceived: nodeId={}, field[{}]={}",
+                            items.get(i).getReadValueId().getNodeId(), j, variants[j].getValue()
+                        );
+                    }
                 }
-            }
 
-            eventLatch.countDown();
+                eventLatch.countDown();
+            }
         });
+
+        // Create the subscription on the server.
+        subscription.create();
 
         EventFilter eventFilter = new EventFilterBuilder()
             .select(NodeIds.BaseEventType, new QualifiedName(0, "EventId"))
@@ -65,11 +77,18 @@ public class ManagedSubscriptionEventExample implements ClientExample {
             .select(NodeIds.BaseEventType, new QualifiedName(0, "Message"))
             .build();
 
-        ManagedEventItem eventItem = subscription.createEventItem(NodeIds.Server, eventFilter);
+        var monitoredItem = OpcUaMonitoredItem.newEventItem(NodeIds.Server, eventFilter);
+
+        subscription.addMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
 
         // wait for some events to arrive before completing
         eventLatch.await();
-        eventItem.delete();
+
+        subscription.removeMonitoredItem(monitoredItem);
+        subscription.synchronizeMonitoredItems();
+        subscription.delete();
+
         future.complete(client);
     }
 
