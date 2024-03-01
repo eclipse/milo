@@ -191,7 +191,16 @@ public class JsonConversions {
     }
 
     public static JsonElement fromQualifiedName(QualifiedName value) {
-        return null; // TODO
+        // TODO the v2 OPC UA JSON encoding uses a namespace URI here
+
+        String name = value.getName() == null ? "" : value.getName();
+        int ns = value.getNamespaceIndex().intValue();
+
+        if (ns != 0) {
+            return new JsonPrimitive(value.getNamespaceIndex() + ":" + name);
+        } else {
+            return new JsonPrimitive(name);
+        }
     }
 
     public static JsonElement fromLocalizedText(LocalizedText value) {
@@ -385,7 +394,18 @@ public class JsonConversions {
     }
 
     public static QualifiedName toQualifiedName(JsonElement element) {
-        return null; // TODO
+        // TODO the v2 OPC UA JSON encoding uses a namespace URI here
+
+        int ns = 0;
+        String name = element.getAsString();
+
+        if (name.contains(":")) {
+            String[] ss = name.split(":", 2);
+            ns = Integer.parseInt(ss[0]);
+            name = ss[1];
+        }
+
+        return new QualifiedName(ns, name);
     }
 
     public static LocalizedText toLocalizedText(JsonElement element) {
@@ -450,7 +470,7 @@ public class JsonConversions {
 
             for (int i = 0; i < jsonArray.size(); i++) {
                 JsonElement jsonElement = jsonArray.get(i);
-                Object value = getScalarValue(jsonElement, dataType);
+                Object value = to(jsonElement, dataType);
                 Array.set(array, i, value);
             }
 
@@ -466,66 +486,7 @@ public class JsonConversions {
                 return Variant.of(array);
             }
         } else {
-            return Variant.of(getScalarValue(bodyElement, dataType));
-        }
-    }
-
-    private static Object getScalarValue(JsonElement element, BuiltinDataType dataType) {
-        switch (dataType) {
-            case Boolean:
-                return toBoolean(element);
-            case SByte:
-                return toSByte(element);
-            case Byte:
-                return toByte(element).intValue();
-            case Int16:
-                return toInt16(element);
-            case UInt16:
-                return toUInt16(element).intValue();
-            case Int32:
-                return element.getAsInt();
-            case UInt32:
-                return toUInt32(element).longValue();
-            case Int64:
-                return element.getAsLong();
-            case UInt64:
-                return toUInt64(element).longValue();
-            case Float:
-                return element.getAsFloat();
-            case Double:
-                return element.getAsDouble();
-            case String:
-                return element.getAsString();
-            case DateTime:
-                return toDateTime(element);
-            case Guid:
-                return toGuid(element);
-            case ByteString:
-                return toByteString(element);
-            case XmlElement:
-                return toXmlElement(element);
-            case NodeId:
-                return toNodeId(element);
-            case ExpandedNodeId:
-                return toExpandedNodeId(element);
-            case StatusCode:
-                return toStatusCode(element);
-            case QualifiedName:
-                return toQualifiedName(element);
-            case LocalizedText:
-                return toLocalizedText(element);
-            case ExtensionObject:
-                return toExtensionObject(element);
-            case DataValue:
-                return toDataValue(element);
-            case Variant:
-                return toVariant(element);
-            case DiagnosticInfo:
-            default:
-                // note: shouldn't be possible to get here.
-                // DiagnosticInfo is not allowed in Variant.
-                // All other types should be handled above.
-                return null;
+            return Variant.of(to(bodyElement, dataType));
         }
     }
 

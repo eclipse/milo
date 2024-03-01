@@ -23,6 +23,7 @@ import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -165,7 +166,30 @@ class JsonConversionsTest {
 
     @Test
     void toQualifiedName() {
-        // TODO
+        {
+            var qn0 = new QualifiedName(0, "foo");
+
+            var asJson = JsonConversions.fromQualifiedName(qn0);
+            assertEquals(new JsonPrimitive("foo"), asJson);
+            var asOpcUa = JsonConversions.toQualifiedName(asJson);
+            assertEquals(qn0, asOpcUa);
+        }
+        {
+            var qn1 = new QualifiedName(1, "bar");
+
+            var asJson = JsonConversions.fromQualifiedName(qn1);
+            assertEquals(new JsonPrimitive("1:bar"), asJson);
+            var asOpcUa = JsonConversions.toQualifiedName(asJson);
+            assertEquals(qn1, asOpcUa);
+        }
+        {
+            var qn2 = new QualifiedName(2, "baz:qux");
+
+            var asJson = JsonConversions.fromQualifiedName(qn2);
+            assertEquals(new JsonPrimitive("2:baz:qux"), asJson);
+            var asOpcUa = JsonConversions.toQualifiedName(asJson);
+            assertEquals(qn2, asOpcUa);
+        }
     }
 
     @Test
