@@ -21,10 +21,12 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -205,7 +207,27 @@ class JsonConversionsTest {
     }
 
     @Test
-    void toVariant() {
+    void testDataValue() {
+        var value = new DataValue(
+            Variant.ofInt32(42),
+            StatusCode.GOOD,
+            DateTime.MIN_DATE_TIME, UShort.valueOf(0),
+            DateTime.MIN_DATE_TIME, UShort.valueOf(0)
+        );
+
+        JsonElement asJson = JsonConversions.fromDataValue(value);
+        System.out.println(asJson);
+        assertEquals(
+            "{\"Value\":{\"Type\":6,\"Body\":42},\"SourceTime\":\"0001-01-01T00:00:00Z\",\"SourcePicoseconds\":0,\"ServerTime\":\"0001-01-01T00:00:00Z\",\"ServerPicoseconds\":0}",
+            asJson.toString()
+        );
+
+        DataValue asOpcUa = JsonConversions.toDataValue(asJson);
+        assertEquals(value, asOpcUa);
+    }
+
+    @Test
+    void testVariant() {
 
     }
 

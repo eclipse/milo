@@ -12,6 +12,7 @@ package org.eclipse.milo.sdk.core.types.json;
 
 import java.lang.reflect.Array;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 
 public class JsonConversions {
 
@@ -231,11 +233,72 @@ public class JsonConversions {
     }
 
     public static JsonElement fromDataValue(DataValue value) {
-        return null; // TODO
+        var jsonObject = new JsonObject();
+
+        if (value.getValue().isNotNull()) {
+            jsonObject.add("Value", fromVariant(value.getValue()));
+        }
+        if (value.getStatusCode() != null && value.getStatusCode().getValue() != 0L) {
+            jsonObject.add("StatusCode", fromStatusCode(value.getStatusCode()));
+        }
+        if (value.getSourceTime() != null) {
+            jsonObject.add("SourceTime", fromDateTime(value.getSourceTime()));
+        }
+        if (value.getSourcePicoseconds() != null) {
+            jsonObject.addProperty("SourcePicoseconds", value.getSourcePicoseconds().intValue());
+        }
+        if (value.getServerTime() != null) {
+            jsonObject.add("ServerTime", fromDateTime(value.getServerTime()));
+        }
+        if (value.getServerPicoseconds() != null) {
+            jsonObject.addProperty("ServerPicoseconds", value.getServerPicoseconds().intValue());
+        }
+
+        return jsonObject;
     }
 
     public static JsonElement fromVariant(Variant value) {
-        return null; // TODO
+        if (value.isNull()) {
+            return JsonNull.INSTANCE;
+        }
+
+        var jsonObject = new JsonObject();
+
+        BuiltinDataType dataType = value.getBuiltinDataType().orElseThrow();
+        jsonObject.addProperty("Type", dataType.getTypeId());
+
+        Object valueObject = value.getValue();
+        assert valueObject != null;
+
+        if (valueObject.getClass().isArray()) {
+            int[] dimensions = ArrayUtil.getDimensions(valueObject);
+            assert dimensions.length == 1;
+            var jsonArray = new JsonArray();
+            for (int i = 0; i < Array.getLength(valueObject); i++) {
+                Object arrayValue = Array.get(valueObject, i);
+                jsonArray.add(from(arrayValue, dataType));
+            }
+            jsonObject.add("Body", jsonArray);
+        } else if (valueObject instanceof Matrix) {
+            Matrix matrix = (Matrix) valueObject;
+
+            Object flatArray = matrix.getElements();
+            var bodyJsonArray = new JsonArray();
+            for (int i = 0; i < Array.getLength(flatArray); i++) {
+                Object element = Array.get(flatArray, i);
+                bodyJsonArray.add(from(element, dataType));
+            }
+            jsonObject.add("Body", bodyJsonArray);
+
+            int[] dimensions = matrix.getDimensions();
+            var dimensionsJsonArray = new JsonArray();
+            Arrays.stream(dimensions).forEach(dimensionsJsonArray::add);
+            jsonObject.add("Dimensions", dimensionsJsonArray);
+        } else {
+            jsonObject.add("Body", from(valueObject, dataType));
+        }
+
+        return jsonObject;
     }
 
     //endregion
@@ -445,7 +508,39 @@ public class JsonConversions {
     }
 
     public static DataValue toDataValue(JsonElement element) {
-        return null; // TODO
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        Variant value = Variant.NULL_VALUE;
+        if (jsonObject.has("Value")) {
+            value = toVariant(jsonObject.get("Value"));
+        }
+
+        StatusCode statusCode = StatusCode.GOOD;
+        if (jsonObject.has("StatusCode")) {
+            statusCode = toStatusCode(jsonObject.get("StatusCode"));
+        }
+
+        DateTime sourceTime = null;
+        if (jsonObject.has("SourceTime")) {
+            sourceTime = toDateTime(jsonObject.get("SourceTime"));
+        }
+
+        UShort sourcePicoseconds = null;
+        if (jsonObject.has("SourcePicoseconds")) {
+            sourcePicoseconds = UShort.valueOf(jsonObject.get("SourcePicoseconds").getAsInt());
+        }
+
+        DateTime serverTime = null;
+        if (jsonObject.has("ServerTime")) {
+            serverTime = toDateTime(jsonObject.get("ServerTime"));
+        }
+
+        UShort serverPicoseconds = null;
+        if (jsonObject.has("ServerPicoseconds")) {
+            serverPicoseconds = UShort.valueOf(jsonObject.get("ServerPicoseconds").getAsInt());
+        }
+
+        return new DataValue(value, statusCode, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
     }
 
     public static Variant toVariant(JsonElement element) {

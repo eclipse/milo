@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -77,7 +77,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 // TODO this needs to be able to match when argument DataType is an alias type
                 //  extract subtype logic from AttributeWriter...
                 boolean dataTypeMatch = value == null ||
-                    variant.getDataType()
+                    variant.getDataTypeId()
                         .flatMap(xni -> xni.toNodeId(node.getNodeContext().getNamespaceTable()))
                         .map(type -> {
                             if (type.equals(argument.getDataType())) {

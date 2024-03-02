@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -55,13 +56,18 @@ public final class Variant {
         this.value = value;
     }
 
-    public Optional<ExpandedNodeId> getDataType() {
+    public Optional<ExpandedNodeId> getDataTypeId() {
         if (value == null) return Optional.empty();
 
         if (value instanceof UaStructuredType) {
             return Optional.of(((UaStructuredType) value).getTypeId());
         } else if (value instanceof UaEnumeratedType) {
             return Optional.of(NodeIds.Int32.expanded());
+        } else if (value instanceof Matrix) {
+            // TODO should Matrix have a getDataTypeId()
+            //  method that looks to see if it's holding a struct?
+            return ((Matrix) value).getBuiltinDataType()
+                .map(d -> d.getNodeId().expanded());
         } else {
             Class<?> clazz = value.getClass().isArray() ?
                 ArrayUtil.getType(value) : value.getClass();
@@ -70,6 +76,26 @@ public final class Variant {
 
             return typeId == -1 ?
                 Optional.empty() : Optional.of(new NodeId(0, typeId).expanded());
+        }
+    }
+
+    public Optional<BuiltinDataType> getBuiltinDataType() {
+        if (value == null) {
+            return Optional.empty();
+        }
+
+        if (value instanceof UaStructuredType) {
+            return Optional.of(BuiltinDataType.ExtensionObject);
+        } else if (value instanceof UaEnumeratedType) {
+            return Optional.of(BuiltinDataType.Int32);
+        } else if (value instanceof Matrix) {
+            Matrix matrix = (Matrix) value;
+            return matrix.getBuiltinDataType();
+        } else {
+            Class<?> clazz = value.getClass().isArray() ?
+                ArrayUtil.getType(value) : value.getClass();
+
+            return Optional.ofNullable(BuiltinDataType.fromBackingClass(clazz));
         }
     }
 
