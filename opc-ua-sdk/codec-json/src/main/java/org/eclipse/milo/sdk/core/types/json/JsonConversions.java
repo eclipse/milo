@@ -258,7 +258,8 @@ public class JsonConversions {
     }
 
     public static JsonElement fromVariant(Variant value) {
-        if (value.isNull()) {
+        Object valueObject = value.getValue();
+        if (valueObject == null) {
             return JsonNull.INSTANCE;
         }
 
@@ -266,9 +267,6 @@ public class JsonConversions {
 
         BuiltinDataType dataType = value.getBuiltinDataType().orElseThrow();
         jsonObject.addProperty("Type", dataType.getTypeId());
-
-        Object valueObject = value.getValue();
-        assert valueObject != null;
 
         if (valueObject.getClass().isArray()) {
             int[] dimensions = ArrayUtil.getDimensions(valueObject);
@@ -283,12 +281,12 @@ public class JsonConversions {
             Matrix matrix = (Matrix) valueObject;
 
             Object flatArray = matrix.getElements();
-            var bodyJsonArray = new JsonArray();
+            var jsonArray = new JsonArray();
             for (int i = 0; i < Array.getLength(flatArray); i++) {
                 Object element = Array.get(flatArray, i);
-                bodyJsonArray.add(from(element, dataType));
+                jsonArray.add(from(element, dataType));
             }
-            jsonObject.add("Body", bodyJsonArray);
+            jsonObject.add("Body", jsonArray);
 
             int[] dimensions = matrix.getDimensions();
             var dimensionsJsonArray = new JsonArray();
