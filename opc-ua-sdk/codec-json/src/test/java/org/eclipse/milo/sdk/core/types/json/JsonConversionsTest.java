@@ -334,24 +334,77 @@ class JsonConversionsTest {
         );
     }
 
-    @Test
-    void convertDataValue() {
-        var value = new DataValue(
-            Variant.ofInt32(42),
-            StatusCode.GOOD,
-            DateTime.MIN_DATE_TIME, UShort.valueOf(0),
-            DateTime.MIN_DATE_TIME, UShort.valueOf(0)
-        );
-
-        JsonElement asJson = JsonConversions.fromDataValue(value);
+    @ParameterizedTest
+    @MethodSource("convertDataValueProvider")
+    void convertDataValue(DataValue dataValue, String expectedJson) {
+        JsonElement asJson = JsonConversions.fromDataValue(dataValue);
         System.out.println(asJson);
-        assertEquals(
-            "{\"Value\":{\"Type\":6,\"Body\":42},\"SourceTime\":\"0001-01-01T00:00:00Z\",\"SourcePicoseconds\":0,\"ServerTime\":\"0001-01-01T00:00:00Z\",\"ServerPicoseconds\":0}",
-            asJson.toString()
-        );
+
+        assertEquals(expectedJson, asJson.toString());
 
         DataValue asOpcUa = JsonConversions.toDataValue(asJson);
-        assertEquals(value, asOpcUa);
+        assertEquals(dataValue, asOpcUa);
+    }
+
+    private static Stream<Arguments> convertDataValueProvider() {
+        return Stream.of(
+            Arguments.of(
+                new DataValue(
+                    Variant.ofInt32(42),
+                    StatusCode.GOOD,
+                    DateTime.MIN_DATE_TIME,
+                    UShort.valueOf(0),
+                    DateTime.MIN_DATE_TIME,
+                    UShort.valueOf(0)
+                ),
+                "{\"Value\":{\"Type\":6,\"Body\":42},\"SourceTime\":\"0001-01-01T00:00:00Z\",\"SourcePicoseconds\":0,\"ServerTime\":\"0001-01-01T00:00:00Z\",\"ServerPicoseconds\":0}"
+            ),
+            Arguments.of(
+                new DataValue(
+                    Variant.ofInt32(42),
+                    StatusCode.GOOD,
+                    DateTime.MIN_DATE_TIME, null,
+                    DateTime.MIN_DATE_TIME, null
+                ),
+                "{\"Value\":{\"Type\":6,\"Body\":42},\"SourceTime\":\"0001-01-01T00:00:00Z\",\"ServerTime\":\"0001-01-01T00:00:00Z\"}"
+            ),
+            Arguments.of(
+                new DataValue(
+                    Variant.ofInt32(42),
+                    StatusCode.GOOD,
+                    null, UShort.valueOf(0),
+                    null, UShort.valueOf(0)
+                ),
+                "{\"Value\":{\"Type\":6,\"Body\":42},\"SourcePicoseconds\":0,\"ServerPicoseconds\":0}"
+            ),
+            Arguments.of(
+                new DataValue(
+                    Variant.ofInt32(42),
+                    StatusCode.GOOD,
+                    null, null,
+                    null, null
+                ),
+                "{\"Value\":{\"Type\":6,\"Body\":42}}"
+            ),
+            Arguments.of(
+                new DataValue(
+                    Variant.ofInt32(42),
+                    StatusCode.GOOD,
+                    null, null,
+                    null, null
+                ),
+                "{\"Value\":{\"Type\":6,\"Body\":42}}"
+            ),
+            Arguments.of(
+                new DataValue(
+                    Variant.NULL_VALUE,
+                    StatusCode.GOOD,
+                    null, null,
+                    null, null
+                ),
+                "{}"
+            )
+        );
     }
 
     @Test
