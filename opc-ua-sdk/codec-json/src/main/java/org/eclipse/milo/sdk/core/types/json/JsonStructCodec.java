@@ -515,12 +515,12 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             case Structure:
             case StructureWithOptionalFields:
             case StructureWithSubtypedValues:
-                encodeStruct(context, encoder, value);
+                encodeStruct(encoder, value);
                 break;
 
             case Union:
             case UnionWithSubtypedValues:
-                encodeUnion(context, encoder, value);
+                encodeUnion(encoder, value);
                 break;
 
             default:
@@ -529,7 +529,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
-    private void encodeStruct(EncodingContext context, UaEncoder encoder, JsonStruct value) {
+    private void encodeStruct(UaEncoder encoder, JsonStruct value) {
         StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
         var switchField = 0xFFFFFFFFL;
@@ -555,7 +555,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
-    private void encodeUnion(EncodingContext context, UaEncoder encoder, JsonStruct value) {
+    private void encodeUnion(UaEncoder encoder, JsonStruct value) {
         if (value.getJsonObject().size() == 0) {
             encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));
         } else {

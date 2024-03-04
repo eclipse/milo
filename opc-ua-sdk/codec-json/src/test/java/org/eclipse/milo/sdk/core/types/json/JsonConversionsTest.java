@@ -23,7 +23,9 @@ import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -43,8 +45,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JsonConversionsTest {
 
     @ParameterizedTest
+    @ValueSource(ints = {Byte.MIN_VALUE, 0, Byte.MAX_VALUE})
+    void convertSByte(int input) {
+        var original = (byte) input;
+
+        JsonElement jsonValue = JsonConversions.fromSByte(original);
+        assertEquals(new JsonPrimitive(input), jsonValue);
+
+        byte opcValue = JsonConversions.toSByte(jsonValue);
+        assertEquals(original, opcValue);
+    }
+
+    @ParameterizedTest
     @ValueSource(ints = {0, 1, Byte.MAX_VALUE, UByte.MAX_VALUE})
-    void testByte(int input) {
+    void convertByte(int input) {
         var original = UByte.valueOf(input);
 
         JsonElement jsonValue = JsonConversions.fromByte(original);
@@ -55,8 +69,20 @@ class JsonConversionsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {Short.MIN_VALUE, 0, Short.MAX_VALUE})
+    void convertInt16(int input) {
+        var original = (short) input;
+
+        JsonElement jsonValue = JsonConversions.fromInt16(original);
+        assertEquals(new JsonPrimitive(input), jsonValue);
+
+        short opcValue = JsonConversions.toInt16(jsonValue);
+        assertEquals(original, opcValue);
+    }
+
+    @ParameterizedTest
     @ValueSource(ints = {0, 1, Short.MAX_VALUE, UShort.MAX_VALUE})
-    void testUInt16(int input) {
+    void convertUInt16(int input) {
         var original = UShort.valueOf(input);
 
         JsonElement jsonValue = JsonConversions.fromUInt16(original);
@@ -67,8 +93,18 @@ class JsonConversionsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, 0, Integer.MAX_VALUE})
+    void convertInt32(int input) {
+        JsonElement jsonValue = JsonConversions.fromInt32(input);
+        assertEquals(new JsonPrimitive(input), jsonValue);
+
+        int opcValue = JsonConversions.toInt32(jsonValue);
+        assertEquals(input, opcValue);
+    }
+
+    @ParameterizedTest
     @ValueSource(longs = {0L, 1L, Integer.MAX_VALUE, UInteger.MAX_VALUE})
-    void testUInt32(long input) {
+    void convertUInt32(long input) {
         var original = UInteger.valueOf(input);
 
         JsonElement jsonValue = JsonConversions.fromUInt32(original);
@@ -79,8 +115,18 @@ class JsonConversionsTest {
     }
 
     @ParameterizedTest
-    @MethodSource("testUInt64Provider")
-    void testUInt64(BigInteger input) {
+    @ValueSource(longs = {Long.MIN_VALUE, 0L, Long.MAX_VALUE})
+    void convertInt64(long input) {
+        JsonElement jsonValue = JsonConversions.fromInt64(input);
+        assertEquals(new JsonPrimitive(input), jsonValue);
+
+        long opcValue = JsonConversions.toInt64(jsonValue);
+        assertEquals(input, opcValue);
+    }
+
+    @ParameterizedTest
+    @MethodSource("convertUInt64Provider")
+    void convertUInt64(BigInteger input) {
         var original = ULong.valueOf(input);
 
         JsonElement jsonValue = JsonConversions.fromUInt64(original);
@@ -90,7 +136,7 @@ class JsonConversionsTest {
         assertEquals(original, opcValue);
     }
 
-    private static Stream<Arguments> testUInt64Provider() {
+    private static Stream<Arguments> convertUInt64Provider() {
         return Stream.of(
             () -> new Object[]{BigInteger.ZERO},
             () -> new Object[]{BigInteger.ONE},
@@ -99,8 +145,30 @@ class JsonConversionsTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(floats = {Float.MIN_VALUE, 0, Float.MAX_VALUE,
+        Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Float.NaN})
+    void convertFloat(float input) {
+        JsonElement jsonValue = JsonConversions.fromFloat(input);
+        assertEquals(new JsonPrimitive(input), jsonValue);
+
+        float opcValue = JsonConversions.toFloat(jsonValue);
+        assertEquals((float) input, opcValue);
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {Double.MIN_VALUE, 0, Double.MAX_VALUE,
+        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN})
+    void convertDouble(double input) {
+        JsonElement jsonValue = JsonConversions.fromDouble(input);
+        assertEquals(new JsonPrimitive(input), jsonValue);
+
+        double opcValue = JsonConversions.toDouble(jsonValue);
+        assertEquals(input, opcValue);
+    }
+
     @Test
-    void toDateTime() {
+    void convertDateTime() {
         var now = Instant.now();
         String iso8601 = now.toString();
 
@@ -109,48 +177,107 @@ class JsonConversionsTest {
     }
 
     @Test
-    void toUUID() {
+    void convertUUID() {
         String uuid = "123e4567-e89b-12d3-a456-426614174000";
         UUID result = JsonConversions.toGuid(new JsonPrimitive(uuid));
         assertEquals(UUID.fromString(uuid), result);
     }
 
-    @Test
-    void toByteString() {
-        byte[] bs = new byte[]{1, 2, 3, 4, 5};
-        String b64 = Base64.getEncoder().encodeToString(bs);
+    @ParameterizedTest
+    @MethodSource("convertByteStringProvider")
+    void convertByteString(ByteString input) {
+        JsonElement jsonValue = JsonConversions.fromByteString(input);
+        String b64 = Base64.getEncoder().encodeToString(input.bytesOrEmpty());
+        assertEquals(new JsonPrimitive(b64), jsonValue);
 
-        ByteString result = JsonConversions.toByteString(new JsonPrimitive(b64));
-
-        assertEquals(ByteString.of(bs), result);
+        ByteString opcValue = JsonConversions.toByteString(jsonValue);
+        assertEquals(input, opcValue);
     }
 
-    @Test
-    public void toXmlElement() {
-        String knownXml = "<root><element>value</element></root>";
-        var json = new JsonPrimitive(knownXml);
-
-        XmlElement result = JsonConversions.toXmlElement(json);
-        XmlElement expected = new XmlElement(knownXml);
-
-        assertEquals(expected, result);
-
-        assertEquals(new XmlElement(null), JsonConversions.toXmlElement(JsonNull.INSTANCE));
-    }
-
-    @Test
-    void toNodeId() {
-        // TODO
-    }
-
-    @Test
-    void toExpandedNodeId() {
-        // TODO
+    private static Stream<Arguments> convertByteStringProvider() {
+        return Stream.of(
+            Arguments.of(ByteString.of(new byte[]{1, 2, 3, 4, 5})),
+            Arguments.of(ByteString.of(new byte[0])),
+            Arguments.of(ByteString.NULL_VALUE)
+        );
     }
 
     @ParameterizedTest
-    @MethodSource("toStatusCodeProvider")
-    void testStatusCode(StatusCode input) {
+    @MethodSource("convertXmlElementProvider")
+    void convertXmlElement(XmlElement input) {
+        JsonElement jsonValue = JsonConversions.fromXmlElement(input);
+
+        if (input.isNull()) {
+            assertEquals(JsonNull.INSTANCE, jsonValue);
+        } else {
+            assertEquals(new JsonPrimitive(input.getFragment()), jsonValue);
+        }
+
+        XmlElement opcValue = JsonConversions.toXmlElement(jsonValue);
+        assertEquals(input, opcValue);
+    }
+
+    private static Stream<Arguments> convertXmlElementProvider() {
+        return Stream.of(
+            Arguments.of(new XmlElement("<root><element>value</element></root>")),
+            Arguments.of(new XmlElement(null))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("convertNodeIdProvider")
+    void convertNodeId(NodeId nodeId) {
+        JsonElement jsonValue = JsonConversions.fromNodeId(nodeId);
+        assertEquals(new JsonPrimitive(nodeId.toParseableString()), jsonValue);
+
+        NodeId opcValue = JsonConversions.toNodeId(jsonValue);
+        assertEquals(nodeId, opcValue);
+    }
+
+    private static Stream<Arguments> convertNodeIdProvider() {
+        return Stream.of(
+            Arguments.of(NodeId.parse("ns=0;i=1")),
+            Arguments.of(NodeId.parse("ns=0;s=foo")),
+            Arguments.of(NodeId.parse("ns=0;g=123e4567-e89b-12d3-a456-426614174000")),
+            Arguments.of(NodeId.parse("ns=0;b=AAECAwQFBgcICQoLDA0ODw==")),
+            Arguments.of(NodeId.parse("ns=1;i=1")),
+            Arguments.of(NodeId.parse("ns=1;s=foo")),
+            Arguments.of(NodeId.parse("ns=1;g=123e4567-e89b-12d3-a456-426614174000")),
+            Arguments.of(NodeId.parse("ns=1;b=AAECAwQFBgcICQoLDA0ODw=="))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("convertExpandedNodeIdProvider")
+    void convertExpandedNodeId(ExpandedNodeId expandedNodeId) {
+        JsonElement jsonValue = JsonConversions.fromExpandedNodeId(expandedNodeId);
+        assertEquals(new JsonPrimitive(expandedNodeId.toParseableString()), jsonValue);
+
+        ExpandedNodeId opcValue = JsonConversions.toExpandedNodeId(jsonValue);
+        assertEquals(expandedNodeId, opcValue);
+    }
+
+    private static Stream<Arguments> convertExpandedNodeIdProvider() {
+        // TODO include test values that use explicit namespace URI and server index
+        return Stream.of(
+            Arguments.of(ExpandedNodeId.parse("ns=0;i=1")),
+            Arguments.of(ExpandedNodeId.parse("ns=0;s=foo")),
+            Arguments.of(ExpandedNodeId.parse("ns=0;g=123e4567-e89b-12d3-a456-426614174000")),
+            Arguments.of(ExpandedNodeId.parse("ns=0;b=AAECAwQFBgcICQoLDA0ODw==")),
+            Arguments.of(ExpandedNodeId.parse("ns=1;i=1")),
+            Arguments.of(ExpandedNodeId.parse("ns=1;s=foo")),
+            Arguments.of(ExpandedNodeId.parse("ns=1;g=123e4567-e89b-12d3-a456-426614174000")),
+            Arguments.of(ExpandedNodeId.parse("ns=1;b=AAECAwQFBgcICQoLDA0ODw==")),
+            Arguments.of(ExpandedNodeId.parse("nsu=https://example.com;i=1")),
+            Arguments.of(ExpandedNodeId.parse("nsu=https://example.com;s=foo")),
+            Arguments.of(ExpandedNodeId.parse("nsu=https://example.com;g=123e4567-e89b-12d3-a456-426614174000")),
+            Arguments.of(ExpandedNodeId.parse("nsu=https://example.com;b=AAECAwQFBgcICQoLDA0ODw=="))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("convertStatusCodeProvider")
+    void convertStatusCode(StatusCode input) {
         var jsonValue = JsonConversions.fromStatusCode(input);
         assertEquals(new JsonPrimitive(input.getValue()), jsonValue);
 
@@ -158,7 +285,7 @@ class JsonConversionsTest {
         assertEquals(input, opcValue);
     }
 
-    private static Stream<Arguments> toStatusCodeProvider() {
+    private static Stream<Arguments> convertStatusCodeProvider() {
         return Stream.of(
             Arguments.of(StatusCode.GOOD),
             Arguments.of(StatusCode.BAD),
@@ -166,48 +293,49 @@ class JsonConversionsTest {
         );
     }
 
-    @Test
-    void toQualifiedName() {
-        {
-            var qn0 = new QualifiedName(0, "foo");
+    @ParameterizedTest
+    @MethodSource("convertQualifiedNameProvider")
+    void convertQualifiedName(QualifiedName qualifiedName, String encoded) {
+        JsonElement jsonValue = JsonConversions.fromQualifiedName(qualifiedName);
+        assertEquals(new JsonPrimitive(encoded), jsonValue);
 
-            var asJson = JsonConversions.fromQualifiedName(qn0);
-            assertEquals(new JsonPrimitive("foo"), asJson);
-            var asOpcUa = JsonConversions.toQualifiedName(asJson);
-            assertEquals(qn0, asOpcUa);
-        }
-        {
-            var qn1 = new QualifiedName(1, "bar");
+        QualifiedName opcValue = JsonConversions.toQualifiedName(jsonValue);
+        assertEquals(qualifiedName, opcValue);
+    }
 
-            var asJson = JsonConversions.fromQualifiedName(qn1);
-            assertEquals(new JsonPrimitive("1:bar"), asJson);
-            var asOpcUa = JsonConversions.toQualifiedName(asJson);
-            assertEquals(qn1, asOpcUa);
-        }
-        {
-            var qn2 = new QualifiedName(2, "baz:qux");
+    private static Stream<Arguments> convertQualifiedNameProvider() {
+        return Stream.of(
+            Arguments.of(new QualifiedName(0, "foo"), "foo"),
+            Arguments.of(new QualifiedName(1, "bar"), "1:bar"),
+            Arguments.of(new QualifiedName(2, "baz:qux"), "2:baz:qux")
+        );
+    }
 
-            var asJson = JsonConversions.fromQualifiedName(qn2);
-            assertEquals(new JsonPrimitive("2:baz:qux"), asJson);
-            var asOpcUa = JsonConversions.toQualifiedName(asJson);
-            assertEquals(qn2, asOpcUa);
-        }
+    @ParameterizedTest
+    @MethodSource("convertLocalizedTextProvider")
+    void convertLocalizedText(LocalizedText localizedText) {
+        JsonElement jsonValue = JsonConversions.fromLocalizedText(localizedText);
+        var expectedJsonObject = new JsonObject();
+        expectedJsonObject.addProperty("Locale", localizedText.getLocale());
+        expectedJsonObject.addProperty("Text", localizedText.getText());
+        assertEquals(expectedJsonObject, jsonValue);
+
+        LocalizedText opcValue = JsonConversions.toLocalizedText(jsonValue);
+        assertEquals(localizedText, opcValue);
+    }
+
+    private static Stream<Arguments> convertLocalizedTextProvider() {
+        return Stream.of(
+            Arguments.of(new LocalizedText("en", "Hello, World!")),
+            Arguments.of(new LocalizedText("de", "Hallo, Welt!")),
+            Arguments.of(new LocalizedText(null, "Hello, World!")),
+            Arguments.of(new LocalizedText("en", null)),
+            Arguments.of(new LocalizedText(null, null))
+        );
     }
 
     @Test
-    void toLocalizedText() {
-        var jsonObject = new JsonObject();
-        jsonObject.addProperty("Locale", "en");
-        jsonObject.addProperty("Text", "Hello, World!");
-
-        LocalizedText result = JsonConversions.toLocalizedText(jsonObject);
-        LocalizedText expected = new LocalizedText("en", "Hello, World!");
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void testDataValue() {
+    void convertDataValue() {
         var value = new DataValue(
             Variant.ofInt32(42),
             StatusCode.GOOD,
@@ -227,7 +355,7 @@ class JsonConversionsTest {
     }
 
     @Test
-    void testVariant() {
+    void convertVariant() {
 
     }
 

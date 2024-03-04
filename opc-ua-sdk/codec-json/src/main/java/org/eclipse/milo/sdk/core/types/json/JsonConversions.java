@@ -470,9 +470,20 @@ public class JsonConversions {
     }
 
     public static LocalizedText toLocalizedText(JsonElement element) {
+        String locale = null;
+        String text = null;
+
         JsonObject jsonObject = element.getAsJsonObject();
-        String locale = jsonObject.get("Locale").getAsString();
-        String text = jsonObject.get("Text").getAsString();
+
+        JsonElement localeElement = jsonObject.get("Locale");
+        if (!localeElement.isJsonNull()) {
+            locale = localeElement.getAsString();
+        }
+
+        JsonElement textElement = jsonObject.get("Text");
+        if (!textElement.isJsonNull()) {
+            text = textElement.getAsString();
+        }
 
         return new LocalizedText(locale, text);
     }
