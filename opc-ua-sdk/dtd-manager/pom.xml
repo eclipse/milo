@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>milo-dtd-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>

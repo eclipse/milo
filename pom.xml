@@ -9,7 +9,8 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.eclipse.milo</groupId>
@@ -54,6 +55,25 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Dependency Versions -->
+        <bouncycastle.version>1.77</bouncycastle.version>
+        <gson.version>2.10.1</gson.version>
+        <guava.version>33.0.0-jre</guava.version>
+        <jakarta-activation.version>2.0.1</jakarta-activation.version>
+        <jakarta-xml-bind-api.version>4.0.1</jakarta-xml-bind-api.version>
+        <jaxb.version>4.0.4</jaxb.version>
+        <jetbrains-annotations.version>24.1.0</jetbrains-annotations.version>
+        <netty.version>4.1.107.Final</netty.version>
+        <netty-channel-fsm.version>0.9</netty-channel-fsm.version>
+        <slf4j.version>2.0.12</slf4j.version>
+
+        <checkstyle.version>10.14.0</checkstyle.version>
+
+        <!-- Test Dependency Versions -->
+        <junit.version>5.10.2</junit.version>
+        <mockito.version>2.25.1</mockito.version>
+        <testng.version>6.9.10</testng.version>
     </properties>
 
     <profiles>
@@ -201,7 +221,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.18</version>
+                        <version>${checkstyle.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.eclipse.milo</groupId>
@@ -211,12 +231,12 @@
                     <dependency>
                         <groupId>org.slf4j</groupId>
                         <artifactId>jcl-over-slf4j</artifactId>
-                        <version>1.7.21</version>
+                        <version>${slf4j.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-jdk14</artifactId>
-                        <version>1.7.21</version>
+                        <version>${slf4j.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
