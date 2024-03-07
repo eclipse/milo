@@ -89,11 +89,11 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             case Structure:
             case StructureWithOptionalFields:
             case StructureWithSubtypedValues:
-                return decodeStruct(context, decoder);
+                return decodeStruct(decoder);
 
             case Union:
             case UnionWithSubtypedValues:
-                return decodeUnion(context, decoder);
+                return decodeUnion(decoder);
 
             default:
                 throw new IllegalArgumentException(
@@ -101,7 +101,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
-    private JsonStruct decodeStruct(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
+    private JsonStruct decodeStruct(UaDecoder decoder) throws UaSerializationException {
         var jsonObject = new JsonObject();
 
         var switchField = 0xFFFFFFFFL;
@@ -123,7 +123,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         return new JsonStruct(dataType, jsonObject);
     }
 
-    private JsonStruct decodeUnion(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
+    private JsonStruct decodeUnion(UaDecoder decoder) throws UaSerializationException {
         int switchField = decoder.decodeUInt32("SwitchField").intValue();
         StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
@@ -447,14 +447,13 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     private static JsonElement decodeBuiltinDataTypeMatrix(Object flatArray, BuiltinDataType dataType, int[] dimensions, int offset) {
+        var jsonArray = new JsonArray();
+
         if (dimensions.length == 1) {
-            var jsonArray = new JsonArray();
             for (int i = 0; i < dimensions[0]; i++) {
                 jsonArray.add(JsonConversions.from(Array.get(flatArray, offset + i), dataType));
             }
-            return jsonArray;
         } else {
-            var jsonArray = new JsonArray();
             int[] dimensionsTail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
 
             for (int i = 0; i < dimensions[0]; i++) {
@@ -467,8 +466,9 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 jsonArray.add(e);
             }
 
-            return jsonArray;
         }
+        
+        return jsonArray;
     }
 
     static JsonElement decodeEnumMatrix(Matrix matrix) {
@@ -480,16 +480,15 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     private static JsonElement decodeStructMatrix(Object flatArray, int[] dimensions, int offset) {
+        var jsonArray = new JsonArray();
+
         if (dimensions.length == 1) {
-            var jsonArray = new JsonArray();
             for (int i = 0; i < dimensions[0]; i++) {
                 Object value = Array.get(flatArray, offset + i);
                 JsonStruct struct = (JsonStruct) value;
                 jsonArray.add(struct.getJsonObject());
             }
-            return jsonArray;
         } else {
-            var jsonArray = new JsonArray();
             int[] dimensionsTail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
 
             for (int i = 0; i < dimensions[0]; i++) {
@@ -501,8 +500,9 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 jsonArray.add(e);
             }
 
-            return jsonArray;
         }
+
+        return jsonArray;
     }
 
     //endregion
@@ -556,7 +556,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     private void encodeUnion(UaEncoder encoder, JsonStruct value) {
-        if (value.getJsonObject().size() == 0) {
+        if (value.getJsonObject().isEmpty()) {
             encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));
         } else {
             StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
@@ -966,21 +966,6 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
 
         return elements.toArray();
-    }
-
-    static Object encodeBuiltinDataTypeMatrixNested(BuiltinDataType dataType, JsonArray jsonArray) {
-        Object javaArray = Array.newInstance(dataType.getBackingClass(), getDimensions(jsonArray));
-
-        for (int i = 0; i < jsonArray.size(); i++) {
-            var element = jsonArray.get(i);
-            if (element.isJsonArray()) {
-                Array.set(javaArray, i, encodeBuiltinDataTypeMatrixNested(dataType, element.getAsJsonArray()));
-            } else {
-                Array.set(javaArray, i, JsonConversions.to(element, dataType));
-            }
-        }
-
-        return javaArray;
     }
 
     static int[] getDimensions(JsonArray array) {
