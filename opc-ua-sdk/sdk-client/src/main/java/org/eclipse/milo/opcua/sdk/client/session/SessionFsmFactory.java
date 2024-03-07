@@ -31,6 +31,7 @@ import com.digitalpetri.strictmachine.dsl.ActionContext;
 import com.digitalpetri.strictmachine.dsl.FsmBuilder;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
+import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
@@ -648,6 +649,19 @@ public class SessionFsmFactory {
                             );
 
                             ctx.fireEvent(new Event.KeepAliveFailure());
+
+                            // Close the underlying channel to force a reconnect.
+                            // This is useful if the server has gone offline in an "unclean"
+                            // manner to avoid having to wait for the underlying TCP stack's keep
+                            // alive to kick in.
+                            OpcClientTransport transport = client.getTransport();
+                            if (transport instanceof OpcTcpClientTransport) {
+                                ChannelFsm channelFsm = ((OpcTcpClientTransport) transport).getChannelFsm();
+                                Channel channel = channelFsm.getChannel().getNow(null);
+                                if (channel != null) {
+                                    channel.close();
+                                }
+                            }
                         } else {
                             LOGGER.debug(
                                 "[{}] Keep Alive failureCount={}",
