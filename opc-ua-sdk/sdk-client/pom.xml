@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>milo-transport</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>${jetbrains-annotations.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
