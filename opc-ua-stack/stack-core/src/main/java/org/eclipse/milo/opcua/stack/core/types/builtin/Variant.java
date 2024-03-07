@@ -18,7 +18,6 @@ import java.util.UUID;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -62,12 +61,9 @@ public final class Variant {
         if (value instanceof UaStructuredType) {
             return Optional.of(((UaStructuredType) value).getTypeId());
         } else if (value instanceof UaEnumeratedType) {
-            return Optional.of(NodeIds.Int32.expanded());
+            return Optional.of(((UaEnumeratedType) value).getTypeId());
         } else if (value instanceof Matrix) {
-            // TODO should Matrix have a getDataTypeId()
-            //  method that looks to see if it's holding a struct?
-            return ((Matrix) value).getBuiltinDataType()
-                .map(d -> d.getNodeId().expanded());
+            return ((Matrix) value).getDataTypeId();
         } else {
             Class<?> clazz = value.getClass().isArray() ?
                 ArrayUtil.getType(value) : value.getClass();
