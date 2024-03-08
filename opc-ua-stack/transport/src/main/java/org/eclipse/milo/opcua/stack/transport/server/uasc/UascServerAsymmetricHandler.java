@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,6 +57,7 @@ import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -63,6 +65,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelReque
 import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
+import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.transport.server.ServerApplicationContext;
@@ -337,7 +340,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         }
                     }
 
-                    sendOpenSecureChannelResponse(ctx, requestId, request);
+                    sendOpenSecureChannelResponse(ctx, requestId, header, request);
                 } catch (Throwable t) {
                     logger.error("Error decoding OpenSecureChannelRequest", t);
 
@@ -353,13 +356,14 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     private void sendOpenSecureChannelResponse(
         ChannelHandlerContext ctx,
         long requestId,
+        AsymmetricSecurityHeader header,
         OpenSecureChannelRequest request
     ) {
 
         ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
         try {
-            OpenSecureChannelResponse response = openSecureChannel(ctx, request);
+            OpenSecureChannelResponse response = openSecureChannel(ctx, header, request);
 
             binaryEncoder.setBuffer(messageBuffer);
             binaryEncoder.encodeMessage(null, response);
@@ -415,6 +419,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
     private OpenSecureChannelResponse openSecureChannel(
         ChannelHandlerContext ctx,
+        AsymmetricSecurityHeader header,
         OpenSecureChannelRequest request
     ) throws UaException {
 
@@ -448,10 +453,18 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         request.getSecurityMode()
                     );
 
+                    boolean thumbprintMatch = true;
+                    if (!header.getReceiverThumbprint().isNullOrEmpty()) {
+                        thumbprintMatch = Arrays.equals(
+                            DigestUtil.sha1(e.getServerCertificate().bytesOrEmpty()),
+                            header.getReceiverThumbprint().bytesOrEmpty()
+                        );
+                    }
+
                     // allow a matched endpoint OR any unsecured connection, regardless of the
                     // endpoint security, so that the receiving ServerApplication can decide if
                     // it wants to allow unsecured Discovery services.
-                    return transportMatch && pathMatch &&
+                    return transportMatch && pathMatch && thumbprintMatch &&
                         (securityPolicyMatch && securityModeMatch ||
                             secureChannel.getSecurityPolicy() == SecurityPolicy.None);
                 })
@@ -459,9 +472,10 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 .orElseThrow(() -> {
                     String message = String.format(
                         "no matching endpoint found: transportProfile=%s, " +
-                            "endpointUrl=%s, securityPolicy=%s, securityMode=%s",
+                            "endpointUrl=%s, thumbprint=%s, securityPolicy=%s, securityMode=%s",
                         transportProfile,
                         endpointUrl,
+                        header.getReceiverThumbprint(),
                         secureChannel.getSecurityPolicy(),
                         request.getSecurityMode()
                     );
