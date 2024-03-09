@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class JsonStructCodecTest {
@@ -43,22 +42,22 @@ class JsonStructCodecTest {
         }
 
         @Override
-        public @Nullable NodeId getBinaryEncodingId() {
+        public NodeId getBinaryEncodingId() {
             return NodeIds.XVType_Encoding_DefaultBinary;
         }
 
         @Override
-        public @Nullable NodeId getXmlEncodingId() {
+        public NodeId getXmlEncodingId() {
             return NodeIds.XVType_Encoding_DefaultXml;
         }
 
         @Override
-        public @Nullable NodeId getJsonEncodingId() {
+        public NodeId getJsonEncodingId() {
             return NodeIds.XVType_Encoding_DefaultJson;
         }
 
         @Override
-        public @Nullable DataTypeDefinition getDataTypeDefinition() {
+        public DataTypeDefinition getDataTypeDefinition() {
             return XVType.definition(new NamespaceTable());
         }
 
@@ -94,7 +93,7 @@ class JsonStructCodecTest {
         for (String json : jsonArrays) {
             for (BuiltinDataType dataType : numericDataTypes) {
                 JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
-                Object[] flatArray = JsonStructCodec.encodeBuiltinDataTypeMatrixFlat(dataType, jsonArray);
+                Object[] flatArray = JsonStructCodec.encodeBuiltinDataTypeMatrix(dataType, jsonArray);
                 System.out.println("JSON: " + jsonArray);
 
                 var matrix = new Matrix(flatArray, JsonStructCodec.getDimensions(jsonArray), dataType);
@@ -112,7 +111,7 @@ class JsonStructCodecTest {
 
         for (String json : List.of(json2d, json3d, json4d)) {
             JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
-            Object[] flatArray = JsonStructCodec.encodeEnumMatrixFlat(NodeIds.ApplicationType.expanded(), jsonArray);
+            Object[] flatArray = JsonStructCodec.encodeEnumMatrix(NodeIds.ApplicationType.expanded(), jsonArray);
             System.out.println("JSON: " + jsonArray);
 
             var matrix = new Matrix(flatArray, JsonStructCodec.getDimensions(jsonArray), BuiltinDataType.Int32);
@@ -129,7 +128,7 @@ class JsonStructCodecTest {
 
         for (String json : List.of(json2d, json3d, json4d)) {
             JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
-            Object[] flatArray = JsonStructCodec.encodeStructMatrixFlat(XV_DATA_TYPE, jsonArray);
+            Object[] flatArray = JsonStructCodec.encodeStructMatrix(XV_DATA_TYPE, jsonArray);
             System.out.println("JSON: " + jsonArray);
 
             var matrix = new Matrix(flatArray, JsonStructCodec.getDimensions(jsonArray), BuiltinDataType.ExtensionObject);

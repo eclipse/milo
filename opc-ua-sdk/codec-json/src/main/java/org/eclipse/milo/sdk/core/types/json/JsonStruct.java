@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class JsonStruct implements UaStructuredType {
 
@@ -39,6 +40,24 @@ public class JsonStruct implements UaStructuredType {
     @Override
     public ExpandedNodeId getTypeId() {
         return dataType.getNodeId().expanded();
+    }
+
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        NodeId binaryEncodingId = dataType.getBinaryEncodingId();
+        return binaryEncodingId != null ? binaryEncodingId.expanded() : ExpandedNodeId.NULL_VALUE;
+    }
+
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        NodeId xmlEncodingId = dataType.getXmlEncodingId();
+        return xmlEncodingId != null ? xmlEncodingId.expanded() : ExpandedNodeId.NULL_VALUE;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        NodeId jsonEncodingId = dataType.getJsonEncodingId();
+        return jsonEncodingId != null ? jsonEncodingId.expanded() : ExpandedNodeId.NULL_VALUE;
     }
 
     @Override

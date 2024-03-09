@@ -467,7 +467,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             }
 
         }
-        
+
         return jsonArray;
     }
 
@@ -620,15 +620,15 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
             Object hint = getHint(field);
             if (hint instanceof BuiltinDataType) {
-                Object[] flatArray = encodeBuiltinDataTypeMatrixFlat((BuiltinDataType) hint, jsonArray);
+                Object[] flatArray = encodeBuiltinDataTypeMatrix((BuiltinDataType) hint, jsonArray);
                 var matrix = new Matrix(flatArray, getDimensions(jsonArray), (BuiltinDataType) hint);
                 encoder.encodeMatrix(fieldName, matrix);
             } else if (hint instanceof EnumHint) {
-                Object[] flatArray = encodeEnumMatrixFlat(dataTypeId.expanded(), jsonArray);
+                Object[] flatArray = encodeEnumMatrix(dataTypeId.expanded(), jsonArray);
                 var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.Int32);
                 encoder.encodeEnumMatrix(fieldName, matrix);
             } else if (hint instanceof StructHint) {
-                Object[] flatArray = encodeStructMatrixFlat(dataTypeTree.getDataType(dataTypeId), jsonArray);
+                Object[] flatArray = encodeStructMatrix(dataTypeTree.getDataType(dataTypeId), jsonArray);
                 var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
                 encoder.encodeStructMatrix(fieldName, matrix, dataTypeId);
             } else {
@@ -921,13 +921,13 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         }
     }
 
-    static Object[] encodeBuiltinDataTypeMatrixFlat(BuiltinDataType dataType, JsonArray jsonArray) {
+    static Object[] encodeBuiltinDataTypeMatrix(BuiltinDataType dataType, JsonArray jsonArray) {
         var elements = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.size(); i++) {
             var element = jsonArray.get(i);
             if (element.isJsonArray()) {
-                Collections.addAll(elements, encodeBuiltinDataTypeMatrixFlat(dataType, element.getAsJsonArray()));
+                Collections.addAll(elements, encodeBuiltinDataTypeMatrix(dataType, element.getAsJsonArray()));
             } else {
                 elements.add(JsonConversions.to(element, dataType));
             }
@@ -936,13 +936,13 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         return elements.toArray();
     }
 
-    static Object[] encodeEnumMatrixFlat(ExpandedNodeId dataTypeId, JsonArray jsonArray) {
+    static Object[] encodeEnumMatrix(ExpandedNodeId dataTypeId, JsonArray jsonArray) {
         var elements = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.size(); i++) {
             var element = jsonArray.get(i);
             if (element.isJsonArray()) {
-                Collections.addAll(elements, encodeEnumMatrixFlat(dataTypeId, element.getAsJsonArray()));
+                Collections.addAll(elements, encodeEnumMatrix(dataTypeId, element.getAsJsonArray()));
             } else {
                 var wrapper = new JsonEnumWrapper(element.getAsInt(), dataTypeId);
                 elements.add(wrapper);
@@ -952,13 +952,13 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         return elements.toArray();
     }
 
-    static Object[] encodeStructMatrixFlat(DataType dataType, JsonArray jsonArray) {
+    static Object[] encodeStructMatrix(DataType dataType, JsonArray jsonArray) {
         var elements = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.size(); i++) {
             var element = jsonArray.get(i);
             if (element.isJsonArray()) {
-                Collections.addAll(elements, encodeStructMatrixFlat(dataType, element.getAsJsonArray()));
+                Collections.addAll(elements, encodeStructMatrix(dataType, element.getAsJsonArray()));
             } else {
                 var struct = new JsonStruct(dataType, element.getAsJsonObject());
                 elements.add(struct);
