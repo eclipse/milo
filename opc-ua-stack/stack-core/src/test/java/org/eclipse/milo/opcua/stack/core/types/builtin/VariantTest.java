@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertThrows;
+
 public class VariantTest {
 
     @Test
@@ -32,6 +34,11 @@ public class VariantTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void variantCannotContainDiagnosticInfo() {
         Variant.of(DiagnosticInfo.NULL_VALUE);
+    }
+
+    @Test
+    public void variantCannotContainUnknownTypes() {
+        assertThrows(IllegalArgumentException.class, () -> Variant.of(new Object()));
     }
 
 }

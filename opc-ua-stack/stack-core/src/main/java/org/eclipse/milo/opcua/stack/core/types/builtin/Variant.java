@@ -80,18 +80,29 @@ public final class Variant {
             return Optional.empty();
         }
 
-        if (value instanceof UaStructuredType) {
-            return Optional.of(BuiltinDataType.ExtensionObject);
-        } else if (value instanceof UaEnumeratedType) {
-            return Optional.of(BuiltinDataType.Int32);
-        } else if (value instanceof Matrix) {
-            Matrix matrix = (Matrix) value;
-            return matrix.getBuiltinDataType();
-        } else {
-            Class<?> clazz = value.getClass().isArray() ?
-                ArrayUtil.getType(value) : value.getClass();
+        Class<?> type = value.getClass().isArray() ?
+            ArrayUtil.getType(value) : value.getClass();
 
-            return Optional.ofNullable(BuiltinDataType.fromBackingClass(clazz));
+        if (UaEnumeratedType.class.isAssignableFrom(type)) {
+            return Optional.of(BuiltinDataType.Int32);
+        } else if (UaStructuredType.class.isAssignableFrom(type)) {
+            return Optional.of(BuiltinDataType.ExtensionObject);
+        } else if (OptionSetUInteger.class.isAssignableFrom(type)) {
+            if (OptionSetUI8.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.Byte);
+            } else if (OptionSetUI16.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.UInt16);
+            } else if (OptionSetUI32.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.UInt32);
+            } else if (OptionSetUI64.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.UInt64);
+            } else {
+                throw new RuntimeException("unknown OptionSetUInteger subclass: " + type);
+            }
+        } else if (Matrix.class.isAssignableFrom(type)) {
+            return ((Matrix) value).getBuiltinDataType();
+        } else {
+            return Optional.ofNullable(BuiltinDataType.fromBackingClass(type));
         }
     }
 
@@ -172,17 +183,20 @@ public final class Variant {
      * @return a new Variant containing {@code value}.
      */
     public static Variant of(@Nullable Object value) {
+        var variant = new Variant(value);
+
         if (value != null) {
             boolean clazzIsArray = value.getClass().isArray();
 
-            Class<?> componentClazz = clazzIsArray ?
+            Class<?> clazz = clazzIsArray ?
                 ArrayUtil.getType(value) : value.getClass();
 
-            checkArgument(clazzIsArray || !Variant.class.equals(componentClazz), "Variant cannot contain Variant");
-            checkArgument(!DiagnosticInfo.class.equals(componentClazz), "Variant cannot contain DiagnosticInfo");
+            checkArgument(clazzIsArray || !Variant.class.equals(clazz), "Variant cannot contain Variant");
+            checkArgument(!DiagnosticInfo.class.equals(clazz), "Variant cannot contain DiagnosticInfo");
+            checkArgument(variant.getBuiltinDataType().isPresent(), "Variant cannot contain %s", value.getClass());
         }
 
-        return new Variant(value);
+        return variant;
     }
 
     /**

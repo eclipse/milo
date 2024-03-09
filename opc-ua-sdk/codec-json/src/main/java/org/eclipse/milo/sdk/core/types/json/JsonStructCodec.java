@@ -590,7 +590,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             } else if (hint instanceof EnumHint) {
                 encoder.encodeEnum(fieldName, new JsonEnumWrapper(value.getAsInt(), dataTypeId.expanded()));
             } else if (hint instanceof StructHint) {
-                encoder.encodeStruct(fieldName, value, dataTypeId);
+                encoder.encodeStruct(fieldName, new JsonStruct(dataTypeTree.getDataType(dataTypeId), value.getAsJsonObject()), dataTypeId);
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
