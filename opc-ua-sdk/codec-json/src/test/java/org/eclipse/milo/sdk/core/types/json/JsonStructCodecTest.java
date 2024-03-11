@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -259,9 +260,12 @@ class JsonStructCodecTest {
         DataTypeManager dataTypeManager = new DefaultDataTypeManager();
 
         public TestEncodingContext() {
+            DataTypeCodec xvDataTypeCodec =
+                JsonCodecFactory.create(XV_DATA_TYPE, dataTypeTree);
+
             dataTypeManager.registerType(
                 XV_DATA_TYPE.getNodeId(),
-                new JsonStructCodec(XV_DATA_TYPE, dataTypeTree),
+                xvDataTypeCodec,
                 XV_DATA_TYPE.getBinaryEncodingId(),
                 XV_DATA_TYPE.getXmlEncodingId(),
                 XV_DATA_TYPE.getJsonEncodingId()
