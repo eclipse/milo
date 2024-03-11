@@ -18,57 +18,56 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JsonStructCodecTest {
 
-    private static final DataType XV_DATA_TYPE = new DataType() {
-        @Override
-        public QualifiedName getBrowseName() {
-            return new QualifiedName(0, "XVType");
-        }
+    @Test
+    void encodeType() {
+        var jsonStruct = new JsonStruct(
+            XV_DATA_TYPE,
+            JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject()
+        );
 
-        @Override
-        public NodeId getNodeId() {
-            return NodeIds.XVType;
-        }
+        var encoded = ExtensionObject.encode(new TestEncodingContext(), jsonStruct);
+        var expected = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, new XVType(1.0d, 2.0f));
 
-        @Override
-        public NodeId getBinaryEncodingId() {
-            return NodeIds.XVType_Encoding_DefaultBinary;
-        }
+        assertEquals(expected, encoded);
+    }
 
-        @Override
-        public NodeId getXmlEncodingId() {
-            return NodeIds.XVType_Encoding_DefaultXml;
-        }
+    @Test
+    void decodeType() {
+        var encoded = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, new XVType(1.0d, 2.0f));
 
-        @Override
-        public NodeId getJsonEncodingId() {
-            return NodeIds.XVType_Encoding_DefaultJson;
-        }
+        var decoded = encoded.decode(new TestEncodingContext());
+        var expected = new JsonStruct(
+            XV_DATA_TYPE,
+            JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject()
+        );
 
-        @Override
-        public DataTypeDefinition getDataTypeDefinition() {
-            return XVType.definition(new NamespaceTable());
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", "DataType" + "[", "]")
-                .add("browseName=" + getBrowseName())
-                .add("nodeId=" + getNodeId())
-                .toString();
-        }
-    };
+        assertEquals(expected, decoded);
+    }
 
     @Test
     void encodeBuiltinDataTypeMatrix() {
@@ -211,6 +210,87 @@ class JsonStructCodecTest {
 
             System.out.println("Matrix: " + matrix);
             System.out.println("JSON: " + jsonArray);
+        }
+    }
+
+    private static final DataType XV_DATA_TYPE = new DataType() {
+        @Override
+        public QualifiedName getBrowseName() {
+            return new QualifiedName(0, "XVType");
+        }
+
+        @Override
+        public NodeId getNodeId() {
+            return NodeIds.XVType;
+        }
+
+        @Override
+        public NodeId getBinaryEncodingId() {
+            return NodeIds.XVType_Encoding_DefaultBinary;
+        }
+
+        @Override
+        public NodeId getXmlEncodingId() {
+            return NodeIds.XVType_Encoding_DefaultXml;
+        }
+
+        @Override
+        public NodeId getJsonEncodingId() {
+            return NodeIds.XVType_Encoding_DefaultJson;
+        }
+
+        @Override
+        public DataTypeDefinition getDataTypeDefinition() {
+            return XVType.definition(new NamespaceTable());
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", "DataType" + "[", "]")
+                .add("browseName=" + getBrowseName())
+                .add("nodeId=" + getNodeId())
+                .toString();
+        }
+    };
+
+    private static class TestEncodingContext implements EncodingContext {
+
+        DataTypeTree dataTypeTree = Mockito.mock(DataTypeTree.class);
+        DataTypeManager dataTypeManager = new DefaultDataTypeManager();
+
+        public TestEncodingContext() {
+            dataTypeManager.registerType(
+                XV_DATA_TYPE.getNodeId(),
+                new JsonStructCodec(XV_DATA_TYPE, dataTypeTree),
+                XV_DATA_TYPE.getBinaryEncodingId(),
+                XV_DATA_TYPE.getXmlEncodingId(),
+                XV_DATA_TYPE.getJsonEncodingId()
+            );
+        }
+
+        @Override
+        public DataTypeManager getDataTypeManager() {
+            return dataTypeManager;
+        }
+
+        @Override
+        public EncodingManager getEncodingManager() {
+            return DefaultEncodingManager.createAndInitialize();
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return EncodingLimits.DEFAULT;
+        }
+
+        @Override
+        public NamespaceTable getNamespaceTable() {
+            return new NamespaceTable();
+        }
+
+        @Override
+        public ServerTable getServerTable() {
+            return new ServerTable();
         }
     }
 
