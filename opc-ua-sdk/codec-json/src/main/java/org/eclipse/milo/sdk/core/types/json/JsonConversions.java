@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
+import org.jetbrains.annotations.Nullable;
 
 public class JsonConversions {
 
@@ -154,8 +155,12 @@ public class JsonConversions {
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement fromString(String value) {
-        return new JsonPrimitive(value);
+    public static JsonElement fromString(@Nullable String value) {
+        if (value == null) {
+            return JsonNull.INSTANCE;
+        } else {
+            return new JsonPrimitive(value);
+        }
     }
 
     public static JsonElement fromDateTime(DateTime value) {
