@@ -272,18 +272,14 @@ public class OpcUaSubscription {
             DeleteSubscriptionsResponse response =
                 client.deleteSubscriptions(List.of(serverState.getSubscriptionId()));
 
-            StatusCode[] results = requireNonNull(response.getResults());
+            StatusCode result = requireNonNull(response.getResults())[0];
 
-            if (results[0].isGood()) {
-                client.removeSubscription(this);
-                client.getPublishingManager().removeSubscription(this);
+            if (result.isGood() || result.getValue() == StatusCodes.Bad_SubscriptionIdInvalid) {
+                reset();
+            }
 
-                cancelWatchdogTimer();
-
-                serverState = null;
-                syncState = SyncState.INITIAL;
-            } else {
-                throw new UaException(results[0]);
+            if (!result.isGood()) {
+                throw new UaException(result);
             }
         }
     }
@@ -1162,6 +1158,28 @@ public class OpcUaSubscription {
      */
     public TaskQueue getDeliveryQueue() {
         return deliveryQueue;
+    }
+
+    /**
+     * Reset this Subscription.
+     * <p>
+     * Resetting the Subscription removes it from the Client and PublishingManager, cancels the
+     * watchdog timer, and sets the {@link SyncState} back to {@link SyncState#INITIAL}.
+     * <p>
+     * This is called automatically when the Subscription is deleted, but can also be called
+     * manually when necessary if it has been determined the Subscription no longer exists on
+     * the Server.
+     */
+    public void reset() {
+        if (syncState != SyncState.INITIAL) {
+            client.removeSubscription(this);
+            client.getPublishingManager().removeSubscription(this);
+
+            cancelWatchdogTimer();
+
+            serverState = null;
+            syncState = SyncState.INITIAL;
+        }
     }
 
     void cancelWatchdogTimer() {
