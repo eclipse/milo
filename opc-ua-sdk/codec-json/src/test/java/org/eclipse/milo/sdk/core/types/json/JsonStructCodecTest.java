@@ -45,6 +45,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JsonStructCodecTest {
 
     @Test
+    void encodeDecodeStaticType() {
+        var xv = new XVType(1.0d, 2.0f);
+        var encoded1 = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, xv);
+
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new TestEncodingContext());
+
+        assertEquals(
+            "{\"X\":1.0,\"Value\":2.0,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}",
+            decoded.getJsonObject().toString()
+        );
+
+        var encoded2 = ExtensionObject.encode(new TestEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @Test
     void encodeType() {
         var jsonStruct = new JsonStruct(
             XV_DATA_TYPE,

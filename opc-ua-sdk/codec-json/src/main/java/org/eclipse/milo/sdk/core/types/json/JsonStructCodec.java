@@ -163,10 +163,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
                 return new JsonPrimitive(enumValue);
             } else if (hint instanceof StructHint) {
-                if (dataTypeId.equals(NodeIds.Structure) ||
-                    (field.getIsOptional() &&
-                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
-
+                if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(field)) {
                     ExtensionObject xo = decoder.decodeExtensionObject(fieldName);
                     JsonStruct struct = (JsonStruct) xo.decode(decoder.getEncodingContext());
 
@@ -192,10 +189,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             } else if (hint instanceof StructHint) {
                 var array = new JsonArray();
 
-                if (dataTypeId.equals(NodeIds.Structure) ||
-                    (field.getIsOptional() &&
-                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
-
+                if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(field)) {
                     for (ExtensionObject value : decoder.decodeExtensionObjectArray(fieldName)) {
                         JsonStruct struct = (JsonStruct) value.decode(decoder.getEncodingContext());
                         array.add(struct.getJsonObject());
@@ -221,10 +215,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
                 return decodeEnumMatrix(matrix);
             } else if (hint instanceof StructHint) {
-                if (dataTypeId.equals(NodeIds.Structure) ||
-                    (field.getIsOptional() &&
-                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
-
+                if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(field)) {
                     Matrix matrix = decoder.decodeMatrix(fieldName, BuiltinDataType.ExtensionObject);
 
                     return decodeStructMatrix(decoder.getEncodingContext(), matrix, true);
@@ -239,6 +230,19 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         } else {
             throw new IllegalArgumentException("unsupported value rank: " + field.getValueRank());
         }
+    }
+
+    /**
+     * Get whether the field allows subtyping, which means for structures the field is encoded as
+     * an ExtensionObject rather than a Structure.
+     *
+     * @param field the {@link StructureField} to check.
+     * @return {@code true} if the field allows subtyping.
+     */
+    private boolean fieldAllowsSubtyping(StructureField field) {
+        return field.getIsOptional() &&
+            (definition.getStructureType() == StructureType.StructureWithSubtypedValues ||
+                definition.getStructureType() == StructureType.UnionWithSubtypedValues);
     }
 
     private static JsonElement decodeBuiltinDataType(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
@@ -640,10 +644,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             } else if (hint instanceof StructHint) {
                 JsonObject jsonObject = value.getAsJsonObject();
 
-                if (dataTypeId.equals(NodeIds.Structure) ||
-                    (field.getIsOptional() &&
-                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
-
+                if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(field)) {
                     JsonObject metadata = jsonObject.getAsJsonObject("__metadata");
                     NodeId concreteDataTypeId = NodeId.parse(
                         metadata.getAsJsonPrimitive("dataTypeId").getAsString()
@@ -671,10 +672,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 }
                 encoder.encodeEnumArray(fieldName, enumValues);
             } else if (hint instanceof StructHint) {
-                if (dataTypeId.equals(NodeIds.Structure) ||
-                    (field.getIsOptional() &&
-                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
-
+                if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(field)) {
                     var xoArray = new ExtensionObject[jsonArray.size()];
 
                     NodeId concreteDataTypeId = dataTypeId;
@@ -717,10 +715,7 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.Int32);
                 encoder.encodeEnumMatrix(fieldName, matrix);
             } else if (hint instanceof StructHint) {
-                if (dataTypeId.equals(NodeIds.Structure) ||
-                    (field.getIsOptional() &&
-                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
-
+                if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(field)) {
                     Object[] flatArray =
                         encodeStructMatrix(encoder.getEncodingContext(), dataTypeTree, jsonArray, true);
                     var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
