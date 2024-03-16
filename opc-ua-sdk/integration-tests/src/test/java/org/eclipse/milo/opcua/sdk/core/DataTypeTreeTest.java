@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,6 +56,10 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
                 System.out.print("\t");
             }
             System.out.println(dataType.getBrowseName().toParseableString());
+        }, (o1, o2) -> {
+            String name1 = requireNonNullElse(o1.getValue().getBrowseName().getName(), "");
+            String name2 = requireNonNullElse(o2.getValue().getBrowseName().getName(), "");
+            return Comparator.<String>naturalOrder().compare(name1, name2);
         });
     }
 

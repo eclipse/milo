@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -58,7 +59,7 @@ public class Tree<A> {
      * @param c the value {@link Consumer}.
      */
     public void traverse(Consumer<A> c) {
-        traverse(this, (a, integer) -> c.accept(a), 0);
+        traverse(this, (a, integer) -> c.accept(a), 0, null);
     }
 
     /**
@@ -76,7 +77,17 @@ public class Tree<A> {
      * @param c the value and depth {@link BiConsumer}.
      */
     public void traverseWithDepth(BiConsumer<A, Integer> c) {
-        traverse(this, c, 0);
+        traverse(this, c, 0, null);
+    }
+
+    /**
+     * Traverse this tree consuming the {@code value} and current depth at each node.
+     *
+     * @param c the value and depth {@link BiConsumer}.
+     * @param comparator a {@link Comparator} to sort the children of each node.
+     */
+    public void traverseWithDepth(BiConsumer<A, Integer> c, Comparator<Tree<A>> comparator) {
+        traverse(this, c, 0, comparator);
     }
 
     /**
@@ -93,7 +104,7 @@ public class Tree<A> {
     /**
      * Map this tree into a new tree using the transformation {@code f}.
      *
-     * @param f   a function that transforms from {@code A} to {@code B}.
+     * @param f a function that transforms from {@code A} to {@code B}.
      * @param <B> the new type.
      * @return a new tree in which the values have been mapped from {@code A} to {@code B} using {@code f}.
      */
@@ -116,10 +127,15 @@ public class Tree<A> {
         });
     }
 
-    private static <T> void traverse(Tree<T> tree, BiConsumer<T, Integer> c, int depth) {
+    private static <T> void traverse(Tree<T> tree, BiConsumer<T, Integer> c, int depth, @Nullable Comparator<Tree<T>> comparator) {
         T value = tree.value;
         c.accept(value, depth);
-        tree.children.forEach(t -> traverse(t, c, depth + 1));
+
+        if (comparator != null) {
+            tree.children.stream().sorted(comparator).forEach(t -> traverse(t, c, depth + 1, comparator));
+        } else {
+            tree.children.forEach(t -> traverse(t, c, depth + 1, comparator));
+        }
     }
 
     private static <T> void traverseNodes(Tree<T> tree, BiConsumer<Tree<T>, Integer> c, int depth) {
