@@ -111,11 +111,11 @@ public class JsonConversions {
         }
     }
 
-    public static JsonElement fromBoolean(boolean value) {
+    public static JsonElement fromBoolean(Boolean value) {
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement fromSByte(byte value) {
+    public static JsonElement fromSByte(Byte value) {
         return new JsonPrimitive(value);
     }
 
@@ -123,7 +123,7 @@ public class JsonConversions {
         return new JsonPrimitive(value.shortValue());
     }
 
-    public static JsonElement fromInt16(short value) {
+    public static JsonElement fromInt16(Short value) {
         return new JsonPrimitive(value);
     }
 
@@ -131,7 +131,7 @@ public class JsonConversions {
         return new JsonPrimitive(value.intValue());
     }
 
-    public static JsonElement fromInt32(int value) {
+    public static JsonElement fromInt32(Integer value) {
         return new JsonPrimitive(value);
     }
 
@@ -139,7 +139,7 @@ public class JsonConversions {
         return new JsonPrimitive(value.longValue());
     }
 
-    public static JsonElement fromInt64(long value) {
+    public static JsonElement fromInt64(Long value) {
         return new JsonPrimitive(value);
     }
 
@@ -147,11 +147,11 @@ public class JsonConversions {
         return new JsonPrimitive(value.toBigInteger());
     }
 
-    public static JsonElement fromFloat(float value) {
+    public static JsonElement fromFloat(Float value) {
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement fromDouble(double value) {
+    public static JsonElement fromDouble(Double value) {
         return new JsonPrimitive(value);
     }
 
@@ -211,15 +211,14 @@ public class JsonConversions {
     }
 
     public static JsonElement fromLocalizedText(LocalizedText value) {
-        JsonObject jsonObject = new JsonObject();
+        var jsonObject = new JsonObject();
         jsonObject.addProperty("Locale", value.getLocale());
         jsonObject.addProperty("Text", value.getText());
-
         return jsonObject;
     }
 
     public static JsonElement fromExtensionObject(ExtensionObject value) {
-        JsonObject jsonObject = new JsonObject();
+        var jsonObject = new JsonObject();
 
         jsonObject.add("TypeId", fromNodeId(value.getEncodingId()));
 
@@ -377,11 +376,11 @@ public class JsonConversions {
         }
     }
 
-    public static boolean toBoolean(JsonElement element) {
+    public static Boolean toBoolean(JsonElement element) {
         return element.getAsBoolean();
     }
 
-    public static byte toSByte(JsonElement element) {
+    public static Byte toSByte(JsonElement element) {
         return element.getAsByte();
     }
 
@@ -389,7 +388,7 @@ public class JsonConversions {
         return UByte.valueOf(element.getAsShort());
     }
 
-    public static short toInt16(JsonElement element) {
+    public static Short toInt16(JsonElement element) {
         return element.getAsShort();
     }
 
@@ -397,7 +396,7 @@ public class JsonConversions {
         return UShort.valueOf(element.getAsInt());
     }
 
-    public static int toInt32(JsonElement element) {
+    public static Integer toInt32(JsonElement element) {
         return element.getAsInt();
     }
 
@@ -405,7 +404,7 @@ public class JsonConversions {
         return UInteger.valueOf(element.getAsLong());
     }
 
-    public static long toInt64(JsonElement element) {
+    public static Long toInt64(JsonElement element) {
         return element.getAsLong();
     }
 
@@ -413,11 +412,11 @@ public class JsonConversions {
         return ULong.valueOf(element.getAsBigInteger());
     }
 
-    public static float toFloat(JsonElement element) {
+    public static Float toFloat(JsonElement element) {
         return element.getAsFloat();
     }
 
-    public static double toDouble(JsonElement element) {
+    public static Double toDouble(JsonElement element) {
         return element.getAsDouble();
     }
 

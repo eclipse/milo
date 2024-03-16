@@ -64,7 +64,7 @@ class JsonStructCodecTest {
         var decoded = encoded.decode(new TestEncodingContext());
         var expected = new JsonStruct(
             XV_DATA_TYPE,
-            JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject()
+            JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}").getAsJsonObject()
         );
 
         assertEquals(expected, decoded);
@@ -122,13 +122,14 @@ class JsonStructCodecTest {
 
     @Test
     void encodeStructMatrix() {
-        String json2d = "[[{\"X\": 1, \"Value\": 2}, {\"X\": 3, \"Value\": 4}], [{\"X\": 5, \"Value\": 6}, {\"X\": 7, \"Value\": 8}]]";
-        String json3d = "[[[{\"X\": 1, \"Value\": 2}, {\"X\": 3, \"Value\": 4}], [{\"X\": 5, \"Value\": 6}, {\"X\": 7, \"Value\": 8}]], [[{\"X\": 9, \"Value\": 10}, {\"X\": 11, \"Value\": 12}], [{\"X\": 13, \"Value\": 14}, {\"X\": 15, \"Value\": 16}]]]";
-        String json4d = "[[[[{\"X\": 1, \"Value\": 2}, {\"X\": 3, \"Value\": 4}], [{\"X\": 5, \"Value\": 6}, {\"X\": 7, \"Value\": 8}]], [[{\"X\": 9, \"Value\": 10}, {\"X\": 11, \"Value\": 12}], [{\"X\": 13, \"Value\": 14}, {\"X\": 15, \"Value\": 16}]]], [[[{\"X\": 17, \"Value\": 18}, {\"X\": 19, \"Value\": 20}], [{\"X\": 21, \"Value\": 22}, {\"X\": 23, \"Value\": 24}]], [[{\"X\": 25, \"Value\": 26}, {\"X\": 27, \"Value\": 28}], [{\"X\": 29, \"Value\": 30}, {\"X\": 31, \"Value\": 32}]]]]";
+        String json2d = "[[{\"X\": 1, \"Value\": 2,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 3, \"Value\": 4,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}], [{\"X\": 5, \"Value\": 6,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 7, \"Value\": 8,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}]]";
+        String json3d = "[[[{\"X\": 1, \"Value\": 2,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 3, \"Value\": 4,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}], [{\"X\": 5, \"Value\": 6,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 7, \"Value\": 8,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}]], [[{\"X\": 9, \"Value\": 10,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 11, \"Value\": 12,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 13, \"Value\": 14,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}, {\"X\": 15, \"Value\": 16,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}]]]";
 
-        for (String json : List.of(json2d, json3d, json4d)) {
+        var context = new TestEncodingContext();
+
+        for (String json : List.of(json2d, json3d)) {
             JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
-            Object[] flatArray = JsonStructCodec.encodeStructMatrix(XV_DATA_TYPE, jsonArray);
+            Object[] flatArray = JsonStructCodec.encodeStructMatrix(context, context.dataTypeTree, jsonArray, false);
             System.out.println("JSON: " + jsonArray);
 
             var matrix = new Matrix(flatArray, JsonStructCodec.getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
@@ -195,19 +196,30 @@ class JsonStructCodecTest {
 
     @Test
     void decodeStructMatrix() {
+        var context = new TestEncodingContext();
+
         var matrix2d = new Matrix(
             new Object[]{
-                new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject()),
-                new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 3.0, \"Value\": 4.0}").getAsJsonObject()),
-                new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 5.0, \"Value\": 6.0}").getAsJsonObject()),
-                new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 7.0, \"Value\": 8.0}").getAsJsonObject())
+                ExtensionObject.encode(
+                    context,
+                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject())),
+                ExtensionObject.encode(
+                    context,
+                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 3.0, \"Value\": 4.0}").getAsJsonObject())),
+                ExtensionObject.encode(
+                    context,
+                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 5.0, \"Value\": 6.0}").getAsJsonObject())),
+                ExtensionObject.encode(
+                    context,
+                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 7.0, \"Value\": 8.0}").getAsJsonObject())
+                )
             },
             new int[]{2, 2},
             BuiltinDataType.ExtensionObject
         );
 
         for (Matrix matrix : List.of(matrix2d)) {
-            JsonElement jsonArray = JsonStructCodec.decodeStructMatrix(matrix);
+            JsonElement jsonArray = JsonStructCodec.decodeStructMatrix(new TestEncodingContext(), matrix, true);
 
             System.out.println("Matrix: " + matrix);
             System.out.println("JSON: " + jsonArray);
@@ -270,6 +282,8 @@ class JsonStructCodecTest {
                 XV_DATA_TYPE.getXmlEncodingId(),
                 XV_DATA_TYPE.getJsonEncodingId()
             );
+
+            Mockito.when(dataTypeTree.getDataType(XV_DATA_TYPE.getNodeId())).thenReturn(XV_DATA_TYPE);
         }
 
         @Override

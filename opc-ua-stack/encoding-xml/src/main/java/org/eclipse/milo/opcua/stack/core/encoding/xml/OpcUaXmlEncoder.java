@@ -67,6 +67,11 @@ public class OpcUaXmlEncoder implements UaEncoder {
         }
     }
 
+    @Override
+    public EncodingContext getEncodingContext() {
+        return context;
+    }
+
     public Document getDocument() {
         return document;
     }

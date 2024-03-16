@@ -189,7 +189,7 @@ public final class DataTypeTreeBuilder {
                 tree.getValue().getNodeId(),
                 BrowseDirection.Forward,
                 NodeIds.HasSubtype,
-                false,
+                true,
                 uint(NodeClass.DataType.getValue()),
                 uint(BrowseResultMask.All.getValue())
             )

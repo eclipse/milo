@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.stack.core.types;
 
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
 
 public interface DataTypeManager {
@@ -25,9 +24,15 @@ public interface DataTypeManager {
         @Nullable NodeId jsonEncodingId
     );
 
-    @Nullable DataTypeCodec getCodec(NodeId encodingId);
-
-    @Nullable DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId);
+    /**
+     * Get the {@link DataTypeCodec} for the given {@link NodeId}.
+     * <p>
+     * The {@link NodeId} may be either the datatype or encoding id.
+     *
+     * @param id the {@link NodeId} of either the datatype or encoding.
+     * @return the {@link DataTypeCodec} for the given {@link NodeId}.
+     */
+    @Nullable DataTypeCodec getCodec(NodeId id);
 
     @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId);
 

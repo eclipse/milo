@@ -75,6 +75,11 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         return this;
     }
 
+    @Override
+    public EncodingContext getEncodingContext() {
+        return context;
+    }
+
     public <T> T[] decodeArray(Supplier<T> read, Class<T> clazz) throws UaSerializationException {
         int length = decodeInt32();
 
@@ -687,8 +692,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
 
     @Override
     public Object decodeStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        DataTypeCodec codec = context.getDataTypeManager()
-            .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
         if (codec != null) {
             return codec.decode(context, this);
@@ -1155,8 +1159,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         } else {
             checkArrayLength(length);
 
-            DataTypeCodec codec = context.getDataTypeManager()
-                .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -1284,8 +1287,7 @@ public class OpcUaBinaryDecoder implements UaDecoder {
         }
         checkArrayLength(length);
 
-        DataTypeCodec codec = context.getDataTypeManager()
-            .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(

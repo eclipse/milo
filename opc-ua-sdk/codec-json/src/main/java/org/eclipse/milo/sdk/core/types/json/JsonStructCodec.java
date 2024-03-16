@@ -28,6 +28,7 @@ import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
@@ -111,14 +112,18 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
         StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
-        for (int i = 0; i < fields.length; i++) {
-            StructureField field = fields[i];
-            if (!field.getIsOptional() || (switchField >>> i & 1L) == 1L) {
+        int optionalFieldIndex = 0;
+        for (StructureField field : fields) {
+            if (!field.getIsOptional() || (switchField >>> optionalFieldIndex++ & 1L) == 1L) {
                 JsonElement value = decodeFieldValue(decoder, field);
 
                 jsonObject.add(requireNonNull(field.getName()), value);
             }
         }
+
+        var metadata = new JsonObject();
+        metadata.addProperty("dataTypeId", dataType.getNodeId().toParseableString());
+        jsonObject.add("__metadata", metadata);
 
         return new JsonStruct(dataType, jsonObject);
     }
@@ -158,9 +163,19 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
                 return new JsonPrimitive(enumValue);
             } else if (hint instanceof StructHint) {
-                JsonStruct structValue = (JsonStruct) decoder.decodeStruct(fieldName, dataTypeId);
+                if (dataTypeId.equals(NodeIds.Structure) ||
+                    (field.getIsOptional() &&
+                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
 
-                return structValue.getJsonObject();
+                    ExtensionObject xo = decoder.decodeExtensionObject(fieldName);
+                    JsonStruct struct = (JsonStruct) xo.decode(decoder.getEncodingContext());
+
+                    return struct.getJsonObject();
+                } else {
+                    JsonStruct struct = (JsonStruct) decoder.decodeStruct(fieldName, dataTypeId);
+
+                    return struct.getJsonObject();
+                }
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -176,8 +191,20 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 return array;
             } else if (hint instanceof StructHint) {
                 var array = new JsonArray();
-                for (Object value : decoder.decodeStructArray(fieldName, dataTypeId)) {
-                    array.add(((JsonStruct) value).getJsonObject());
+
+                if (dataTypeId.equals(NodeIds.Structure) ||
+                    (field.getIsOptional() &&
+                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
+
+                    for (ExtensionObject value : decoder.decodeExtensionObjectArray(fieldName)) {
+                        JsonStruct struct = (JsonStruct) value.decode(decoder.getEncodingContext());
+                        array.add(struct.getJsonObject());
+                    }
+                } else {
+                    for (Object o : decoder.decodeStructArray(fieldName, dataTypeId)) {
+                        JsonStruct struct = (JsonStruct) o;
+                        array.add(struct.getJsonObject());
+                    }
                 }
                 return array;
             } else {
@@ -194,9 +221,18 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
                 return decodeEnumMatrix(matrix);
             } else if (hint instanceof StructHint) {
-                Matrix matrix = decoder.decodeStructMatrix(fieldName, dataTypeId);
+                if (dataTypeId.equals(NodeIds.Structure) ||
+                    (field.getIsOptional() &&
+                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
 
-                return decodeStructMatrix(matrix);
+                    Matrix matrix = decoder.decodeMatrix(fieldName, BuiltinDataType.ExtensionObject);
+
+                    return decodeStructMatrix(decoder.getEncodingContext(), matrix, true);
+                } else {
+                    Matrix matrix = decoder.decodeStructMatrix(fieldName, dataTypeId);
+
+                    return decodeStructMatrix(decoder.getEncodingContext(), matrix, false);
+                }
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -475,25 +511,40 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         return decodeBuiltinDataTypeMatrix(matrix.getElements(), BuiltinDataType.Int32, matrix.getDimensions(), 0);
     }
 
-    static JsonElement decodeStructMatrix(Matrix matrix) {
-        return decodeStructMatrix(matrix.getElements(), matrix.getDimensions(), 0);
+    static JsonElement decodeStructMatrix(EncodingContext context, Matrix matrix, boolean subtyped) {
+        return decodeStructMatrix(context, matrix.getElements(), subtyped, matrix.getDimensions(), 0);
     }
 
-    private static JsonElement decodeStructMatrix(Object flatArray, int[] dimensions, int offset) {
+    private static JsonElement decodeStructMatrix(
+        EncodingContext context,
+        Object flatArray,
+        boolean decodeExtensionObject,
+        int[] dimensions, int offset
+    ) {
+
         var jsonArray = new JsonArray();
 
         if (dimensions.length == 1) {
             for (int i = 0; i < dimensions[0]; i++) {
                 Object value = Array.get(flatArray, offset + i);
-                JsonStruct struct = (JsonStruct) value;
-                jsonArray.add(struct.getJsonObject());
+
+                if (decodeExtensionObject) {
+                    ExtensionObject xo = (ExtensionObject) value;
+                    JsonStruct struct = (JsonStruct) xo.decode(context);
+                    jsonArray.add(struct.getJsonObject());
+                } else {
+                    JsonStruct struct = (JsonStruct) value;
+                    jsonArray.add(struct.getJsonObject());
+                }
             }
         } else {
             int[] dimensionsTail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
 
             for (int i = 0; i < dimensions[0]; i++) {
                 JsonElement e = decodeStructMatrix(
+                    context,
                     flatArray,
+                    decodeExtensionObject,
                     dimensionsTail,
                     offset + i * Arrays.stream(dimensionsTail).reduce(1, (a, b) -> a * b)
                 );
@@ -532,23 +583,20 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     private void encodeStruct(UaEncoder encoder, JsonStruct value) {
         StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
-        var switchField = 0xFFFFFFFFL;
+        var switchField = 0L;
         if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
-            switchField = 0L;
-            for (int i = 0; i < fields.length; i++) {
-                StructureField field = fields[i];
-                if (!field.getIsOptional() ||
-                    field.getIsOptional() && value.getJsonObject().has(requireNonNull(field.getName()))) {
-
-                    switchField = switchField | (1L << i);
+            int optionalFieldIndex = 0;
+            for (StructureField field : fields) {
+                if (field.getIsOptional() && value.getJsonObject().has(requireNonNull(field.getName()))) {
+                    switchField = switchField | (1L << optionalFieldIndex++);
                 }
             }
             encoder.encodeUInt32("SwitchField", UInteger.valueOf(switchField));
         }
 
-        for (int i = 0; i < fields.length; i++) {
-            StructureField field = fields[i];
-            if (!field.getIsOptional() || (switchField >>> i & 1L) == 1L) {
+        int optionalFieldIndex = 0;
+        for (StructureField field : fields) {
+            if (!field.getIsOptional() || ((switchField >>> optionalFieldIndex++) & 1L) == 1L) {
                 JsonElement fieldValue = value.getJsonObject().get(requireNonNull(field.getName()));
                 encodeFieldValue(encoder, field, fieldValue);
             }
@@ -590,7 +638,23 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             } else if (hint instanceof EnumHint) {
                 encoder.encodeEnum(fieldName, new JsonEnumWrapper(value.getAsInt(), dataTypeId.expanded()));
             } else if (hint instanceof StructHint) {
-                encoder.encodeStruct(fieldName, new JsonStruct(dataTypeTree.getDataType(dataTypeId), value.getAsJsonObject()), dataTypeId);
+                JsonObject jsonObject = value.getAsJsonObject();
+
+                if (dataTypeId.equals(NodeIds.Structure) ||
+                    (field.getIsOptional() &&
+                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
+
+                    JsonObject metadata = jsonObject.getAsJsonObject("__metadata");
+                    NodeId concreteDataTypeId = NodeId.parse(
+                        metadata.getAsJsonPrimitive("dataTypeId").getAsString()
+                    );
+                    var struct = new JsonStruct(dataTypeTree.getDataType(concreteDataTypeId), jsonObject);
+                    var xo = ExtensionObject.encode(encoder.getEncodingContext(), struct);
+                    encoder.encodeExtensionObject(fieldName, xo);
+                } else {
+                    var struct = new JsonStruct(dataTypeTree.getDataType(dataTypeId), jsonObject);
+                    encoder.encodeStruct(fieldName, struct, dataTypeId);
+                }
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -607,11 +671,36 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 }
                 encoder.encodeEnumArray(fieldName, enumValues);
             } else if (hint instanceof StructHint) {
-                JsonStruct[] structValues = new JsonStruct[jsonArray.size()];
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    structValues[i] = new JsonStruct(dataTypeTree.getDataType(dataTypeId), jsonArray.get(i).getAsJsonObject());
+                if (dataTypeId.equals(NodeIds.Structure) ||
+                    (field.getIsOptional() &&
+                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
+
+                    var xoArray = new ExtensionObject[jsonArray.size()];
+
+                    NodeId concreteDataTypeId = dataTypeId;
+                    if (!jsonArray.isEmpty()) {
+                        JsonObject metadata = jsonArray.get(0).getAsJsonObject().getAsJsonObject("__metadata");
+                        String id = metadata.getAsJsonPrimitive("dataTypeId").getAsString();
+                        concreteDataTypeId = NodeId.parse(id);
+                    }
+
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+                        var struct = new JsonStruct(dataTypeTree.getDataType(concreteDataTypeId), jsonObject);
+                        xoArray[i] = ExtensionObject.encode(encoder.getEncodingContext(), struct);
+                    }
+
+                    encoder.encodeExtensionObjectArray(fieldName, xoArray);
+                } else {
+                    var structArray = new JsonStruct[jsonArray.size()];
+
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+                        structArray[i] = new JsonStruct(dataTypeTree.getDataType(dataTypeId), jsonObject);
+                    }
+
+                    encoder.encodeStructArray(fieldName, structArray, dataTypeId);
                 }
-                encoder.encodeStructArray(fieldName, structValues, dataTypeId);
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -628,9 +717,20 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.Int32);
                 encoder.encodeEnumMatrix(fieldName, matrix);
             } else if (hint instanceof StructHint) {
-                Object[] flatArray = encodeStructMatrix(dataTypeTree.getDataType(dataTypeId), jsonArray);
-                var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
-                encoder.encodeStructMatrix(fieldName, matrix, dataTypeId);
+                if (dataTypeId.equals(NodeIds.Structure) ||
+                    (field.getIsOptional() &&
+                        definition.getStructureType() == StructureType.StructureWithSubtypedValues)) {
+
+                    Object[] flatArray =
+                        encodeStructMatrix(encoder.getEncodingContext(), dataTypeTree, jsonArray, true);
+                    var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
+                    encoder.encodeMatrix(fieldName, matrix);
+                } else {
+                    Object[] flatArray =
+                        encodeStructMatrix(encoder.getEncodingContext(), dataTypeTree, jsonArray, false);
+                    var matrix = new Matrix(flatArray, getDimensions(jsonArray), BuiltinDataType.ExtensionObject);
+                    encoder.encodeStructMatrix(fieldName, matrix, dataTypeId);
+                }
             } else {
                 throw new IllegalArgumentException("hint: " + hint);
             }
@@ -952,16 +1052,39 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         return elements.toArray();
     }
 
-    static Object[] encodeStructMatrix(DataType dataType, JsonArray jsonArray) {
+    static Object[] encodeStructMatrix(
+        EncodingContext context,
+        DataTypeTree dataTypeTree,
+        JsonArray jsonArray,
+        boolean encodeExtensionObject
+    ) {
+
         var elements = new ArrayList<>();
+
+        DataType dataType = null;
 
         for (int i = 0; i < jsonArray.size(); i++) {
             var element = jsonArray.get(i);
             if (element.isJsonArray()) {
-                Collections.addAll(elements, encodeStructMatrix(dataType, element.getAsJsonArray()));
+                Collections.addAll(
+                    elements,
+                    encodeStructMatrix(context, dataTypeTree, element.getAsJsonArray(), encodeExtensionObject)
+                );
             } else {
+                if (dataType == null) {
+                    JsonObject metadata = element.getAsJsonObject().getAsJsonObject("__metadata");
+                    String dataTypeId = metadata.getAsJsonPrimitive("dataTypeId").getAsString();
+                    dataType = dataTypeTree.getDataType(NodeId.parse(dataTypeId));
+                }
+
                 var struct = new JsonStruct(dataType, element.getAsJsonObject());
-                elements.add(struct);
+
+                if (encodeExtensionObject) {
+                    var xo = ExtensionObject.encode(context, struct);
+                    elements.add(xo);
+                } else {
+                    elements.add(struct);
+                }
             }
         }
 
