@@ -233,8 +233,9 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     /**
-     * Get whether the field allows subtyping, which means for structures the field is encoded as
-     * an ExtensionObject rather than a Structure.
+     * Check if the field allows subtyping.
+     * <p>
+     * In Structures and Unions this means the field is encoded as an ExtensionObject.
      *
      * @param field the {@link StructureField} to check.
      * @return {@code true} if the field allows subtyping.
