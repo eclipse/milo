@@ -16,7 +16,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -57,7 +56,7 @@ public class MethodExample2 implements ClientExample {
     }
 
     private void logArguments(OpcUaClient client, UaMethod method) throws UaException {
-        DataTypeTree dataTypeTree = DataTypeTreeBuilder.build(client);
+        DataTypeTree dataTypeTree = client.getDataTypeTree();
         Argument[] inputArguments = method.getInputArguments();
         Argument[] outputArguments = method.getOutputArguments();
 
