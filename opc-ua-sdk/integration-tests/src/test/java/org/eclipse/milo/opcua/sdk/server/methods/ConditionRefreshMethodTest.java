@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -25,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Objects.requireNonNull;
+import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_SubscriptionIdInvalid;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConditionRefreshMethodTest extends AbstractClientServerTest {
@@ -40,7 +40,7 @@ public class ConditionRefreshMethodTest extends AbstractClientServerTest {
         CallResponse response = client.call(List.of(request));
         CallMethodResult result = requireNonNull(response.getResults())[0];
 
-        assertEquals(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid), result.getStatusCode());
+        assertEquals(StatusCode.of(Bad_SubscriptionIdInvalid), result.getStatusCode());
     }
 
 }

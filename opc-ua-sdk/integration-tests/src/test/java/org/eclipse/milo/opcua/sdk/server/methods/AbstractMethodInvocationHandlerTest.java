@@ -18,7 +18,6 @@ import org.eclipse.milo.opcua.sdk.client.methods.UaMethodException;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -33,6 +32,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Objects.requireNonNull;
+import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ArgumentsMissing;
+import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_InvalidArgument;
+import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_OutOfRange;
+import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_TooManyArguments;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -70,8 +73,8 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
             System.out.println("result: " + e.getStatusCode());
             System.out.println("inputArgumentResults: " + Arrays.toString(e.getInputArgumentResults()));
 
-            assertEquals(StatusCodes.Bad_InvalidArgument, e.getStatusCode().getValue());
-            assertEquals(StatusCodes.Bad_OutOfRange, e.getInputArgumentResults()[0].getValue());
+            assertEquals(StatusCode.of(Bad_InvalidArgument), e.getStatusCode());
+            assertEquals(StatusCode.of(Bad_OutOfRange), e.getInputArgumentResults()[0]);
         }
     }
 
@@ -87,7 +90,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
 
             CallMethodResult result = requireNonNull(response.getResults())[0];
 
-            assertEquals(StatusCodes.Bad_ArgumentsMissing, result.getStatusCode().getValue());
+            assertEquals(StatusCode.of(Bad_ArgumentsMissing), result.getStatusCode());
         }
 
         // too many arguments
@@ -100,7 +103,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
 
             CallMethodResult result = requireNonNull(response.getResults())[0];
 
-            assertEquals(StatusCodes.Bad_TooManyArguments, result.getStatusCode().getValue());
+            assertEquals(StatusCode.of(Bad_TooManyArguments), result.getStatusCode());
         }
     }
 
@@ -121,7 +124,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
 
             CallMethodResult result = requireNonNull(response.getResults())[0];
 
-            assertEquals(new StatusCode(StatusCodes.Good), result.getStatusCode());
+            assertEquals(StatusCode.GOOD, result.getStatusCode());
             assertEquals(0, requireNonNull(result.getInputArgumentResults()).length);
             assertEquals(input, requireNonNull(result.getOutputArguments())[0]);
         }
@@ -139,7 +142,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
 
         CallMethodResult result = requireNonNull(response.getResults())[0];
 
-        assertEquals(new StatusCode(StatusCodes.Good), result.getStatusCode());
+        assertEquals(StatusCode.GOOD, result.getStatusCode());
         assertEquals(0, requireNonNull(result.getInputArgumentResults()).length);
         assertEquals(input, requireNonNull(result.getOutputArguments())[0]);
     }
@@ -157,7 +160,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
 
         CallMethodResult result = requireNonNull(response.getResults())[0];
 
-        assertEquals(new StatusCode(StatusCodes.Good), result.getStatusCode());
+        assertEquals(StatusCode.GOOD, result.getStatusCode());
         assertEquals(0, requireNonNull(result.getInputArgumentResults()).length);
         assertEquals(input, requireNonNull(result.getOutputArguments())[0]);
     }
