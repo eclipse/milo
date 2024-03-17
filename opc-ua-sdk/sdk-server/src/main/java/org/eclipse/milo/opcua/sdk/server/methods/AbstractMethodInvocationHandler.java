@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.sdk.server.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -103,11 +102,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                                     .orElse(NodeId.NULL_VALUE);
 
                                 DataType type = dataTypeTree.getType(argDataTypeId);
-
-                                // TODO better way to determine if a type is abstract...
-                                //  add to DataType? dataTypeTree.isAbstract()?
-                                boolean isAbstract = type != null &&
-                                    ((DataTypeTreeBuilder.ServerDataType) type).isAbstract();
+                                boolean isAbstract = type != null && type.isAbstract();
 
                                 if (isAbstract) {
                                     dataTypeMatch = dataTypeTree.isSubtypeOf(typeId, argDataTypeId);

@@ -38,6 +38,7 @@ class ClientDataType implements DataType {
     private final NodeId xmlEncodingId;
     private final NodeId jsonEncodingId;
     private final DataTypeDefinition dataTypeDefinition;
+    private final Boolean isAbstract;
 
     public ClientDataType(
         QualifiedName browseName,
@@ -45,7 +46,7 @@ class ClientDataType implements DataType {
         NodeId binaryEncodingId,
         NodeId xmlEncodingId,
         NodeId jsonEncodingId,
-        DataTypeDefinition dataTypeDefinition
+        DataTypeDefinition dataTypeDefinition, Boolean isAbstract
     ) {
 
         this.browseName = browseName;
@@ -54,6 +55,7 @@ class ClientDataType implements DataType {
         this.xmlEncodingId = xmlEncodingId;
         this.jsonEncodingId = jsonEncodingId;
         this.dataTypeDefinition = dataTypeDefinition;
+        this.isAbstract = isAbstract;
     }
 
     @Override
@@ -87,6 +89,11 @@ class ClientDataType implements DataType {
     }
 
     @Override
+    public Boolean isAbstract() {
+        return isAbstract;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -96,7 +103,8 @@ class ClientDataType implements DataType {
             Objects.equals(binaryEncodingId, dataType.binaryEncodingId) &&
             Objects.equals(xmlEncodingId, dataType.xmlEncodingId) &&
             Objects.equals(jsonEncodingId, dataType.jsonEncodingId) &&
-            Objects.equals(dataTypeDefinition, dataType.dataTypeDefinition);
+            Objects.equals(dataTypeDefinition, dataType.dataTypeDefinition) &&
+            Objects.equals(isAbstract, dataType.isAbstract);
     }
 
     @Override
@@ -107,7 +115,8 @@ class ClientDataType implements DataType {
             binaryEncodingId,
             xmlEncodingId,
             jsonEncodingId,
-            dataTypeDefinition
+            dataTypeDefinition,
+            isAbstract
         );
     }
 
@@ -120,6 +129,7 @@ class ClientDataType implements DataType {
             .add("xmlEncodingId=" + xmlEncodingId)
             .add("jsonEncodingId=" + jsonEncodingId)
             .add("dataTypeDefinition=" + dataTypeDefinition)
+            .add("isAbstract=" + isAbstract)
             .toString();
     }
 
