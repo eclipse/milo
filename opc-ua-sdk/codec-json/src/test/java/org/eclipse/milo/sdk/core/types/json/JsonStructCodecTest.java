@@ -275,6 +275,11 @@ class JsonStructCodecTest {
         }
 
         @Override
+        public Boolean isAbstract() {
+            return false;
+        }
+
+        @Override
         public String toString() {
             return new StringJoiner(", ", "DataType" + "[", "]")
                 .add("browseName=" + getBrowseName())
