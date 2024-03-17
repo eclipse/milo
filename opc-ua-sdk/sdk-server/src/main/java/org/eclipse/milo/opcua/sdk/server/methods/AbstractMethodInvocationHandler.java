@@ -97,17 +97,17 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                             if (decoded instanceof UaStructuredType) {
                                 UaStructuredType structuredType = (UaStructuredType) decoded;
 
-                                NodeId typeId = structuredType.getTypeId()
+                                valueDataTypeId = structuredType.getTypeId()
                                     .toNodeId(node.getNodeContext().getNamespaceTable())
                                     .orElse(NodeId.NULL_VALUE);
 
-                                DataType type = dataTypeTree.getType(argDataTypeId);
-                                boolean isAbstract = type != null && type.isAbstract();
+                                DataType argType = dataTypeTree.getType(argDataTypeId);
+                                boolean isAbstract = argType != null && argType.isAbstract();
 
                                 if (isAbstract) {
-                                    dataTypeMatch = dataTypeTree.isSubtypeOf(typeId, argDataTypeId);
+                                    dataTypeMatch = dataTypeTree.isSubtypeOf(valueDataTypeId, argDataTypeId);
                                 } else {
-                                    dataTypeMatch = Objects.equals(typeId, argDataTypeId);
+                                    dataTypeMatch = Objects.equals(valueDataTypeId, argDataTypeId);
                                 }
                             } else {
                                 dataTypeMatch = false;
