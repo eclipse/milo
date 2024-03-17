@@ -377,6 +377,11 @@ public class OpcUaServer extends AbstractServiceHandler {
         return variableTypeManager;
     }
 
+    /**
+     * Get the Server's {@link DataTypeTree}.
+     *
+     * @return the Server's {@link DataTypeTree}.
+     */
     public DataTypeTree getDataTypeTree() {
         return dataTypeTree.get(() -> DataTypeTreeBuilder.build(this));
     }

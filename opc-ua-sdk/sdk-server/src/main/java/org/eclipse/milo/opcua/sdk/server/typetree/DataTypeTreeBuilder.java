@@ -30,9 +30,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class DataTypeTreeBuilder {
 
+    /**
+     * Build a {@link DataTypeTree} by recursively traversing the {@link UaDataTypeNode}
+     * hierarchy starting at {@link NodeIds#BaseDataType}.
+     *
+     * @param server the {@link OpcUaServer} to build the tree for.
+     * @return the {@link DataTypeTree}.
+     */
     public static DataTypeTree build(OpcUaServer server) {
         UaNode rootNode = server.getAddressSpaceManager()
-            .getManagedNode(NodeIds.Structure)
+            .getManagedNode(NodeIds.BaseDataType)
             .orElseThrow();
 
         var tree = new Tree<DataType>(
