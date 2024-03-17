@@ -11,29 +11,30 @@
 package org.eclipse.milo.opcua.sdk.server.methods;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
-import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * A partial implementation of {@link MethodInvocationHandler} that handles checking the Executable and UserExecutable
@@ -59,8 +60,8 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
         try {
             checkExecutableAttributes(accessContext);
 
-            Variant[] inputArgumentValues = request.getInputArguments();
-            if (inputArgumentValues == null) inputArgumentValues = new Variant[0];
+            Variant[] inputArgumentValues =
+                requireNonNullElse(request.getInputArguments(), new Variant[0]);
 
             if (inputArgumentValues.length < getInputArguments().length) {
                 throw new UaException(StatusCodes.Bad_ArgumentsMissing);
@@ -77,52 +78,69 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 Variant variant = inputArgumentValues[i];
                 Object value = variant.getValue();
 
-                // TODO this needs to be able to match when argument DataType is an alias type
-                //  extract subtype logic from AttributeWriter...
-                boolean dataTypeMatch = value == null ||
-                    variant.getDataType()
+                boolean dataTypeMatch = true;
+
+                if (value != null) {
+                    NodeId argDataTypeId = argument.getDataType();
+
+                    NodeId valueDataTypeId = variant.getDataType()
                         .flatMap(xni -> xni.toNodeId(node.getNodeContext().getNamespaceTable()))
-                        .map(type -> {
-                            if (type.equals(argument.getDataType())) {
-                                return true;
-                            } else {
-                                if (NodeIds.Structure.equals(type) && value instanceof ExtensionObject) {
-                                    EncodingContext encodingContext =
-                                        getNode().getNodeContext().getServer().getEncodingContext();
+                        .orElse(NodeId.NULL_VALUE);
 
-                                    try {
-                                        Object decoded = ((ExtensionObject) value).decode(encodingContext);
+                    if (!argDataTypeId.equals(valueDataTypeId)) {
+                        DataTypeTree dataTypeTree = node.getNodeContext().getServer().getDataTypeTree();
 
-                                        if (decoded instanceof UaStructuredType) {
-                                            return ((UaStructuredType) decoded).getTypeId()
-                                                .toNodeId(node.getNodeContext().getNamespaceTable())
-                                                .map(argument.getDataType()::equals).orElse(false);
-                                        }
-                                    } catch (UaSerializationException e) {
-                                        LoggerFactory.getLogger(getClass())
-                                            .warn("Error decoding argument value", e);
-                                    }
+                        if (dataTypeTree.isStructType(argDataTypeId)) {
+                            ExtensionObject xo = (ExtensionObject) value;
+                            Object decoded = xo.decode(node.getNodeContext().getServer().getEncodingContext());
+
+                            if (decoded instanceof UaStructuredType) {
+                                UaStructuredType structuredType = (UaStructuredType) decoded;
+
+                                valueDataTypeId = structuredType.getTypeId()
+                                    .toNodeId(node.getNodeContext().getNamespaceTable())
+                                    .orElse(NodeId.NULL_VALUE);
+
+                                DataType argType = dataTypeTree.getType(argDataTypeId);
+                                boolean isAbstract = argType != null && argType.isAbstract();
+
+                                if (isAbstract) {
+                                    dataTypeMatch = dataTypeTree.isSubtypeOf(valueDataTypeId, argDataTypeId);
+                                } else {
+                                    dataTypeMatch = Objects.equals(valueDataTypeId, argDataTypeId);
                                 }
-
-                                return false;
+                            } else {
+                                dataTypeMatch = false;
                             }
-                        })
-                        .orElse(false);
 
-                switch (argument.getValueRank()) {
-                    case ValueRanks.Scalar:
-                        if (value != null && value.getClass().isArray()) {
-                            dataTypeMatch = false;
+                        } else {
+                            dataTypeMatch = dataTypeTree.isAssignable(argDataTypeId, value.getClass());
                         }
-                        break;
-                    case ValueRanks.OneDimension:
-                    case ValueRanks.OneOrMoreDimensions:
-                        if (value != null && !value.getClass().isArray()) {
-                            dataTypeMatch = false;
-                        }
-                        break;
-                    default:
-                        break;
+                    }
+                }
+
+                int valueRank = argument.getValueRank();
+
+                if (valueRank == -1) {
+                    // scalar
+                    if (value != null && (value.getClass().isArray() || value instanceof Matrix)) {
+                        dataTypeMatch = false;
+                    }
+                } else if (valueRank == 1) {
+                    // one dimension
+                    if (value != null && !value.getClass().isArray()) {
+                        dataTypeMatch = false;
+                    }
+                } else if (valueRank == 0) {
+                    // one or more dimension
+                    if (value != null && !(value.getClass().isArray() || value instanceof Matrix)) {
+                        dataTypeMatch = false;
+                    }
+                } else if (valueRank > 1) {
+                    // matrix (2+ dimensions)
+                    if (value != null && !(value instanceof Matrix)) {
+                        dataTypeMatch = false;
+                    }
                 }
 
                 if (dataTypeMatch) {

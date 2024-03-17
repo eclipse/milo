@@ -200,6 +200,16 @@ public final class StatusCode {
         return helper.toString();
     }
 
+    /**
+     * Create a new StatusCode with the given value.
+     *
+     * @param value the value of the StatusCode.
+     * @return a new StatusCode.
+     */
+    public static StatusCode of(long value) {
+        return new StatusCode(value);
+    }
+
     private static String quality(StatusCode statusCode) {
         if (statusCode.isGood()) {
             return "good";
