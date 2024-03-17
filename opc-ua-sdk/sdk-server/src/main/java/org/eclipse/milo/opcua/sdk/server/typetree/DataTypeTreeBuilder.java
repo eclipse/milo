@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.ReferenceTypes;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
@@ -36,7 +37,7 @@ public class DataTypeTreeBuilder {
 
         var tree = new Tree<DataType>(
             null,
-            new ServerDataType(null, (UaDataTypeNode) rootNode)
+            new ServerDataType((UaDataTypeNode) rootNode, null, null, null)
         );
 
         addChildren(tree, server);
@@ -47,7 +48,6 @@ public class DataTypeTreeBuilder {
     private static void addChildren(Tree<DataType> tree, OpcUaServer server) {
         NodeId nodeId = tree.getValue().getNodeId();
 
-        // TODO HasSubtype _or_ subtypes of HasSubtype...
         List<Reference> references = server.getAddressSpaceManager().getManagedReferences(
             nodeId,
             r -> r.isForward() && r.getReferenceTypeId().equals(ReferenceTypes.HasSubtype)
@@ -62,9 +62,33 @@ public class DataTypeTreeBuilder {
             .collect(Collectors.toList());
 
         for (UaNode childNode : childNodes) {
-            tree.addChild(
-                new ServerDataType(tree, (UaDataTypeNode) childNode)
-            );
+            UaDataTypeNode dataTypeNode = (UaDataTypeNode) childNode;
+
+            NodeId binaryEncodingId = null;
+            NodeId xmlEncodingId = null;
+            NodeId jsonEncodingId = null;
+
+            for (Reference reference : dataTypeNode.getReferences()) {
+                if (reference.getReferenceTypeId().equals(NodeIds.HasEncoding)) {
+                    QualifiedName browseName = server.getAddressSpaceManager()
+                        .getManagedNode(reference.getTargetNodeId())
+                        .map(UaNode::getBrowseName)
+                        .orElse(null);
+
+                    if (DataTypeEncoding.BINARY_ENCODING_NAME.equals(browseName)) {
+                        binaryEncodingId = reference.getTargetNodeId()
+                            .toNodeId(server.getNamespaceTable()).orElse(null);
+                    } else if (DataTypeEncoding.XML_ENCODING_NAME.equals(browseName)) {
+                        xmlEncodingId = reference.getTargetNodeId()
+                            .toNodeId(server.getNamespaceTable()).orElse(null);
+                    } else if (DataTypeEncoding.JSON_ENCODING_NAME.equals(browseName)) {
+                        jsonEncodingId = reference.getTargetNodeId()
+                            .toNodeId(server.getNamespaceTable()).orElse(null);
+                    }
+                }
+            }
+
+            tree.addChild(new ServerDataType(dataTypeNode, binaryEncodingId, xmlEncodingId, jsonEncodingId));
         }
 
         for (Tree<DataType> child : tree.getChildren()) {
@@ -74,12 +98,22 @@ public class DataTypeTreeBuilder {
 
     private static class ServerDataType implements DataType {
 
-        private final Tree<DataType> tree;
         private final UaDataTypeNode node;
+        private final @Nullable NodeId binaryEncodingId;
+        private final @Nullable NodeId xmlEncodingId;
+        private final @Nullable NodeId jsonEncodingId;
 
-        public ServerDataType(Tree<DataType> tree, UaDataTypeNode node) {
-            this.tree = tree;
+        public ServerDataType(
+            UaDataTypeNode node,
+            @Nullable NodeId binaryEncodingId,
+            @Nullable NodeId xmlEncodingId,
+            @Nullable NodeId jsonEncodingId
+        ) {
+
             this.node = node;
+            this.binaryEncodingId = binaryEncodingId;
+            this.xmlEncodingId = xmlEncodingId;
+            this.jsonEncodingId = jsonEncodingId;
         }
 
         @Override
@@ -94,17 +128,17 @@ public class DataTypeTreeBuilder {
 
         @Override
         public @Nullable NodeId getBinaryEncodingId() {
-            return null; // TODO
+            return binaryEncodingId;
         }
 
         @Override
         public @Nullable NodeId getXmlEncodingId() {
-            return null; // TODO
+            return xmlEncodingId;
         }
 
         @Override
         public @Nullable NodeId getJsonEncodingId() {
-            return null; // TODO
+            return jsonEncodingId;
         }
 
         @Override

@@ -667,8 +667,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                     "Output",
                     inputArgument.getDataType(),
                     inputArgument.getValueRank(),
-                    null,
-                    LocalizedText.NULL_VALUE
+                    inputArgument.getArrayDimensions(),
+                    LocalizedText.english("Echo of the input argument.")
                 )
             };
         }
