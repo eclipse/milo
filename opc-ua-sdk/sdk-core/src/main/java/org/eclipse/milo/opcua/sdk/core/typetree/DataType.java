@@ -67,4 +67,11 @@ public interface DataType extends TypeTree.Type {
      */
     @Nullable DataTypeDefinition getDataTypeDefinition();
 
+    /**
+     * Get whether this DataType is abstract.
+     *
+     * @return {@code true} if this DataType is abstract.
+     */
+    Boolean isAbstract();
+
 }

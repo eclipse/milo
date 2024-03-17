@@ -74,7 +74,8 @@ public class DataTypeTreeBuilder {
                 null,
                 null,
                 null,
-                null
+                null,
+                true
             )
         );
 
@@ -153,7 +154,7 @@ public class DataTypeTreeBuilder {
                 maxNodesPerBrowse
             );
 
-            List<DataTypeDefinition> dataTypeDefinitions = readDataTypeDefinitions(
+            List<Attributes> dataTypeAttributes = readDataTypeAttributes(
                 client,
                 dataTypeIds,
                 maxNodesPerRead
@@ -161,7 +162,7 @@ public class DataTypeTreeBuilder {
 
             assert subtypes.size() == dataTypeIds.size() &&
                 subtypes.size() == encodingReferences.size() &&
-                subtypes.size() == dataTypeDefinitions.size();
+                subtypes.size() == dataTypeAttributes.size();
 
             var dataTypes = new ArrayList<ClientDataType>();
 
@@ -169,7 +170,8 @@ public class DataTypeTreeBuilder {
                 QualifiedName browseName = subtypes.get(j).getBrowseName();
                 NodeId dataTypeId = dataTypeIds.get(j);
                 List<ReferenceDescription> encodings = encodingReferences.get(j);
-                DataTypeDefinition dataTypeDefinition = dataTypeDefinitions.get(j);
+                DataTypeDefinition dataTypeDefinition = dataTypeAttributes.get(j).definition;
+                Boolean isAbstract = dataTypeAttributes.get(j).isAbstract;
 
                 NodeId binaryEncodingId = null;
                 NodeId xmlEncodingId = null;
@@ -200,7 +202,8 @@ public class DataTypeTreeBuilder {
                     binaryEncodingId,
                     xmlEncodingId,
                     jsonEncodingId,
-                    dataTypeDefinition
+                    dataTypeDefinition,
+                    isAbstract
                 );
 
                 dataTypes.add(dataType);
@@ -269,7 +272,7 @@ public class DataTypeTreeBuilder {
         return browseWithOperationLimits(client, browseDescriptions, maxNodesPerBrowse);
     }
 
-    private static List<@Nullable DataTypeDefinition> readDataTypeDefinitions(
+    private static List<@Nullable Attributes> readDataTypeAttributes(
         OpcUaClient client,
         List<NodeId> dataTypeIds,
         UInteger maxNodesPerRead
@@ -279,36 +282,67 @@ public class DataTypeTreeBuilder {
             return List.of();
         }
 
-        List<ReadValueId> readValueIds = dataTypeIds.stream()
-            .map(dataTypeId ->
+        var readValueIds = new ArrayList<ReadValueId>();
+
+        for (NodeId dataTypeId : dataTypeIds) {
+            readValueIds.add(
+                new ReadValueId(
+                    dataTypeId,
+                    AttributeId.IsAbstract.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                )
+            );
+            readValueIds.add(
                 new ReadValueId(
                     dataTypeId,
                     AttributeId.DataTypeDefinition.uid(),
                     null,
                     QualifiedName.NULL_VALUE
                 )
-            )
-            .collect(Collectors.toList());
+            );
+        }
 
-        return readWithOperationLimits(client, readValueIds, maxNodesPerRead).stream()
-            .map(value -> {
-                if (value.getStatusCode() != null && value.getStatusCode().isGood()) {
-                    Object o = value.getValue().getValue();
-                    if (o instanceof ExtensionObject) {
-                        Object decoded = ((ExtensionObject) o).decode(
-                            client.getStaticEncodingContext()
-                        );
+        var attributes = new ArrayList<Attributes>();
 
-                        return (DataTypeDefinition) decoded;
-                    } else {
-                        return null;
-                    }
-                } else {
-                    // OPC UA 1.03 and prior servers will return Bad_AttributeIdInvalid
-                    return null;
+        List<DataValue> values = readWithOperationLimits(client, readValueIds, maxNodesPerRead);
+
+        for (int i = 0; i < values.size(); i += 2) {
+            DataValue isAbstractValue = values.get(i);
+            DataValue definitionValue = values.get(i + 1);
+
+            Boolean isAbstract = false;
+            DataTypeDefinition definition = null;
+
+            if (isAbstractValue.getStatusCode() != null && isAbstractValue.getStatusCode().isGood()) {
+                isAbstract = (Boolean) isAbstractValue.getValue().getValue();
+            }
+
+            if (definitionValue.getStatusCode() != null && definitionValue.getStatusCode().isGood()) {
+                Object o = definitionValue.getValue().getValue();
+                if (o instanceof ExtensionObject) {
+                    Object decoded = ((ExtensionObject) o).decode(
+                        client.getStaticEncodingContext()
+                    );
+
+                    definition = (DataTypeDefinition) decoded;
                 }
-            })
-            .collect(Collectors.toList());
+            }
+
+            attributes.add(new Attributes(isAbstract, definition));
+        }
+
+        return attributes;
+    }
+
+    private static class Attributes {
+        final Boolean isAbstract;
+        final DataTypeDefinition definition;
+
+        private Attributes(Boolean isAbstract, DataTypeDefinition definition) {
+            this.isAbstract = isAbstract;
+            this.definition = definition;
+        }
     }
 
     private static UInteger[] readOperationLimits(OpcUaClient client) throws UaException {

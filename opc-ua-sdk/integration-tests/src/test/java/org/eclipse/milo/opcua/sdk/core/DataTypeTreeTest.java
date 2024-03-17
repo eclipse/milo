@@ -213,4 +213,19 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         });
     }
 
+    @Test
+    void testIsAbstractAttribute() {
+        DataType baseDataType = dataTypeTree.getType(NodeIds.BaseDataType);
+        assertNotNull(baseDataType);
+        assertTrue(baseDataType.isAbstract());
+
+        DataType structureType = dataTypeTree.getType(NodeIds.Structure);
+        assertNotNull(structureType);
+        assertTrue(structureType.isAbstract());
+
+        DataType xvType = dataTypeTree.getType(NodeIds.XVType);
+        assertNotNull(xvType);
+        assertFalse(xvType.isAbstract());
+    }
+
 }
