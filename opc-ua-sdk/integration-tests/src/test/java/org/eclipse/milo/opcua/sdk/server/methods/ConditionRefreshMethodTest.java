@@ -25,12 +25,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Objects.requireNonNull;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConditionRefreshMethodTest extends AbstractClientServerTest {
 
     @Test
-    void callConditionRefresh() throws UaException {
+    void subscriptionIdInvalid() throws UaException {
         var request = new CallMethodRequest(
             NodeIds.ConditionType,
             NodeIds.ConditionType_ConditionRefresh,
@@ -38,12 +38,9 @@ public class ConditionRefreshMethodTest extends AbstractClientServerTest {
         );
 
         CallResponse response = client.call(List.of(request));
-        System.out.println(response.getResponseHeader().getServiceResult());
-
         CallMethodResult result = requireNonNull(response.getResults())[0];
-        System.out.println(result);
 
-        assertNotEquals(new StatusCode(StatusCodes.Bad_InvalidArgument), result.getStatusCode());
+        assertEquals(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid), result.getStatusCode());
     }
 
 }

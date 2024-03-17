@@ -286,6 +286,60 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 return methodNode;
             });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("scalarAbstractTypeEcho()"));
+                b.setBrowseName(newQualifiedName("scalarAbstractTypeEcho()"));
+                b.setDisplayName(LocalizedText.english("scalarAbstractTypeEcho()"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+                methodNode.setInvocationHandler(new ScalarAbstractTypeMethod(methodNode));
+
+                return methodNode;
+            });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("scalarSimpleTypeEcho()"));
+                b.setBrowseName(newQualifiedName("scalarSimpleTypeEcho()"));
+                b.setDisplayName(LocalizedText.english("scalarSimpleTypeEcho()"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+                methodNode.setInvocationHandler(new ScalarSimpleTypeMethod(methodNode));
+
+                return methodNode;
+            });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("scalarStructureEcho()"));
+                b.setBrowseName(newQualifiedName("scalarStructureEcho()"));
+                b.setDisplayName(LocalizedText.english("scalarStructureEcho()"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+                methodNode.setInvocationHandler(new ScalarStructureMethod(methodNode));
+
+                return methodNode;
+            });
         });
 
         getLifecycleManager().addStartupTask(() -> {
@@ -531,6 +585,101 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
     public void configure(BiConsumer<UaNodeContext, UaNodeManager> consumer) {
         consumer.accept(getNodeContext(), getNodeManager());
+    }
+
+    static class ScalarAbstractTypeMethod extends AbstractEchoMethod {
+
+        public ScalarAbstractTypeMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        protected Argument getInputArgument() {
+            return new Argument(
+                "Input",
+                NodeIds.Number,
+                ValueRanks.Scalar,
+                null,
+                LocalizedText.NULL_VALUE
+            );
+        }
+
+    }
+
+    static class ScalarSimpleTypeMethod extends AbstractEchoMethod {
+
+        public ScalarSimpleTypeMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        protected Argument getInputArgument() {
+            return new Argument(
+                "Input",
+                NodeIds.Duration,
+                ValueRanks.Scalar,
+                null,
+                LocalizedText.NULL_VALUE
+            );
+        }
+
+    }
+
+    static class ScalarStructureMethod extends AbstractEchoMethod {
+
+        public ScalarStructureMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        protected Argument getInputArgument() {
+            return new Argument(
+                "Input",
+                NodeIds.XVType,
+                ValueRanks.Scalar,
+                null,
+                LocalizedText.NULL_VALUE
+            );
+        }
+
+    }
+
+    static abstract class AbstractEchoMethod extends AbstractMethodInvocationHandler {
+
+        /**
+         * @param node the {@link UaMethodNode} this handler will be installed on.
+         */
+        public AbstractEchoMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{getInputArgument()};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            Argument inputArgument = getInputArgument();
+
+            return new Argument[]{
+                new Argument(
+                    "Output",
+                    inputArgument.getDataType(),
+                    inputArgument.getValueRank(),
+                    null,
+                    LocalizedText.NULL_VALUE
+                )
+            };
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException {
+            return new Variant[]{inputValues[0]};
+        }
+
+        protected abstract Argument getInputArgument();
+
     }
 
 }
