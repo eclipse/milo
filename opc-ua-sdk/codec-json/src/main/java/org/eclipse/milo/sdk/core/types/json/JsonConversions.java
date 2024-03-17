@@ -13,7 +13,6 @@ package org.eclipse.milo.sdk.core.types.json;
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.UUID;
 
 import com.google.gson.JsonArray;
@@ -21,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -172,9 +172,10 @@ public class JsonConversions {
     }
 
     public static JsonElement fromByteString(ByteString value) {
-        String b64 = Base64.getEncoder().encodeToString(value.bytesOrEmpty());
-
-        return new JsonPrimitive(b64);
+        // JDK17 use HexFormat
+        byte[] bs = value.bytesOrEmpty();
+        String hex = ByteBufUtil.hexDump(bs);
+        return new JsonPrimitive(hex);
     }
 
     public static JsonElement fromXmlElement(XmlElement value) {
@@ -198,8 +199,6 @@ public class JsonConversions {
     }
 
     public static JsonElement fromQualifiedName(QualifiedName value) {
-        // TODO the v2 OPC UA JSON encoding uses a namespace URI here
-
         String name = value.getName() == null ? "" : value.getName();
         int ns = value.getNamespaceIndex().intValue();
 
@@ -433,8 +432,9 @@ public class JsonConversions {
     }
 
     public static ByteString toByteString(JsonElement element) {
-        byte[] bs = Base64.getDecoder().decode(element.getAsString());
-
+        // JDK17 use HexFormat
+        String hex = element.getAsString();
+        byte[] bs = ByteBufUtil.decodeHexDump(hex);
         return new ByteString(bs);
     }
 
@@ -459,8 +459,6 @@ public class JsonConversions {
     }
 
     public static QualifiedName toQualifiedName(JsonElement element) {
-        // TODO the v2 OPC UA JSON encoding uses a namespace URI here
-
         int ns = 0;
         String name = element.getAsString();
 

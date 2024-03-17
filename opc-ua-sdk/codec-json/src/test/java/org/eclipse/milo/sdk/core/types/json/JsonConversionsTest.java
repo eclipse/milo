@@ -12,7 +12,6 @@ package org.eclipse.milo.sdk.core.types.json;
 
 import java.math.BigInteger;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -185,10 +184,9 @@ class JsonConversionsTest {
 
     @ParameterizedTest
     @MethodSource("convertByteStringProvider")
-    void convertByteString(ByteString input) {
+    void convertByteString(ByteString input, String expected) {
         JsonElement jsonValue = JsonConversions.fromByteString(input);
-        String b64 = Base64.getEncoder().encodeToString(input.bytesOrEmpty());
-        assertEquals(new JsonPrimitive(b64), jsonValue);
+        assertEquals(new JsonPrimitive(expected), jsonValue);
 
         ByteString opcValue = JsonConversions.toByteString(jsonValue);
         assertEquals(input, opcValue);
@@ -196,9 +194,9 @@ class JsonConversionsTest {
 
     private static Stream<Arguments> convertByteStringProvider() {
         return Stream.of(
-            Arguments.of(ByteString.of(new byte[]{1, 2, 3, 4, 5})),
-            Arguments.of(ByteString.of(new byte[0])),
-            Arguments.of(ByteString.NULL_VALUE)
+            Arguments.of(ByteString.of(new byte[]{1, 2, 3, 4, 5}), "0102030405"),
+            Arguments.of(ByteString.of(new byte[0]), ""),
+            Arguments.of(ByteString.NULL_VALUE, "")
         );
     }
 
