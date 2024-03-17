@@ -96,7 +96,7 @@ public class DataTypeTreeBuilder {
         }
     }
 
-    private static class ServerDataType implements DataType {
+    public static class ServerDataType implements DataType {
 
         private final UaDataTypeNode node;
         private final @Nullable NodeId binaryEncodingId;
@@ -144,6 +144,10 @@ public class DataTypeTreeBuilder {
         @Override
         public DataTypeDefinition getDataTypeDefinition() {
             return node.getDataTypeDefinition();
+        }
+
+        public boolean isAbstract() {
+            return node.getIsAbstract();
         }
 
     }

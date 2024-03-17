@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDVector;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,7 @@ import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ArgumentsMissing
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_InvalidArgument;
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_OutOfRange;
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_TooManyArguments;
+import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_TypeMismatch;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -163,6 +165,41 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
         assertEquals(StatusCode.GOOD, result.getStatusCode());
         assertEquals(0, requireNonNull(result.getInputArgumentResults()).length);
         assertEquals(input, requireNonNull(result.getOutputArguments())[0]);
+    }
+
+    @Test
+    void scalarAbstractStructureEcho() throws UaException {
+        var xo1 = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, new XVType(1.0, 2.0f));
+        var xo2 = ExtensionObject.encode(DefaultEncodingContext.INSTANCE, new ThreeDVector(1.0, 2.0, 3.0));
+        var input1 = Variant.ofExtensionObject(xo1);
+        var input2 = Variant.ofExtensionObject(xo2);
+
+        for (Variant input : List.of(input1, input2)) {
+            CallResponse response = client.call(List.of(new CallMethodRequest(
+                NodeIds.ObjectsFolder,
+                NodeId.parse("ns=2;s=scalarAbstractStructureEcho()"),
+                new Variant[]{input}
+            )));
+
+            CallMethodResult result = requireNonNull(response.getResults())[0];
+
+            assertEquals(StatusCode.GOOD, result.getStatusCode());
+            assertEquals(0, requireNonNull(result.getInputArgumentResults()).length);
+            assertEquals(input, requireNonNull(result.getOutputArguments())[0]);
+        }
+
+        var input3 = Variant.ofInt32(42);
+
+        CallResponse response = client.call(List.of(new CallMethodRequest(
+            NodeIds.ObjectsFolder,
+            NodeId.parse("ns=2;s=scalarAbstractStructureEcho()"),
+            new Variant[]{input3}
+        )));
+
+        CallMethodResult result = requireNonNull(response.getResults())[0];
+
+        assertEquals(StatusCode.of(Bad_InvalidArgument), result.getStatusCode());
+        assertEquals(StatusCode.of(Bad_TypeMismatch), requireNonNull(result.getInputArgumentResults())[0]);
     }
 
 }

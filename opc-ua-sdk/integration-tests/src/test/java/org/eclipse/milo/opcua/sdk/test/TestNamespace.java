@@ -340,6 +340,24 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 return methodNode;
             });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("scalarAbstractStructureEcho()"));
+                b.setBrowseName(newQualifiedName("scalarAbstractStructureEcho()"));
+                b.setDisplayName(LocalizedText.english("scalarAbstractStructureEcho()"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+                methodNode.setInvocationHandler(new ScalarAbstractStructureMethod(methodNode));
+
+                return methodNode;
+            });
         });
 
         getLifecycleManager().addStartupTask(() -> {
@@ -636,6 +654,25 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
             return new Argument(
                 "Input",
                 NodeIds.XVType,
+                ValueRanks.Scalar,
+                null,
+                LocalizedText.NULL_VALUE
+            );
+        }
+
+    }
+
+    static class ScalarAbstractStructureMethod extends AbstractEchoMethod {
+
+        public ScalarAbstractStructureMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        protected Argument getInputArgument() {
+            return new Argument(
+                "Input",
+                NodeIds.Structure,
                 ValueRanks.Scalar,
                 null,
                 LocalizedText.NULL_VALUE

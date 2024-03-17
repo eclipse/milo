@@ -14,11 +14,13 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.sdk.server.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -95,22 +97,29 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
 
                             if (decoded instanceof UaStructuredType) {
                                 UaStructuredType structuredType = (UaStructuredType) decoded;
+
                                 NodeId typeId = structuredType.getTypeId()
                                     .toNodeId(node.getNodeContext().getNamespaceTable())
                                     .orElse(NodeId.NULL_VALUE);
 
-                                dataTypeMatch = Objects.equals(argDataTypeId, typeId);
+                                DataType type = dataTypeTree.getType(argDataTypeId);
 
-                                // TODO should we check for subtypes here?
-                                //if (!dataTypeMatch) {
-                                //    dataTypeMatch = dataTypeTree.isSubtypeOf(typeId, argDataTypeId);
-                                //}
+                                // TODO better way to determine if a type is abstract...
+                                //  add to DataType? dataTypeTree.isAbstract()?
+                                boolean isAbstract = type != null &&
+                                    ((DataTypeTreeBuilder.ServerDataType) type).isAbstract();
+
+                                if (isAbstract) {
+                                    dataTypeMatch = dataTypeTree.isSubtypeOf(typeId, argDataTypeId);
+                                } else {
+                                    dataTypeMatch = Objects.equals(typeId, argDataTypeId);
+                                }
                             } else {
                                 dataTypeMatch = false;
                             }
 
                         } else {
-                            dataTypeMatch = dataTypeTree.isAssignable(valueDataTypeId, value.getClass());
+                            dataTypeMatch = dataTypeTree.isAssignable(argDataTypeId, value.getClass());
                         }
                     }
                 }
