@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
@@ -50,6 +51,7 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultSessionServiceS
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultSubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
+import org.eclipse.milo.opcua.sdk.server.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
@@ -122,6 +124,8 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final Lazy<DataTypeTree> dataTypeTree = new Lazy<>();
 
     private final DataTypeManager dataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
@@ -371,6 +375,15 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     public VariableTypeManager getVariableTypeManager() {
         return variableTypeManager;
+    }
+
+    /**
+     * Get the Server's {@link DataTypeTree}.
+     *
+     * @return the Server's {@link DataTypeTree}.
+     */
+    public DataTypeTree getDataTypeTree() {
+        return dataTypeTree.get(() -> DataTypeTreeBuilder.build(this));
     }
 
     public Set<NodeId> getRegisteredViews() {

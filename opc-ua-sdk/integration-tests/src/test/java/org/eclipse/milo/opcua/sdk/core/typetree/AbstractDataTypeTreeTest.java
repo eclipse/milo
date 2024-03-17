@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,14 +8,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.core;
+package org.eclipse.milo.opcua.sdk.core.typetree;
 
 import java.util.Comparator;
 import java.util.Objects;
 
-import org.eclipse.milo.opcua.sdk.client.typetree.DataTypeTreeBuilder;
-import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
-import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -40,14 +37,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DataTypeTreeTest extends AbstractClientServerTest {
+public abstract class AbstractDataTypeTreeTest extends AbstractClientServerTest {
 
     private DataTypeTree dataTypeTree;
 
     @BeforeAll
     public void buildDataTypeTree() throws UaException {
-        dataTypeTree = DataTypeTreeBuilder.build(client);
+        dataTypeTree = getDataTypeTree();
     }
+
+    protected abstract DataTypeTree getDataTypeTree() throws UaException;
 
     @Test
     public void testGetTree() {
