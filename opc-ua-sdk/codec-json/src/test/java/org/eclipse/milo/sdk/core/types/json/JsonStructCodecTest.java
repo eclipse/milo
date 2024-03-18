@@ -18,19 +18,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
-import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -38,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -243,7 +233,7 @@ class JsonStructCodecTest {
         }
     }
 
-    private static final DataType XV_DATA_TYPE = new DataType() {
+    static final DataType XV_DATA_TYPE = new DataType() {
         @Override
         public QualifiedName getBrowseName() {
             return new QualifiedName(0, "XVType");
@@ -287,51 +277,5 @@ class JsonStructCodecTest {
                 .toString();
         }
     };
-
-    private static class TestEncodingContext implements EncodingContext {
-
-        DataTypeTree dataTypeTree = Mockito.mock(DataTypeTree.class);
-        DataTypeManager dataTypeManager = new DefaultDataTypeManager();
-
-        public TestEncodingContext() {
-            DataTypeCodec xvDataTypeCodec =
-                JsonCodecFactory.create(XV_DATA_TYPE, dataTypeTree);
-
-            dataTypeManager.registerType(
-                XV_DATA_TYPE.getNodeId(),
-                xvDataTypeCodec,
-                XV_DATA_TYPE.getBinaryEncodingId(),
-                XV_DATA_TYPE.getXmlEncodingId(),
-                XV_DATA_TYPE.getJsonEncodingId()
-            );
-
-            Mockito.when(dataTypeTree.getDataType(XV_DATA_TYPE.getNodeId())).thenReturn(XV_DATA_TYPE);
-        }
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return dataTypeManager;
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return DefaultEncodingManager.createAndInitialize();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return EncodingLimits.DEFAULT;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return new NamespaceTable();
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return new ServerTable();
-        }
-    }
 
 }
