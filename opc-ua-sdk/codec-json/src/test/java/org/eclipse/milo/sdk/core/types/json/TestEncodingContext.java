@@ -10,8 +10,10 @@
 
 package org.eclipse.milo.sdk.core.types.json;
 
+import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
@@ -20,27 +22,53 @@ import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.mockito.Mockito;
 
 class TestEncodingContext implements EncodingContext {
+
+    static final DataType XV_DATA_TYPE = new TestDataType(
+        NodeIds.XVType,
+        new QualifiedName(0, "XVType"),
+        XVType.definition(new NamespaceTable()),
+        false
+    ) {
+
+        @Override
+        public NodeId getBinaryEncodingId() {
+            return NodeIds.XVType_Encoding_DefaultBinary;
+        }
+
+        @Override
+        public NodeId getXmlEncodingId() {
+            return NodeIds.XVType_Encoding_DefaultXml;
+        }
+
+        @Override
+        public NodeId getJsonEncodingId() {
+            return NodeIds.XVType_Encoding_DefaultJson;
+        }
+    };
 
     DataTypeTree dataTypeTree = Mockito.mock(DataTypeTree.class);
     DataTypeManager dataTypeManager = new DefaultDataTypeManager();
 
     public TestEncodingContext() {
         DataTypeCodec xvDataTypeCodec =
-            JsonCodecFactory.create(JsonStructCodecTest.XV_DATA_TYPE, dataTypeTree);
+            JsonCodecFactory.create(XV_DATA_TYPE, dataTypeTree);
 
         dataTypeManager.registerType(
-            JsonStructCodecTest.XV_DATA_TYPE.getNodeId(),
+            XV_DATA_TYPE.getNodeId(),
             xvDataTypeCodec,
-            JsonStructCodecTest.XV_DATA_TYPE.getBinaryEncodingId(),
-            JsonStructCodecTest.XV_DATA_TYPE.getXmlEncodingId(),
-            JsonStructCodecTest.XV_DATA_TYPE.getJsonEncodingId()
+            XV_DATA_TYPE.getBinaryEncodingId(),
+            XV_DATA_TYPE.getXmlEncodingId(),
+            XV_DATA_TYPE.getJsonEncodingId()
         );
 
-        Mockito.when(dataTypeTree.getDataType(JsonStructCodecTest.XV_DATA_TYPE.getNodeId()))
-            .thenReturn(JsonStructCodecTest.XV_DATA_TYPE);
+        Mockito.when(dataTypeTree.getDataType(XV_DATA_TYPE.getNodeId()))
+            .thenReturn(XV_DATA_TYPE);
     }
 
     @Override

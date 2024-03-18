@@ -12,21 +12,15 @@ package org.eclipse.milo.sdk.core.types.json;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +48,7 @@ class JsonStructCodecTest {
     @Test
     void encodeType() {
         var jsonStruct = new JsonStruct(
-            XV_DATA_TYPE,
+            TestEncodingContext.XV_DATA_TYPE,
             JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject()
         );
 
@@ -70,7 +64,7 @@ class JsonStructCodecTest {
 
         var decoded = encoded.decode(new TestEncodingContext());
         var expected = new JsonStruct(
-            XV_DATA_TYPE,
+            TestEncodingContext.XV_DATA_TYPE,
             JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0,\"__metadata\":{\"dataTypeId\":\"ns=0;i=12080\"}}").getAsJsonObject()
         );
 
@@ -209,16 +203,16 @@ class JsonStructCodecTest {
             new Object[]{
                 ExtensionObject.encode(
                     context,
-                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject())),
+                    new JsonStruct(TestEncodingContext.XV_DATA_TYPE, JsonParser.parseString("{\"X\": 1.0, \"Value\": 2.0}").getAsJsonObject())),
                 ExtensionObject.encode(
                     context,
-                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 3.0, \"Value\": 4.0}").getAsJsonObject())),
+                    new JsonStruct(TestEncodingContext.XV_DATA_TYPE, JsonParser.parseString("{\"X\": 3.0, \"Value\": 4.0}").getAsJsonObject())),
                 ExtensionObject.encode(
                     context,
-                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 5.0, \"Value\": 6.0}").getAsJsonObject())),
+                    new JsonStruct(TestEncodingContext.XV_DATA_TYPE, JsonParser.parseString("{\"X\": 5.0, \"Value\": 6.0}").getAsJsonObject())),
                 ExtensionObject.encode(
                     context,
-                    new JsonStruct(XV_DATA_TYPE, JsonParser.parseString("{\"X\": 7.0, \"Value\": 8.0}").getAsJsonObject())
+                    new JsonStruct(TestEncodingContext.XV_DATA_TYPE, JsonParser.parseString("{\"X\": 7.0, \"Value\": 8.0}").getAsJsonObject())
                 )
             },
             new int[]{2, 2},
@@ -232,50 +226,5 @@ class JsonStructCodecTest {
             System.out.println("JSON: " + jsonArray);
         }
     }
-
-    static final DataType XV_DATA_TYPE = new DataType() {
-        @Override
-        public QualifiedName getBrowseName() {
-            return new QualifiedName(0, "XVType");
-        }
-
-        @Override
-        public NodeId getNodeId() {
-            return NodeIds.XVType;
-        }
-
-        @Override
-        public NodeId getBinaryEncodingId() {
-            return NodeIds.XVType_Encoding_DefaultBinary;
-        }
-
-        @Override
-        public NodeId getXmlEncodingId() {
-            return NodeIds.XVType_Encoding_DefaultXml;
-        }
-
-        @Override
-        public NodeId getJsonEncodingId() {
-            return NodeIds.XVType_Encoding_DefaultJson;
-        }
-
-        @Override
-        public DataTypeDefinition getDataTypeDefinition() {
-            return XVType.definition(new NamespaceTable());
-        }
-
-        @Override
-        public Boolean isAbstract() {
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", "DataType" + "[", "]")
-                .add("browseName=" + getBrowseName())
-                .add("nodeId=" + getNodeId())
-                .toString();
-        }
-    };
 
 }
