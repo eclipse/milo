@@ -112,9 +112,17 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
         StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
-        int optionalFieldIndex = 0;
-        for (StructureField field : fields) {
-            if (!field.getIsOptional() || (switchField >>> optionalFieldIndex++ & 1L) == 1L) {
+        if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
+            int optionalFieldIndex = 0;
+            for (StructureField field : fields) {
+                if (!field.getIsOptional() || (switchField >>> optionalFieldIndex++ & 1L) == 1L) {
+                    JsonElement value = decodeFieldValue(decoder, field);
+
+                    jsonObject.add(requireNonNull(field.getName()), value);
+                }
+            }
+        } else {
+            for (StructureField field : fields) {
                 JsonElement value = decodeFieldValue(decoder, field);
 
                 jsonObject.add(requireNonNull(field.getName()), value);
@@ -599,9 +607,16 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
             encoder.encodeUInt32("SwitchField", UInteger.valueOf(switchField));
         }
 
-        int optionalFieldIndex = 0;
-        for (StructureField field : fields) {
-            if (!field.getIsOptional() || ((switchField >>> optionalFieldIndex++) & 1L) == 1L) {
+        if (definition.getStructureType() == StructureType.StructureWithOptionalFields) {
+            int optionalFieldIndex = 0;
+            for (StructureField field : fields) {
+                if (!field.getIsOptional() || ((switchField >>> optionalFieldIndex++) & 1L) == 1L) {
+                    JsonElement fieldValue = value.getJsonObject().get(requireNonNull(field.getName()));
+                    encodeFieldValue(encoder, field, fieldValue);
+                }
+            }
+        } else {
+            for (StructureField field : fields) {
                 JsonElement fieldValue = value.getJsonObject().get(requireNonNull(field.getName()));
                 encodeFieldValue(encoder, field, fieldValue);
             }
@@ -1116,7 +1131,6 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
                 } else {
                     // alias/simple type, find the builtin parent
                     map.put(f, dataTypeTree.getBuiltinType(dataTypeId));
-
                 }
             }
 

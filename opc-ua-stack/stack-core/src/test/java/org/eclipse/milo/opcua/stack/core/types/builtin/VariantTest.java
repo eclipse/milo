@@ -62,6 +62,13 @@ public class VariantTest {
         assertEquals(expected, Variant.of(input).getBuiltinDataType().orElseThrow());
     }
 
+    @Test
+    void variantCanContainAbstractType() {
+        Number n = 1.0f;
+        Variant v = Variant.of(n);
+        assertEquals(BuiltinDataType.Float, v.getBuiltinDataType().orElseThrow());
+    }
+
     private static Stream<Arguments> getBuiltinDataTypeSource() {
         return Stream.of(
             Arguments.of(true, BuiltinDataType.Boolean),

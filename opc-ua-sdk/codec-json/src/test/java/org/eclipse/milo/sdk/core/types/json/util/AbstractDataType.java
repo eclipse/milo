@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.sdk.core.types.json;
+package org.eclipse.milo.sdk.core.types.json.util;
 
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -16,14 +16,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.jetbrains.annotations.Nullable;
 
-public class TestDataType implements DataType {
+public abstract class AbstractDataType implements DataType {
 
-    final NodeId nodeId;
-    final QualifiedName browseName;
-    final DataTypeDefinition definition;
-    final boolean isAbstract;
+    public final NodeId nodeId;
+    public final QualifiedName browseName;
+    public final DataTypeDefinition definition;
+    public final boolean isAbstract;
 
-    public TestDataType(NodeId nodeId, QualifiedName browseName, DataTypeDefinition definition, boolean isAbstract) {
+    public AbstractDataType(NodeId nodeId, QualifiedName browseName, DataTypeDefinition definition, boolean isAbstract) {
         this.nodeId = nodeId;
         this.browseName = browseName;
         this.definition = definition;
@@ -38,21 +38,6 @@ public class TestDataType implements DataType {
     @Override
     public QualifiedName getBrowseName() {
         return browseName;
-    }
-
-    @Override
-    public @Nullable NodeId getBinaryEncodingId() {
-        return null;
-    }
-
-    @Override
-    public @Nullable NodeId getXmlEncodingId() {
-        return null;
-    }
-
-    @Override
-    public @Nullable NodeId getJsonEncodingId() {
-        return null;
     }
 
     @Override
