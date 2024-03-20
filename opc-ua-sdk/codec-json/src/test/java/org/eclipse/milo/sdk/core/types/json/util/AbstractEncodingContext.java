@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.test.types.AbstractTestType;
 import org.eclipse.milo.opcua.test.types.ConcreteTestType;
 import org.eclipse.milo.opcua.test.types.ConcreteTestTypeEx;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractArrayFields;
+import org.eclipse.milo.opcua.test.types.StructWithAbstractMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
@@ -77,6 +78,7 @@ public abstract class AbstractEncodingContext implements EncodingContext {
     protected final DataType structWithArrayFieldsEx;
     protected final DataType structWithAbstractScalarFields;
     protected final DataType structWithAbstractArrayFields;
+    protected final DataType structWithAbstractMatrixFields;
     protected final DataType structWithOptionalScalarFields;
     protected final DataType structWithOptionalArrayFields;
     protected final DataType structWithMatrixFields;
@@ -112,6 +114,7 @@ public abstract class AbstractEncodingContext implements EncodingContext {
         structWithArrayFieldsEx = setupStructWithArrayFieldsEx();
         structWithAbstractScalarFields = setupStructWithAbstractScalarFields();
         structWithAbstractArrayFields = setupStructWithAbstractArrayFields();
+        structWithAbstractMatrixFields = setupStructWithAbstractMatrixFields();
         structWithOptionalScalarFields = setupStructWithOptionalScalarFields();
         structWithOptionalArrayFields = setupStructWithOptionalArrayFields();
         structWithMatrixFields = setupStructWithMatrixFields();
@@ -432,6 +435,37 @@ public abstract class AbstractEncodingContext implements EncodingContext {
         Mockito.when(dataTypeTree.getDataType(typeId)).thenReturn(dataType);
         Mockito.when(dataTypeTree.getBuiltinType(NodeIds.Number)).thenReturn(BuiltinDataType.Variant);
         Mockito.when(dataTypeTree.isStructType(typeId)).thenReturn(true);
+
+        return dataType;
+    }
+
+    protected DataType setupStructWithAbstractMatrixFields() {
+        NodeId typeId = StructWithAbstractMatrixFields.TYPE_ID.toNodeId(getNamespaceTable()).orElseThrow();
+
+        var dataType = new AbstractDataType(
+            typeId,
+            new QualifiedName(1, "StructWithAbstractMatrixFields"),
+            StructWithAbstractMatrixFields.definition(getNamespaceTable()),
+            false
+        ) {
+
+            @Override
+            public NodeId getBinaryEncodingId() {
+                return StructWithAbstractMatrixFields.BINARY_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+
+            @Override
+            public NodeId getXmlEncodingId() {
+                return StructWithAbstractMatrixFields.XML_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+
+            @Override
+            public NodeId getJsonEncodingId() {
+                return StructWithAbstractMatrixFields.JSON_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+        };
+
+        Mockito.when(dataTypeTree.getDataType(typeId)).thenReturn(dataType);
 
         return dataType;
     }

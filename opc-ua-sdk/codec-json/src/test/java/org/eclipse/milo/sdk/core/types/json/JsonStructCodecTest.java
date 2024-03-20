@@ -34,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.eclipse.milo.opcua.test.types.ConcreteTestType;
 import org.eclipse.milo.opcua.test.types.ConcreteTestTypeEx;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractArrayFields;
+import org.eclipse.milo.opcua.test.types.StructWithAbstractMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
@@ -256,6 +257,29 @@ class JsonStructCodecTest {
             new ConcreteTestTypeEx[]{
                 new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0)),
                 new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0))}
+        );
+
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @Test
+    void structWithAbstractMatrixFields() {
+        var struct = new StructWithAbstractMatrixFields(
+            Matrix.ofInt32(new Integer[][]{{0, 0}, {0, 0}}),
+            Matrix.ofStruct(new ConcreteTestType[][]{
+                {new ConcreteTestType((short) 0, 0.0, "", false),
+                    new ConcreteTestType((short) 0, 0.0, "", false)},
+                {new ConcreteTestType((short) 0, 0.0, "", false),
+                    new ConcreteTestType((short) 0, 0.0, "", false)}}),
+            Matrix.ofStruct(new ConcreteTestTypeEx[][]{
+                {new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0)),
+                    new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0))},
+                {new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0)),
+                    new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0))}})
         );
 
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
