@@ -9,6 +9,7 @@ import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
 import org.eclipse.milo.opcua.test.types.StructWithMatrixFields;
+import org.eclipse.milo.opcua.test.types.StructWithMatrixFieldsEx;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithScalarFields;
@@ -89,6 +90,13 @@ public class DataTypeInitializer {
             StructWithMatrixFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             StructWithMatrixFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             StructWithMatrixFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            StructWithMatrixFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithMatrixFieldsEx.Codec(),
+            StructWithMatrixFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithMatrixFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithMatrixFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
             StructWithOptionalArrayFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),

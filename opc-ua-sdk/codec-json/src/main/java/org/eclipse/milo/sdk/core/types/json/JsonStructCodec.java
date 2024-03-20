@@ -141,13 +141,23 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
         StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
         if (switchField == 0) {
-            return new JsonStruct(dataType, new JsonObject());
+            var jsonObject = new JsonObject();
+
+            var metadata = new JsonObject();
+            metadata.addProperty("dataTypeId", dataType.getNodeId().toParseableString());
+            jsonObject.add("__metadata", metadata);
+
+            return new JsonStruct(dataType, jsonObject);
         } else if (switchField <= fields.length) {
             StructureField field = fields[switchField - 1];
             JsonElement value = decodeFieldValue(decoder, field);
 
             var jsonObject = new JsonObject();
             jsonObject.add(requireNonNull(field.getName()), value);
+
+            var metadata = new JsonObject();
+            metadata.addProperty("dataTypeId", dataType.getNodeId().toParseableString());
+            jsonObject.add("__metadata", metadata);
 
             return new JsonStruct(dataType, jsonObject);
         } else {
@@ -624,27 +634,24 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     private void encodeUnion(UaEncoder encoder, JsonStruct value) {
-        if (value.getJsonObject().isEmpty()) {
-            encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));
-        } else {
-            StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
+        StructureField[] fields = requireNonNullElse(definition.getFields(), new StructureField[0]);
 
-            for (int i = 0; i < fields.length; i++) {
-                StructureField field = fields[i];
+        for (int i = 0; i < fields.length; i++) {
+            StructureField field = fields[i];
 
-                if (value.getJsonObject().has(requireNonNull(field.getName()))) {
-                    encoder.encodeUInt32("SwitchValue", UInteger.valueOf(i + 1));
-                    JsonElement fieldValue = value.getJsonObject().get(requireNonNull(field.getName()));
-                    encodeFieldValue(encoder, field, fieldValue);
+            if (value.getJsonObject().has(requireNonNull(field.getName()))) {
+                encoder.encodeUInt32("SwitchValue", UInteger.valueOf(i + 1));
+                JsonElement fieldValue = value.getJsonObject().get(requireNonNull(field.getName()));
+                encodeFieldValue(encoder, field, fieldValue);
 
-                    // Return as soon as a field has been encoded.
-                    // Unions are only one field, indicated by SwitchValue.
-                    return;
-                }
+                // Return as soon as a field has been encoded.
+                // Unions are only one field, indicated by SwitchValue.
+                return;
             }
-
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, "no Union value found");
         }
+
+        // No field was found, so the union is null/empty.
+        encoder.encodeUInt32("SwitchValue", UInteger.valueOf(0));
     }
 
     private void encodeFieldValue(UaEncoder encoder, StructureField field, JsonElement value) {

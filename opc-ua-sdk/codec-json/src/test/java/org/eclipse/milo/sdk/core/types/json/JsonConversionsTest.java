@@ -405,9 +405,4 @@ class JsonConversionsTest {
         );
     }
 
-    @Test
-    void convertVariant() {
-
-    }
-
 }
