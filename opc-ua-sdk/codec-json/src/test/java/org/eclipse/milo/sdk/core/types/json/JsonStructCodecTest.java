@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.test.types.StructWithAbstractArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithScalarFields;
@@ -139,8 +140,6 @@ class JsonStructCodecTest {
 
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
         JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
-
-        System.out.println(decoded.getJsonObject());
         var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
 
         assertEquals(encoded1, encoded2);
@@ -219,7 +218,17 @@ class JsonStructCodecTest {
             new LocalizedText[]{LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE},
             new DataValue[]{new DataValue(new Variant(0)), new DataValue(new Variant(0))},
             new Variant[]{Variant.ofInt32(0), Variant.ofInt32(0)},
-            new Double[]{0.0, 0.0}
+            new Double[]{0.0, 0.0},
+            new ApplicationType[]{ApplicationType.Server, ApplicationType.Client},
+            new TestEnumType[]{TestEnumType.A, TestEnumType.B},
+            new XVType[]{new XVType(0.0d, 0.0f), new XVType(0.0d, 0.0f)},
+            new ConcreteTestType[]{
+                new ConcreteTestType((short) 0, 0.0, "", false),
+                new ConcreteTestType((short) 0, 0.0, "", false)},
+            new UnionOfScalar[]{UnionOfScalar.ofBoolean(false), UnionOfScalar.ofByte(ubyte(0))},
+            new UnionOfArray[]{
+                UnionOfArray.ofBoolean(new Boolean[]{false, false}),
+                UnionOfArray.ofSByte(new Byte[]{0, 0})}
         );
 
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
@@ -276,6 +285,65 @@ class JsonStructCodecTest {
     @ParameterizedTest
     @MethodSource("structWithOptionalArrayFieldsProvider")
     void structWithOptionalArrayFields(StructWithOptionalArrayFields struct) {
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @Test
+    void structWithMatrixFields() {
+        var struct = new StructWithMatrixFields(
+            Matrix.ofBoolean(new Boolean[][]{{false, false}, {false, false}}),
+            Matrix.ofSByte(new Byte[][]{{0, 0}, {0, 0}}),
+            Matrix.ofByte(new UByte[][]{{ubyte(0), ubyte(0)}, {ubyte(0), ubyte(0)}}),
+            Matrix.ofInt16(new Short[][]{{0, 0}, {0, 0}}),
+            Matrix.ofUInt16(new UShort[][]{{ushort(0), ushort(0)}, {ushort(0), ushort(0)}}),
+            Matrix.ofInt32(new Integer[][]{{0, 0}, {0, 0}}),
+            Matrix.ofUInt32(new UInteger[][]{{uint(0), uint(0)}, {uint(0), uint(0)}}),
+            Matrix.ofInt64(new Long[][]{{0L, 0L}, {0L, 0L}}),
+            Matrix.ofUInt64(new ULong[][]{{ulong(0L), ulong(0L)}, {ulong(0L), ulong(0L)}}),
+            Matrix.ofFloat(new Float[][]{{0.0f, 0.0f}, {0.0f, 0.0f}}),
+            Matrix.ofDouble(new Double[][]{{0.0d, 0.0d}, {0.0d, 0.0d}}),
+            Matrix.ofString(new String[][]{{"", ""}, {"", ""}}),
+            Matrix.ofDateTime(new DateTime[][]{
+                {DateTime.MIN_DATE_TIME, DateTime.MIN_DATE_TIME},
+                {DateTime.MIN_DATE_TIME, DateTime.MIN_DATE_TIME}}),
+            Matrix.ofGuid(new UUID[][]{
+                {UUID.fromString("00000000-0000-0000-0000-000000000000"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000000")},
+                {UUID.fromString("00000000-0000-0000-0000-000000000000"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000000")}}),
+            Matrix.ofByteString(new ByteString[][]{
+                {ByteString.of(new byte[]{0}), ByteString.of(new byte[]{0})},
+                {ByteString.of(new byte[]{0}), ByteString.of(new byte[]{0})}}),
+            Matrix.ofXmlElement(new XmlElement[][]{
+                {XmlElement.of(""), XmlElement.of("")},
+                {XmlElement.of(""), XmlElement.of("")}}),
+            Matrix.ofNodeId(new NodeId[][]{
+                {new NodeId(0, 0), new NodeId(0, 0)},
+                {new NodeId(0, 0), new NodeId(0, 0)}}),
+            Matrix.ofExpandedNodeId(new ExpandedNodeId[][]{
+                {new ExpandedNodeId(ushort(0), null, uint(0)), new ExpandedNodeId(ushort(0), null, uint(0))},
+                {new ExpandedNodeId(ushort(0), null, uint(0)), new ExpandedNodeId(ushort(0), null, uint(0))}}),
+            Matrix.ofStatusCode(new StatusCode[][]{
+                {StatusCode.GOOD, StatusCode.GOOD},
+                {StatusCode.GOOD, StatusCode.GOOD}}),
+            Matrix.ofQualifiedName(new QualifiedName[][]{
+                {new QualifiedName(0, ""), new QualifiedName(0, "")},
+                {new QualifiedName(0, ""), new QualifiedName(0, "")}}),
+            Matrix.ofLocalizedText(new LocalizedText[][]{
+                {LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE},
+                {LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE}}),
+            Matrix.ofDataValue(new DataValue[][]{
+                {new DataValue(new Variant(0)), new DataValue(new Variant(0))},
+                {new DataValue(new Variant(0)), new DataValue(new Variant(0))}}),
+            Matrix.ofVariant(new Variant[][]{
+                {Variant.ofInt32(0), Variant.ofInt32(0)},
+                {Variant.ofInt32(0), Variant.ofInt32(0)}})
+        );
+
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
         JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
         var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
@@ -350,10 +418,9 @@ class JsonStructCodecTest {
         );
     }
 
-    @Test
-    void unionOfScalar() {
-        var union = UnionOfScalar.ofByte(ubyte(0));
-
+    @ParameterizedTest
+    @MethodSource("unionOfScalarProvider")
+    void unionOfScalar(UnionOfScalar union) {
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
         JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
         var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
@@ -361,15 +428,34 @@ class JsonStructCodecTest {
         assertEquals(encoded1, encoded2);
     }
 
-    @Test
-    void unionOfArray() {
-        var union = UnionOfArray.ofBoolean(new Boolean[]{false, false});
 
+    @ParameterizedTest
+    @MethodSource("unionOfArrayProvider")
+    void unionOfArray(UnionOfArray union) {
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
         JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
         var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
 
         assertEquals(encoded1, encoded2);
+    }
+
+    public static Stream<Arguments> unionOfScalarProvider() {
+        return Stream.of(
+            Arguments.of(UnionOfScalar.ofNull()),
+            Arguments.of(UnionOfScalar.ofBoolean(false)),
+            Arguments.of(UnionOfScalar.ofSByte((byte) 0)),
+            Arguments.of(UnionOfScalar.ofByte(ubyte(0)))
+        );
+    }
+
+    public static Stream<Arguments> unionOfArrayProvider() {
+        return Stream.of(
+            Arguments.of(UnionOfArray.ofNull()),
+            Arguments.of(UnionOfArray.ofBoolean(new Boolean[]{false, false})),
+            Arguments.of(UnionOfArray.ofSByte(new Byte[]{0, 0})),
+            Arguments.of(UnionOfArray.ofByte(new UByte[]{ubyte(0), ubyte(0)})
+            )
+        );
     }
 
     @Test

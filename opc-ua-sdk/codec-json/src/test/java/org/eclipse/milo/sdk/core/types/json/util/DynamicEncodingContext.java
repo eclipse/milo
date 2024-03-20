@@ -160,6 +160,14 @@ public class DynamicEncodingContext extends AbstractEncodingContext {
         );
 
         dataTypeManager.registerType(
+            structWithMatrixFields.getNodeId(),
+            JsonCodecFactory.create(structWithMatrixFields, dataTypeTree),
+            structWithMatrixFields.getBinaryEncodingId(),
+            structWithMatrixFields.getXmlEncodingId(),
+            structWithMatrixFields.getJsonEncodingId()
+        );
+
+        dataTypeManager.registerType(
             unionOfScalar.getNodeId(),
             JsonCodecFactory.create(unionOfScalar, dataTypeTree),
             unionOfScalar.getBinaryEncodingId(),

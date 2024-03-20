@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.test.types.StructWithAbstractArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalScalarFields;
 import org.eclipse.milo.opcua.test.types.StructWithScalarFields;
@@ -77,6 +78,7 @@ public abstract class AbstractEncodingContext implements EncodingContext {
     protected final DataType structWithAbstractArrayFields;
     protected final DataType structWithOptionalScalarFields;
     protected final DataType structWithOptionalArrayFields;
+    protected final DataType structWithMatrixFields;
     protected final DataType unionOfScalar;
     protected final DataType unionOfArray;
 
@@ -110,6 +112,7 @@ public abstract class AbstractEncodingContext implements EncodingContext {
         structWithAbstractArrayFields = setupStructWithAbstractArrayFields();
         structWithOptionalScalarFields = setupStructWithOptionalScalarFields();
         structWithOptionalArrayFields = setupStructWithOptionalArrayFields();
+        structWithMatrixFields = setupStructWithMatrixFields();
         unionOfScalar = setupUnionOfScalar();
         unionOfArray = setupUnionOfArray();
     }
@@ -484,6 +487,37 @@ public abstract class AbstractEncodingContext implements EncodingContext {
             @Override
             public NodeId getJsonEncodingId() {
                 return StructWithOptionalArrayFields.JSON_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+        };
+
+        Mockito.when(dataTypeTree.getDataType(typeId)).thenReturn(dataType);
+
+        return dataType;
+    }
+
+    protected DataType setupStructWithMatrixFields() {
+        NodeId typeId = StructWithMatrixFields.TYPE_ID.toNodeId(getNamespaceTable()).orElseThrow();
+
+        var dataType = new AbstractDataType(
+            typeId,
+            new QualifiedName(1, "StructWithMatrixFields"),
+            StructWithMatrixFields.definition(getNamespaceTable()),
+            false
+        ) {
+
+            @Override
+            public NodeId getBinaryEncodingId() {
+                return StructWithMatrixFields.BINARY_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+
+            @Override
+            public NodeId getXmlEncodingId() {
+                return StructWithMatrixFields.XML_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+
+            @Override
+            public NodeId getJsonEncodingId() {
+                return StructWithMatrixFields.JSON_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
             }
         };
 

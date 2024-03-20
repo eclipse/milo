@@ -23,9 +23,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
+import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +43,18 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
 
     private final Double @Nullable [] duration;
 
+    private final ApplicationType @Nullable [] applicationType;
+
+    private final TestEnumType @Nullable [] testEnumType;
+
+    private final XVType @Nullable [] xvType;
+
+    private final ConcreteTestType @Nullable [] concreteTestType;
+
+    private final UnionOfScalar @Nullable [] unionOfScalar;
+
+    private final UnionOfArray @Nullable [] unionOfArray;
+
     public StructWithArrayFieldsEx(Boolean @Nullable [] _boolean, Byte @Nullable [] sByte,
                                    UByte @Nullable [] _byte, Short @Nullable [] int16, UShort @Nullable [] uInt16,
                                    Integer @Nullable [] int32, UInteger @Nullable [] uInt32, Long @Nullable [] int64,
@@ -50,9 +64,18 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
                                    NodeId @Nullable [] nodeId, ExpandedNodeId @Nullable [] expandedNodeId,
                                    StatusCode @Nullable [] statusCode, QualifiedName @Nullable [] qualifiedName,
                                    LocalizedText @Nullable [] localizedText, DataValue @Nullable [] dataValue,
-                                   Variant @Nullable [] variant, Double @Nullable [] duration) {
+                                   Variant @Nullable [] variant, Double @Nullable [] duration,
+                                   ApplicationType @Nullable [] applicationType, TestEnumType @Nullable [] testEnumType,
+                                   XVType @Nullable [] xvType, ConcreteTestType @Nullable [] concreteTestType,
+                                   UnionOfScalar @Nullable [] unionOfScalar, UnionOfArray @Nullable [] unionOfArray) {
         super(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         this.duration = duration;
+        this.applicationType = applicationType;
+        this.testEnumType = testEnumType;
+        this.xvType = xvType;
+        this.concreteTestType = concreteTestType;
+        this.unionOfScalar = unionOfScalar;
+        this.unionOfArray = unionOfArray;
     }
 
     @Override
@@ -79,6 +102,30 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
         return duration;
     }
 
+    public ApplicationType @Nullable [] getApplicationType() {
+        return applicationType;
+    }
+
+    public TestEnumType @Nullable [] getTestEnumType() {
+        return testEnumType;
+    }
+
+    public XVType @Nullable [] getXvType() {
+        return xvType;
+    }
+
+    public ConcreteTestType @Nullable [] getConcreteTestType() {
+        return concreteTestType;
+    }
+
+    public UnionOfScalar @Nullable [] getUnionOfScalar() {
+        return unionOfScalar;
+    }
+
+    public UnionOfArray @Nullable [] getUnionOfArray() {
+        return unionOfArray;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -90,6 +137,12 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
         var eqb = new EqualsBuilder();
         eqb.appendSuper(super.equals(object));
         eqb.append(getDuration(), that.getDuration());
+        eqb.append(getApplicationType(), that.getApplicationType());
+        eqb.append(getTestEnumType(), that.getTestEnumType());
+        eqb.append(getXvType(), that.getXvType());
+        eqb.append(getConcreteTestType(), that.getConcreteTestType());
+        eqb.append(getUnionOfScalar(), that.getUnionOfScalar());
+        eqb.append(getUnionOfArray(), that.getUnionOfArray());
         return eqb.build();
     }
 
@@ -97,6 +150,12 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
     public int hashCode() {
         var hcb = new HashCodeBuilder();
         hcb.append(getDuration());
+        hcb.append(getApplicationType());
+        hcb.append(getTestEnumType());
+        hcb.append(getXvType());
+        hcb.append(getConcreteTestType());
+        hcb.append(getUnionOfScalar());
+        hcb.append(getUnionOfArray());
         hcb.appendSuper(super.hashCode());
         return hcb.build();
     }
@@ -105,6 +164,12 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
     public String toString() {
         var joiner = new StringJoiner(", ", StructWithArrayFieldsEx.class.getSimpleName() + "[", "]");
         joiner.add("duration=" + java.util.Arrays.toString(getDuration()));
+        joiner.add("applicationType=" + java.util.Arrays.toString(getApplicationType()));
+        joiner.add("testEnumType=" + java.util.Arrays.toString(getTestEnumType()));
+        joiner.add("xvType=" + java.util.Arrays.toString(getXvType()));
+        joiner.add("concreteTestType=" + java.util.Arrays.toString(getConcreteTestType()));
+        joiner.add("unionOfScalar=" + java.util.Arrays.toString(getUnionOfScalar()));
+        joiner.add("unionOfArray=" + java.util.Arrays.toString(getUnionOfArray()));
         return joiner.toString();
     }
 
@@ -137,7 +202,13 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
                 new StructureField("LocalizedText", LocalizedText.NULL_VALUE, new NodeId(0, 21), 1, new UInteger[]{UInteger.valueOf(4)}, UInteger.valueOf(0), false),
                 new StructureField("DataValue", LocalizedText.NULL_VALUE, new NodeId(0, 23), 1, new UInteger[]{UInteger.valueOf(4)}, UInteger.valueOf(0), false),
                 new StructureField("Variant", LocalizedText.NULL_VALUE, new NodeId(0, 24), 1, new UInteger[]{UInteger.valueOf(4)}, UInteger.valueOf(0), false),
-                new StructureField("Duration", LocalizedText.NULL_VALUE, new NodeId(0, 290), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false)
+                new StructureField("Duration", LocalizedText.NULL_VALUE, new NodeId(0, 290), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("ApplicationType", LocalizedText.NULL_VALUE, new NodeId(0, 307), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("TestEnumType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3011").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("XVType", LocalizedText.NULL_VALUE, new NodeId(0, 12080), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("ConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("UnionOfScalar", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3020").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("UnionOfArray", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3023").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false)
             }
         );
     }
@@ -174,7 +245,31 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
             DataValue[] dataValue = decoder.decodeDataValueArray("DataValue");
             Variant[] variant = decoder.decodeVariantArray("Variant");
             Double[] duration = decoder.decodeDoubleArray("Duration");
-            return new StructWithArrayFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration);
+            ApplicationType[] applicationType = null;
+            {
+                Integer[] values = decoder.decodeEnumArray("ApplicationType");
+                if (values != null) {
+                    applicationType = new ApplicationType[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        applicationType[i] = ApplicationType.from(values[i]);
+                    }
+                }
+            }
+            TestEnumType[] testEnumType = null;
+            {
+                Integer[] values = decoder.decodeEnumArray("TestEnumType");
+                if (values != null) {
+                    testEnumType = new TestEnumType[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        testEnumType[i] = TestEnumType.from(values[i]);
+                    }
+                }
+            }
+            XVType[] xvType = (XVType[]) decoder.decodeStructArray("XVType", XVType.TYPE_ID);
+            ConcreteTestType[] concreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("ConcreteTestType", ConcreteTestType.TYPE_ID);
+            UnionOfScalar[] unionOfScalar = (UnionOfScalar[]) decoder.decodeStructArray("UnionOfScalar", UnionOfScalar.TYPE_ID);
+            UnionOfArray[] unionOfArray = (UnionOfArray[]) decoder.decodeStructArray("UnionOfArray", UnionOfArray.TYPE_ID);
+            return new StructWithArrayFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
         }
 
         @Override
@@ -204,6 +299,12 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
             encoder.encodeDataValueArray("DataValue", value.getDataValue());
             encoder.encodeVariantArray("Variant", value.getVariant());
             encoder.encodeDoubleArray("Duration", value.getDuration());
+            encoder.encodeEnumArray("ApplicationType", value.getApplicationType());
+            encoder.encodeEnumArray("TestEnumType", value.getTestEnumType());
+            encoder.encodeStructArray("XVType", value.getXvType(), XVType.TYPE_ID);
+            encoder.encodeStructArray("ConcreteTestType", value.getConcreteTestType(), ConcreteTestType.TYPE_ID);
+            encoder.encodeStructArray("UnionOfScalar", value.getUnionOfScalar(), UnionOfScalar.TYPE_ID);
+            encoder.encodeStructArray("UnionOfArray", value.getUnionOfArray(), UnionOfArray.TYPE_ID);
         }
     }
 }
