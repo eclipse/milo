@@ -36,14 +36,17 @@ import org.eclipse.milo.opcua.test.types.ConcreteTestTypeEx;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
-import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
-import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
-import org.eclipse.milo.opcua.test.types.StructWithMatrixFields;
-import org.eclipse.milo.opcua.test.types.StructWithMatrixFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinArrayFields;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinArrayFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinMatrixFields;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinMatrixFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinScalarFields;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinScalarFieldsEx;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalScalarFields;
-import org.eclipse.milo.opcua.test.types.StructWithScalarFields;
-import org.eclipse.milo.opcua.test.types.StructWithScalarFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithStructureArrayFields;
+import org.eclipse.milo.opcua.test.types.StructWithStructureMatrixFields;
+import org.eclipse.milo.opcua.test.types.StructWithStructureScalarFields;
 import org.eclipse.milo.opcua.test.types.TestEnumType;
 import org.eclipse.milo.opcua.test.types.UnionOfArray;
 import org.eclipse.milo.opcua.test.types.UnionOfScalar;
@@ -64,7 +67,7 @@ class JsonStructCodecTest {
 
     @Test
     void structWithScalarFields() {
-        var struct = new StructWithScalarFields(
+        var struct = new StructWithBuiltinScalarFields(
             false,
             (byte) 0,
             ubyte(0),
@@ -99,7 +102,7 @@ class JsonStructCodecTest {
 
     @Test
     void structWithScalarFieldsEx() {
-        var struct = new StructWithScalarFieldsEx(
+        var struct = new StructWithBuiltinScalarFieldsEx(
             false,
             (byte) 0,
             ubyte(0),
@@ -141,7 +144,7 @@ class JsonStructCodecTest {
 
     @Test
     void structWithArrayFields() {
-        var struct = new StructWithArrayFields(
+        var struct = new StructWithBuiltinArrayFields(
             new Boolean[]{false, false},
             new Byte[]{0, 0},
             new UByte[]{ubyte(0), ubyte(0)},
@@ -182,7 +185,7 @@ class JsonStructCodecTest {
 
     @Test
     void structWithArrayFieldsEx() {
-        var struct = new StructWithArrayFieldsEx(
+        var struct = new StructWithBuiltinArrayFieldsEx(
             new Boolean[]{false, false},
             new Byte[]{0, 0},
             new UByte[]{ubyte(0), ubyte(0)},
@@ -311,7 +314,7 @@ class JsonStructCodecTest {
 
     @Test
     void structWithMatrixFields() {
-        var struct = new StructWithMatrixFields(
+        var struct = new StructWithBuiltinMatrixFields(
             Matrix.ofBoolean(new Boolean[][]{{false, false}, {false, false}}),
             Matrix.ofSByte(new Byte[][]{{0, 0}, {0, 0}}),
             Matrix.ofByte(new UByte[][]{{ubyte(0), ubyte(0)}, {ubyte(0), ubyte(0)}}),
@@ -370,7 +373,7 @@ class JsonStructCodecTest {
 
     @Test
     void structWithMatrixFieldsEx() {
-        var struct = new StructWithMatrixFieldsEx(
+        var struct = new StructWithBuiltinMatrixFieldsEx(
             Matrix.ofBoolean(new Boolean[][]{{false, false}, {false, false}}),
             Matrix.ofSByte(new Byte[][]{{0, 0}, {0, 0}}),
             Matrix.ofByte(new UByte[][]{{ubyte(0), ubyte(0)}, {ubyte(0), ubyte(0)}}),
@@ -448,6 +451,101 @@ class JsonStructCodecTest {
         assertEquals(encoded1, encoded2);
     }
 
+    @Test
+    void structWithStructureScalarFields() {
+        var struct = new StructWithStructureScalarFields(
+            ExtensionObject.encode(
+                new StaticEncodingContext(),
+                new XVType(0.0d, 0.0f)),
+            ExtensionObject.encode(
+                new StaticEncodingContext(),
+                new ConcreteTestType((short) 0, 0.0, "", false)),
+            ExtensionObject.encode(
+                new StaticEncodingContext(),
+                new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0)))
+        );
+
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @Test
+    void structWithStructureArrayFields() {
+        var xo1 = ExtensionObject.encode(
+            new StaticEncodingContext(),
+            new XVType(0.0d, 0.0f)
+        );
+        var xo2 = ExtensionObject.encode(
+            new StaticEncodingContext(),
+            new ConcreteTestType((short) 0, 0.0, "", false)
+        );
+        var xo3 = ExtensionObject.encode(
+            new StaticEncodingContext(),
+            new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0))
+        );
+        var struct = new StructWithStructureArrayFields(
+            new ExtensionObject[]{xo1, xo1},
+            new ExtensionObject[]{xo2, xo2},
+            new ExtensionObject[]{xo3, xo3}
+        );
+
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @Test
+    void structWithStructureMatrixFields() {
+        var xo1 = ExtensionObject.encode(
+            new StaticEncodingContext(),
+            new XVType(0.0d, 0.0f)
+        );
+        var xo2 = ExtensionObject.encode(
+            new StaticEncodingContext(),
+            new ConcreteTestType((short) 0, 0.0, "", false)
+        );
+        var xo3 = ExtensionObject.encode(
+            new StaticEncodingContext(),
+            new ConcreteTestTypeEx((short) 0, 0.0, "", false, uint(0))
+        );
+        var struct = new StructWithStructureMatrixFields(
+            Matrix.ofExtensionObject(new ExtensionObject[][]{{xo1, xo1}, {xo1, xo1}}),
+            Matrix.ofExtensionObject(new ExtensionObject[][]{{xo2, xo2}, {xo2, xo2}}),
+            Matrix.ofExtensionObject(new ExtensionObject[][]{{xo3, xo3}, {xo3, xo3}})
+        );
+
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unionOfScalarProvider")
+    void unionOfScalar(UnionOfScalar union) {
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unionOfArrayProvider")
+    void unionOfArray(UnionOfArray union) {
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
     private static Stream<Arguments> structWithOptionalScalarFieldsProvider() {
         return Stream.of(
             Arguments.of(
@@ -475,26 +573,6 @@ class JsonStructCodecTest {
                 )
             )
         );
-    }
-
-    @ParameterizedTest
-    @MethodSource("unionOfScalarProvider")
-    void unionOfScalar(UnionOfScalar union) {
-        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
-        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
-        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
-
-        assertEquals(encoded1, encoded2);
-    }
-
-    @ParameterizedTest
-    @MethodSource("unionOfArrayProvider")
-    void unionOfArray(UnionOfArray union) {
-        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
-        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
-        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
-
-        assertEquals(encoded1, encoded2);
     }
 
     private static Stream<Arguments> structWithOptionalArrayFieldsProvider() {

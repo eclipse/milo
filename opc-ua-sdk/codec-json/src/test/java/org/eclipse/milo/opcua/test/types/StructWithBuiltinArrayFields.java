@@ -31,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
-public class StructWithArrayFields extends Structure implements UaStructuredType {
+public class StructWithBuiltinArrayFields extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=1;i=3019");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5014");
@@ -86,16 +86,16 @@ public class StructWithArrayFields extends Structure implements UaStructuredType
 
     private final Variant @Nullable [] variant;
 
-    public StructWithArrayFields(Boolean @Nullable [] _boolean, Byte @Nullable [] sByte,
-                                 UByte @Nullable [] _byte, Short @Nullable [] int16, UShort @Nullable [] uInt16,
-                                 Integer @Nullable [] int32, UInteger @Nullable [] uInt32, Long @Nullable [] int64,
-                                 ULong @Nullable [] uInt64, Float @Nullable [] _float, Double @Nullable [] _double,
-                                 String @Nullable [] string, DateTime @Nullable [] dateTime, UUID @Nullable [] guid,
-                                 ByteString @Nullable [] byteString, XmlElement @Nullable [] xmlElement,
-                                 NodeId @Nullable [] nodeId, ExpandedNodeId @Nullable [] expandedNodeId,
-                                 StatusCode @Nullable [] statusCode, QualifiedName @Nullable [] qualifiedName,
-                                 LocalizedText @Nullable [] localizedText, DataValue @Nullable [] dataValue,
-                                 Variant @Nullable [] variant) {
+    public StructWithBuiltinArrayFields(Boolean @Nullable [] _boolean, Byte @Nullable [] sByte,
+                                        UByte @Nullable [] _byte, Short @Nullable [] int16, UShort @Nullable [] uInt16,
+                                        Integer @Nullable [] int32, UInteger @Nullable [] uInt32, Long @Nullable [] int64,
+                                        ULong @Nullable [] uInt64, Float @Nullable [] _float, Double @Nullable [] _double,
+                                        String @Nullable [] string, DateTime @Nullable [] dateTime, UUID @Nullable [] guid,
+                                        ByteString @Nullable [] byteString, XmlElement @Nullable [] xmlElement,
+                                        NodeId @Nullable [] nodeId, ExpandedNodeId @Nullable [] expandedNodeId,
+                                        StatusCode @Nullable [] statusCode, QualifiedName @Nullable [] qualifiedName,
+                                        LocalizedText @Nullable [] localizedText, DataValue @Nullable [] dataValue,
+                                        Variant @Nullable [] variant) {
         this._boolean = _boolean;
         this.sByte = sByte;
         this._byte = _byte;
@@ -240,7 +240,7 @@ public class StructWithArrayFields extends Structure implements UaStructuredType
         } else if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        StructWithArrayFields that = (StructWithArrayFields) object;
+        StructWithBuiltinArrayFields that = (StructWithBuiltinArrayFields) object;
         var eqb = new EqualsBuilder();
         eqb.append(getBoolean(), that.getBoolean());
         eqb.append(getSByte(), that.getSByte());
@@ -299,7 +299,7 @@ public class StructWithArrayFields extends Structure implements UaStructuredType
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(", ", StructWithArrayFields.class.getSimpleName() + "[", "]");
+        var joiner = new StringJoiner(", ", StructWithBuiltinArrayFields.class.getSimpleName() + "[", "]");
         joiner.add("_boolean=" + java.util.Arrays.toString(getBoolean()));
         joiner.add("sByte=" + java.util.Arrays.toString(getSByte()));
         joiner.add("_byte=" + java.util.Arrays.toString(getByte()));
@@ -359,14 +359,14 @@ public class StructWithArrayFields extends Structure implements UaStructuredType
         );
     }
 
-    public static final class Codec extends GenericDataTypeCodec<StructWithArrayFields> {
+    public static final class Codec extends GenericDataTypeCodec<StructWithBuiltinArrayFields> {
         @Override
-        public Class<StructWithArrayFields> getType() {
-            return StructWithArrayFields.class;
+        public Class<StructWithBuiltinArrayFields> getType() {
+            return StructWithBuiltinArrayFields.class;
         }
 
         @Override
-        public StructWithArrayFields decodeType(EncodingContext context, UaDecoder decoder) {
+        public StructWithBuiltinArrayFields decodeType(EncodingContext context, UaDecoder decoder) {
             Boolean[] _boolean = decoder.decodeBooleanArray("Boolean");
             Byte[] sByte = decoder.decodeSByteArray("SByte");
             UByte[] _byte = decoder.decodeByteArray("Byte");
@@ -390,12 +390,12 @@ public class StructWithArrayFields extends Structure implements UaStructuredType
             LocalizedText[] localizedText = decoder.decodeLocalizedTextArray("LocalizedText");
             DataValue[] dataValue = decoder.decodeDataValueArray("DataValue");
             Variant[] variant = decoder.decodeVariantArray("Variant");
-            return new StructWithArrayFields(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
+            return new StructWithBuiltinArrayFields(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         }
 
         @Override
         public void encodeType(EncodingContext context, UaEncoder encoder,
-                               StructWithArrayFields value) {
+                               StructWithBuiltinArrayFields value) {
             encoder.encodeBooleanArray("Boolean", value.getBoolean());
             encoder.encodeSByteArray("SByte", value.getSByte());
             encoder.encodeByteArray("Byte", value.getByte());

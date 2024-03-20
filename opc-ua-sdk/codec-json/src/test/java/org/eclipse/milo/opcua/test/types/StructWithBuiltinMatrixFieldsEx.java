@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
-public class StructWithMatrixFieldsEx extends StructWithMatrixFields implements UaStructuredType {
+public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFields implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=1;i=3017");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5044");
@@ -45,17 +45,17 @@ public class StructWithMatrixFieldsEx extends StructWithMatrixFields implements 
 
     private final @Nullable Matrix unionOfArray;
 
-    public StructWithMatrixFieldsEx(@Nullable Matrix _boolean, @Nullable Matrix sByte,
-                                    @Nullable Matrix _byte, @Nullable Matrix int16, @Nullable Matrix uInt16,
-                                    @Nullable Matrix int32, @Nullable Matrix uInt32, @Nullable Matrix int64,
-                                    @Nullable Matrix uInt64, @Nullable Matrix _float, @Nullable Matrix _double,
-                                    @Nullable Matrix string, @Nullable Matrix dateTime, @Nullable Matrix guid,
-                                    @Nullable Matrix byteString, @Nullable Matrix xmlElement, @Nullable Matrix nodeId,
-                                    @Nullable Matrix expandedNodeId, @Nullable Matrix statusCode, @Nullable Matrix qualifiedName,
-                                    @Nullable Matrix localizedText, @Nullable Matrix dataValue, @Nullable Matrix variant,
-                                    @Nullable Matrix duration, @Nullable Matrix applicationType, @Nullable Matrix testEnumType,
-                                    @Nullable Matrix xvType, @Nullable Matrix concreteTestType, @Nullable Matrix unionOfScalar,
-                                    @Nullable Matrix unionOfArray) {
+    public StructWithBuiltinMatrixFieldsEx(@Nullable Matrix _boolean, @Nullable Matrix sByte,
+                                           @Nullable Matrix _byte, @Nullable Matrix int16, @Nullable Matrix uInt16,
+                                           @Nullable Matrix int32, @Nullable Matrix uInt32, @Nullable Matrix int64,
+                                           @Nullable Matrix uInt64, @Nullable Matrix _float, @Nullable Matrix _double,
+                                           @Nullable Matrix string, @Nullable Matrix dateTime, @Nullable Matrix guid,
+                                           @Nullable Matrix byteString, @Nullable Matrix xmlElement, @Nullable Matrix nodeId,
+                                           @Nullable Matrix expandedNodeId, @Nullable Matrix statusCode, @Nullable Matrix qualifiedName,
+                                           @Nullable Matrix localizedText, @Nullable Matrix dataValue, @Nullable Matrix variant,
+                                           @Nullable Matrix duration, @Nullable Matrix applicationType, @Nullable Matrix testEnumType,
+                                           @Nullable Matrix xvType, @Nullable Matrix concreteTestType, @Nullable Matrix unionOfScalar,
+                                           @Nullable Matrix unionOfArray) {
         super(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         this.duration = duration;
         this.applicationType = applicationType;
@@ -121,7 +121,7 @@ public class StructWithMatrixFieldsEx extends StructWithMatrixFields implements 
         } else if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        StructWithMatrixFieldsEx that = (StructWithMatrixFieldsEx) object;
+        StructWithBuiltinMatrixFieldsEx that = (StructWithBuiltinMatrixFieldsEx) object;
         var eqb = new EqualsBuilder();
         eqb.appendSuper(super.equals(object));
         eqb.append(getDuration(), that.getDuration());
@@ -150,7 +150,7 @@ public class StructWithMatrixFieldsEx extends StructWithMatrixFields implements 
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(", ", StructWithMatrixFieldsEx.class.getSimpleName() + "[", "]");
+        var joiner = new StringJoiner(", ", StructWithBuiltinMatrixFieldsEx.class.getSimpleName() + "[", "]");
         joiner.add("duration=" + getDuration());
         joiner.add("applicationType=" + getApplicationType());
         joiner.add("testEnumType=" + getTestEnumType());
@@ -201,14 +201,14 @@ public class StructWithMatrixFieldsEx extends StructWithMatrixFields implements 
         );
     }
 
-    public static final class Codec extends GenericDataTypeCodec<StructWithMatrixFieldsEx> {
+    public static final class Codec extends GenericDataTypeCodec<StructWithBuiltinMatrixFieldsEx> {
         @Override
-        public Class<StructWithMatrixFieldsEx> getType() {
-            return StructWithMatrixFieldsEx.class;
+        public Class<StructWithBuiltinMatrixFieldsEx> getType() {
+            return StructWithBuiltinMatrixFieldsEx.class;
         }
 
         @Override
-        public StructWithMatrixFieldsEx decodeType(EncodingContext context, UaDecoder decoder) {
+        public StructWithBuiltinMatrixFieldsEx decodeType(EncodingContext context, UaDecoder decoder) {
             Matrix _boolean = decoder.decodeMatrix("Boolean", BuiltinDataType.Boolean);
             Matrix sByte = decoder.decodeMatrix("SByte", BuiltinDataType.SByte);
             Matrix _byte = decoder.decodeMatrix("Byte", BuiltinDataType.Byte);
@@ -239,12 +239,12 @@ public class StructWithMatrixFieldsEx extends StructWithMatrixFields implements 
             Matrix concreteTestType = (Matrix) decoder.decodeStructMatrix("ConcreteTestType", ConcreteTestType.TYPE_ID);
             Matrix unionOfScalar = (Matrix) decoder.decodeStructMatrix("UnionOfScalar", UnionOfScalar.TYPE_ID);
             Matrix unionOfArray = (Matrix) decoder.decodeStructMatrix("UnionOfArray", UnionOfArray.TYPE_ID);
-            return new StructWithMatrixFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
+            return new StructWithBuiltinMatrixFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
         }
 
         @Override
         public void encodeType(EncodingContext context, UaEncoder encoder,
-                               StructWithMatrixFieldsEx value) {
+                               StructWithBuiltinMatrixFieldsEx value) {
             encoder.encodeMatrix("Boolean", value.getBoolean());
             encoder.encodeMatrix("SByte", value.getSByte());
             encoder.encodeMatrix("Byte", value.getByte());

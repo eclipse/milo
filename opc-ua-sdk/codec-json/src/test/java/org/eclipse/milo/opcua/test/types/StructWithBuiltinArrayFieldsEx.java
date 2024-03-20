@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
-public class StructWithArrayFieldsEx extends StructWithArrayFields implements UaStructuredType {
+public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=1;i=3008");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5035");
@@ -55,19 +55,19 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
 
     private final UnionOfArray @Nullable [] unionOfArray;
 
-    public StructWithArrayFieldsEx(Boolean @Nullable [] _boolean, Byte @Nullable [] sByte,
-                                   UByte @Nullable [] _byte, Short @Nullable [] int16, UShort @Nullable [] uInt16,
-                                   Integer @Nullable [] int32, UInteger @Nullable [] uInt32, Long @Nullable [] int64,
-                                   ULong @Nullable [] uInt64, Float @Nullable [] _float, Double @Nullable [] _double,
-                                   String @Nullable [] string, DateTime @Nullable [] dateTime, UUID @Nullable [] guid,
-                                   ByteString @Nullable [] byteString, XmlElement @Nullable [] xmlElement,
-                                   NodeId @Nullable [] nodeId, ExpandedNodeId @Nullable [] expandedNodeId,
-                                   StatusCode @Nullable [] statusCode, QualifiedName @Nullable [] qualifiedName,
-                                   LocalizedText @Nullable [] localizedText, DataValue @Nullable [] dataValue,
-                                   Variant @Nullable [] variant, Double @Nullable [] duration,
-                                   ApplicationType @Nullable [] applicationType, TestEnumType @Nullable [] testEnumType,
-                                   XVType @Nullable [] xvType, ConcreteTestType @Nullable [] concreteTestType,
-                                   UnionOfScalar @Nullable [] unionOfScalar, UnionOfArray @Nullable [] unionOfArray) {
+    public StructWithBuiltinArrayFieldsEx(Boolean @Nullable [] _boolean, Byte @Nullable [] sByte,
+                                          UByte @Nullable [] _byte, Short @Nullable [] int16, UShort @Nullable [] uInt16,
+                                          Integer @Nullable [] int32, UInteger @Nullable [] uInt32, Long @Nullable [] int64,
+                                          ULong @Nullable [] uInt64, Float @Nullable [] _float, Double @Nullable [] _double,
+                                          String @Nullable [] string, DateTime @Nullable [] dateTime, UUID @Nullable [] guid,
+                                          ByteString @Nullable [] byteString, XmlElement @Nullable [] xmlElement,
+                                          NodeId @Nullable [] nodeId, ExpandedNodeId @Nullable [] expandedNodeId,
+                                          StatusCode @Nullable [] statusCode, QualifiedName @Nullable [] qualifiedName,
+                                          LocalizedText @Nullable [] localizedText, DataValue @Nullable [] dataValue,
+                                          Variant @Nullable [] variant, Double @Nullable [] duration,
+                                          ApplicationType @Nullable [] applicationType, TestEnumType @Nullable [] testEnumType,
+                                          XVType @Nullable [] xvType, ConcreteTestType @Nullable [] concreteTestType,
+                                          UnionOfScalar @Nullable [] unionOfScalar, UnionOfArray @Nullable [] unionOfArray) {
         super(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         this.duration = duration;
         this.applicationType = applicationType;
@@ -133,7 +133,7 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
         } else if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        StructWithArrayFieldsEx that = (StructWithArrayFieldsEx) object;
+        StructWithBuiltinArrayFieldsEx that = (StructWithBuiltinArrayFieldsEx) object;
         var eqb = new EqualsBuilder();
         eqb.appendSuper(super.equals(object));
         eqb.append(getDuration(), that.getDuration());
@@ -162,7 +162,7 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(", ", StructWithArrayFieldsEx.class.getSimpleName() + "[", "]");
+        var joiner = new StringJoiner(", ", StructWithBuiltinArrayFieldsEx.class.getSimpleName() + "[", "]");
         joiner.add("duration=" + java.util.Arrays.toString(getDuration()));
         joiner.add("applicationType=" + java.util.Arrays.toString(getApplicationType()));
         joiner.add("testEnumType=" + java.util.Arrays.toString(getTestEnumType()));
@@ -213,14 +213,14 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
         );
     }
 
-    public static final class Codec extends GenericDataTypeCodec<StructWithArrayFieldsEx> {
+    public static final class Codec extends GenericDataTypeCodec<StructWithBuiltinArrayFieldsEx> {
         @Override
-        public Class<StructWithArrayFieldsEx> getType() {
-            return StructWithArrayFieldsEx.class;
+        public Class<StructWithBuiltinArrayFieldsEx> getType() {
+            return StructWithBuiltinArrayFieldsEx.class;
         }
 
         @Override
-        public StructWithArrayFieldsEx decodeType(EncodingContext context, UaDecoder decoder) {
+        public StructWithBuiltinArrayFieldsEx decodeType(EncodingContext context, UaDecoder decoder) {
             Boolean[] _boolean = decoder.decodeBooleanArray("Boolean");
             Byte[] sByte = decoder.decodeSByteArray("SByte");
             UByte[] _byte = decoder.decodeByteArray("Byte");
@@ -269,12 +269,12 @@ public class StructWithArrayFieldsEx extends StructWithArrayFields implements Ua
             ConcreteTestType[] concreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("ConcreteTestType", ConcreteTestType.TYPE_ID);
             UnionOfScalar[] unionOfScalar = (UnionOfScalar[]) decoder.decodeStructArray("UnionOfScalar", UnionOfScalar.TYPE_ID);
             UnionOfArray[] unionOfArray = (UnionOfArray[]) decoder.decodeStructArray("UnionOfArray", UnionOfArray.TYPE_ID);
-            return new StructWithArrayFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
+            return new StructWithBuiltinArrayFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
         }
 
         @Override
         public void encodeType(EncodingContext context, UaEncoder encoder,
-                               StructWithArrayFieldsEx value) {
+                               StructWithBuiltinArrayFieldsEx value) {
             encoder.encodeBooleanArray("Boolean", value.getBoolean());
             encoder.encodeSByteArray("SByte", value.getSByte());
             encoder.encodeByteArray("Byte", value.getByte());

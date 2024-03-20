@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
 import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
-public class StructWithMatrixFields extends Structure implements UaStructuredType {
+public class StructWithBuiltinMatrixFields extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=1;i=3010");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5041");
@@ -77,14 +77,14 @@ public class StructWithMatrixFields extends Structure implements UaStructuredTyp
 
     private final @Nullable Matrix variant;
 
-    public StructWithMatrixFields(@Nullable Matrix _boolean, @Nullable Matrix sByte,
-                                  @Nullable Matrix _byte, @Nullable Matrix int16, @Nullable Matrix uInt16,
-                                  @Nullable Matrix int32, @Nullable Matrix uInt32, @Nullable Matrix int64,
-                                  @Nullable Matrix uInt64, @Nullable Matrix _float, @Nullable Matrix _double,
-                                  @Nullable Matrix string, @Nullable Matrix dateTime, @Nullable Matrix guid,
-                                  @Nullable Matrix byteString, @Nullable Matrix xmlElement, @Nullable Matrix nodeId,
-                                  @Nullable Matrix expandedNodeId, @Nullable Matrix statusCode, @Nullable Matrix qualifiedName,
-                                  @Nullable Matrix localizedText, @Nullable Matrix dataValue, @Nullable Matrix variant) {
+    public StructWithBuiltinMatrixFields(@Nullable Matrix _boolean, @Nullable Matrix sByte,
+                                         @Nullable Matrix _byte, @Nullable Matrix int16, @Nullable Matrix uInt16,
+                                         @Nullable Matrix int32, @Nullable Matrix uInt32, @Nullable Matrix int64,
+                                         @Nullable Matrix uInt64, @Nullable Matrix _float, @Nullable Matrix _double,
+                                         @Nullable Matrix string, @Nullable Matrix dateTime, @Nullable Matrix guid,
+                                         @Nullable Matrix byteString, @Nullable Matrix xmlElement, @Nullable Matrix nodeId,
+                                         @Nullable Matrix expandedNodeId, @Nullable Matrix statusCode, @Nullable Matrix qualifiedName,
+                                         @Nullable Matrix localizedText, @Nullable Matrix dataValue, @Nullable Matrix variant) {
         this._boolean = _boolean;
         this.sByte = sByte;
         this._byte = _byte;
@@ -229,7 +229,7 @@ public class StructWithMatrixFields extends Structure implements UaStructuredTyp
         } else if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        StructWithMatrixFields that = (StructWithMatrixFields) object;
+        StructWithBuiltinMatrixFields that = (StructWithBuiltinMatrixFields) object;
         var eqb = new EqualsBuilder();
         eqb.append(getBoolean(), that.getBoolean());
         eqb.append(getSByte(), that.getSByte());
@@ -288,7 +288,7 @@ public class StructWithMatrixFields extends Structure implements UaStructuredTyp
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(", ", StructWithMatrixFields.class.getSimpleName() + "[", "]");
+        var joiner = new StringJoiner(", ", StructWithBuiltinMatrixFields.class.getSimpleName() + "[", "]");
         joiner.add("_boolean=" + getBoolean());
         joiner.add("sByte=" + getSByte());
         joiner.add("_byte=" + getByte());
@@ -348,14 +348,14 @@ public class StructWithMatrixFields extends Structure implements UaStructuredTyp
         );
     }
 
-    public static final class Codec extends GenericDataTypeCodec<StructWithMatrixFields> {
+    public static final class Codec extends GenericDataTypeCodec<StructWithBuiltinMatrixFields> {
         @Override
-        public Class<StructWithMatrixFields> getType() {
-            return StructWithMatrixFields.class;
+        public Class<StructWithBuiltinMatrixFields> getType() {
+            return StructWithBuiltinMatrixFields.class;
         }
 
         @Override
-        public StructWithMatrixFields decodeType(EncodingContext context, UaDecoder decoder) {
+        public StructWithBuiltinMatrixFields decodeType(EncodingContext context, UaDecoder decoder) {
             Matrix _boolean = decoder.decodeMatrix("Boolean", BuiltinDataType.Boolean);
             Matrix sByte = decoder.decodeMatrix("SByte", BuiltinDataType.SByte);
             Matrix _byte = decoder.decodeMatrix("Byte", BuiltinDataType.Byte);
@@ -379,12 +379,12 @@ public class StructWithMatrixFields extends Structure implements UaStructuredTyp
             Matrix localizedText = decoder.decodeMatrix("LocalizedText", BuiltinDataType.LocalizedText);
             Matrix dataValue = decoder.decodeMatrix("DataValue", BuiltinDataType.DataValue);
             Matrix variant = decoder.decodeMatrix("Variant", BuiltinDataType.Variant);
-            return new StructWithMatrixFields(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
+            return new StructWithBuiltinMatrixFields(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         }
 
         @Override
         public void encodeType(EncodingContext context, UaEncoder encoder,
-                               StructWithMatrixFields value) {
+                               StructWithBuiltinMatrixFields value) {
             encoder.encodeMatrix("Boolean", value.getBoolean());
             encoder.encodeMatrix("SByte", value.getSByte());
             encoder.encodeMatrix("Byte", value.getByte());

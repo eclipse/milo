@@ -7,14 +7,17 @@ import org.eclipse.milo.opcua.test.types.ConcreteTestTypeEx;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithAbstractScalarFields;
-import org.eclipse.milo.opcua.test.types.StructWithArrayFields;
-import org.eclipse.milo.opcua.test.types.StructWithArrayFieldsEx;
-import org.eclipse.milo.opcua.test.types.StructWithMatrixFields;
-import org.eclipse.milo.opcua.test.types.StructWithMatrixFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinArrayFields;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinArrayFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinMatrixFields;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinMatrixFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinScalarFields;
+import org.eclipse.milo.opcua.test.types.StructWithBuiltinScalarFieldsEx;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithOptionalScalarFields;
-import org.eclipse.milo.opcua.test.types.StructWithScalarFields;
-import org.eclipse.milo.opcua.test.types.StructWithScalarFieldsEx;
+import org.eclipse.milo.opcua.test.types.StructWithStructureArrayFields;
+import org.eclipse.milo.opcua.test.types.StructWithStructureMatrixFields;
+import org.eclipse.milo.opcua.test.types.StructWithStructureScalarFields;
 import org.eclipse.milo.opcua.test.types.UnionOfArray;
 import org.eclipse.milo.opcua.test.types.UnionOfScalar;
 
@@ -79,32 +82,32 @@ public class DataTypeInitializer {
             StructWithAbstractScalarFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
-            StructWithArrayFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-            new StructWithArrayFields.Codec(),
-            StructWithArrayFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithArrayFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithArrayFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+            StructWithBuiltinArrayFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithBuiltinArrayFields.Codec(),
+            StructWithBuiltinArrayFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinArrayFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinArrayFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
-            StructWithArrayFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-            new StructWithArrayFieldsEx.Codec(),
-            StructWithArrayFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithArrayFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithArrayFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+            StructWithBuiltinArrayFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithBuiltinArrayFieldsEx.Codec(),
+            StructWithBuiltinArrayFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinArrayFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinArrayFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
-            StructWithMatrixFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-            new StructWithMatrixFields.Codec(),
-            StructWithMatrixFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithMatrixFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithMatrixFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+            StructWithBuiltinMatrixFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithBuiltinMatrixFields.Codec(),
+            StructWithBuiltinMatrixFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinMatrixFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinMatrixFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
-            StructWithMatrixFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-            new StructWithMatrixFieldsEx.Codec(),
-            StructWithMatrixFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithMatrixFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithMatrixFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+            StructWithBuiltinMatrixFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithBuiltinMatrixFieldsEx.Codec(),
+            StructWithBuiltinMatrixFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinMatrixFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinMatrixFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
             StructWithOptionalArrayFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
@@ -121,18 +124,39 @@ public class DataTypeInitializer {
             StructWithOptionalScalarFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
-            StructWithScalarFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-            new StructWithScalarFields.Codec(),
-            StructWithScalarFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithScalarFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithScalarFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+            StructWithBuiltinScalarFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithBuiltinScalarFields.Codec(),
+            StructWithBuiltinScalarFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinScalarFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinScalarFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
-            StructWithScalarFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
-            new StructWithScalarFieldsEx.Codec(),
-            StructWithScalarFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithScalarFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
-            StructWithScalarFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+            StructWithBuiltinScalarFieldsEx.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithBuiltinScalarFieldsEx.Codec(),
+            StructWithBuiltinScalarFieldsEx.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinScalarFieldsEx.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithBuiltinScalarFieldsEx.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            StructWithStructureArrayFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithStructureArrayFields.Codec(),
+            StructWithStructureArrayFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithStructureArrayFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithStructureArrayFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            StructWithStructureMatrixFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithStructureMatrixFields.Codec(),
+            StructWithStructureMatrixFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithStructureMatrixFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithStructureMatrixFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            StructWithStructureScalarFields.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new StructWithStructureScalarFields.Codec(),
+            StructWithStructureScalarFields.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithStructureScalarFields.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            StructWithStructureScalarFields.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
     }
 }

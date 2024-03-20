@@ -88,43 +88,43 @@ public class DynamicEncodingContext extends AbstractEncodingContext {
         );
 
         dataTypeManager.registerType(
-            structWithScalarFields.getNodeId(),
-            JsonCodecFactory.create(structWithScalarFields, dataTypeTree),
-            structWithScalarFields.getBinaryEncodingId(),
-            structWithScalarFields.getXmlEncodingId(),
-            structWithScalarFields.getJsonEncodingId()
+            structWithBuiltinScalarFields.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinScalarFields, dataTypeTree),
+            structWithBuiltinScalarFields.getBinaryEncodingId(),
+            structWithBuiltinScalarFields.getXmlEncodingId(),
+            structWithBuiltinScalarFields.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
-            structWithScalarFields.getNodeId(),
-            JsonCodecFactory.create(structWithScalarFields, dataTypeTree),
-            structWithScalarFields.getBinaryEncodingId(),
-            structWithScalarFields.getXmlEncodingId(),
-            structWithScalarFields.getJsonEncodingId()
+            structWithBuiltinScalarFields.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinScalarFields, dataTypeTree),
+            structWithBuiltinScalarFields.getBinaryEncodingId(),
+            structWithBuiltinScalarFields.getXmlEncodingId(),
+            structWithBuiltinScalarFields.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
-            structWithScalarFieldsEx.getNodeId(),
-            JsonCodecFactory.create(structWithScalarFieldsEx, dataTypeTree),
-            structWithScalarFieldsEx.getBinaryEncodingId(),
-            structWithScalarFieldsEx.getXmlEncodingId(),
-            structWithScalarFieldsEx.getJsonEncodingId()
+            structWithBuiltinScalarFieldsEx.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinScalarFieldsEx, dataTypeTree),
+            structWithBuiltinScalarFieldsEx.getBinaryEncodingId(),
+            structWithBuiltinScalarFieldsEx.getXmlEncodingId(),
+            structWithBuiltinScalarFieldsEx.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
-            structWithArrayFields.getNodeId(),
-            JsonCodecFactory.create(structWithArrayFields, dataTypeTree),
-            structWithArrayFields.getBinaryEncodingId(),
-            structWithArrayFields.getXmlEncodingId(),
-            structWithArrayFields.getJsonEncodingId()
+            structWithBuiltinArrayFields.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinArrayFields, dataTypeTree),
+            structWithBuiltinArrayFields.getBinaryEncodingId(),
+            structWithBuiltinArrayFields.getXmlEncodingId(),
+            structWithBuiltinArrayFields.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
-            structWithArrayFieldsEx.getNodeId(),
-            JsonCodecFactory.create(structWithArrayFieldsEx, dataTypeTree),
-            structWithArrayFieldsEx.getBinaryEncodingId(),
-            structWithArrayFieldsEx.getXmlEncodingId(),
-            structWithArrayFieldsEx.getJsonEncodingId()
+            structWithBuiltinArrayFieldsEx.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinArrayFieldsEx, dataTypeTree),
+            structWithBuiltinArrayFieldsEx.getBinaryEncodingId(),
+            structWithBuiltinArrayFieldsEx.getXmlEncodingId(),
+            structWithBuiltinArrayFieldsEx.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
@@ -168,19 +168,43 @@ public class DynamicEncodingContext extends AbstractEncodingContext {
         );
 
         dataTypeManager.registerType(
-            structWithMatrixFields.getNodeId(),
-            JsonCodecFactory.create(structWithMatrixFields, dataTypeTree),
-            structWithMatrixFields.getBinaryEncodingId(),
-            structWithMatrixFields.getXmlEncodingId(),
-            structWithMatrixFields.getJsonEncodingId()
+            structWithBuiltinMatrixFields.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinMatrixFields, dataTypeTree),
+            structWithBuiltinMatrixFields.getBinaryEncodingId(),
+            structWithBuiltinMatrixFields.getXmlEncodingId(),
+            structWithBuiltinMatrixFields.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
-            structWithMatrixFieldsEx.getNodeId(),
-            JsonCodecFactory.create(structWithMatrixFieldsEx, dataTypeTree),
-            structWithMatrixFieldsEx.getBinaryEncodingId(),
-            structWithMatrixFieldsEx.getXmlEncodingId(),
-            structWithMatrixFieldsEx.getJsonEncodingId()
+            structWithBuiltinMatrixFieldsEx.getNodeId(),
+            JsonCodecFactory.create(structWithBuiltinMatrixFieldsEx, dataTypeTree),
+            structWithBuiltinMatrixFieldsEx.getBinaryEncodingId(),
+            structWithBuiltinMatrixFieldsEx.getXmlEncodingId(),
+            structWithBuiltinMatrixFieldsEx.getJsonEncodingId()
+        );
+
+        dataTypeManager.registerType(
+            structWithStructureScalarFields.getNodeId(),
+            JsonCodecFactory.create(structWithStructureScalarFields, dataTypeTree),
+            structWithStructureScalarFields.getBinaryEncodingId(),
+            structWithStructureScalarFields.getXmlEncodingId(),
+            structWithStructureScalarFields.getJsonEncodingId()
+        );
+
+        dataTypeManager.registerType(
+            structWithStructureArrayFields.getNodeId(),
+            JsonCodecFactory.create(structWithStructureArrayFields, dataTypeTree),
+            structWithStructureArrayFields.getBinaryEncodingId(),
+            structWithStructureArrayFields.getXmlEncodingId(),
+            structWithStructureArrayFields.getJsonEncodingId()
+        );
+
+        dataTypeManager.registerType(
+            structWithStructureMatrixFields.getNodeId(),
+            JsonCodecFactory.create(structWithStructureMatrixFields, dataTypeTree),
+            structWithStructureMatrixFields.getBinaryEncodingId(),
+            structWithStructureMatrixFields.getXmlEncodingId(),
+            structWithStructureMatrixFields.getJsonEncodingId()
         );
 
         dataTypeManager.registerType(
