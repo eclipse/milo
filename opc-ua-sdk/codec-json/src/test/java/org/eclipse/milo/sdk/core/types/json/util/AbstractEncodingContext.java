@@ -318,6 +318,11 @@ public abstract class AbstractEncodingContext implements EncodingContext {
             TestEnumType.TypeInfo.TYPE_ID.toNodeId(getNamespaceTable()).orElseThrow())).thenReturn(true);
         Mockito.when(dataTypeTree.isStructType(NodeIds.XVType)).thenReturn(true);
 
+        Mockito.when(dataTypeTree.getBuiltinType(NodeIds.AccessLevelType)).thenReturn(BuiltinDataType.Byte);
+        Mockito.when(dataTypeTree.getBuiltinType(NodeIds.AccessRestrictionType)).thenReturn(BuiltinDataType.UInt16);
+        Mockito.when(dataTypeTree.getBuiltinType(NodeIds.AccessLevelExType)).thenReturn(BuiltinDataType.UInt32);
+        Mockito.when(dataTypeTree.getBuiltinType(NodeIds.BitFieldMaskDataType)).thenReturn(BuiltinDataType.UInt64);
+
         return dataType;
     }
 

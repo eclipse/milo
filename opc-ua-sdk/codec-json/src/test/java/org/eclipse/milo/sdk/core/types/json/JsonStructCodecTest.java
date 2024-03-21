@@ -30,6 +30,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 import org.eclipse.milo.opcua.test.types.ConcreteTestType;
 import org.eclipse.milo.opcua.test.types.ConcreteTestTypeEx;
@@ -132,7 +135,11 @@ class JsonStructCodecTest {
             new XVType(0.0d, 0.0f),
             new ConcreteTestType((short) 0, 0.0, "", false),
             UnionOfScalar.ofBoolean(false),
-            UnionOfArray.ofBoolean(new Boolean[]{false, false})
+            UnionOfArray.ofBoolean(new Boolean[]{false, false}),
+            AccessLevelType.of(),
+            AccessRestrictionType.of(),
+            AccessLevelExType.of(),
+            ulong(0)
         );
 
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
@@ -225,7 +232,11 @@ class JsonStructCodecTest {
             new UnionOfScalar[]{UnionOfScalar.ofBoolean(false), UnionOfScalar.ofByte(ubyte(0))},
             new UnionOfArray[]{
                 UnionOfArray.ofBoolean(new Boolean[]{false, false}),
-                UnionOfArray.ofSByte(new Byte[]{0, 0})}
+                UnionOfArray.ofSByte(new Byte[]{0, 0})},
+            new AccessLevelType[]{AccessLevelType.of(), AccessLevelType.of()},
+            new AccessRestrictionType[]{AccessRestrictionType.of(), AccessRestrictionType.of()},
+            new AccessLevelExType[]{AccessLevelExType.of(), AccessLevelExType.of()},
+            new ULong[]{ulong(0L), ulong(0L)}
         );
 
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);
@@ -441,7 +452,17 @@ class JsonStructCodecTest {
                 {UnionOfScalar.ofBoolean(false), UnionOfScalar.ofByte(ubyte(0))}}),
             Matrix.ofStruct(new UnionOfArray[][]{
                 {UnionOfArray.ofBoolean(new Boolean[]{false, false}), UnionOfArray.ofSByte(new Byte[]{0, 0})},
-                {UnionOfArray.ofBoolean(new Boolean[]{false, false}), UnionOfArray.ofSByte(new Byte[]{0, 0})}})
+                {UnionOfArray.ofBoolean(new Boolean[]{false, false}), UnionOfArray.ofSByte(new Byte[]{0, 0})}}),
+            Matrix.ofOptionSetUI(new AccessLevelType[][]{
+                {AccessLevelType.of(), AccessLevelType.of()},
+                {AccessLevelType.of(), AccessLevelType.of()}}),
+            Matrix.ofOptionSetUI(new AccessRestrictionType[][]{
+                {AccessRestrictionType.of(), AccessRestrictionType.of()},
+                {AccessRestrictionType.of(), AccessRestrictionType.of()}}),
+            Matrix.ofOptionSetUI(new AccessLevelExType[][]{
+                {AccessLevelExType.of(), AccessLevelExType.of()},
+                {AccessLevelExType.of(), AccessLevelExType.of()}}),
+            Matrix.ofUInt64(new ULong[][]{{ulong(0), ulong(0)}, {ulong(0), ulong(0)}})
         );
 
         var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), struct);

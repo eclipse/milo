@@ -129,9 +129,12 @@ public class StructWithStructureArrayFields extends Structure implements UaStruc
 
         @Override
         public StructWithStructureArrayFields decodeType(EncodingContext context, UaDecoder decoder) {
-            ExtensionObject[] struct1 = decoder.decodeExtensionObjectArray("Struct1");
-            ExtensionObject[] struct2 = decoder.decodeExtensionObjectArray("Struct2");
-            ExtensionObject[] struct3 = decoder.decodeExtensionObjectArray("Struct3");
+            final ExtensionObject[] struct1;
+            final ExtensionObject[] struct2;
+            final ExtensionObject[] struct3;
+            struct1 = decoder.decodeExtensionObjectArray("Struct1");
+            struct2 = decoder.decodeExtensionObjectArray("Struct2");
+            struct3 = decoder.decodeExtensionObjectArray("Struct3");
             return new StructWithStructureArrayFields(struct1, struct2, struct3);
         }
 

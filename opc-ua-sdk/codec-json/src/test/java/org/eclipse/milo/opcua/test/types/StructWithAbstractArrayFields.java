@@ -130,7 +130,9 @@ public class StructWithAbstractArrayFields extends Structure implements UaStruct
 
         @Override
         public StructWithAbstractArrayFields decodeType(EncodingContext context, UaDecoder decoder) {
-            Number[] number = null;
+            final Number[] number;
+            final AbstractTestType[] att1;
+            final AbstractTestType[] att2;
             {
                 Variant[] variants = decoder.decodeVariantArray("Number");
                 if (variants != null) {
@@ -138,9 +140,10 @@ public class StructWithAbstractArrayFields extends Structure implements UaStruct
                     for (int i = 0; i < number.length; i++) {
                         number[i] = (Number) variants[i].getValue();
                     }
+                } else {
+                    number = null;
                 }
             }
-            AbstractTestType[] att1 = null;
             {
                 ExtensionObject[] xos = decoder.decodeExtensionObjectArray("ATT1");
                 if (xos != null) {
@@ -148,9 +151,10 @@ public class StructWithAbstractArrayFields extends Structure implements UaStruct
                     for (int i = 0; i < xos.length; i++) {
                         att1[i] = (AbstractTestType) xos[i].decode(context);
                     }
+                } else {
+                    att1 = null;
                 }
             }
-            AbstractTestType[] att2 = null;
             {
                 ExtensionObject[] xos = decoder.decodeExtensionObjectArray("ATT2");
                 if (xos != null) {
@@ -158,6 +162,8 @@ public class StructWithAbstractArrayFields extends Structure implements UaStruct
                     for (int i = 0; i < xos.length; i++) {
                         att2[i] = (AbstractTestType) xos[i].decode(context);
                     }
+                } else {
+                    att2 = null;
                 }
             }
             return new StructWithAbstractArrayFields(number, att1, att2);

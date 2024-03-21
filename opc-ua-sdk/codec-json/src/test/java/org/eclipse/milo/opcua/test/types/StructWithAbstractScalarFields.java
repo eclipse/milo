@@ -129,17 +129,17 @@ public class StructWithAbstractScalarFields extends Structure implements UaStruc
 
         @Override
         public StructWithAbstractScalarFields decodeType(EncodingContext context, UaDecoder decoder) {
-            Number number;
+            final Number number;
+            final AbstractTestType att1;
+            final AbstractTestType att2;
             {
                 Variant variant = decoder.decodeVariant("Number");
                 number = (Number) variant.getValue();
             }
-            AbstractTestType att1;
             {
                 ExtensionObject xo = decoder.decodeExtensionObject("ATT1");
                 att1 = (AbstractTestType) xo.decode(context);
             }
-            AbstractTestType att2;
             {
                 ExtensionObject xo = decoder.decodeExtensionObject("ATT2");
                 att2 = (AbstractTestType) xo.decode(context);

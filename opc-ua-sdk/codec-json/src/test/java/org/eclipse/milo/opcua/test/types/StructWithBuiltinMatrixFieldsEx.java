@@ -13,8 +13,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
@@ -45,6 +51,14 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
 
     private final @Nullable Matrix unionOfArray;
 
+    private final @Nullable Matrix optionSetUi8;
+
+    private final @Nullable Matrix optionSetUi16;
+
+    private final @Nullable Matrix optionSetUi32;
+
+    private final @Nullable Matrix optionSetUi64;
+
     public StructWithBuiltinMatrixFieldsEx(@Nullable Matrix _boolean, @Nullable Matrix sByte,
                                            @Nullable Matrix _byte, @Nullable Matrix int16, @Nullable Matrix uInt16,
                                            @Nullable Matrix int32, @Nullable Matrix uInt32, @Nullable Matrix int64,
@@ -55,7 +69,8 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
                                            @Nullable Matrix localizedText, @Nullable Matrix dataValue, @Nullable Matrix variant,
                                            @Nullable Matrix duration, @Nullable Matrix applicationType, @Nullable Matrix testEnumType,
                                            @Nullable Matrix xvType, @Nullable Matrix concreteTestType, @Nullable Matrix unionOfScalar,
-                                           @Nullable Matrix unionOfArray) {
+                                           @Nullable Matrix unionOfArray, @Nullable Matrix optionSetUi8, @Nullable Matrix optionSetUi16,
+                                           @Nullable Matrix optionSetUi32, @Nullable Matrix optionSetUi64) {
         super(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         this.duration = duration;
         this.applicationType = applicationType;
@@ -64,6 +79,10 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
         this.concreteTestType = concreteTestType;
         this.unionOfScalar = unionOfScalar;
         this.unionOfArray = unionOfArray;
+        this.optionSetUi8 = optionSetUi8;
+        this.optionSetUi16 = optionSetUi16;
+        this.optionSetUi32 = optionSetUi32;
+        this.optionSetUi64 = optionSetUi64;
     }
 
     @Override
@@ -114,6 +133,22 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
         return unionOfArray;
     }
 
+    public @Nullable Matrix getOptionSetUi8() {
+        return optionSetUi8;
+    }
+
+    public @Nullable Matrix getOptionSetUi16() {
+        return optionSetUi16;
+    }
+
+    public @Nullable Matrix getOptionSetUi32() {
+        return optionSetUi32;
+    }
+
+    public @Nullable Matrix getOptionSetUi64() {
+        return optionSetUi64;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -131,6 +166,10 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
         eqb.append(getConcreteTestType(), that.getConcreteTestType());
         eqb.append(getUnionOfScalar(), that.getUnionOfScalar());
         eqb.append(getUnionOfArray(), that.getUnionOfArray());
+        eqb.append(getOptionSetUi8(), that.getOptionSetUi8());
+        eqb.append(getOptionSetUi16(), that.getOptionSetUi16());
+        eqb.append(getOptionSetUi32(), that.getOptionSetUi32());
+        eqb.append(getOptionSetUi64(), that.getOptionSetUi64());
         return eqb.build();
     }
 
@@ -144,6 +183,10 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
         hcb.append(getConcreteTestType());
         hcb.append(getUnionOfScalar());
         hcb.append(getUnionOfArray());
+        hcb.append(getOptionSetUi8());
+        hcb.append(getOptionSetUi16());
+        hcb.append(getOptionSetUi32());
+        hcb.append(getOptionSetUi64());
         hcb.appendSuper(super.hashCode());
         return hcb.build();
     }
@@ -158,6 +201,10 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
         joiner.add("concreteTestType=" + getConcreteTestType());
         joiner.add("unionOfScalar=" + getUnionOfScalar());
         joiner.add("unionOfArray=" + getUnionOfArray());
+        joiner.add("optionSetUi8=" + getOptionSetUi8());
+        joiner.add("optionSetUi16=" + getOptionSetUi16());
+        joiner.add("optionSetUi32=" + getOptionSetUi32());
+        joiner.add("optionSetUi64=" + getOptionSetUi64());
         return joiner.toString();
     }
 
@@ -196,7 +243,11 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
                 new StructureField("XVType", LocalizedText.NULL_VALUE, new NodeId(0, 12080), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
                 new StructureField("ConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
                 new StructureField("UnionOfScalar", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3020").toNodeId(namespaceTable).orElseThrow(), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
-                new StructureField("UnionOfArray", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3023").toNodeId(namespaceTable).orElseThrow(), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false)
+                new StructureField("UnionOfArray", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3023").toNodeId(namespaceTable).orElseThrow(), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI8", LocalizedText.NULL_VALUE, new NodeId(0, 15031), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI16", LocalizedText.NULL_VALUE, new NodeId(0, 95), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI32", LocalizedText.NULL_VALUE, new NodeId(0, 15406), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI64", LocalizedText.NULL_VALUE, new NodeId(0, 11737), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false)
             }
         );
     }
@@ -209,37 +260,90 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
 
         @Override
         public StructWithBuiltinMatrixFieldsEx decodeType(EncodingContext context, UaDecoder decoder) {
-            Matrix _boolean = decoder.decodeMatrix("Boolean", BuiltinDataType.Boolean);
-            Matrix sByte = decoder.decodeMatrix("SByte", BuiltinDataType.SByte);
-            Matrix _byte = decoder.decodeMatrix("Byte", BuiltinDataType.Byte);
-            Matrix int16 = decoder.decodeMatrix("Int16", BuiltinDataType.Int16);
-            Matrix uInt16 = decoder.decodeMatrix("UInt16", BuiltinDataType.UInt16);
-            Matrix int32 = decoder.decodeMatrix("Int32", BuiltinDataType.Int32);
-            Matrix uInt32 = decoder.decodeMatrix("UInt32", BuiltinDataType.UInt32);
-            Matrix int64 = decoder.decodeMatrix("Int64", BuiltinDataType.Int64);
-            Matrix uInt64 = decoder.decodeMatrix("UInt64", BuiltinDataType.UInt64);
-            Matrix _float = decoder.decodeMatrix("Float", BuiltinDataType.Float);
-            Matrix _double = decoder.decodeMatrix("Double", BuiltinDataType.Double);
-            Matrix string = decoder.decodeMatrix("String", BuiltinDataType.String);
-            Matrix dateTime = decoder.decodeMatrix("DateTime", BuiltinDataType.DateTime);
-            Matrix guid = decoder.decodeMatrix("Guid", BuiltinDataType.Guid);
-            Matrix byteString = decoder.decodeMatrix("ByteString", BuiltinDataType.ByteString);
-            Matrix xmlElement = decoder.decodeMatrix("XmlElement", BuiltinDataType.XmlElement);
-            Matrix nodeId = decoder.decodeMatrix("NodeId", BuiltinDataType.NodeId);
-            Matrix expandedNodeId = decoder.decodeMatrix("ExpandedNodeId", BuiltinDataType.ExpandedNodeId);
-            Matrix statusCode = decoder.decodeMatrix("StatusCode", BuiltinDataType.StatusCode);
-            Matrix qualifiedName = decoder.decodeMatrix("QualifiedName", BuiltinDataType.QualifiedName);
-            Matrix localizedText = decoder.decodeMatrix("LocalizedText", BuiltinDataType.LocalizedText);
-            Matrix dataValue = decoder.decodeMatrix("DataValue", BuiltinDataType.DataValue);
-            Matrix variant = decoder.decodeMatrix("Variant", BuiltinDataType.Variant);
-            Matrix duration = decoder.decodeMatrix("Duration", BuiltinDataType.Double);
-            Matrix applicationType = decoder.decodeEnumMatrix("ApplicationType");
-            Matrix testEnumType = decoder.decodeEnumMatrix("TestEnumType");
-            Matrix xvType = (Matrix) decoder.decodeStructMatrix("XVType", XVType.TYPE_ID);
-            Matrix concreteTestType = (Matrix) decoder.decodeStructMatrix("ConcreteTestType", ConcreteTestType.TYPE_ID);
-            Matrix unionOfScalar = (Matrix) decoder.decodeStructMatrix("UnionOfScalar", UnionOfScalar.TYPE_ID);
-            Matrix unionOfArray = (Matrix) decoder.decodeStructMatrix("UnionOfArray", UnionOfArray.TYPE_ID);
-            return new StructWithBuiltinMatrixFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
+            final Matrix _boolean;
+            final Matrix sByte;
+            final Matrix _byte;
+            final Matrix int16;
+            final Matrix uInt16;
+            final Matrix int32;
+            final Matrix uInt32;
+            final Matrix int64;
+            final Matrix uInt64;
+            final Matrix _float;
+            final Matrix _double;
+            final Matrix string;
+            final Matrix dateTime;
+            final Matrix guid;
+            final Matrix byteString;
+            final Matrix xmlElement;
+            final Matrix nodeId;
+            final Matrix expandedNodeId;
+            final Matrix statusCode;
+            final Matrix qualifiedName;
+            final Matrix localizedText;
+            final Matrix dataValue;
+            final Matrix variant;
+            final Matrix duration;
+            final Matrix applicationType;
+            final Matrix testEnumType;
+            final Matrix xvType;
+            final Matrix concreteTestType;
+            final Matrix unionOfScalar;
+            final Matrix unionOfArray;
+            final Matrix optionSetUi8;
+            final Matrix optionSetUi16;
+            final Matrix optionSetUi32;
+            final Matrix optionSetUi64;
+            _boolean = decoder.decodeMatrix("Boolean", BuiltinDataType.Boolean);
+            sByte = decoder.decodeMatrix("SByte", BuiltinDataType.SByte);
+            _byte = decoder.decodeMatrix("Byte", BuiltinDataType.Byte);
+            int16 = decoder.decodeMatrix("Int16", BuiltinDataType.Int16);
+            uInt16 = decoder.decodeMatrix("UInt16", BuiltinDataType.UInt16);
+            int32 = decoder.decodeMatrix("Int32", BuiltinDataType.Int32);
+            uInt32 = decoder.decodeMatrix("UInt32", BuiltinDataType.UInt32);
+            int64 = decoder.decodeMatrix("Int64", BuiltinDataType.Int64);
+            uInt64 = decoder.decodeMatrix("UInt64", BuiltinDataType.UInt64);
+            _float = decoder.decodeMatrix("Float", BuiltinDataType.Float);
+            _double = decoder.decodeMatrix("Double", BuiltinDataType.Double);
+            string = decoder.decodeMatrix("String", BuiltinDataType.String);
+            dateTime = decoder.decodeMatrix("DateTime", BuiltinDataType.DateTime);
+            guid = decoder.decodeMatrix("Guid", BuiltinDataType.Guid);
+            byteString = decoder.decodeMatrix("ByteString", BuiltinDataType.ByteString);
+            xmlElement = decoder.decodeMatrix("XmlElement", BuiltinDataType.XmlElement);
+            nodeId = decoder.decodeMatrix("NodeId", BuiltinDataType.NodeId);
+            expandedNodeId = decoder.decodeMatrix("ExpandedNodeId", BuiltinDataType.ExpandedNodeId);
+            statusCode = decoder.decodeMatrix("StatusCode", BuiltinDataType.StatusCode);
+            qualifiedName = decoder.decodeMatrix("QualifiedName", BuiltinDataType.QualifiedName);
+            localizedText = decoder.decodeMatrix("LocalizedText", BuiltinDataType.LocalizedText);
+            dataValue = decoder.decodeMatrix("DataValue", BuiltinDataType.DataValue);
+            variant = decoder.decodeMatrix("Variant", BuiltinDataType.Variant);
+            duration = decoder.decodeMatrix("Duration", BuiltinDataType.Double);
+            {
+                Matrix matrix = decoder.decodeEnumMatrix("ApplicationType");
+                applicationType = matrix.transform(i -> ApplicationType.from((Integer) i));
+            }
+            {
+                Matrix matrix = decoder.decodeEnumMatrix("TestEnumType");
+                testEnumType = matrix.transform(i -> TestEnumType.from((Integer) i));
+            }
+            xvType = (Matrix) decoder.decodeStructMatrix("XVType", XVType.TYPE_ID);
+            concreteTestType = (Matrix) decoder.decodeStructMatrix("ConcreteTestType", ConcreteTestType.TYPE_ID);
+            unionOfScalar = (Matrix) decoder.decodeStructMatrix("UnionOfScalar", UnionOfScalar.TYPE_ID);
+            unionOfArray = (Matrix) decoder.decodeStructMatrix("UnionOfArray", UnionOfArray.TYPE_ID);
+            {
+                Matrix matrix = decoder.decodeMatrix("OptionSetUI8", BuiltinDataType.Byte);
+                optionSetUi8 = matrix.transform(i -> new AccessLevelType((UByte) i));
+            }
+            {
+                Matrix matrix = decoder.decodeMatrix("OptionSetUI16", BuiltinDataType.UInt16);
+                optionSetUi16 = matrix.transform(i -> new AccessRestrictionType((UShort) i));
+            }
+            {
+                Matrix matrix = decoder.decodeMatrix("OptionSetUI32", BuiltinDataType.UInt32);
+                optionSetUi32 = matrix.transform(i -> new AccessLevelExType((UInteger) i));
+            }
+            optionSetUi64 = decoder.decodeMatrix("OptionSetUI64", BuiltinDataType.UInt64);
+            return new StructWithBuiltinMatrixFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray, optionSetUi8, optionSetUi16, optionSetUi32, optionSetUi64);
         }
 
         @Override
@@ -275,6 +379,10 @@ public class StructWithBuiltinMatrixFieldsEx extends StructWithBuiltinMatrixFiel
             encoder.encodeStructMatrix("ConcreteTestType", value.getConcreteTestType(), ConcreteTestType.TYPE_ID);
             encoder.encodeStructMatrix("UnionOfScalar", value.getUnionOfScalar(), UnionOfScalar.TYPE_ID);
             encoder.encodeStructMatrix("UnionOfArray", value.getUnionOfArray(), UnionOfArray.TYPE_ID);
+            encoder.encodeMatrix("OptionSetUI8", value.getOptionSetUi8());
+            encoder.encodeMatrix("OptionSetUI16", value.getOptionSetUi16());
+            encoder.encodeMatrix("OptionSetUI32", value.getOptionSetUi32());
+            encoder.encodeMatrix("OptionSetUI64", value.getOptionSetUi64());
         }
     }
 }

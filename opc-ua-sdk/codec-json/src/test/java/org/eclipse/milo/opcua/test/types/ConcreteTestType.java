@@ -111,10 +111,14 @@ public class ConcreteTestType extends AbstractTestType implements UaStructuredTy
 
         @Override
         public ConcreteTestType decodeType(EncodingContext context, UaDecoder decoder) {
-            Short int16Field = decoder.decodeInt16("Int16Field");
-            Double doubleField = decoder.decodeDouble("DoubleField");
-            String stringField = decoder.decodeString("StringField");
-            Boolean booleanField = decoder.decodeBoolean("BooleanField");
+            final Short int16Field;
+            final Double doubleField;
+            final String stringField;
+            final Boolean booleanField;
+            int16Field = decoder.decodeInt16("Int16Field");
+            doubleField = decoder.decodeDouble("DoubleField");
+            stringField = decoder.decodeString("StringField");
+            booleanField = decoder.decodeBoolean("BooleanField");
             return new ConcreteTestType(int16Field, doubleField, stringField, booleanField);
         }
 

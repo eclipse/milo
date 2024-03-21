@@ -171,10 +171,10 @@ public class StructWithOptionalArrayFields extends Structure implements UaStruct
                 new StructureField("OptionalInt32", LocalizedText.NULL_VALUE, new NodeId(0, 6), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), true),
                 new StructureField("String", LocalizedText.NULL_VALUE, new NodeId(0, 12), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
                 new StructureField("OptionalString", LocalizedText.NULL_VALUE, new NodeId(0, 12), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), true),
-                new StructureField("Duration", LocalizedText.NULL_VALUE, new NodeId(0, 290), 1, new UInteger[]{UInteger.valueOf(0)}, UInteger.valueOf(0), false),
-                new StructureField("OptionalDuration", LocalizedText.NULL_VALUE, new NodeId(0, 290), 1, new UInteger[]{UInteger.valueOf(0)}, UInteger.valueOf(0), true),
-                new StructureField("ConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, UInteger.valueOf(0), false),
-                new StructureField("OptionalConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, UInteger.valueOf(0), true)
+                new StructureField("Duration", LocalizedText.NULL_VALUE, new NodeId(0, 290), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("OptionalDuration", LocalizedText.NULL_VALUE, new NodeId(0, 290), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), true),
+                new StructureField("ConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("OptionalConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), true)
             }
         );
     }
@@ -187,26 +187,38 @@ public class StructWithOptionalArrayFields extends Structure implements UaStruct
 
         @Override
         public StructWithOptionalArrayFields decodeType(EncodingContext context, UaDecoder decoder) {
-            long encodingMask = decoder.decodeUInt32("EncodingMask").longValue();
-            Integer[] int32 = decoder.decodeInt32Array("Int32");
-            Integer[] optionalInt32 = null;
+            final Integer[] int32;
+            final Integer[] optionalInt32;
+            final String[] string;
+            final String[] optionalString;
+            final Double[] duration;
+            final Double[] optionalDuration;
+            final ConcreteTestType[] concreteTestType;
+            final ConcreteTestType[] optionalConcreteTestType;
+            final long encodingMask = decoder.decodeUInt32("EncodingMask").longValue();
+            int32 = decoder.decodeInt32Array("Int32");
             if ((encodingMask & (1L << 0)) != 0) {
                 optionalInt32 = decoder.decodeInt32Array("OptionalInt32");
+            } else {
+                optionalInt32 = null;
             }
-            String[] string = decoder.decodeStringArray("String");
-            String[] optionalString = null;
+            string = decoder.decodeStringArray("String");
             if ((encodingMask & (1L << 1)) != 0) {
                 optionalString = decoder.decodeStringArray("OptionalString");
+            } else {
+                optionalString = null;
             }
-            Double[] duration = decoder.decodeDoubleArray("Duration");
-            Double[] optionalDuration = null;
+            duration = decoder.decodeDoubleArray("Duration");
             if ((encodingMask & (1L << 2)) != 0) {
                 optionalDuration = decoder.decodeDoubleArray("OptionalDuration");
+            } else {
+                optionalDuration = null;
             }
-            ConcreteTestType[] concreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("ConcreteTestType", ConcreteTestType.TYPE_ID);
-            ConcreteTestType[] optionalConcreteTestType = null;
+            concreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("ConcreteTestType", ConcreteTestType.TYPE_ID);
             if ((encodingMask & (1L << 3)) != 0) {
                 optionalConcreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("OptionalConcreteTestType", ConcreteTestType.TYPE_ID);
+            } else {
+                optionalConcreteTestType = null;
             }
             return new StructWithOptionalArrayFields(int32, optionalInt32, string, optionalString, duration, optionalDuration, concreteTestType, optionalConcreteTestType);
         }

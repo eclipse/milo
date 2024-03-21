@@ -25,6 +25,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
@@ -55,6 +58,14 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
 
     private final UnionOfArray @Nullable [] unionOfArray;
 
+    private final AccessLevelType @Nullable [] optionSetUi8;
+
+    private final AccessRestrictionType @Nullable [] optionSetUi16;
+
+    private final AccessLevelExType @Nullable [] optionSetUi32;
+
+    private final ULong @Nullable [] optionSetUi64;
+
     public StructWithBuiltinArrayFieldsEx(Boolean @Nullable [] _boolean, Byte @Nullable [] sByte,
                                           UByte @Nullable [] _byte, Short @Nullable [] int16, UShort @Nullable [] uInt16,
                                           Integer @Nullable [] int32, UInteger @Nullable [] uInt32, Long @Nullable [] int64,
@@ -67,7 +78,9 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
                                           Variant @Nullable [] variant, Double @Nullable [] duration,
                                           ApplicationType @Nullable [] applicationType, TestEnumType @Nullable [] testEnumType,
                                           XVType @Nullable [] xvType, ConcreteTestType @Nullable [] concreteTestType,
-                                          UnionOfScalar @Nullable [] unionOfScalar, UnionOfArray @Nullable [] unionOfArray) {
+                                          UnionOfScalar @Nullable [] unionOfScalar, UnionOfArray @Nullable [] unionOfArray,
+                                          AccessLevelType @Nullable [] optionSetUi8, AccessRestrictionType @Nullable [] optionSetUi16,
+                                          AccessLevelExType @Nullable [] optionSetUi32, ULong @Nullable [] optionSetUi64) {
         super(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant);
         this.duration = duration;
         this.applicationType = applicationType;
@@ -76,6 +89,10 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
         this.concreteTestType = concreteTestType;
         this.unionOfScalar = unionOfScalar;
         this.unionOfArray = unionOfArray;
+        this.optionSetUi8 = optionSetUi8;
+        this.optionSetUi16 = optionSetUi16;
+        this.optionSetUi32 = optionSetUi32;
+        this.optionSetUi64 = optionSetUi64;
     }
 
     @Override
@@ -126,6 +143,22 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
         return unionOfArray;
     }
 
+    public AccessLevelType @Nullable [] getOptionSetUi8() {
+        return optionSetUi8;
+    }
+
+    public AccessRestrictionType @Nullable [] getOptionSetUi16() {
+        return optionSetUi16;
+    }
+
+    public AccessLevelExType @Nullable [] getOptionSetUi32() {
+        return optionSetUi32;
+    }
+
+    public ULong @Nullable [] getOptionSetUi64() {
+        return optionSetUi64;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -143,6 +176,10 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
         eqb.append(getConcreteTestType(), that.getConcreteTestType());
         eqb.append(getUnionOfScalar(), that.getUnionOfScalar());
         eqb.append(getUnionOfArray(), that.getUnionOfArray());
+        eqb.append(getOptionSetUi8(), that.getOptionSetUi8());
+        eqb.append(getOptionSetUi16(), that.getOptionSetUi16());
+        eqb.append(getOptionSetUi32(), that.getOptionSetUi32());
+        eqb.append(getOptionSetUi64(), that.getOptionSetUi64());
         return eqb.build();
     }
 
@@ -156,6 +193,10 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
         hcb.append(getConcreteTestType());
         hcb.append(getUnionOfScalar());
         hcb.append(getUnionOfArray());
+        hcb.append(getOptionSetUi8());
+        hcb.append(getOptionSetUi16());
+        hcb.append(getOptionSetUi32());
+        hcb.append(getOptionSetUi64());
         hcb.appendSuper(super.hashCode());
         return hcb.build();
     }
@@ -170,6 +211,10 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
         joiner.add("concreteTestType=" + java.util.Arrays.toString(getConcreteTestType()));
         joiner.add("unionOfScalar=" + java.util.Arrays.toString(getUnionOfScalar()));
         joiner.add("unionOfArray=" + java.util.Arrays.toString(getUnionOfArray()));
+        joiner.add("optionSetUi8=" + java.util.Arrays.toString(getOptionSetUi8()));
+        joiner.add("optionSetUi16=" + java.util.Arrays.toString(getOptionSetUi16()));
+        joiner.add("optionSetUi32=" + java.util.Arrays.toString(getOptionSetUi32()));
+        joiner.add("optionSetUi64=" + java.util.Arrays.toString(getOptionSetUi64()));
         return joiner.toString();
     }
 
@@ -208,7 +253,11 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
                 new StructureField("XVType", LocalizedText.NULL_VALUE, new NodeId(0, 12080), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
                 new StructureField("ConcreteTestType", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3006").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
                 new StructureField("UnionOfScalar", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3020").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
-                new StructureField("UnionOfArray", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3023").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false)
+                new StructureField("UnionOfArray", LocalizedText.NULL_VALUE, ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=3023").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI8", LocalizedText.NULL_VALUE, new NodeId(0, 15031), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI16", LocalizedText.NULL_VALUE, new NodeId(0, 95), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI32", LocalizedText.NULL_VALUE, new NodeId(0, 15406), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false),
+                new StructureField("OptionSetUI64", LocalizedText.NULL_VALUE, new NodeId(0, 11737), 1, new UInteger[]{UInteger.valueOf(3)}, UInteger.valueOf(0), false)
             }
         );
     }
@@ -221,31 +270,64 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
 
         @Override
         public StructWithBuiltinArrayFieldsEx decodeType(EncodingContext context, UaDecoder decoder) {
-            Boolean[] _boolean = decoder.decodeBooleanArray("Boolean");
-            Byte[] sByte = decoder.decodeSByteArray("SByte");
-            UByte[] _byte = decoder.decodeByteArray("Byte");
-            Short[] int16 = decoder.decodeInt16Array("Int16");
-            UShort[] uInt16 = decoder.decodeUInt16Array("UInt16");
-            Integer[] int32 = decoder.decodeInt32Array("Int32");
-            UInteger[] uInt32 = decoder.decodeUInt32Array("UInt32");
-            Long[] int64 = decoder.decodeInt64Array("Int64");
-            ULong[] uInt64 = decoder.decodeUInt64Array("UInt64");
-            Float[] _float = decoder.decodeFloatArray("Float");
-            Double[] _double = decoder.decodeDoubleArray("Double");
-            String[] string = decoder.decodeStringArray("String");
-            DateTime[] dateTime = decoder.decodeDateTimeArray("DateTime");
-            UUID[] guid = decoder.decodeGuidArray("Guid");
-            ByteString[] byteString = decoder.decodeByteStringArray("ByteString");
-            XmlElement[] xmlElement = decoder.decodeXmlElementArray("XmlElement");
-            NodeId[] nodeId = decoder.decodeNodeIdArray("NodeId");
-            ExpandedNodeId[] expandedNodeId = decoder.decodeExpandedNodeIdArray("ExpandedNodeId");
-            StatusCode[] statusCode = decoder.decodeStatusCodeArray("StatusCode");
-            QualifiedName[] qualifiedName = decoder.decodeQualifiedNameArray("QualifiedName");
-            LocalizedText[] localizedText = decoder.decodeLocalizedTextArray("LocalizedText");
-            DataValue[] dataValue = decoder.decodeDataValueArray("DataValue");
-            Variant[] variant = decoder.decodeVariantArray("Variant");
-            Double[] duration = decoder.decodeDoubleArray("Duration");
-            ApplicationType[] applicationType = null;
+            final Boolean[] _boolean;
+            final Byte[] sByte;
+            final UByte[] _byte;
+            final Short[] int16;
+            final UShort[] uInt16;
+            final Integer[] int32;
+            final UInteger[] uInt32;
+            final Long[] int64;
+            final ULong[] uInt64;
+            final Float[] _float;
+            final Double[] _double;
+            final String[] string;
+            final DateTime[] dateTime;
+            final UUID[] guid;
+            final ByteString[] byteString;
+            final XmlElement[] xmlElement;
+            final NodeId[] nodeId;
+            final ExpandedNodeId[] expandedNodeId;
+            final StatusCode[] statusCode;
+            final QualifiedName[] qualifiedName;
+            final LocalizedText[] localizedText;
+            final DataValue[] dataValue;
+            final Variant[] variant;
+            final Double[] duration;
+            final ApplicationType[] applicationType;
+            final TestEnumType[] testEnumType;
+            final XVType[] xvType;
+            final ConcreteTestType[] concreteTestType;
+            final UnionOfScalar[] unionOfScalar;
+            final UnionOfArray[] unionOfArray;
+            final AccessLevelType[] optionSetUi8;
+            final AccessRestrictionType[] optionSetUi16;
+            final AccessLevelExType[] optionSetUi32;
+            final ULong[] optionSetUi64;
+            _boolean = decoder.decodeBooleanArray("Boolean");
+            sByte = decoder.decodeSByteArray("SByte");
+            _byte = decoder.decodeByteArray("Byte");
+            int16 = decoder.decodeInt16Array("Int16");
+            uInt16 = decoder.decodeUInt16Array("UInt16");
+            int32 = decoder.decodeInt32Array("Int32");
+            uInt32 = decoder.decodeUInt32Array("UInt32");
+            int64 = decoder.decodeInt64Array("Int64");
+            uInt64 = decoder.decodeUInt64Array("UInt64");
+            _float = decoder.decodeFloatArray("Float");
+            _double = decoder.decodeDoubleArray("Double");
+            string = decoder.decodeStringArray("String");
+            dateTime = decoder.decodeDateTimeArray("DateTime");
+            guid = decoder.decodeGuidArray("Guid");
+            byteString = decoder.decodeByteStringArray("ByteString");
+            xmlElement = decoder.decodeXmlElementArray("XmlElement");
+            nodeId = decoder.decodeNodeIdArray("NodeId");
+            expandedNodeId = decoder.decodeExpandedNodeIdArray("ExpandedNodeId");
+            statusCode = decoder.decodeStatusCodeArray("StatusCode");
+            qualifiedName = decoder.decodeQualifiedNameArray("QualifiedName");
+            localizedText = decoder.decodeLocalizedTextArray("LocalizedText");
+            dataValue = decoder.decodeDataValueArray("DataValue");
+            variant = decoder.decodeVariantArray("Variant");
+            duration = decoder.decodeDoubleArray("Duration");
             {
                 Integer[] values = decoder.decodeEnumArray("ApplicationType");
                 if (values != null) {
@@ -253,9 +335,10 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
                     for (int i = 0; i < values.length; i++) {
                         applicationType[i] = ApplicationType.from(values[i]);
                     }
+                } else {
+                    applicationType = null;
                 }
             }
-            TestEnumType[] testEnumType = null;
             {
                 Integer[] values = decoder.decodeEnumArray("TestEnumType");
                 if (values != null) {
@@ -263,13 +346,49 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
                     for (int i = 0; i < values.length; i++) {
                         testEnumType[i] = TestEnumType.from(values[i]);
                     }
+                } else {
+                    testEnumType = null;
                 }
             }
-            XVType[] xvType = (XVType[]) decoder.decodeStructArray("XVType", XVType.TYPE_ID);
-            ConcreteTestType[] concreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("ConcreteTestType", ConcreteTestType.TYPE_ID);
-            UnionOfScalar[] unionOfScalar = (UnionOfScalar[]) decoder.decodeStructArray("UnionOfScalar", UnionOfScalar.TYPE_ID);
-            UnionOfArray[] unionOfArray = (UnionOfArray[]) decoder.decodeStructArray("UnionOfArray", UnionOfArray.TYPE_ID);
-            return new StructWithBuiltinArrayFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray);
+            xvType = (XVType[]) decoder.decodeStructArray("XVType", XVType.TYPE_ID);
+            concreteTestType = (ConcreteTestType[]) decoder.decodeStructArray("ConcreteTestType", ConcreteTestType.TYPE_ID);
+            unionOfScalar = (UnionOfScalar[]) decoder.decodeStructArray("UnionOfScalar", UnionOfScalar.TYPE_ID);
+            unionOfArray = (UnionOfArray[]) decoder.decodeStructArray("UnionOfArray", UnionOfArray.TYPE_ID);
+            {
+                UByte[] values = decoder.decodeByteArray("OptionSetUI8");
+                if (values != null) {
+                    optionSetUi8 = new AccessLevelType[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        optionSetUi8[i] = new AccessLevelType(values[i]);
+                    }
+                } else {
+                    optionSetUi8 = null;
+                }
+            }
+            {
+                UShort[] values = decoder.decodeUInt16Array("OptionSetUI16");
+                if (values != null) {
+                    optionSetUi16 = new AccessRestrictionType[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        optionSetUi16[i] = new AccessRestrictionType(values[i]);
+                    }
+                } else {
+                    optionSetUi16 = null;
+                }
+            }
+            {
+                UInteger[] values = decoder.decodeUInt32Array("OptionSetUI32");
+                if (values != null) {
+                    optionSetUi32 = new AccessLevelExType[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        optionSetUi32[i] = new AccessLevelExType(values[i]);
+                    }
+                } else {
+                    optionSetUi32 = null;
+                }
+            }
+            optionSetUi64 = decoder.decodeUInt64Array("OptionSetUI64");
+            return new StructWithBuiltinArrayFieldsEx(_boolean, sByte, _byte, int16, uInt16, int32, uInt32, int64, uInt64, _float, _double, string, dateTime, guid, byteString, xmlElement, nodeId, expandedNodeId, statusCode, qualifiedName, localizedText, dataValue, variant, duration, applicationType, testEnumType, xvType, concreteTestType, unionOfScalar, unionOfArray, optionSetUi8, optionSetUi16, optionSetUi32, optionSetUi64);
         }
 
         @Override
@@ -305,6 +424,37 @@ public class StructWithBuiltinArrayFieldsEx extends StructWithBuiltinArrayFields
             encoder.encodeStructArray("ConcreteTestType", value.getConcreteTestType(), ConcreteTestType.TYPE_ID);
             encoder.encodeStructArray("UnionOfScalar", value.getUnionOfScalar(), UnionOfScalar.TYPE_ID);
             encoder.encodeStructArray("UnionOfArray", value.getUnionOfArray(), UnionOfArray.TYPE_ID);
+            {
+                UByte[] values = null;
+                if (value.getOptionSetUi8() != null) {
+                    values = new UByte[value.getOptionSetUi8().length];
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = value.getOptionSetUi8()[i].getValue();
+                    }
+                }
+                encoder.encodeByteArray("OptionSetUI8", values);
+            }
+            {
+                UShort[] values = null;
+                if (value.getOptionSetUi16() != null) {
+                    values = new UShort[value.getOptionSetUi16().length];
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = value.getOptionSetUi16()[i].getValue();
+                    }
+                }
+                encoder.encodeUInt16Array("OptionSetUI16", values);
+            }
+            {
+                UInteger[] values = null;
+                if (value.getOptionSetUi32() != null) {
+                    values = new UInteger[value.getOptionSetUi32().length];
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = value.getOptionSetUi32()[i].getValue();
+                    }
+                }
+                encoder.encodeUInt32Array("OptionSetUI32", values);
+            }
+            encoder.encodeUInt64Array("OptionSetUI64", value.getOptionSetUi64());
         }
     }
 }

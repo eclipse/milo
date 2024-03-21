@@ -112,11 +112,16 @@ public class ConcreteTestTypeEx extends ConcreteTestType implements UaStructured
 
         @Override
         public ConcreteTestTypeEx decodeType(EncodingContext context, UaDecoder decoder) {
-            Short int16Field = decoder.decodeInt16("Int16Field");
-            Double doubleField = decoder.decodeDouble("DoubleField");
-            String stringField = decoder.decodeString("StringField");
-            Boolean booleanField = decoder.decodeBoolean("BooleanField");
-            UInteger uInt32Field = decoder.decodeUInt32("UInt32Field");
+            final Short int16Field;
+            final Double doubleField;
+            final String stringField;
+            final Boolean booleanField;
+            final UInteger uInt32Field;
+            int16Field = decoder.decodeInt16("Int16Field");
+            doubleField = decoder.decodeDouble("DoubleField");
+            stringField = decoder.decodeString("StringField");
+            booleanField = decoder.decodeBoolean("BooleanField");
+            uInt32Field = decoder.decodeUInt32("UInt32Field");
             return new ConcreteTestTypeEx(int16Field, doubleField, stringField, booleanField, uInt32Field);
         }
 

@@ -186,26 +186,38 @@ public class StructWithOptionalScalarFields extends Structure implements UaStruc
 
         @Override
         public StructWithOptionalScalarFields decodeType(EncodingContext context, UaDecoder decoder) {
-            long encodingMask = decoder.decodeUInt32("EncodingMask").longValue();
-            String string = decoder.decodeString("String");
-            String optionalString = null;
+            final String string;
+            final String optionalString;
+            final Integer int32;
+            final Integer optionalInt32;
+            final Double duration;
+            final Double optionalDuration;
+            final ConcreteTestType concreteTestType;
+            final ConcreteTestType optionalConcreteTestType;
+            final long encodingMask = decoder.decodeUInt32("EncodingMask").longValue();
+            string = decoder.decodeString("String");
             if ((encodingMask & (1L << 0)) != 0) {
                 optionalString = decoder.decodeString("OptionalString");
+            } else {
+                optionalString = null;
             }
-            Integer int32 = decoder.decodeInt32("Int32");
-            Integer optionalInt32 = null;
+            int32 = decoder.decodeInt32("Int32");
             if ((encodingMask & (1L << 1)) != 0) {
                 optionalInt32 = decoder.decodeInt32("OptionalInt32");
+            } else {
+                optionalInt32 = null;
             }
-            Double duration = decoder.decodeDouble("Duration");
-            Double optionalDuration = null;
+            duration = decoder.decodeDouble("Duration");
             if ((encodingMask & (1L << 2)) != 0) {
                 optionalDuration = decoder.decodeDouble("OptionalDuration");
+            } else {
+                optionalDuration = null;
             }
-            ConcreteTestType concreteTestType = (ConcreteTestType) decoder.decodeStruct("ConcreteTestType", ConcreteTestType.TYPE_ID);
-            ConcreteTestType optionalConcreteTestType = null;
+            concreteTestType = (ConcreteTestType) decoder.decodeStruct("ConcreteTestType", ConcreteTestType.TYPE_ID);
             if ((encodingMask & (1L << 3)) != 0) {
                 optionalConcreteTestType = (ConcreteTestType) decoder.decodeStruct("OptionalConcreteTestType", ConcreteTestType.TYPE_ID);
+            } else {
+                optionalConcreteTestType = null;
             }
             return new StructWithOptionalScalarFields(string, optionalString, int32, optionalInt32, duration, optionalDuration, concreteTestType, optionalConcreteTestType);
         }

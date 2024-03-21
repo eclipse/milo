@@ -128,9 +128,12 @@ public class StructWithStructureScalarFields extends Structure implements UaStru
 
         @Override
         public StructWithStructureScalarFields decodeType(EncodingContext context, UaDecoder decoder) {
-            ExtensionObject struct1 = decoder.decodeExtensionObject("Struct1");
-            ExtensionObject struct2 = decoder.decodeExtensionObject("Struct2");
-            ExtensionObject struct3 = decoder.decodeExtensionObject("Struct3");
+            final ExtensionObject struct1;
+            final ExtensionObject struct2;
+            final ExtensionObject struct3;
+            struct1 = decoder.decodeExtensionObject("Struct1");
+            struct2 = decoder.decodeExtensionObject("Struct2");
+            struct3 = decoder.decodeExtensionObject("Struct3");
             return new StructWithStructureScalarFields(struct1, struct2, struct3);
         }
 

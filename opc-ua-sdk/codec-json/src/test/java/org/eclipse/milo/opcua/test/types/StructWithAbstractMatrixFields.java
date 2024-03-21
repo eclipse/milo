@@ -132,17 +132,17 @@ public class StructWithAbstractMatrixFields extends Structure implements UaStruc
 
         @Override
         public StructWithAbstractMatrixFields decodeType(EncodingContext context, UaDecoder decoder) {
-            Matrix number = null;
+            final Matrix number;
+            final Matrix att1;
+            final Matrix att2;
             {
                 Matrix matrix = decoder.decodeMatrix("Number", BuiltinDataType.Variant);
                 number = matrix.transform(v -> ((Variant) v).getValue());
             }
-            Matrix att1;
             {
                 Matrix matrix = decoder.decodeMatrix("ATT1", BuiltinDataType.ExtensionObject);
                 att1 = matrix.transform(v -> ((ExtensionObject) v).decode(context));
             }
-            Matrix att2;
             {
                 Matrix matrix = decoder.decodeMatrix("ATT2", BuiltinDataType.ExtensionObject);
                 att2 = matrix.transform(v -> ((ExtensionObject) v).decode(context));

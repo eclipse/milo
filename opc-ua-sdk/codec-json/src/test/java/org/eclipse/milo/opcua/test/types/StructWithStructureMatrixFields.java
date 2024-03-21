@@ -130,9 +130,12 @@ public class StructWithStructureMatrixFields extends Structure implements UaStru
 
         @Override
         public StructWithStructureMatrixFields decodeType(EncodingContext context, UaDecoder decoder) {
-            Matrix struct1 = decoder.decodeMatrix("Struct1", BuiltinDataType.ExtensionObject);
-            Matrix struct2 = decoder.decodeMatrix("Struct2", BuiltinDataType.ExtensionObject);
-            Matrix struct3 = decoder.decodeMatrix("Struct3", BuiltinDataType.ExtensionObject);
+            final Matrix struct1;
+            final Matrix struct2;
+            final Matrix struct3;
+            struct1 = decoder.decodeMatrix("Struct1", BuiltinDataType.ExtensionObject);
+            struct2 = decoder.decodeMatrix("Struct2", BuiltinDataType.ExtensionObject);
+            struct3 = decoder.decodeMatrix("Struct3", BuiltinDataType.ExtensionObject);
             return new StructWithStructureMatrixFields(struct1, struct2, struct3);
         }
 
