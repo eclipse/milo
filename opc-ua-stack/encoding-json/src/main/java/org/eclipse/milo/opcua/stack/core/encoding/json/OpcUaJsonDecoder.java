@@ -79,6 +79,11 @@ public class OpcUaJsonDecoder implements UaDecoder {
         reset(reader);
     }
 
+    @Override
+    public EncodingContext getEncodingContext() {
+        return context;
+    }
+
     public void reset(Reader reader) {
         jsonReader = new JsonReader(reader);
     }
@@ -1300,8 +1305,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Object decodeStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        DataTypeCodec codec = context.getDataTypeManager()
-            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
         if (codec != null) {
             try {
@@ -1501,8 +1505,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Object[] decodeStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
-        DataTypeCodec codec = context.getDataTypeManager()
-            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(
@@ -1612,8 +1615,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Matrix decodeStructMatrix(String field, NodeId dataTypeId) throws UaSerializationException {
-        DataTypeCodec codec = context.getDataTypeManager()
-            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
         if (codec != null) {
             try {

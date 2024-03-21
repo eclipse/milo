@@ -91,6 +91,11 @@ public class OpcUaXmlDecoder implements UaDecoder {
         }
     }
 
+    @Override
+    public EncodingContext getEncodingContext() {
+        return context;
+    }
+
     public OpcUaXmlDecoder setInput(Document document) {
         this.document = document;
         this.currentNode = document.getFirstChild();
@@ -945,8 +950,7 @@ public class OpcUaXmlDecoder implements UaDecoder {
         if (currentNode(field)) {
             Node node = currentNode;
 
-            DataTypeCodec codec = context.getDataTypeManager()
-                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
             if (codec != null) {
                 try {
@@ -1197,8 +1201,7 @@ public class OpcUaXmlDecoder implements UaDecoder {
         if (currentNode(field)) {
             Node node = currentNode;
 
-            DataTypeCodec codec = context.getDataTypeManager()
-                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(

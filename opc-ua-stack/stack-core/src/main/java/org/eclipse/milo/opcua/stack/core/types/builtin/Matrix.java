@@ -44,16 +44,19 @@ public class Matrix {
     private final Object flatArray;
     private final int[] dimensions;
     private final BuiltinDataType builtinDataType;
+    private final ExpandedNodeId dataTypeId;
 
     public Matrix(@Nullable Object nestedArray) {
         if (nestedArray == null) {
             this.flatArray = null;
             this.dimensions = new int[0];
             this.builtinDataType = null;
+            this.dataTypeId = null;
         } else {
             this.flatArray = ArrayUtil.flatten(nestedArray);
             this.dimensions = ArrayUtil.getDimensions(nestedArray);
             this.builtinDataType = deriveBuiltinType(flatArray);
+            this.dataTypeId = deriveDataTypeId(flatArray);
         }
 
         assert flatArray == null || (dimensions.length > 1 && builtinDataType != null);
@@ -63,6 +66,7 @@ public class Matrix {
         this.flatArray = flatArray;
         this.dimensions = dimensions;
         this.builtinDataType = deriveBuiltinType(flatArray);
+        this.dataTypeId = deriveDataTypeId(flatArray);
 
         assert dimensions.length > 1 && builtinDataType != null;
     }
@@ -71,32 +75,9 @@ public class Matrix {
         this.flatArray = flatArray;
         this.dimensions = dimensions;
         this.builtinDataType = builtinDataType;
+        this.dataTypeId = deriveDataTypeId(flatArray);
 
         assert flatArray != null && dimensions.length > 1 && builtinDataType != null;
-    }
-
-    private static BuiltinDataType deriveBuiltinType(Object flatArray) {
-        Class<?> type = ArrayUtil.getType(flatArray);
-
-        if (UaEnumeratedType.class.isAssignableFrom(type)) {
-            return BuiltinDataType.Int32;
-        } else if (UaStructuredType.class.isAssignableFrom(type)) {
-            return BuiltinDataType.ExtensionObject;
-        } else if (OptionSetUInteger.class.isAssignableFrom(type)) {
-            if (OptionSetUI8.class.isAssignableFrom(type)) {
-                return BuiltinDataType.Byte;
-            } else if (OptionSetUI16.class.isAssignableFrom(type)) {
-                return BuiltinDataType.UInt16;
-            } else if (OptionSetUI32.class.isAssignableFrom(type)) {
-                return BuiltinDataType.UInt32;
-            } else if (OptionSetUI64.class.isAssignableFrom(type)) {
-                return BuiltinDataType.UInt64;
-            } else {
-                throw new RuntimeException("unknown OptionSetUInteger subclass: " + type);
-            }
-        } else {
-            return BuiltinDataType.fromBackingClass(type);
-        }
     }
 
     /**
@@ -139,6 +120,21 @@ public class Matrix {
      */
     public Optional<BuiltinDataType> getBuiltinDataType() {
         return Optional.ofNullable(builtinDataType);
+    }
+
+    /**
+     * Get the {@link ExpandedNodeId} of the DataType of the elements of this Matrix.
+     * <p>
+     * If this Matrix contains elements of {@link UaEnumeratedType} or {@link UaStructuredType}
+     * then the {@link ExpandedNodeId} of the DataType is returned, not its reduction to built-in
+     * types Int32 or ExtensionObject.
+     * <p>
+     * Empty only if this Matrix contains a {@code null} value.
+     *
+     * @return the {@link ExpandedNodeId} of the DataType of the elements of this Matrix.
+     */
+    public Optional<ExpandedNodeId> getDataTypeId() {
+        return Optional.ofNullable(dataTypeId);
     }
 
     /**
@@ -239,6 +235,61 @@ public class Matrix {
         }
 
         return joiner.toString();
+    }
+
+    private static @Nullable BuiltinDataType deriveBuiltinType(Object flatArray) {
+        Class<?> type = ArrayUtil.getType(flatArray);
+
+        return deriveBuiltinType(type);
+    }
+
+    private static @Nullable BuiltinDataType deriveBuiltinType(Class<?> type) {
+        if (UaEnumeratedType.class.isAssignableFrom(type)) {
+            return BuiltinDataType.Int32;
+        } else if (UaStructuredType.class.isAssignableFrom(type)) {
+            return BuiltinDataType.ExtensionObject;
+        } else if (OptionSetUInteger.class.isAssignableFrom(type)) {
+            if (OptionSetUI8.class.isAssignableFrom(type)) {
+                return BuiltinDataType.Byte;
+            } else if (OptionSetUI16.class.isAssignableFrom(type)) {
+                return BuiltinDataType.UInt16;
+            } else if (OptionSetUI32.class.isAssignableFrom(type)) {
+                return BuiltinDataType.UInt32;
+            } else if (OptionSetUI64.class.isAssignableFrom(type)) {
+                return BuiltinDataType.UInt64;
+            } else {
+                throw new RuntimeException("unknown OptionSetUInteger subclass: " + type);
+            }
+        } else {
+            return BuiltinDataType.fromBackingClass(type);
+        }
+    }
+
+    private static @Nullable ExpandedNodeId deriveDataTypeId(Object flatArray) {
+        Class<?> type = ArrayUtil.getType(flatArray);
+
+        if (UaEnumeratedType.class.isAssignableFrom(type)) {
+            Object e = Array.get(flatArray, 0);
+            if (e instanceof UaEnumeratedType) {
+                return ((UaEnumeratedType) e).getTypeId();
+            } else {
+                return null;
+            }
+        } else if (UaStructuredType.class.isAssignableFrom(type)) {
+            Object e = Array.get(flatArray, 0);
+            if (e instanceof UaStructuredType) {
+                return ((UaStructuredType) e).getTypeId();
+            } else {
+                return null;
+            }
+        } else {
+            BuiltinDataType builtinDataType = deriveBuiltinType(type);
+            if (builtinDataType == null) {
+                return null;
+            } else {
+                return builtinDataType.getNodeId().expanded();
+            }
+        }
     }
 
     //region Static factory methods

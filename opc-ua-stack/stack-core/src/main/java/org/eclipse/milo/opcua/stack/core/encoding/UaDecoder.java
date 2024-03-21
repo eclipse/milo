@@ -36,6 +36,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface UaDecoder {
 
+    EncodingContext getEncodingContext();
+
     Boolean decodeBoolean(String field) throws UaSerializationException;
 
     Byte decodeSByte(String field) throws UaSerializationException;

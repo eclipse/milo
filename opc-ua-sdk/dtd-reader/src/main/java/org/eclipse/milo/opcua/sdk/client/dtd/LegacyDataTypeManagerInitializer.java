@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
@@ -34,7 +35,12 @@ public class LegacyDataTypeManagerInitializer implements OpcUaClient.DataTypeMan
     }
 
     @Override
-    public void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) throws UaException {
+    public void initialize(
+        NamespaceTable namespaceTable,
+        DataTypeTree dataTypeTree,
+        DataTypeManager dataTypeManager
+    ) throws UaException {
+        
         List<DataTypeDictionary> dataTypeDictionaries =
             new BinaryDataTypeDictionaryReader(client)
                 .readDataTypeDictionaries(codecFactory);

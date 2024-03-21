@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -83,7 +83,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 if (value != null) {
                     NodeId argDataTypeId = argument.getDataType();
 
-                    NodeId valueDataTypeId = variant.getDataType()
+                    NodeId valueDataTypeId = variant.getDataTypeId()
                         .flatMap(xni -> xni.toNodeId(node.getNodeContext().getNamespaceTable()))
                         .orElse(NodeId.NULL_VALUE);
 
