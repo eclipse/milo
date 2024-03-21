@@ -222,6 +222,14 @@ public class DynamicEncodingContext extends AbstractEncodingContext {
             unionOfArray.getXmlEncodingId(),
             unionOfArray.getJsonEncodingId()
         );
+
+        dataTypeManager.registerType(
+            unionOfMatrix.getNodeId(),
+            JsonCodecFactory.create(unionOfMatrix, dataTypeTree),
+            unionOfMatrix.getBinaryEncodingId(),
+            unionOfMatrix.getXmlEncodingId(),
+            unionOfMatrix.getJsonEncodingId()
+        );
     }
 
 

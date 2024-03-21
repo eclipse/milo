@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.test.types.StructWithStructureArrayFields;
 import org.eclipse.milo.opcua.test.types.StructWithStructureMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithStructureScalarFields;
 import org.eclipse.milo.opcua.test.types.UnionOfArray;
+import org.eclipse.milo.opcua.test.types.UnionOfMatrix;
 import org.eclipse.milo.opcua.test.types.UnionOfScalar;
 
 public class DataTypeInitializer {
@@ -39,6 +40,13 @@ public class DataTypeInitializer {
             UnionOfArray.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             UnionOfArray.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
             UnionOfArray.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
+        );
+        dataTypeManager.registerType(
+            UnionOfMatrix.TYPE_ID.toNodeIdOrThrow(namespaceTable),
+            new UnionOfMatrix.Codec(),
+            UnionOfMatrix.BINARY_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            UnionOfMatrix.XML_ENCODING_ID.toNodeIdOrThrow(namespaceTable),
+            UnionOfMatrix.JSON_ENCODING_ID.toNodeIdOrThrow(namespaceTable)
         );
         dataTypeManager.registerType(
             UnionOfScalar.TYPE_ID.toNodeIdOrThrow(namespaceTable),

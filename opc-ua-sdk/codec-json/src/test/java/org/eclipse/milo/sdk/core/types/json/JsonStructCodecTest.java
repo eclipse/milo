@@ -52,6 +52,7 @@ import org.eclipse.milo.opcua.test.types.StructWithStructureMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithStructureScalarFields;
 import org.eclipse.milo.opcua.test.types.TestEnumType;
 import org.eclipse.milo.opcua.test.types.UnionOfArray;
+import org.eclipse.milo.opcua.test.types.UnionOfMatrix;
 import org.eclipse.milo.opcua.test.types.UnionOfScalar;
 import org.eclipse.milo.sdk.core.types.json.util.DynamicEncodingContext;
 import org.eclipse.milo.sdk.core.types.json.util.StaticEncodingContext;
@@ -567,6 +568,16 @@ class JsonStructCodecTest {
         assertEquals(encoded1, encoded2);
     }
 
+    @ParameterizedTest
+    @MethodSource("unionOfMatrixProvider")
+    void unionOfMatrix(UnionOfMatrix union) {
+        var encoded1 = ExtensionObject.encode(new StaticEncodingContext(), union);
+        JsonStruct decoded = (JsonStruct) encoded1.decode(new DynamicEncodingContext());
+        var encoded2 = ExtensionObject.encode(new DynamicEncodingContext(), decoded);
+
+        assertEquals(encoded1, encoded2);
+    }
+
     private static Stream<Arguments> structWithOptionalScalarFieldsProvider() {
         return Stream.of(
             Arguments.of(
@@ -634,7 +645,7 @@ class JsonStructCodecTest {
         );
     }
 
-    public static Stream<Arguments> unionOfScalarProvider() {
+    private static Stream<Arguments> unionOfScalarProvider() {
         return Stream.of(
             Arguments.of(UnionOfScalar.ofNull()),
             Arguments.of(UnionOfScalar.ofBoolean(false)),
@@ -643,13 +654,22 @@ class JsonStructCodecTest {
         );
     }
 
-    public static Stream<Arguments> unionOfArrayProvider() {
+    private static Stream<Arguments> unionOfArrayProvider() {
         return Stream.of(
             Arguments.of(UnionOfArray.ofNull()),
             Arguments.of(UnionOfArray.ofBoolean(new Boolean[]{false, false})),
             Arguments.of(UnionOfArray.ofSByte(new Byte[]{0, 0})),
             Arguments.of(UnionOfArray.ofByte(new UByte[]{ubyte(0), ubyte(0)})
             )
+        );
+    }
+
+    private static Stream<Arguments> unionOfMatrixProvider() {
+        return Stream.of(
+            Arguments.of(UnionOfMatrix.ofNull()),
+            Arguments.of(UnionOfMatrix.ofBoolean(Matrix.ofBoolean(new Boolean[][]{{false, false}, {false, false}}))),
+            Arguments.of(UnionOfMatrix.ofSByte(Matrix.ofSByte(new Byte[][]{{0, 0}, {0, 0}}))),
+            Arguments.of(UnionOfMatrix.ofByte(Matrix.ofByte(new UByte[][]{{ubyte(0), ubyte(0)}, {ubyte(0), ubyte(0)}})))
         );
     }
 

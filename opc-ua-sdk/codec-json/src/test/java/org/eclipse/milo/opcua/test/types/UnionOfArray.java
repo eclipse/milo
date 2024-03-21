@@ -54,27 +54,27 @@ public class UnionOfArray extends Union {
     }
 
     public Boolean[] asBoolean() {
-        return (java.lang.Boolean[]) value;
+        return (Boolean[]) value;
     }
 
     public Byte[] asSByte() {
-        return (java.lang.Byte[]) value;
+        return (Byte[]) value;
     }
 
     public UByte[] asByte() {
-        return (org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte[]) value;
+        return (UByte[]) value;
     }
 
     public Boolean[] getBoolean() {
-        return (java.lang.Boolean[]) value;
+        return (Boolean[]) value;
     }
 
     public Byte[] getSByte() {
-        return (java.lang.Byte[]) value;
+        return (Byte[]) value;
     }
 
     public UByte[] getByte() {
-        return (org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte[]) value;
+        return (UByte[]) value;
     }
 
     public boolean isBoolean() {
@@ -150,15 +150,18 @@ public class UnionOfArray extends Union {
                 case 0:
                     return UnionOfArray.ofNull();
                 case 1: {
-                    Boolean[] _boolean = decoder.decodeBooleanArray("Boolean");
+                    final Boolean[] _boolean;
+                    _boolean = decoder.decodeBooleanArray("Boolean");
                     return UnionOfArray.ofBoolean(_boolean);
                 }
                 case 2: {
-                    Byte[] sByte = decoder.decodeSByteArray("SByte");
+                    final Byte[] sByte;
+                    sByte = decoder.decodeSByteArray("SByte");
                     return UnionOfArray.ofSByte(sByte);
                 }
                 case 3: {
-                    UByte[] _byte = decoder.decodeByteArray("Byte");
+                    final UByte[] _byte;
+                    _byte = decoder.decodeByteArray("Byte");
                     return UnionOfArray.ofByte(_byte);
                 }
                 default:

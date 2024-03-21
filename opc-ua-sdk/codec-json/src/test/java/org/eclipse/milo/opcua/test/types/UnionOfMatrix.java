@@ -2,6 +2,7 @@ package org.eclipse.milo.opcua.test.types;
 
 import java.util.StringJoiner;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -11,8 +12,8 @@ import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Matrix;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
@@ -20,20 +21,20 @@ import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 import org.eclipse.milo.opcua.stack.core.types.structured.Union;
 
-public class UnionOfScalar extends Union {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=1;i=3020");
+public class UnionOfMatrix extends Union {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=1;i=3038");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5029");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5062");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5031");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5064");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5030");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("ns=1;i=5063");
 
     private final Type type;
 
     private final Object value;
 
-    private UnionOfScalar(Type type, Object value) {
+    private UnionOfMatrix(Type type, Object value) {
         this.type = type;
         this.value = value;
     }
@@ -53,28 +54,28 @@ public class UnionOfScalar extends Union {
         return XML_ENCODING_ID;
     }
 
-    public Boolean asBoolean() {
-        return (Boolean) value;
+    public Matrix asBoolean() {
+        return (Matrix) value;
     }
 
-    public Byte asSByte() {
-        return (Byte) value;
+    public Matrix asSByte() {
+        return (Matrix) value;
     }
 
-    public UByte asByte() {
-        return (UByte) value;
+    public Matrix asByte() {
+        return (Matrix) value;
     }
 
-    public Boolean getBoolean() {
-        return (Boolean) value;
+    public Matrix getBoolean() {
+        return (Matrix) value;
     }
 
-    public Byte getSByte() {
-        return (Byte) value;
+    public Matrix getSByte() {
+        return (Matrix) value;
     }
 
-    public UByte getByte() {
-        return (UByte) value;
+    public Matrix getByte() {
+        return (Matrix) value;
     }
 
     public boolean isBoolean() {
@@ -91,38 +92,38 @@ public class UnionOfScalar extends Union {
 
     @Override
     public String toString() {
-        var joiner = new StringJoiner(", ", UnionOfScalar.class.getSimpleName() + "[", "]");
+        var joiner = new StringJoiner(", ", UnionOfMatrix.class.getSimpleName() + "[", "]");
         joiner.add("_boolean=" + getBoolean());
         joiner.add("sByte=" + getSByte());
         joiner.add("_byte=" + getByte());
         return joiner.toString();
     }
 
-    public static UnionOfScalar ofNull() {
-        return new UnionOfScalar(Type.NULL, null);
+    public static UnionOfMatrix ofNull() {
+        return new UnionOfMatrix(Type.NULL, null);
     }
 
-    public static UnionOfScalar ofBoolean(Boolean value) {
-        return new UnionOfScalar(Type.Boolean, value);
+    public static UnionOfMatrix ofBoolean(Matrix value) {
+        return new UnionOfMatrix(Type.Boolean, value);
     }
 
-    public static UnionOfScalar ofSByte(Byte value) {
-        return new UnionOfScalar(Type.SByte, value);
+    public static UnionOfMatrix ofSByte(Matrix value) {
+        return new UnionOfMatrix(Type.SByte, value);
     }
 
-    public static UnionOfScalar ofByte(UByte value) {
-        return new UnionOfScalar(Type.Byte, value);
+    public static UnionOfMatrix ofByte(Matrix value) {
+        return new UnionOfMatrix(Type.Byte, value);
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {
         return new StructureDefinition(
-            ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=5029").toNodeId(namespaceTable).orElseThrow(),
+            ExpandedNodeId.parse("nsu=https://github.com/eclipse/milo/DataTypeTest;i=5062").toNodeId(namespaceTable).orElseThrow(),
             ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12756").toNodeId(namespaceTable).orElseThrow(),
             StructureType.Union,
             new StructureField[]{
-                new StructureField("Boolean", LocalizedText.NULL_VALUE, new NodeId(0, 1), -1, null, UInteger.valueOf(0), false),
-                new StructureField("SByte", LocalizedText.NULL_VALUE, new NodeId(0, 2), -1, null, UInteger.valueOf(0), false),
-                new StructureField("Byte", LocalizedText.NULL_VALUE, new NodeId(0, 3), -1, null, UInteger.valueOf(0), false)
+                new StructureField("Boolean", LocalizedText.NULL_VALUE, new NodeId(0, 1), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
+                new StructureField("SByte", LocalizedText.NULL_VALUE, new NodeId(0, 2), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false),
+                new StructureField("Byte", LocalizedText.NULL_VALUE, new NodeId(0, 3), 2, new UInteger[]{UInteger.valueOf(2), UInteger.valueOf(2)}, UInteger.valueOf(0), false)
             }
         );
     }
@@ -137,57 +138,57 @@ public class UnionOfScalar extends Union {
         Byte
     }
 
-    public static final class Codec extends GenericDataTypeCodec<UnionOfScalar> {
+    public static final class Codec extends GenericDataTypeCodec<UnionOfMatrix> {
         @Override
-        public Class<UnionOfScalar> getType() {
-            return UnionOfScalar.class;
+        public Class<UnionOfMatrix> getType() {
+            return UnionOfMatrix.class;
         }
 
         @Override
-        public UnionOfScalar decodeType(EncodingContext context, UaDecoder decoder) {
+        public UnionOfMatrix decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger switchValue = decoder.decodeUInt32("SwitchField");
             switch (switchValue.intValue()) {
                 case 0:
-                    return UnionOfScalar.ofNull();
+                    return UnionOfMatrix.ofNull();
                 case 1: {
-                    final Boolean _boolean;
-                    _boolean = decoder.decodeBoolean("Boolean");
-                    return UnionOfScalar.ofBoolean(_boolean);
+                    final Matrix _boolean;
+                    _boolean = decoder.decodeMatrix("Boolean", BuiltinDataType.Boolean);
+                    return UnionOfMatrix.ofBoolean(_boolean);
                 }
                 case 2: {
-                    final Byte sByte;
-                    sByte = decoder.decodeSByte("SByte");
-                    return UnionOfScalar.ofSByte(sByte);
+                    final Matrix sByte;
+                    sByte = decoder.decodeMatrix("SByte", BuiltinDataType.SByte);
+                    return UnionOfMatrix.ofSByte(sByte);
                 }
                 case 3: {
-                    final UByte _byte;
-                    _byte = decoder.decodeByte("Byte");
-                    return UnionOfScalar.ofByte(_byte);
+                    final Matrix _byte;
+                    _byte = decoder.decodeMatrix("Byte", BuiltinDataType.Byte);
+                    return UnionOfMatrix.ofByte(_byte);
                 }
                 default:
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
-                        "unknown field in Union UnionOfScalar: " + switchValue
+                        "unknown field in Union UnionOfMatrix: " + switchValue
                     );
             }
         }
 
         @Override
-        public void encodeType(EncodingContext context, UaEncoder encoder, UnionOfScalar value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, UnionOfMatrix value) {
             encoder.encodeUInt32("SwitchField", Unsigned.uint(value.type.ordinal()));
             switch (value.type) {
                 case NULL:
                     break;
                 case Boolean: {
-                    encoder.encodeBoolean("Boolean", value.getBoolean());
+                    encoder.encodeMatrix("Boolean", value.getBoolean());
                     break;
                 }
                 case SByte: {
-                    encoder.encodeSByte("SByte", value.getSByte());
+                    encoder.encodeMatrix("SByte", value.getSByte());
                     break;
                 }
                 case Byte: {
-                    encoder.encodeByte("Byte", value.getByte());
+                    encoder.encodeMatrix("Byte", value.getByte());
                     break;
                 }
             }

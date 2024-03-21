@@ -44,6 +44,7 @@ import org.eclipse.milo.opcua.test.types.StructWithStructureMatrixFields;
 import org.eclipse.milo.opcua.test.types.StructWithStructureScalarFields;
 import org.eclipse.milo.opcua.test.types.TestEnumType;
 import org.eclipse.milo.opcua.test.types.UnionOfArray;
+import org.eclipse.milo.opcua.test.types.UnionOfMatrix;
 import org.eclipse.milo.opcua.test.types.UnionOfScalar;
 import org.mockito.Mockito;
 
@@ -92,6 +93,7 @@ public abstract class AbstractEncodingContext implements EncodingContext {
 
     protected final DataType unionOfScalar;
     protected final DataType unionOfArray;
+    protected final DataType unionOfMatrix;
 
     public DataTypeTree dataTypeTree = Mockito.mock(DataTypeTree.class);
     public DataTypeManager dataTypeManager = new DefaultDataTypeManager();
@@ -131,6 +133,7 @@ public abstract class AbstractEncodingContext implements EncodingContext {
         structWithStructureMatrixFields = setupStructWithStructureMatrixFields();
         unionOfScalar = setupUnionOfScalar();
         unionOfArray = setupUnionOfArray();
+        unionOfMatrix = setupUnionOfMatrix();
     }
 
     @Override
@@ -757,6 +760,38 @@ public abstract class AbstractEncodingContext implements EncodingContext {
             @Override
             public NodeId getJsonEncodingId() {
                 return UnionOfArray.JSON_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+        };
+
+        Mockito.when(dataTypeTree.getDataType(typeId)).thenReturn(dataType);
+        Mockito.when(dataTypeTree.isStructType(typeId)).thenReturn(true);
+
+        return dataType;
+    }
+
+    protected DataType setupUnionOfMatrix() {
+        NodeId typeId = UnionOfMatrix.TYPE_ID.toNodeId(getNamespaceTable()).orElseThrow();
+
+        var dataType = new AbstractDataType(
+            typeId,
+            new QualifiedName(1, "UnionOfMatrix"),
+            UnionOfMatrix.definition(getNamespaceTable()),
+            false
+        ) {
+
+            @Override
+            public NodeId getBinaryEncodingId() {
+                return UnionOfMatrix.BINARY_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+
+            @Override
+            public NodeId getXmlEncodingId() {
+                return UnionOfMatrix.XML_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
+            }
+
+            @Override
+            public NodeId getJsonEncodingId() {
+                return UnionOfMatrix.JSON_ENCODING_ID.toNodeId(namespaceTable).orElseThrow();
             }
         };
 
