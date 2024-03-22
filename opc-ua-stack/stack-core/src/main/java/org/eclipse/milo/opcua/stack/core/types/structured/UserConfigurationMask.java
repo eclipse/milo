@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,22 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.3">https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class UserConfigurationMask extends OptionSetUI32<UserConfigurationMask.Field> {
     public UserConfigurationMask(UInteger value) {
         super(value);
@@ -53,13 +51,23 @@ public class UserConfigurationMask extends OptionSetUI32<UserConfigurationMask.F
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<UserConfigurationMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static UserConfigurationMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", UserConfigurationMask.class.getSimpleName() + "[", "]");
+        joiner.add("noDelete=" + getNoDelete());
+        joiner.add("disabled=" + getDisabled());
+        joiner.add("noChangeByUser=" + getNoChangeByUser());
+        joiner.add("mustChangePassword=" + getMustChangePassword());
+        return joiner.toString();
+    }
+
+    public static UserConfigurationMask of(UserConfigurationMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -69,7 +77,7 @@ public class UserConfigurationMask extends OptionSetUI32<UserConfigurationMask.F
         return new UserConfigurationMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         NoDelete(0),
 
         Disabled(1),

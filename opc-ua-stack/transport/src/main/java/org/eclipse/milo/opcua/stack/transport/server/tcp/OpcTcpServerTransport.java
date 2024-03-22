@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -43,7 +43,7 @@ public class OpcTcpServerTransport implements OpcServerTransport {
 
     @Override
     public synchronized void bind(ServerApplicationContext applicationContext, InetSocketAddress bindAddress) throws Exception {
-        ServerBootstrap bootstrap = serverBootstrap.getOrCompute(() ->
+        ServerBootstrap bootstrap = serverBootstrap.get(() ->
             new ServerBootstrap()
                 .channel(NioServerSocketChannel.class)
                 .group(config.getEventLoop())

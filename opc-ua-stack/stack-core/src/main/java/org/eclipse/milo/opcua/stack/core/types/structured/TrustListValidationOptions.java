@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,22 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.lang.Override;
+import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.8">https://reference.opcfoundation.org/v105/Core/docs/Part12/7.8.2/#7.8.2.8</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class TrustListValidationOptions extends OptionSetUI32<TrustListValidationOptions.Field> {
     public TrustListValidationOptions(UInteger value) {
         super(value);
@@ -65,13 +63,26 @@ public class TrustListValidationOptions extends OptionSetUI32<TrustListValidatio
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<TrustListValidationOptions.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static TrustListValidationOptions of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", TrustListValidationOptions.class.getSimpleName() + "[", "]");
+        joiner.add("suppressCertificateExpired=" + getSuppressCertificateExpired());
+        joiner.add("suppressHostNameInvalid=" + getSuppressHostNameInvalid());
+        joiner.add("suppressRevocationStatusUnknown=" + getSuppressRevocationStatusUnknown());
+        joiner.add("suppressIssuerCertificateExpired=" + getSuppressIssuerCertificateExpired());
+        joiner.add("suppressIssuerRevocationStatusUnknown=" + getSuppressIssuerRevocationStatusUnknown());
+        joiner.add("checkRevocationStatusOnline=" + getCheckRevocationStatusOnline());
+        joiner.add("checkRevocationStatusOffline=" + getCheckRevocationStatusOffline());
+        return joiner.toString();
+    }
+
+    public static TrustListValidationOptions of(TrustListValidationOptions.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -81,7 +92,7 @@ public class TrustListValidationOptions extends OptionSetUI32<TrustListValidatio
         return new TrustListValidationOptions(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         SuppressCertificateExpired(0),
 
         SuppressHostNameInvalid(1),

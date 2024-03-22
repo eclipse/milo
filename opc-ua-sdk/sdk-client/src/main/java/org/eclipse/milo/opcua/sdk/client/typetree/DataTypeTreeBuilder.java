@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,121 +10,62 @@
 
 package org.eclipse.milo.opcua.sdk.client.typetree;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
-import org.eclipse.milo.opcua.sdk.client.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.Lists.partition;
 
 /**
  * Builds a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
  * {@link NodeIds#BaseDataType}.
  */
-public final class DataTypeTreeBuilder {
+public class DataTypeTreeBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTypeTreeBuilder.class);
 
-    private DataTypeTreeBuilder() {}
-
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
      * {@link NodeIds#BaseDataType}.
      *
      * @param client a connected {@link OpcUaClient}.
      * @return a {@link DataTypeTree}.
-     * @throws UaException if an unrecoverable error occurs while building the tree.
      */
     public static DataTypeTree build(OpcUaClient client) throws UaException {
-        try {
-            return buildAsync(client).get();
-        } catch (InterruptedException e) {
-            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
-        } catch (ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
-    /**
-     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link NodeIds#BaseDataType}.
-     *
-     * @param client  a connected {@link OpcUaClient}.
-     * @param session an active {@link OpcUaSession}.
-     * @return a {@link DataTypeTree}.
-     * @throws UaException if an unrecoverable error occurs while building the tree.
-     */
-    public static DataTypeTree build(OpcUaClient client, OpcUaSession session) throws UaException {
-        try {
-            return buildAsync(client, session).get();
-        } catch (InterruptedException e) {
-            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
-        } catch (ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
-    /**
-     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link NodeIds#BaseDataType}.
-     *
-     * @param client a connected {@link OpcUaClient}.
-     * @return a {@link DataTypeTree}.
-     */
-    public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client) {
-        return client.getSessionAsync().thenCompose(
-            session ->
-                buildAsync(client, session)
-        );
-    }
-
-    /**
-     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link NodeIds#BaseDataType}.
-     *
-     * @param client  a connected {@link OpcUaClient}.
-     * @param session an active {@link OpcUaSession}.
-     * @return a {@link DataTypeTree}.
-     */
-    public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client, OpcUaSession session) {
         Tree<DataType> root = new Tree<>(
             null,
             new ClientDataType(
@@ -133,210 +74,374 @@ public final class DataTypeTreeBuilder {
                 null,
                 null,
                 null,
-                null
+                null,
+                true
             )
         );
 
-        return readNamespaceTable(client, session)
-            .thenCompose(namespaceTable -> addChildren(root, client, session, namespaceTable))
-            .thenApply(u -> new DataTypeTree(root));
+        NamespaceTable namespaceTable = client.readNamespaceTable();
+
+        UInteger[] operationLimits = readOperationLimits(client);
+        UInteger maxNodesPerBrowse = operationLimits[0];
+        UInteger maxNodesPerRead = operationLimits[1];
+
+        addChildren(List.of(root), client, namespaceTable, maxNodesPerBrowse, maxNodesPerRead);
+
+        return new DataTypeTree(root);
     }
 
-    private static CompletableFuture<NamespaceTable> readNamespaceTable(OpcUaClient client, OpcUaSession session) {
-        RequestHeader requestHeader = client.newRequestHeader(
-            session.getAuthenticationToken(),
-            client.getConfig().getRequestTimeout()
-        );
-
-        CompletableFuture<UaResponseMessageType> readFuture = client.getTransport().sendRequestMessage(
-            new ReadRequest(
-                requestHeader,
-                0.0,
-                TimestampsToReturn.Neither,
-                new ReadValueId[]{
-                    new ReadValueId(
-                        NodeIds.Server_NamespaceArray,
-                        AttributeId.Value.uid(),
-                        null,
-                        QualifiedName.NULL_VALUE)}
-            )
-        );
-
-        return readFuture.thenApply(ReadResponse.class::cast).thenApply(response -> {
-            DataValue dataValue = requireNonNull(response.getResults())[0];
-            String[] namespaceUris = (String[]) dataValue.getValue().getValue();
-            NamespaceTable namespaceTable = new NamespaceTable();
-            if (namespaceUris != null) {
-                for (String namespaceUri : namespaceUris) {
-                    namespaceTable.add(namespaceUri);
+    /**
+     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
+     * {@link NodeIds#BaseDataType}.
+     *
+     * @param client a connected {@link OpcUaClient}.
+     * @return a {@link CompletableFuture} that completes successfully with a
+     *     {@link DataTypeTree}, or completes exceptionally if an error occurs.
+     */
+    public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client) {
+        return CompletableFuture.supplyAsync(
+            () -> {
+                try {
+                    return build(client);
+                } catch (UaException e) {
+                    throw new CompletionException(e);
                 }
-            }
-            return namespaceTable;
-        });
+            },
+            client.getTransport().getConfig().getExecutor()
+        );
     }
 
-    private static CompletableFuture<Unit> addChildren(
-        Tree<DataType> tree,
+    private static void addChildren(
+        List<Tree<DataType>> parentTypes,
         OpcUaClient client,
-        OpcUaSession session,
-        NamespaceTable namespaceTable
+        NamespaceTable namespaceTable,
+        UInteger maxNodesPerBrowse,
+        UInteger maxNodesPerRead
     ) {
 
-        CompletableFuture<List<ReferenceDescription>> subtypes = browseSafe(
+        List<List<ReferenceDescription>> parentSubtypes = browseWithOperationLimits(
             client,
-            session,
-            new BrowseDescription(
-                tree.getValue().getNodeId(),
-                BrowseDirection.Forward,
-                NodeIds.HasSubtype,
-                false,
-                uint(NodeClass.DataType.getValue()),
-                uint(BrowseResultMask.All.getValue())
-            )
+            parentTypes.stream()
+                .map(tree -> new BrowseDescription(
+                    tree.getValue().getNodeId(),
+                    BrowseDirection.Forward,
+                    NodeIds.HasSubtype,
+                    true,
+                    uint(NodeClass.DataType.getValue()),
+                    uint(BrowseResultMask.All.getValue())
+                ))
+                .collect(Collectors.toList()),
+            maxNodesPerBrowse
         );
 
-        CompletableFuture<List<DataType>> dataTypesFuture = subtypes.thenCompose(references -> {
-            Stream<CompletableFuture<DataType>> dataTypeFutures =
-                references.stream().map(dataTypeReference -> {
-                    NodeId dataTypeId = dataTypeReference.getNodeId()
+        var childTypes = new ArrayList<Tree<DataType>>();
+
+        for (int i = 0; i < parentTypes.size(); i++) {
+            Tree<DataType> tree = parentTypes.get(i);
+            List<ReferenceDescription> subtypes = parentSubtypes.get(i);
+
+            List<NodeId> dataTypeIds = subtypes.stream()
+                .map(reference ->
+                    reference.getNodeId()
                         .toNodeId(namespaceTable)
-                        .orElse(NodeId.NULL_VALUE);
+                        .orElse(NodeId.NULL_VALUE)
+                )
+                .collect(Collectors.toList());
 
-                    CompletableFuture<List<ReferenceDescription>> encodingsFuture = browseSafe(
-                        client,
-                        session,
-                        new BrowseDescription(
-                            dataTypeId,
-                            BrowseDirection.Forward,
-                            NodeIds.HasEncoding,
-                            false,
-                            uint(NodeClass.Object.getValue()),
-                            uint(BrowseResultMask.All.getValue())
-                        )
-                    );
+            List<List<ReferenceDescription>> encodingReferences = browseEncodings(
+                client,
+                dataTypeIds,
+                maxNodesPerBrowse
+            );
 
-                    CompletableFuture<DataTypeDefinition> dataTypeDefinitionFuture =
-                        readDataTypeDefinition(client, session, dataTypeId);
+            List<Attributes> dataTypeAttributes = readDataTypeAttributes(
+                client,
+                dataTypeIds,
+                maxNodesPerRead
+            );
 
-                    return encodingsFuture.thenCombine(
-                        dataTypeDefinitionFuture,
-                        (encodingReferences, dataTypeDefinition) -> {
-                            NodeId binaryEncodingId = null;
-                            NodeId xmlEncodingId = null;
-                            NodeId jsonEncodingId = null;
+            assert subtypes.size() == dataTypeIds.size() &&
+                subtypes.size() == encodingReferences.size() &&
+                subtypes.size() == dataTypeAttributes.size();
 
-                            for (ReferenceDescription r : encodingReferences) {
-                                if (r.getBrowseName().equals(DataTypeEncoding.BINARY_ENCODING_NAME)) {
-                                    binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                                } else if (r.getBrowseName().equals(DataTypeEncoding.XML_ENCODING_NAME)) {
-                                    xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                                } else if (r.getBrowseName().equals(DataTypeEncoding.JSON_ENCODING_NAME)) {
-                                    jsonEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                                }
-                            }
+            var dataTypes = new ArrayList<ClientDataType>();
 
-                            return new ClientDataType(
-                                dataTypeReference.getBrowseName(),
-                                dataTypeId,
-                                binaryEncodingId,
-                                xmlEncodingId,
-                                jsonEncodingId,
-                                dataTypeDefinition
-                            );
-                        }
-                    );
-                });
+            for (int j = 0; j < subtypes.size(); j++) {
+                QualifiedName browseName = subtypes.get(j).getBrowseName();
+                NodeId dataTypeId = dataTypeIds.get(j);
+                List<ReferenceDescription> encodings = encodingReferences.get(j);
+                DataTypeDefinition dataTypeDefinition = dataTypeAttributes.get(j).definition;
+                Boolean isAbstract = dataTypeAttributes.get(j).isAbstract;
 
-            return FutureUtils.sequence(dataTypeFutures);
-        });
+                NodeId binaryEncodingId = null;
+                NodeId xmlEncodingId = null;
+                NodeId jsonEncodingId = null;
 
-        return dataTypesFuture
-            .thenCompose(dataTypes -> {
-                Stream<CompletableFuture<Unit>> futures = dataTypes.stream()
-                    .map(tree::addChild)
-                    .map(childNode -> addChildren(childNode, client, session, namespaceTable));
+                for (ReferenceDescription r : encodings) {
+                    // Observed multiple servers at IOP using the wrong namespace index...
+                    // Be lenient and also allow matching on the unqualified browse name.
 
-                return FutureUtils.sequence(futures);
-            })
-            .thenApply(v -> Unit.VALUE);
+                    if (r.getBrowseName().equals(DataTypeEncoding.BINARY_ENCODING_NAME) ||
+                        Objects.equals(r.getBrowseName().getName(), "Default Binary")) {
+
+                        binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                    } else if (r.getBrowseName().equals(DataTypeEncoding.XML_ENCODING_NAME) ||
+                        Objects.equals(r.getBrowseName().getName(), "Default XML")) {
+
+                        xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                    } else if (r.getBrowseName().equals(DataTypeEncoding.JSON_ENCODING_NAME) ||
+                        Objects.equals(r.getBrowseName().getName(), "Default JSON")) {
+
+                        jsonEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                    }
+                }
+
+                var dataType = new ClientDataType(
+                    browseName,
+                    dataTypeId,
+                    binaryEncodingId,
+                    xmlEncodingId,
+                    jsonEncodingId,
+                    dataTypeDefinition,
+                    isAbstract
+                );
+
+                dataTypes.add(dataType);
+            }
+
+
+            for (ClientDataType dataType : dataTypes) {
+                Tree<DataType> childNode = tree.addChild(dataType);
+
+                childTypes.add(childNode);
+            }
+        }
+
+        if (!childTypes.isEmpty()) {
+            addChildren(childTypes, client, namespaceTable, maxNodesPerBrowse, maxNodesPerRead);
+        }
     }
 
-    /**
-     * Browse a {@link BrowseDescription} "safely", completing successfully
-     * with an empty List if any exceptions occur.
-     *
-     * @param client            an {@link OpcUaClient}.
-     * @param session           an {@link OpcUaSession}.
-     * @param browseDescription the {@link BrowseDescription}.
-     * @return a List of {@link ReferenceDescription}s obtained by browsing {@code browseDescription}.
-     */
-    private static CompletableFuture<List<ReferenceDescription>> browseSafe(
+    private static List<List<ReferenceDescription>> browse(
         OpcUaClient client,
-        OpcUaSession session,
-        BrowseDescription browseDescription
+        List<BrowseDescription> browseDescriptions
     ) {
 
-        return BrowseHelper.browse(client, session, browseDescription, uint(0))
-            .exceptionally(ex -> Collections.emptyList());
+        if (browseDescriptions.isEmpty()) {
+            return List.of();
+        }
+
+        final List<List<ReferenceDescription>> references = new ArrayList<>();
+
+        try {
+            client.browse(browseDescriptions).forEach(result -> {
+                if (result.getStatusCode().isGood()) {
+                    ReferenceDescription[] rds =
+                        requireNonNullElse(result.getReferences(), new ReferenceDescription[0]);
+                    references.add(List.of(rds));
+                } else {
+                    references.add(List.of());
+                }
+            });
+        } catch (UaException e) {
+            references.addAll(Collections.nCopies(browseDescriptions.size(), List.of()));
+        }
+
+        return references;
     }
 
-    /**
-     * Read the DataTypeDefinition attribute for the DataType Node identified by {@code nodeId}.
-     *
-     * @param client     an {@link OpcUaClient}.
-     * @param session    an {@link OpcUaSession}.
-     * @param dataTypeId the {@link NodeId} of the DataType node.
-     * @return the value of the {@link DataTypeDefinition} attribute for the Node identified by
-     * {@code dataTypeId}. May be {@code null}.
-     */
-    private static CompletableFuture<@Nullable DataTypeDefinition> readDataTypeDefinition(
+    private static List<List<ReferenceDescription>> browseEncodings(
         OpcUaClient client,
-        OpcUaSession session,
-        NodeId dataTypeId
+        List<NodeId> dataTypeIds,
+        UInteger maxNodesPerBrowse
     ) {
 
-        var request = new ReadRequest(
-            client.newRequestHeader(
-                session.getAuthenticationToken(),
-                client.getConfig().getRequestTimeout()
-            ),
-            0.0,
-            TimestampsToReturn.Neither,
-            new ReadValueId[]{
+        List<BrowseDescription> browseDescriptions = dataTypeIds.stream()
+            .map(dataTypeId ->
+                new BrowseDescription(
+                    dataTypeId,
+                    BrowseDirection.Forward,
+                    NodeIds.HasEncoding,
+                    false,
+                    uint(NodeClass.Object.getValue()),
+                    uint(BrowseResultMask.All.getValue())
+                )
+            )
+            .collect(Collectors.toList());
+
+        return browseWithOperationLimits(client, browseDescriptions, maxNodesPerBrowse);
+    }
+
+    private static List<@Nullable Attributes> readDataTypeAttributes(
+        OpcUaClient client,
+        List<NodeId> dataTypeIds,
+        UInteger maxNodesPerRead
+    ) {
+
+        if (dataTypeIds.isEmpty()) {
+            return List.of();
+        }
+
+        var readValueIds = new ArrayList<ReadValueId>();
+
+        for (NodeId dataTypeId : dataTypeIds) {
+            readValueIds.add(
+                new ReadValueId(
+                    dataTypeId,
+                    AttributeId.IsAbstract.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                )
+            );
+            readValueIds.add(
                 new ReadValueId(
                     dataTypeId,
                     AttributeId.DataTypeDefinition.uid(),
                     null,
                     QualifiedName.NULL_VALUE
                 )
+            );
+        }
+
+        var attributes = new ArrayList<Attributes>();
+
+        List<DataValue> values = readWithOperationLimits(client, readValueIds, maxNodesPerRead);
+
+        for (int i = 0; i < values.size(); i += 2) {
+            DataValue isAbstractValue = values.get(i);
+            DataValue definitionValue = values.get(i + 1);
+
+            Boolean isAbstract = false;
+            DataTypeDefinition definition = null;
+
+            if (isAbstractValue.getStatusCode() != null && isAbstractValue.getStatusCode().isGood()) {
+                isAbstract = (Boolean) isAbstractValue.getValue().getValue();
+            }
+
+            if (definitionValue.getStatusCode() != null && definitionValue.getStatusCode().isGood()) {
+                Object o = definitionValue.getValue().getValue();
+                if (o instanceof ExtensionObject) {
+                    Object decoded = ((ExtensionObject) o).decode(
+                        client.getStaticEncodingContext()
+                    );
+
+                    definition = (DataTypeDefinition) decoded;
+                }
+            }
+
+            attributes.add(new Attributes(isAbstract, definition));
+        }
+
+        return attributes;
+    }
+
+    private static class Attributes {
+        final Boolean isAbstract;
+        final DataTypeDefinition definition;
+
+        private Attributes(Boolean isAbstract, DataTypeDefinition definition) {
+            this.isAbstract = isAbstract;
+            this.definition = definition;
+        }
+    }
+
+    private static UInteger[] readOperationLimits(OpcUaClient client) throws UaException {
+        client.getOperationLimits();
+        UInteger[] operationLimits = new UInteger[2];
+        operationLimits[0] = uint(10);
+        operationLimits[1] = uint(100);
+
+        List<DataValue> dataValues = client.readValues(
+            0.0,
+            TimestampsToReturn.Neither,
+            List.of(NodeIds.OperationLimitsType_MaxNodesPerBrowse, NodeIds.OperationLimitsType_MaxNodesPerRead)
+        );
+
+        DataValue maxNodesPerBrowse = dataValues.get(0);
+        if (maxNodesPerBrowse.getStatusCode() != null &&
+            maxNodesPerBrowse.getStatusCode().isGood() &&
+            maxNodesPerBrowse.getValue().getValue() instanceof UInteger) {
+
+            operationLimits[0] = (UInteger) maxNodesPerBrowse.getValue().getValue();
+        }
+
+        DataValue maxNodesPerRead = dataValues.get(1);
+        if (maxNodesPerRead.getStatusCode() != null &&
+            maxNodesPerRead.getStatusCode().isGood() &&
+            dataValues.get(1).getValue().getValue() instanceof UInteger) {
+
+            operationLimits[1] = (UInteger) maxNodesPerRead.getValue().getValue();
+        }
+
+        return operationLimits;
+    }
+
+    private static List<DataValue> readWithOperationLimits(
+        OpcUaClient client,
+        List<ReadValueId> readValueIds,
+        UInteger maxNodesPerRead
+    ) {
+
+        if (readValueIds.isEmpty()) {
+            return List.of();
+        }
+
+        LOGGER.debug("readWithOperationLimits: {}", readValueIds.size());
+
+        int partitionSize = maxNodesPerRead.longValue() > Integer.MAX_VALUE ?
+            Integer.MAX_VALUE :
+            maxNodesPerRead.intValue();
+
+        if (partitionSize == 0) {
+            partitionSize = Integer.MAX_VALUE;
+        }
+
+        var values = new ArrayList<DataValue>();
+
+        partition(readValueIds, partitionSize).forEach(
+            partition -> {
+                try {
+                    ReadResponse response = client.read(0.0, TimestampsToReturn.Neither, partition);
+                    DataValue[] results = response.getResults();
+                    Collections.addAll(values, requireNonNull(results));
+                } catch (UaException e) {
+                    var value = new DataValue(e.getStatusCode());
+                    values.addAll(Collections.nCopies(partition.size(), value));
+                }
             }
         );
 
-        return client.getTransport().sendRequestMessage(request)
-            .thenApply(ReadResponse.class::cast)
-            .thenApply(response -> {
-                DataValue value = requireNonNull(response.getResults())[0];
+        return values;
+    }
 
-                if (value.getStatusCode() != null && value.getStatusCode().isGood()) {
-                    Object o = value.getValue().getValue();
-                    if (o instanceof ExtensionObject) {
-                        Object decoded = ((ExtensionObject) o).decode(
-                            client.getStaticEncodingContext()
-                        );
+    private static List<List<ReferenceDescription>> browseWithOperationLimits(
+        OpcUaClient client,
+        List<BrowseDescription> browseDescriptions,
+        UInteger maxNodesPerBrowse
+    ) {
 
-                        return (DataTypeDefinition) decoded;
-                    } else {
-                        return null;
-                    }
-                } else {
-                    // OPC UA 1.03 and prior servers will return Bad_AttributeIdInvalid
-                    return null;
-                }
-            })
-            .exceptionally(e -> {
-                LOGGER.warn("Error reading DataTypeDefinition for {}", dataTypeId, e);
-                return null;
-            });
+        if (browseDescriptions.isEmpty()) {
+            return List.of();
+        }
+
+        LOGGER.debug("browseWithOperationLimits: {}", browseDescriptions.size());
+
+        int partitionSize = maxNodesPerBrowse.longValue() > Integer.MAX_VALUE ?
+            Integer.MAX_VALUE :
+            maxNodesPerBrowse.intValue();
+
+        if (partitionSize == 0) {
+            partitionSize = Integer.MAX_VALUE;
+        }
+
+        var references = new ArrayList<List<ReferenceDescription>>();
+
+        partition(browseDescriptions, partitionSize).forEach(
+            partition ->
+                references.addAll(browse(client, partition))
+        );
+
+        return references;
     }
 
 }

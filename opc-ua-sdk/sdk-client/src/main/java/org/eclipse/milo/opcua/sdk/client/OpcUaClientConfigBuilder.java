@@ -51,7 +51,6 @@ public class OpcUaClientConfigBuilder {
     private UInteger keepAliveFailuresAllowed = uint(1);
     private UInteger keepAliveInterval = uint(5000);
     private UInteger keepAliveTimeout = uint(5000);
-    private double subscriptionWatchdogMultiplier = 2.0;
 
     public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
         this.applicationName = applicationName;
@@ -123,11 +122,6 @@ public class OpcUaClientConfigBuilder {
         return this;
     }
 
-    public OpcUaClientConfigBuilder setSubscriptionWatchdogMultiplier(double subscriptionWatchdogMultiplier) {
-        this.subscriptionWatchdogMultiplier = subscriptionWatchdogMultiplier;
-        return this;
-    }
-
     public OpcUaClientConfigBuilder setEndpoint(EndpointDescription endpoint) {
         this.endpoint = endpoint;
         return this;
@@ -180,8 +174,7 @@ public class OpcUaClientConfigBuilder {
             identityProvider,
             keepAliveFailuresAllowed,
             keepAliveInterval,
-            keepAliveTimeout,
-            subscriptionWatchdogMultiplier
+            keepAliveTimeout
         );
     }
 
@@ -207,7 +200,6 @@ public class OpcUaClientConfigBuilder {
         private final UInteger keepAliveFailuresAllowed;
         private final UInteger keepAliveInterval;
         private final UInteger keepAliveTimeout;
-        private final double subscriptionWatchdogMultiplier;
 
         OpcUaClientConfigImpl(
             EndpointDescription endpoint,
@@ -228,8 +220,7 @@ public class OpcUaClientConfigBuilder {
             IdentityProvider identityProvider,
             UInteger keepAliveFailuresAllowed,
             UInteger keepAliveInterval,
-            UInteger keepAliveTimeout,
-            double subscriptionWatchdogMultiplier
+            UInteger keepAliveTimeout
         ) {
             this.endpoint = endpoint;
             this.keyPair = keyPair;
@@ -250,7 +241,6 @@ public class OpcUaClientConfigBuilder {
             this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
             this.keepAliveInterval = keepAliveInterval;
             this.keepAliveTimeout = keepAliveTimeout;
-            this.subscriptionWatchdogMultiplier = subscriptionWatchdogMultiplier;
         }
 
         @Override
@@ -346,11 +336,6 @@ public class OpcUaClientConfigBuilder {
         @Override
         public UInteger getKeepAliveTimeout() {
             return keepAliveTimeout;
-        }
-
-        @Override
-        public double getSubscriptionWatchdogMultiplier() {
-            return subscriptionWatchdogMultiplier;
         }
 
     }

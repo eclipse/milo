@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.encoding.xml;
 
 import java.io.StringReader;
 
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,7 +30,7 @@ public class OpcUaXmlDecoderTest {
                 "        </ExtensionObject>\n" +
                 "      </ListOfExtensionObject>\n";
 
-        OpcUaXmlDecoder decoder = new OpcUaXmlDecoder(new TestEncodingContext())
+        OpcUaXmlDecoder decoder = new OpcUaXmlDecoder(DefaultEncodingContext.INSTANCE)
             .setInput(new StringReader(xml));
 
         assertNotNull(decoder.readVariantValue());

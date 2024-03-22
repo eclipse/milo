@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,16 +23,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.4</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@SuperBuilder
-@ToString
 public class PubSubConfiguration2DataType extends PubSubConfigurationDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=23602");
 
@@ -121,6 +117,53 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
 
     public KeyValuePair @Nullable [] getConfigurationProperties() {
         return configurationProperties;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PubSubConfiguration2DataType that = (PubSubConfiguration2DataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.appendSuper(super.equals(object));
+        eqb.append(getSubscribedDataSets(), that.getSubscribedDataSets());
+        eqb.append(getDataSetClasses(), that.getDataSetClasses());
+        eqb.append(getDefaultSecurityKeyServices(), that.getDefaultSecurityKeyServices());
+        eqb.append(getSecurityGroups(), that.getSecurityGroups());
+        eqb.append(getPubSubKeyPushTargets(), that.getPubSubKeyPushTargets());
+        eqb.append(getConfigurationVersion(), that.getConfigurationVersion());
+        eqb.append(getConfigurationProperties(), that.getConfigurationProperties());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getSubscribedDataSets());
+        hcb.append(getDataSetClasses());
+        hcb.append(getDefaultSecurityKeyServices());
+        hcb.append(getSecurityGroups());
+        hcb.append(getPubSubKeyPushTargets());
+        hcb.append(getConfigurationVersion());
+        hcb.append(getConfigurationProperties());
+        hcb.appendSuper(super.hashCode());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubConfiguration2DataType.class.getSimpleName() + "[", "]");
+        joiner.add("subscribedDataSets=" + java.util.Arrays.toString(getSubscribedDataSets()));
+        joiner.add("dataSetClasses=" + java.util.Arrays.toString(getDataSetClasses()));
+        joiner.add("defaultSecurityKeyServices=" + java.util.Arrays.toString(getDefaultSecurityKeyServices()));
+        joiner.add("securityGroups=" + java.util.Arrays.toString(getSecurityGroups()));
+        joiner.add("pubSubKeyPushTargets=" + java.util.Arrays.toString(getPubSubKeyPushTargets()));
+        joiner.add("configurationVersion=" + getConfigurationVersion());
+        joiner.add("configurationProperties=" + java.util.Arrays.toString(getConfigurationProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

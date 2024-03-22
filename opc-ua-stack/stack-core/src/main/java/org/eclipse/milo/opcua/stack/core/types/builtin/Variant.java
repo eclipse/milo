@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -55,13 +55,15 @@ public final class Variant {
         this.value = value;
     }
 
-    public Optional<ExpandedNodeId> getDataType() {
+    public Optional<ExpandedNodeId> getDataTypeId() {
         if (value == null) return Optional.empty();
 
         if (value instanceof UaStructuredType) {
             return Optional.of(((UaStructuredType) value).getTypeId());
         } else if (value instanceof UaEnumeratedType) {
-            return Optional.of(NodeIds.Int32.expanded());
+            return Optional.of(((UaEnumeratedType) value).getTypeId());
+        } else if (value instanceof Matrix) {
+            return ((Matrix) value).getDataTypeId();
         } else {
             Class<?> clazz = value.getClass().isArray() ?
                 ArrayUtil.getType(value) : value.getClass();
@@ -70,6 +72,37 @@ public final class Variant {
 
             return typeId == -1 ?
                 Optional.empty() : Optional.of(new NodeId(0, typeId).expanded());
+        }
+    }
+
+    public Optional<BuiltinDataType> getBuiltinDataType() {
+        if (value == null) {
+            return Optional.empty();
+        }
+
+        Class<?> type = value.getClass().isArray() ?
+            ArrayUtil.getType(value) : value.getClass();
+
+        if (UaEnumeratedType.class.isAssignableFrom(type)) {
+            return Optional.of(BuiltinDataType.Int32);
+        } else if (UaStructuredType.class.isAssignableFrom(type)) {
+            return Optional.of(BuiltinDataType.ExtensionObject);
+        } else if (OptionSetUInteger.class.isAssignableFrom(type)) {
+            if (OptionSetUI8.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.Byte);
+            } else if (OptionSetUI16.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.UInt16);
+            } else if (OptionSetUI32.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.UInt32);
+            } else if (OptionSetUI64.class.isAssignableFrom(type)) {
+                return Optional.of(BuiltinDataType.UInt64);
+            } else {
+                throw new RuntimeException("unknown OptionSetUInteger subclass: " + type);
+            }
+        } else if (Matrix.class.isAssignableFrom(type)) {
+            return ((Matrix) value).getBuiltinDataType();
+        } else {
+            return Optional.ofNullable(BuiltinDataType.fromBackingClass(type));
         }
     }
 
@@ -150,17 +183,20 @@ public final class Variant {
      * @return a new Variant containing {@code value}.
      */
     public static Variant of(@Nullable Object value) {
+        var variant = new Variant(value);
+
         if (value != null) {
             boolean clazzIsArray = value.getClass().isArray();
 
-            Class<?> componentClazz = clazzIsArray ?
+            Class<?> clazz = clazzIsArray ?
                 ArrayUtil.getType(value) : value.getClass();
 
-            checkArgument(clazzIsArray || !Variant.class.equals(componentClazz), "Variant cannot contain Variant");
-            checkArgument(!DiagnosticInfo.class.equals(componentClazz), "Variant cannot contain DiagnosticInfo");
+            checkArgument(clazzIsArray || !Variant.class.equals(clazz), "Variant cannot contain Variant");
+            checkArgument(!DiagnosticInfo.class.equals(clazz), "Variant cannot contain DiagnosticInfo");
+            checkArgument(variant.getBuiltinDataType().isPresent(), "Variant cannot contain %s", value.getClass());
         }
 
-        return new Variant(value);
+        return variant;
     }
 
     /**

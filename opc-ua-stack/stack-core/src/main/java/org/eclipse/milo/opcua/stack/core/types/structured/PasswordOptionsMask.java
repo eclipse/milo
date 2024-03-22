@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,20 +12,16 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part18/5.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class PasswordOptionsMask extends OptionSetUI32<PasswordOptionsMask.Field> {
     public PasswordOptionsMask(UInteger value) {
         super(value);
@@ -73,13 +69,28 @@ public class PasswordOptionsMask extends OptionSetUI32<PasswordOptionsMask.Field
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<PasswordOptionsMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static PasswordOptionsMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PasswordOptionsMask.class.getSimpleName() + "[", "]");
+        joiner.add("supportInitialPasswordChange=" + getSupportInitialPasswordChange());
+        joiner.add("supportDisableUser=" + getSupportDisableUser());
+        joiner.add("supportDisableDeleteForUser=" + getSupportDisableDeleteForUser());
+        joiner.add("supportNoChangeForUser=" + getSupportNoChangeForUser());
+        joiner.add("supportDescriptionForUser=" + getSupportDescriptionForUser());
+        joiner.add("requiresUpperCaseCharacters=" + getRequiresUpperCaseCharacters());
+        joiner.add("requiresLowerCaseCharacters=" + getRequiresLowerCaseCharacters());
+        joiner.add("requiresDigitCharacters=" + getRequiresDigitCharacters());
+        joiner.add("requiresSpecialCharacters=" + getRequiresSpecialCharacters());
+        return joiner.toString();
+    }
+
+    public static PasswordOptionsMask of(PasswordOptionsMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -89,7 +100,7 @@ public class PasswordOptionsMask extends OptionSetUI32<PasswordOptionsMask.Field
         return new PasswordOptionsMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         SupportInitialPasswordChange(0),
 
         SupportDisableUser(1),

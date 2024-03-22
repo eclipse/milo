@@ -72,6 +72,11 @@ public class OpcUaBinaryEncoder implements UaEncoder {
         return this;
     }
 
+    @Override
+    public EncodingContext getEncodingContext() {
+        return context;
+    }
+
     public <T> void encodeArray(T[] values, Consumer<T> write) throws UaSerializationException {
         if (values == null) {
             buffer.writeIntLE(-1);
@@ -620,7 +625,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
 
             if (typeId == -1) {
                 LoggerFactory.getLogger(getClass())
-                    .warn("Not a built-in type: {}", valueClass);
+                    .warn("Not a built-in type: value={}, valueClass={}", value, valueClass, new Exception());
             }
 
             if (value.getClass().isArray() || value instanceof Matrix) {
@@ -949,8 +954,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
     @Override
     public void encodeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         try {
-            DataTypeCodec codec = context.getDataTypeManager()
-                .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
             if (codec != null) {
                 codec.encode(context, this, value);
@@ -1184,7 +1188,7 @@ public class OpcUaBinaryEncoder implements UaEncoder {
             for (int i = 0; i < length; i++) {
                 Object o = Array.get(elements, i);
 
-                encodeValue(o, typeId, false, false, false);
+                encodeValue(o, typeId, false, false, o instanceof OptionSetUInteger);
             }
         }
     }

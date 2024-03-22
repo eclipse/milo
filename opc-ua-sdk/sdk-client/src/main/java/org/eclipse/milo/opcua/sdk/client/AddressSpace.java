@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -469,7 +469,7 @@ public class AddressSpace {
             browseOptions.getReferenceTypeId(),
             browseOptions.isIncludeSubtypes(),
             browseOptions.getNodeClassMask(),
-            uint(BrowseResultMask.All.getValue())
+            browseOptions.getResultMask()
         );
 
         return BrowseHelper.browse(client, browseDescription, browseOptions.getMaxReferencesPerNode());
@@ -610,7 +610,7 @@ public class AddressSpace {
             browseOptions.getReferenceTypeId(),
             browseOptions.isIncludeSubtypes(),
             browseOptions.getNodeClassMask(),
-            uint(BrowseResultMask.All.getValue())
+            browseOptions.getResultMask()
         );
 
         CompletableFuture<List<ReferenceDescription>> browse = BrowseHelper.browse(
@@ -1742,10 +1742,11 @@ public class AddressSpace {
         private final NodeId referenceTypeId;
         private final boolean includeSubtypes;
         private final UInteger nodeClassMask;
+        private final UInteger resultMask;
         private final UInteger maxReferencesPerNode;
 
         public BrowseOptions() {
-            this(BrowseDirection.Forward, NodeIds.HierarchicalReferences, true, uint(0xFF), uint(0));
+            this(BrowseDirection.Forward, NodeIds.HierarchicalReferences, true, uint(0xFF), uint(0x3F), uint(0));
         }
 
         public BrowseOptions(
@@ -1753,6 +1754,7 @@ public class AddressSpace {
             NodeId referenceTypeId,
             boolean includeSubtypes,
             UInteger nodeClassMask,
+            UInteger resultMask,
             UInteger maxReferencesPerNode
         ) {
 
@@ -1760,6 +1762,7 @@ public class AddressSpace {
             this.referenceTypeId = referenceTypeId;
             this.includeSubtypes = includeSubtypes;
             this.nodeClassMask = nodeClassMask;
+            this.resultMask = resultMask;
             this.maxReferencesPerNode = maxReferencesPerNode;
         }
 
@@ -1777,6 +1780,10 @@ public class AddressSpace {
 
         public UInteger getNodeClassMask() {
             return nodeClassMask;
+        }
+
+        public UInteger getResultMask() {
+            return resultMask;
         }
 
         public UInteger getMaxReferencesPerNode() {
@@ -1801,6 +1808,7 @@ public class AddressSpace {
             private NodeId referenceTypeId = NodeIds.HierarchicalReferences;
             private boolean includeSubtypes = true;
             private UInteger nodeClassMask = uint(0xFF);
+            private UInteger resultMask = uint(0x3F);
             private UInteger maxReferencesPerNode = uint(0);
 
             private Builder() {}
@@ -1810,6 +1818,7 @@ public class AddressSpace {
                 this.referenceTypeId = browseOptions.getReferenceTypeId();
                 this.includeSubtypes = browseOptions.isIncludeSubtypes();
                 this.nodeClassMask = browseOptions.getNodeClassMask();
+                this.resultMask = browseOptions.getResultMask();
                 this.maxReferencesPerNode = browseOptions.getMaxReferencesPerNode();
             }
 
@@ -1841,6 +1850,19 @@ public class AddressSpace {
                 return setNodeClassMask(uint(mask));
             }
 
+            public Builder setResultMask(UInteger resultMask) {
+                this.resultMask = resultMask;
+                return this;
+            }
+
+            public Builder setResultMask(Set<BrowseResultMask> resultMasks) {
+                int mask = 0;
+                for (BrowseResultMask result : resultMasks) {
+                    mask |= result.getValue();
+                }
+                return setResultMask(uint(mask));
+            }
+
             public Builder setMaxReferencesPerNode(UInteger maxReferencesPerNode) {
                 this.maxReferencesPerNode = maxReferencesPerNode;
                 return this;
@@ -1852,6 +1874,7 @@ public class AddressSpace {
                     referenceTypeId,
                     includeSubtypes,
                     nodeClassMask,
+                    resultMask,
                     maxReferencesPerNode
                 );
             }

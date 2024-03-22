@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.stack.core.encoding.binary;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.eclipse.milo.opcua.stack.core.encoding.TestEncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelType;
 import org.testng.annotations.BeforeTest;
@@ -29,7 +29,7 @@ public class OpcUaBinaryEncoderTest {
     @BeforeTest
     public void initializeTest() {
         buffer = Unpooled.buffer();
-        writer = new OpcUaBinaryEncoder(new TestEncodingContext()).setBuffer(buffer);
+        writer = new OpcUaBinaryEncoder(DefaultEncodingContext.INSTANCE).setBuffer(buffer);
     }
 
     @Test

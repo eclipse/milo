@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.12/#6.2.12.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class PubSubKeyPushTargetDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=25270");
 
@@ -132,6 +128,57 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
 
     public String @Nullable [] getSecurityGroups() {
         return securityGroups;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        PubSubKeyPushTargetDataType that = (PubSubKeyPushTargetDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getApplicationUri(), that.getApplicationUri());
+        eqb.append(getPushTargetFolder(), that.getPushTargetFolder());
+        eqb.append(getEndpointUrl(), that.getEndpointUrl());
+        eqb.append(getSecurityPolicyUri(), that.getSecurityPolicyUri());
+        eqb.append(getUserTokenType(), that.getUserTokenType());
+        eqb.append(getRequestedKeyCount(), that.getRequestedKeyCount());
+        eqb.append(getRetryInterval(), that.getRetryInterval());
+        eqb.append(getPushTargetProperties(), that.getPushTargetProperties());
+        eqb.append(getSecurityGroups(), that.getSecurityGroups());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getApplicationUri());
+        hcb.append(getPushTargetFolder());
+        hcb.append(getEndpointUrl());
+        hcb.append(getSecurityPolicyUri());
+        hcb.append(getUserTokenType());
+        hcb.append(getRequestedKeyCount());
+        hcb.append(getRetryInterval());
+        hcb.append(getPushTargetProperties());
+        hcb.append(getSecurityGroups());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", PubSubKeyPushTargetDataType.class.getSimpleName() + "[", "]");
+        joiner.add("applicationUri='" + getApplicationUri() + "'");
+        joiner.add("pushTargetFolder=" + java.util.Arrays.toString(getPushTargetFolder()));
+        joiner.add("endpointUrl='" + getEndpointUrl() + "'");
+        joiner.add("securityPolicyUri='" + getSecurityPolicyUri() + "'");
+        joiner.add("userTokenType=" + getUserTokenType());
+        joiner.add("requestedKeyCount=" + getRequestedKeyCount());
+        joiner.add("retryInterval=" + getRetryInterval());
+        joiner.add("pushTargetProperties=" + java.util.Arrays.toString(getPushTargetProperties()));
+        joiner.add("securityGroups=" + java.util.Arrays.toString(getSecurityGroups()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

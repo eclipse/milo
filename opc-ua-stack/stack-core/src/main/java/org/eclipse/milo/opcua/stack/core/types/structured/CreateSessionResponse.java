@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.6.2/#5.6.2.2</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class CreateSessionResponse extends Structure implements UaResponseMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=462");
 
@@ -139,6 +135,60 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
 
     public UInteger getMaxRequestMessageSize() {
         return maxRequestMessageSize;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        CreateSessionResponse that = (CreateSessionResponse) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getResponseHeader(), that.getResponseHeader());
+        eqb.append(getSessionId(), that.getSessionId());
+        eqb.append(getAuthenticationToken(), that.getAuthenticationToken());
+        eqb.append(getRevisedSessionTimeout(), that.getRevisedSessionTimeout());
+        eqb.append(getServerNonce(), that.getServerNonce());
+        eqb.append(getServerCertificate(), that.getServerCertificate());
+        eqb.append(getServerEndpoints(), that.getServerEndpoints());
+        eqb.append(getServerSoftwareCertificates(), that.getServerSoftwareCertificates());
+        eqb.append(getServerSignature(), that.getServerSignature());
+        eqb.append(getMaxRequestMessageSize(), that.getMaxRequestMessageSize());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getResponseHeader());
+        hcb.append(getSessionId());
+        hcb.append(getAuthenticationToken());
+        hcb.append(getRevisedSessionTimeout());
+        hcb.append(getServerNonce());
+        hcb.append(getServerCertificate());
+        hcb.append(getServerEndpoints());
+        hcb.append(getServerSoftwareCertificates());
+        hcb.append(getServerSignature());
+        hcb.append(getMaxRequestMessageSize());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", CreateSessionResponse.class.getSimpleName() + "[", "]");
+        joiner.add("responseHeader=" + getResponseHeader());
+        joiner.add("sessionId=" + getSessionId());
+        joiner.add("authenticationToken=" + getAuthenticationToken());
+        joiner.add("revisedSessionTimeout=" + getRevisedSessionTimeout());
+        joiner.add("serverNonce=" + getServerNonce());
+        joiner.add("serverCertificate=" + getServerCertificate());
+        joiner.add("serverEndpoints=" + java.util.Arrays.toString(getServerEndpoints()));
+        joiner.add("serverSoftwareCertificates=" + java.util.Arrays.toString(getServerSoftwareCertificates()));
+        joiner.add("serverSignature=" + getServerSignature());
+        joiner.add("maxRequestMessageSize=" + getMaxRequestMessageSize());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

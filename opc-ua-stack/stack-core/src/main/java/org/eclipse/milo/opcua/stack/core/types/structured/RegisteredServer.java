@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.32">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.32</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class RegisteredServer extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=432");
 
@@ -124,6 +120,54 @@ public class RegisteredServer extends Structure implements UaStructuredType {
 
     public Boolean getIsOnline() {
         return isOnline;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        RegisteredServer that = (RegisteredServer) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getServerUri(), that.getServerUri());
+        eqb.append(getProductUri(), that.getProductUri());
+        eqb.append(getServerNames(), that.getServerNames());
+        eqb.append(getServerType(), that.getServerType());
+        eqb.append(getGatewayServerUri(), that.getGatewayServerUri());
+        eqb.append(getDiscoveryUrls(), that.getDiscoveryUrls());
+        eqb.append(getSemaphoreFilePath(), that.getSemaphoreFilePath());
+        eqb.append(getIsOnline(), that.getIsOnline());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getServerUri());
+        hcb.append(getProductUri());
+        hcb.append(getServerNames());
+        hcb.append(getServerType());
+        hcb.append(getGatewayServerUri());
+        hcb.append(getDiscoveryUrls());
+        hcb.append(getSemaphoreFilePath());
+        hcb.append(getIsOnline());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", RegisteredServer.class.getSimpleName() + "[", "]");
+        joiner.add("serverUri='" + getServerUri() + "'");
+        joiner.add("productUri='" + getProductUri() + "'");
+        joiner.add("serverNames=" + java.util.Arrays.toString(getServerNames()));
+        joiner.add("serverType=" + getServerType());
+        joiner.add("gatewayServerUri='" + getGatewayServerUri() + "'");
+        joiner.add("discoveryUrls=" + java.util.Arrays.toString(getDiscoveryUrls()));
+        joiner.add("semaphoreFilePath='" + getSemaphoreFilePath() + "'");
+        joiner.add("isOnline=" + getIsOnline());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

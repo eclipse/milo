@@ -12,14 +12,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.testng.Assert.assertEquals;
 
 public class ApplicationDescriptionTest {
 
     @Test
-    public void testApplicationDescriptionEquals() {
+    public void testEqualsAndHashCode() {
         ApplicationDescription applicationDescription1 = new ApplicationDescription(
             "applicationUri",
             "productUri",
@@ -41,6 +41,7 @@ public class ApplicationDescriptionTest {
         );
 
         assertEquals(applicationDescription1, applicationDescription2);
+        assertEquals(applicationDescription1.hashCode(), applicationDescription2.hashCode());
     }
 
 }

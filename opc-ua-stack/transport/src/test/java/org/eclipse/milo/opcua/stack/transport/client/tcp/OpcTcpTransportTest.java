@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,21 +22,15 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
+import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
-import org.eclipse.milo.opcua.stack.core.encoding.EncodingManager;
-import org.eclipse.milo.opcua.stack.core.encoding.OpcUaEncodingManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -123,7 +117,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public EncodingContext getEncodingContext() {
-                return new DefaultEncodingContext();
+                return DefaultEncodingContext.INSTANCE;
             }
 
             @Override
@@ -189,7 +183,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public EncodingContext getEncodingContext() {
-                return new DefaultEncodingContext();
+                return DefaultEncodingContext.INSTANCE;
             }
 
             @Override
@@ -253,7 +247,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public EncodingContext getEncodingContext() {
-                return new DefaultEncodingContext();
+                return DefaultEncodingContext.INSTANCE;
             }
 
             @Override
@@ -288,13 +282,13 @@ class OpcTcpTransportTest extends SecurityFixture {
 
         var request = new CreateSessionRequest(
             header,
-            ApplicationDescription.builder()
-                .applicationName(LocalizedText.NULL_VALUE)
-                .applicationUri("")
-                .applicationType(ApplicationType.Client)
-                .productUri("")
-                .applicationUri("")
-                .build(),
+            new ApplicationDescription(
+                "",
+                "",
+                LocalizedText.NULL_VALUE,
+                ApplicationType.Client,
+                null, null, null
+            ),
             null,
             "opc.tcp://localhost:12685",
             "sessionName",
@@ -324,7 +318,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public EncodingContext getEncodingContext() {
-                return new DefaultEncodingContext();
+                return DefaultEncodingContext.INSTANCE;
             }
 
             @Override
@@ -406,38 +400,6 @@ class OpcTcpTransportTest extends SecurityFixture {
             TransportProfile.TCP_UASC_UABINARY.getUri(),
             ubyte(0)
         );
-    }
-
-    private static class DefaultEncodingContext implements EncodingContext {
-
-        private final NamespaceTable namespaceTable = new NamespaceTable();
-        private final ServerTable serverTable = new ServerTable();
-
-        @Override
-        public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
-        }
-
-        @Override
-        public EncodingManager getEncodingManager() {
-            return OpcUaEncodingManager.getInstance();
-        }
-
-        @Override
-        public EncodingLimits getEncodingLimits() {
-            return EncodingLimits.DEFAULT;
-        }
-
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceTable;
-        }
-
-        @Override
-        public ServerTable getServerTable() {
-            return serverTable;
-        }
-
     }
 
 }

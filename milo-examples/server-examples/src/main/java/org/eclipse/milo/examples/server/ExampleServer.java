@@ -190,7 +190,7 @@ public class ExampleServer {
 
         var hostnames = new LinkedHashSet<String>();
         hostnames.add(HostnameUtil.getHostname());
-        hostnames.addAll(HostnameUtil.getHostnames("0.0.0.0"));
+        hostnames.addAll(HostnameUtil.getHostnames("0.0.0.0", true, false));
 
         for (String bindAddress : bindAddresses) {
             for (String hostname : hostnames) {

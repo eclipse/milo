@@ -49,7 +49,6 @@ public class OpcUaClientConfigTest {
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
             .setSessionLocaleIds(new String[]{"en", "es"})
-            .setSubscriptionWatchdogMultiplier(1.25)
             .build();
 
         OpcUaClientConfig copy = OpcUaClientConfig.copy(original).build();
@@ -63,7 +62,6 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getKeepAliveInterval(), original.getKeepAliveInterval());
         assertEquals(copy.getKeepAliveTimeout(), original.getKeepAliveTimeout());
         assertEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
-        assertEquals(copy.getSubscriptionWatchdogMultiplier(), original.getSubscriptionWatchdogMultiplier());
     }
 
     @Test
@@ -75,7 +73,6 @@ public class OpcUaClientConfigTest {
             .setMaxResponseMessageSize(UInteger.MAX)
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
-            .setSubscriptionWatchdogMultiplier(3.0)
             .build();
 
         OpcUaClientConfig copy = OpcUaClientConfig.copy(original,
@@ -102,7 +99,6 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getKeepAliveInterval(), uint(10000));
         assertEquals(copy.getKeepAliveTimeout(), uint(15000));
         assertEquals(copy.getSessionLocaleIds(), new String[]{"en", "es"});
-        assertEquals(copy.getSubscriptionWatchdogMultiplier(), 3.0);
     }
 
 }

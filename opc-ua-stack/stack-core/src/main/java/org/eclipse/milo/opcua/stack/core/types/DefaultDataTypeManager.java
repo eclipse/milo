@@ -22,6 +22,12 @@ import org.jetbrains.annotations.Nullable;
 public class DefaultDataTypeManager implements DataTypeManager {
 
     /**
+     * K = NodeId of DataType
+     * V = DataTypeCodec
+     */
+    private final Map<NodeId, DataTypeCodec> codecsByDataTypeId = new ConcurrentHashMap<>();
+
+    /**
      * K = NodeId of DataType Encoding
      * V = DataTypeCodec
      */
@@ -58,6 +64,8 @@ public class DefaultDataTypeManager implements DataTypeManager {
         @Nullable NodeId jsonEncodingId
     ) {
 
+        codecsByDataTypeId.put(dataTypeId, codec);
+
         if (binaryEncodingId != null && binaryEncodingId.isNotNull()) {
             putCodecForEncoding(DataTypeEncoding.BINARY_ENCODING_NAME, dataTypeId, codec);
             putEncodingIdForEncoding(DataTypeEncoding.BINARY_ENCODING_NAME, dataTypeId, binaryEncodingId);
@@ -76,15 +84,11 @@ public class DefaultDataTypeManager implements DataTypeManager {
     }
 
     @Override
-    public @Nullable DataTypeCodec getCodec(NodeId encodingId) {
-        return codecsByEncodingId.get(encodingId);
-    }
-
-    @Override
-    public @Nullable DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId) {
-        Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.get(encodingName);
-
-        return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
+    public @Nullable DataTypeCodec getCodec(NodeId id) {
+        return codecsByEncodingId.getOrDefault(
+            id,
+            codecsByDataTypeId.get(id)
+        );
     }
 
     @Override

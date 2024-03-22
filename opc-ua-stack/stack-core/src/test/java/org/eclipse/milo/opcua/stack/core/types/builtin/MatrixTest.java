@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Arrays;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ThreeDVector;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,8 +23,14 @@ class MatrixTest {
     private final int[][] primitiveInt2d = {{1, 2}, {3, 4}};
     private final Integer[][] boxedInt2d = {{1, 2}, {3, 4}};
 
+    private final ThreeDVector[][] vectors2d = {
+        {new ThreeDVector(1.0, 2.0, 3.0), new ThreeDVector(4.0, 5.0, 6.0)},
+        {new ThreeDVector(7.0, 8.0, 9.0), new ThreeDVector(10.0, 11.0, 12.0)}
+    };
+
     private final Matrix primitiveMatrix2d = new Matrix(primitiveInt2d);
     private final Matrix boxedMatrix2d = new Matrix(boxedInt2d);
+    private final Matrix vectorMatrix2d = new Matrix(vectors2d);
 
     @Test
     void transform() {
@@ -66,6 +74,18 @@ class MatrixTest {
             "Matrix{builtinDataType=Int32, dimensions=[2, 2], flatArray=[1, 2, 3, 4]}", primitiveMatrix2d.toString());
         assertEquals(
             "Matrix{builtinDataType=Int32, dimensions=[2, 2], flatArray=[1, 2, 3, 4]}", boxedMatrix2d.toString());
+    }
+
+    @Test
+    void getBuiltinDataType() {
+        assertEquals(BuiltinDataType.Int32, primitiveMatrix2d.getBuiltinDataType().orElse(null));
+        assertEquals(BuiltinDataType.ExtensionObject, vectorMatrix2d.getBuiltinDataType().orElse(null));
+    }
+
+    @Test
+    void getDataTypeId() {
+        assertEquals(BuiltinDataType.Int32.getNodeId().expanded(), primitiveMatrix2d.getDataTypeId().orElse(null));
+        assertEquals(ThreeDVector.TYPE_ID, vectorMatrix2d.getDataTypeId().orElse(null));
     }
 
 }

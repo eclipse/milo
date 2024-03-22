@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
@@ -50,6 +51,7 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultSessionServiceS
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultSubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
+import org.eclipse.milo.opcua.sdk.server.typetree.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
@@ -122,6 +124,8 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final Lazy<DataTypeTree> dataTypeTree = new Lazy<>();
 
     private final DataTypeManager dataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
@@ -373,6 +377,15 @@ public class OpcUaServer extends AbstractServiceHandler {
         return variableTypeManager;
     }
 
+    /**
+     * Get the Server's {@link DataTypeTree}.
+     *
+     * @return the Server's {@link DataTypeTree}.
+     */
+    public DataTypeTree getDataTypeTree() {
+        return dataTypeTree.get(() -> DataTypeTreeBuilder.build(this));
+    }
+
     public Set<NodeId> getRegisteredViews() {
         return registeredViews;
     }
@@ -478,24 +491,39 @@ public class OpcUaServer extends AbstractServiceHandler {
             ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
 
             if (serviceHandler != null) {
-                logger.trace(
-                    "Service request received: path={} handle={} service={} remote={}",
-                    path,
-                    requestMessage.getRequestHeader().getRequestHandle(),
-                    service,
-                    context.getChannel().remoteAddress()
-                );
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                        "Service request received: path={} handle={} service={} remote={}",
+                        path,
+                        requestMessage.getRequestHeader().getRequestHandle(),
+                        service,
+                        context.getChannel().remoteAddress()
+                    );
+                }
 
                 return serviceHandler.handle(context, requestMessage).whenComplete(
-                    (r, ex) ->
-                        logger.trace(
-                            "Service request completed: path={} handle={} service={} remote={}",
-                            path,
-                            requestMessage.getRequestHeader().getRequestHandle(),
-                            service,
-                            context.getChannel().remoteAddress(),
-                            ex
-                        )
+                    (r, ex) -> {
+                        if (ex == null) {
+                            if (logger.isTraceEnabled()) {
+                                logger.trace(
+                                    "Service request completed: path={} handle={} service={} remote={}",
+                                    path,
+                                    requestMessage.getRequestHeader().getRequestHandle(),
+                                    service,
+                                    context.getChannel().remoteAddress()
+                                );
+                            }
+                        } else {
+                            logger.warn(
+                                "Service request completed exceptionally: path={} handle={} service={} remote={}",
+                                path,
+                                requestMessage.getRequestHeader().getRequestHandle(),
+                                service,
+                                context.getChannel().remoteAddress(),
+                                ex
+                            );
+                        }
+                    }
                 );
             } else {
                 logger.warn("No ServiceHandler registered for path={} service={}", path, service);
@@ -565,7 +593,7 @@ public class OpcUaServer extends AbstractServiceHandler {
 
 
         private ApplicationDescription getApplicationDescription() {
-            return applicationDescription.getOrCompute(() -> {
+            return applicationDescription.get(() -> {
                 List<String> discoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfig::getEndpointUrl)

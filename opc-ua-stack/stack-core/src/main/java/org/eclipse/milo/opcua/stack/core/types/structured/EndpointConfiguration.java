@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -24,12 +23,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class EndpointConfiguration extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=331");
 
@@ -126,6 +122,57 @@ public class EndpointConfiguration extends Structure implements UaStructuredType
 
     public Integer getSecurityTokenLifetime() {
         return securityTokenLifetime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        EndpointConfiguration that = (EndpointConfiguration) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getOperationTimeout(), that.getOperationTimeout());
+        eqb.append(getUseBinaryEncoding(), that.getUseBinaryEncoding());
+        eqb.append(getMaxStringLength(), that.getMaxStringLength());
+        eqb.append(getMaxByteStringLength(), that.getMaxByteStringLength());
+        eqb.append(getMaxArrayLength(), that.getMaxArrayLength());
+        eqb.append(getMaxMessageSize(), that.getMaxMessageSize());
+        eqb.append(getMaxBufferSize(), that.getMaxBufferSize());
+        eqb.append(getChannelLifetime(), that.getChannelLifetime());
+        eqb.append(getSecurityTokenLifetime(), that.getSecurityTokenLifetime());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getOperationTimeout());
+        hcb.append(getUseBinaryEncoding());
+        hcb.append(getMaxStringLength());
+        hcb.append(getMaxByteStringLength());
+        hcb.append(getMaxArrayLength());
+        hcb.append(getMaxMessageSize());
+        hcb.append(getMaxBufferSize());
+        hcb.append(getChannelLifetime());
+        hcb.append(getSecurityTokenLifetime());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", EndpointConfiguration.class.getSimpleName() + "[", "]");
+        joiner.add("operationTimeout=" + getOperationTimeout());
+        joiner.add("useBinaryEncoding=" + getUseBinaryEncoding());
+        joiner.add("maxStringLength=" + getMaxStringLength());
+        joiner.add("maxByteStringLength=" + getMaxByteStringLength());
+        joiner.add("maxArrayLength=" + getMaxArrayLength());
+        joiner.add("maxMessageSize=" + getMaxMessageSize());
+        joiner.add("maxBufferSize=" + getMaxBufferSize());
+        joiner.add("channelLifetime=" + getChannelLifetime());
+        joiner.add("securityTokenLifetime=" + getSecurityTokenLifetime());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.StringJoiner;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -25,16 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.5.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.4/#6.2.4.5.1</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class DataSetWriterDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15597");
 
@@ -132,6 +128,57 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
 
     public DataSetWriterMessageDataType getMessageSettings() {
         return messageSettings;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        DataSetWriterDataType that = (DataSetWriterDataType) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getEnabled(), that.getEnabled());
+        eqb.append(getDataSetWriterId(), that.getDataSetWriterId());
+        eqb.append(getDataSetFieldContentMask(), that.getDataSetFieldContentMask());
+        eqb.append(getKeyFrameCount(), that.getKeyFrameCount());
+        eqb.append(getDataSetName(), that.getDataSetName());
+        eqb.append(getDataSetWriterProperties(), that.getDataSetWriterProperties());
+        eqb.append(getTransportSettings(), that.getTransportSettings());
+        eqb.append(getMessageSettings(), that.getMessageSettings());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getEnabled());
+        hcb.append(getDataSetWriterId());
+        hcb.append(getDataSetFieldContentMask());
+        hcb.append(getKeyFrameCount());
+        hcb.append(getDataSetName());
+        hcb.append(getDataSetWriterProperties());
+        hcb.append(getTransportSettings());
+        hcb.append(getMessageSettings());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", DataSetWriterDataType.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("enabled=" + getEnabled());
+        joiner.add("dataSetWriterId=" + getDataSetWriterId());
+        joiner.add("dataSetFieldContentMask=" + getDataSetFieldContentMask());
+        joiner.add("keyFrameCount=" + getKeyFrameCount());
+        joiner.add("dataSetName='" + getDataSetName() + "'");
+        joiner.add("dataSetWriterProperties=" + java.util.Arrays.toString(getDataSetWriterProperties()));
+        joiner.add("transportSettings=" + getTransportSettings());
+        joiner.add("messageSettings=" + getMessageSettings());
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

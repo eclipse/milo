@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,20 +12,16 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUI32;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/8.60">https://reference.opcfoundation.org/v105/Core/docs/Part3/8.60</a>
  */
-@EqualsAndHashCode(
-    callSuper = true
-)
-@ToString
 public class AttributeWriteMask extends OptionSetUI32<AttributeWriteMask.Field> {
     public AttributeWriteMask(UInteger value) {
         super(value);
@@ -141,13 +137,45 @@ public class AttributeWriteMask extends OptionSetUI32<AttributeWriteMask.Field> 
     }
 
     @Override
-    public Set<Field> toSet() {
+    public Set<AttributeWriteMask.Field> toSet() {
         return Arrays.stream(Field.values())
             .filter(this::get)
             .collect(Collectors.toSet());
     }
 
-    public static AttributeWriteMask of(Field... fields) {
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", AttributeWriteMask.class.getSimpleName() + "[", "]");
+        joiner.add("accessLevel=" + getAccessLevel());
+        joiner.add("arrayDimensions=" + getArrayDimensions());
+        joiner.add("browseName=" + getBrowseName());
+        joiner.add("containsNoLoops=" + getContainsNoLoops());
+        joiner.add("dataType=" + getDataType());
+        joiner.add("description=" + getDescription());
+        joiner.add("displayName=" + getDisplayName());
+        joiner.add("eventNotifier=" + getEventNotifier());
+        joiner.add("executable=" + getExecutable());
+        joiner.add("historizing=" + getHistorizing());
+        joiner.add("inverseName=" + getInverseName());
+        joiner.add("isAbstract=" + getIsAbstract());
+        joiner.add("minimumSamplingInterval=" + getMinimumSamplingInterval());
+        joiner.add("nodeClass=" + getNodeClass());
+        joiner.add("nodeId=" + getNodeId());
+        joiner.add("symmetric=" + getSymmetric());
+        joiner.add("userAccessLevel=" + getUserAccessLevel());
+        joiner.add("userExecutable=" + getUserExecutable());
+        joiner.add("userWriteMask=" + getUserWriteMask());
+        joiner.add("valueRank=" + getValueRank());
+        joiner.add("writeMask=" + getWriteMask());
+        joiner.add("valueForVariableType=" + getValueForVariableType());
+        joiner.add("dataTypeDefinition=" + getDataTypeDefinition());
+        joiner.add("rolePermissions=" + getRolePermissions());
+        joiner.add("accessRestrictions=" + getAccessRestrictions());
+        joiner.add("accessLevelEx=" + getAccessLevelEx());
+        return joiner.toString();
+    }
+
+    public static AttributeWriteMask of(AttributeWriteMask.Field... fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -157,7 +185,7 @@ public class AttributeWriteMask extends OptionSetUI32<AttributeWriteMask.Field> 
         return new AttributeWriteMask(UInteger.valueOf(bits));
     }
 
-    public enum Field implements BitIndex {
+    public enum Field implements OptionSetUInteger.BitIndex {
         AccessLevel(0),
 
         ArrayDimensions(1),

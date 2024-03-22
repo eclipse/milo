@@ -80,12 +80,12 @@ public class CertificateValidationUtil {
      * {@link #validateTrustedCertPath(CertPath, TrustAnchor, Collection, Set, boolean)}, which can return more detailed
      * failure {@link StatusCodes} in its exceptions because it is dealing with a known trusted path.
      *
-     * @param certificateChain    a possibly partial certificate chain to build a trusted path from.
+     * @param certificateChain a possibly partial certificate chain to build a trusted path from.
      * @param trustedCertificates a collection of known trusted certificates.
-     * @param issuerCertificates  a collection of known CAs that can be used in path building but are not considered
-     *                            "trusted" when it comes to determining if the resulting path is "trusted".
+     * @param issuerCertificates a collection of known CAs that can be used in path building but are not considered
+     *     "trusted" when it comes to determining if the resulting path is "trusted".
      * @return a {@link PKIXCertPathBuilderResult} with a {@link TrustAnchor} and {@link CertPath}, which combined
-     * make up the full trusted path.
+     *     make up the full trusted path.
      * @throws UaException if a trusted path cannot be built.
      */
     public static PKIXCertPathBuilderResult buildTrustedCertPath(
@@ -157,12 +157,12 @@ public class CertificateValidationUtil {
      * The function is meant to be used in conjunction with {@link #buildTrustedCertPath(List, Collection, Collection)},
      * the result of which contains a {@link CertPath} and {@link TrustAnchor} that form a trusted certificate path.
      *
-     * @param certPath          a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
-     * @param trustAnchor       a {@link TrustAnchor} containing the root of trust for the path being validated.
-     * @param crls              a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
-     *                          leaf should have a CRL, though whether that's enforced or not depends on
-     *                          {@link ValidationCheck#REVOCATION_LISTS} being present.
-     * @param validationChecks  the set of {@link ValidationCheck}s to enforce.
+     * @param certPath a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
+     * @param trustAnchor a {@link TrustAnchor} containing the root of trust for the path being validated.
+     * @param crls a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
+     *     leaf should have a CRL, though whether that's enforced or not depends on
+     *     {@link ValidationCheck#REVOCATION_LISTS} being present.
+     * @param validationChecks the set of {@link ValidationCheck}s to enforce.
      * @param endEntityIsClient {@code true} if the end-entity is a client, {@code false} if it is a server.
      * @throws UaException if a check from the set of {@link ValidationCheck}s failed.
      */
@@ -345,19 +345,6 @@ public class CertificateValidationUtil {
                     );
                 }
             }
-        } else {
-            try {
-                checkIssuerKeyUsage(anchorCert);
-            } catch (UaException e) {
-                if (validationChecks.contains(ValidationCheck.KEY_USAGE_ISSUER)) {
-                    throw e;
-                } else {
-                    LOGGER.warn(
-                        "check suppressed: certificate failed issuer KeyUsage check: {}",
-                        anchorCert.getSubjectX500Principal().getName()
-                    );
-                }
-            }
         }
     }
 
@@ -392,7 +379,7 @@ public class CertificateValidationUtil {
                 }
             }
 
-            if (intermediates.size() > 0) {
+            if (!intermediates.isEmpty()) {
                 CertStore certStore = CertStore.getInstance(
                     "Collection",
                     new CollectionCertStoreParameters(intermediates)
@@ -467,7 +454,7 @@ public class CertificateValidationUtil {
      * Check that {@code certificate} is valid (the current date and time are within the validity period).
      *
      * @param certificate the {@link X509Certificate} to check.
-     * @param endEntity   {@code true} if the certificate is the end entity, {@code false} if it's an issuer.
+     * @param endEntity {@code true} if the certificate is the end entity, {@code false} if it's an issuer.
      * @throws UaException if the certificate is not valid.
      */
     public static void checkValidity(X509Certificate certificate, boolean endEntity) throws UaException {
@@ -498,7 +485,7 @@ public class CertificateValidationUtil {
      * Validate that one of {@code hostNames} matches a SubjectAltName DNSName or IPAddress entry in the certificate.
      *
      * @param certificate the certificate to validate against.
-     * @param hostNames   the host names or ip addresses to look for.
+     * @param hostNames the host names or ip addresses to look for.
      * @throws UaException if there is no matching DNSName or IPAddress entry.
      */
     public static void checkHostnameOrIpAddress(
@@ -612,46 +599,10 @@ public class CertificateValidationUtil {
         }
     }
 
-    public static void checkIssuerKeyUsage(X509Certificate certificate) throws UaException {
-        boolean[] keyUsage = certificate.getKeyUsage();
-
-        if (keyUsage == null) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "KeyUsage extension not found"
-            );
-        }
-
-        boolean digitalSignature = keyUsage[0];
-        boolean keyCertSign = keyUsage[5];
-        boolean crlSign = keyUsage[6];
-
-        if (!digitalSignature) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "required KeyUsage 'digitalSignature' not found"
-            );
-        }
-
-        if (!keyCertSign) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "required KeyUsage 'keyCertSign' not found"
-            );
-        }
-
-        if (!crlSign) {
-            throw new UaException(
-                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
-                "required KeyUsage 'cRLSign' not found"
-            );
-        }
-    }
-
     /**
      * Validate that the application URI matches the SubjectAltName URI in the given certificate.
      *
-     * @param certificate    the certificate to validate against.
+     * @param certificate the certificate to validate against.
      * @param applicationUri the URI to validate.
      * @throws UaException if the certificate is invalid, does not contain a uri, or contains a uri that does not match.
      */
@@ -692,8 +643,8 @@ public class CertificateValidationUtil {
     /**
      * Test the value of some SubjectAlternativeNames field against a predicate.
      *
-     * @param certificate    an {@link X509Certificate}.
-     * @param field          the field id.
+     * @param certificate an {@link X509Certificate}.
+     * @param field the field id.
      * @param fieldPredicate a predicate to test the field value.
      * @return {@code true} if the field was found and the predicate tested true.
      */

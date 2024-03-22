@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,11 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import java.util.StringJoiner;
 import java.util.UUID;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
@@ -27,16 +25,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.util.codegen.EqualsBuilder;
+import org.eclipse.milo.opcua.stack.core.util.codegen.HashCodeBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.2.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.3/#6.2.3.2.3</a>
  */
-@EqualsAndHashCode(
-    callSuper = false
-)
-@SuperBuilder
-@ToString
 public class FieldMetaData extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14524");
 
@@ -140,6 +135,60 @@ public class FieldMetaData extends Structure implements UaStructuredType {
 
     public KeyValuePair @Nullable [] getProperties() {
         return properties;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        FieldMetaData that = (FieldMetaData) object;
+        var eqb = new EqualsBuilder();
+        eqb.append(getName(), that.getName());
+        eqb.append(getDescription(), that.getDescription());
+        eqb.append(getFieldFlags(), that.getFieldFlags());
+        eqb.append(getBuiltInType(), that.getBuiltInType());
+        eqb.append(getDataType(), that.getDataType());
+        eqb.append(getValueRank(), that.getValueRank());
+        eqb.append(getArrayDimensions(), that.getArrayDimensions());
+        eqb.append(getMaxStringLength(), that.getMaxStringLength());
+        eqb.append(getDataSetFieldId(), that.getDataSetFieldId());
+        eqb.append(getProperties(), that.getProperties());
+        return eqb.build();
+    }
+
+    @Override
+    public int hashCode() {
+        var hcb = new HashCodeBuilder();
+        hcb.append(getName());
+        hcb.append(getDescription());
+        hcb.append(getFieldFlags());
+        hcb.append(getBuiltInType());
+        hcb.append(getDataType());
+        hcb.append(getValueRank());
+        hcb.append(getArrayDimensions());
+        hcb.append(getMaxStringLength());
+        hcb.append(getDataSetFieldId());
+        hcb.append(getProperties());
+        return hcb.build();
+    }
+
+    @Override
+    public String toString() {
+        var joiner = new StringJoiner(", ", FieldMetaData.class.getSimpleName() + "[", "]");
+        joiner.add("name='" + getName() + "'");
+        joiner.add("description=" + getDescription());
+        joiner.add("fieldFlags=" + getFieldFlags());
+        joiner.add("builtInType=" + getBuiltInType());
+        joiner.add("dataType=" + getDataType());
+        joiner.add("valueRank=" + getValueRank());
+        joiner.add("arrayDimensions=" + java.util.Arrays.toString(getArrayDimensions()));
+        joiner.add("maxStringLength=" + getMaxStringLength());
+        joiner.add("dataSetFieldId=" + getDataSetFieldId());
+        joiner.add("properties=" + java.util.Arrays.toString(getProperties()));
+        return joiner.toString();
     }
 
     public static StructureDefinition definition(NamespaceTable namespaceTable) {

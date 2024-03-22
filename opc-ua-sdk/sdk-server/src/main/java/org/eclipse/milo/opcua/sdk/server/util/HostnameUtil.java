@@ -48,11 +48,23 @@ public class HostnameUtil {
     /**
      * Given an address resolve it to as many unique addresses or hostnames as can be found.
      *
-     * @param address         the address to resolve.
+     * @param address the address to resolve.
      * @param includeLoopback if {@code true} loopback addresses will be included in the returned set.
      * @return the addresses and hostnames that were resolved from {@code address}.
      */
     public static Set<String> getHostnames(String address, boolean includeLoopback) {
+        return getHostnames(address, includeLoopback, true);
+    }
+
+    /**
+     * Given an address resolve it to as many unique addresses or hostnames as can be found.
+     *
+     * @param address the address to resolve.
+     * @param includeLoopback if {@code true} loopback addresses will be included in the returned set.
+     * @param resolveHostNames if {@code true} a hostname lookup may be performed for each address.
+     * @return the addresses and hostnames that were resolved from {@code address}.
+     */
+    public static Set<String> getHostnames(String address, boolean includeLoopback, boolean resolveHostNames) {
         var hostnames = new HashSet<String>();
 
         try {
@@ -66,9 +78,12 @@ public class HostnameUtil {
                         Collections.list(ni.getInetAddresses()).forEach(ia -> {
                             if (ia instanceof Inet4Address) {
                                 if (includeLoopback || !ia.isLoopbackAddress()) {
-                                    hostnames.add(ia.getHostName());
                                     hostnames.add(ia.getHostAddress());
-                                    hostnames.add(ia.getCanonicalHostName());
+
+                                    if (resolveHostNames) {
+                                        hostnames.add(ia.getHostName());
+                                        hostnames.add(ia.getCanonicalHostName());
+                                    }
                                 }
                             }
                         });
@@ -79,9 +94,12 @@ public class HostnameUtil {
                 }
             } else {
                 if (includeLoopback || !inetAddress.isLoopbackAddress()) {
-                    hostnames.add(inetAddress.getHostName());
                     hostnames.add(inetAddress.getHostAddress());
-                    hostnames.add(inetAddress.getCanonicalHostName());
+
+                    if (resolveHostNames) {
+                        hostnames.add(inetAddress.getHostName());
+                        hostnames.add(inetAddress.getCanonicalHostName());
+                    }
                 }
             }
         } catch (UnknownHostException e) {
