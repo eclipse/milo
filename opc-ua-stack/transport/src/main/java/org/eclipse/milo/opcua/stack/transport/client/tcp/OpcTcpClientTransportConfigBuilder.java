@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,10 @@ package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -30,6 +33,8 @@ public class OpcTcpClientTransportConfigBuilder {
     private ScheduledExecutorService scheduledExecutor;
     private NioEventLoopGroup eventLoop;
     private HashedWheelTimer wheelTimer;
+    private Consumer<Bootstrap> bootstrapCustomizer = b -> {};
+    private Consumer<ChannelPipeline> channelPipelineCustomizer = p -> {};
 
     public OpcTcpClientTransportConfigBuilder setConnectTimeout(UInteger connectTimeout) {
         this.connectTimeout = connectTimeout;
@@ -66,6 +71,36 @@ public class OpcTcpClientTransportConfigBuilder {
         return this;
     }
 
+    /**
+     * Set a {@link Consumer} that will be given a chance to customize the {@link Bootstrap} used
+     * by this transport.
+     *
+     * @param bootstrapCustomizer a {@link Consumer} that will be given a chance to customize the
+     *     {@link Bootstrap} used by this transport.
+     * @return this {@link OpcTcpClientTransportConfigBuilder}.
+     */
+    public OpcTcpClientTransportConfigBuilder setBootstrapCustomizer(
+        Consumer<Bootstrap> bootstrapCustomizer) {
+
+        this.bootstrapCustomizer = bootstrapCustomizer;
+        return this;
+    }
+
+    /**
+     * Set a {@link Consumer} that will be given a chance to customize the {@link ChannelPipeline}
+     * used by this transport.
+     *
+     * @param channelPipelineCustomizer a {@link Consumer} that will be given a chance to customize
+     *     the {@link ChannelPipeline} used by this transport.
+     * @return this {@link OpcTcpClientTransportConfigBuilder}.
+     */
+    public OpcTcpClientTransportConfigBuilder setChannelPipelineCustomizer(
+        Consumer<ChannelPipeline> channelPipelineCustomizer) {
+
+        this.channelPipelineCustomizer = channelPipelineCustomizer;
+        return this;
+    }
+
     public OpcTcpClientTransportConfig build() {
         if (executor == null) {
             executor = Stack.sharedExecutor();
@@ -87,7 +122,9 @@ public class OpcTcpClientTransportConfigBuilder {
             executor,
             scheduledExecutor,
             eventLoop,
-            wheelTimer
+            wheelTimer,
+            bootstrapCustomizer,
+            channelPipelineCustomizer
         );
     }
 
@@ -100,6 +137,8 @@ public class OpcTcpClientTransportConfigBuilder {
         private final ScheduledExecutorService scheduledExecutor;
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
+        private final Consumer<Bootstrap> bootstrapCustomizer;
+        private final Consumer<ChannelPipeline> channelPipelineCustomizer;
 
         public OpcTcpClientTransportConfigImpl(
             UInteger connectTimeout,
@@ -108,7 +147,9 @@ public class OpcTcpClientTransportConfigBuilder {
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutor,
             NioEventLoopGroup eventLoop,
-            HashedWheelTimer wheelTimer
+            HashedWheelTimer wheelTimer,
+            Consumer<Bootstrap> bootstrapCustomizer,
+            Consumer<ChannelPipeline> channelPipelineCustomizer
         ) {
 
             this.connectTimeout = connectTimeout;
@@ -118,8 +159,9 @@ public class OpcTcpClientTransportConfigBuilder {
             this.scheduledExecutor = scheduledExecutor;
             this.eventLoop = eventLoop;
             this.wheelTimer = wheelTimer;
+            this.bootstrapCustomizer = bootstrapCustomizer;
+            this.channelPipelineCustomizer = channelPipelineCustomizer;
         }
-
 
         @Override
         public UInteger getConnectTimeout() {
@@ -154,6 +196,16 @@ public class OpcTcpClientTransportConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return wheelTimer;
+        }
+
+        @Override
+        public Consumer<Bootstrap> getBootstrapCustomizer() {
+            return bootstrapCustomizer;
+        }
+
+        @Override
+        public Consumer<ChannelPipeline> getChannelPipelineCustomizer() {
+            return channelPipelineCustomizer;
         }
 
     }

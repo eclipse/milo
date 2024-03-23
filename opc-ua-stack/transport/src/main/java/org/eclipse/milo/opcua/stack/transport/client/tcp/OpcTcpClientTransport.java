@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -48,7 +48,6 @@ import org.eclipse.milo.opcua.stack.transport.client.ClientApplicationContext;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.InboundUascResponseHandler.DelegatingUascResponseHandler;
 import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientAcknowledgeHandler;
-import org.eclipse.milo.opcua.stack.transport.client.uasc.UascClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +74,7 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
             .setMaxIdleSeconds(0) // keep alive handled by SessionFsm
             .setMaxReconnectDelaySeconds(16)
             .setPersistent(true)
-            .setChannelActions(new ClientChannelActions(config))
+            .setChannelActions(new ClientChannelActions())
             .setExecutor(config.getExecutor())
             .setScheduler(config.getScheduledExecutor())
             .setLoggerName(CHANNEL_FSM_LOGGER_NAME)
@@ -119,12 +118,6 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
 
         private final Logger logger = LoggerFactory.getLogger(CHANNEL_FSM_LOGGER_NAME);
 
-        private final UascClientConfig config;
-
-        private ClientChannelActions(UascClientConfig config) {
-            this.config = config;
-        }
-
         @Override
         public CompletableFuture<Channel> connect(FsmContext<State, Event> ctx) {
             ClientApplicationContext application = (ClientApplicationContext) ctx.get(KEY_CLIENT_APPLICATION);
@@ -151,8 +144,12 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
 
                         ch.pipeline().addLast(new DelegatingUascResponseHandler(OpcTcpClientTransport.this));
                         ch.pipeline().addLast(acknowledgeHandler);
+
+                        config.getChannelPipelineCustomizer().accept(ch.pipeline());
                     }
                 });
+
+            config.getBootstrapCustomizer().accept(bootstrap);
 
             String endpointUrl = application.getEndpoint().getEndpointUrl();
 
