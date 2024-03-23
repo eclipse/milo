@@ -253,7 +253,7 @@ public class OpcUaClient {
 
         try {
             List<EndpointDescription> endpoints =
-                DiscoveryClient.getEndpoints(endpointUrl).get();
+                DiscoveryClient.getEndpoints(endpointUrl, configureTransport).get();
 
             EndpointDescription endpoint = selectEndpoint.apply(endpoints).orElseThrow(() ->
                 new UaException(
