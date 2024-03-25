@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.util.AsyncGroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
@@ -46,14 +47,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -159,98 +157,57 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
     //region ViewServices
 
     @Override
-    public void browse(BrowseContext context, ViewDescription view, NodeId nodeId) {
+    public List<Reference> browse(BrowseContext context, ViewDescription view, NodeId nodeId) throws UaException {
         List<AddressSpaceFragment> addressSpaces = getAddressSpaces();
 
-        AddressSpace firstMatch;
-        try {
-            firstMatch = addressSpaces.stream()
-                .filter(asx -> asx.getFilter().filterBrowse(server, nodeId))
-                .findFirst()
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
+        AddressSpace firstMatch = addressSpaces.stream()
+            .filter(asx -> asx.getFilter().filterBrowse(server, nodeId))
+            .findFirst()
+            .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
-            addressSpaces.remove(firstMatch);
-        } catch (UaException e) {
-            context.failure(e);
-            return;
-        }
+        addressSpaces.remove(firstMatch);
 
-        List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
-
-        BrowseContext browseContext = new BrowseContext(
+        var browseContext = new BrowseContext(
             getServer(),
             context.getSession().orElse(null)
         );
 
-        firstMatch.browse(browseContext, view, nodeId);
-
-        futures.add(browseContext.getFuture());
+        var references = new LinkedHashSet<>(
+            firstMatch.browse(browseContext, view, nodeId)
+        );
 
         for (AddressSpace asx : addressSpaces) {
+            // TODO re-use this context once it's not an async operation
             browseContext = new BrowseContext(
                 getServer(),
                 context.getSession().orElse(null)
             );
 
-            asx.getReferences(browseContext, view, nodeId);
-
-            futures.add(browseContext.getFuture());
+            references.addAll(asx.getReferences(browseContext, view, nodeId));
         }
 
-        CompletableFuture<List<Reference>> future = FutureUtils.sequence(futures).thenApply(
-            refs ->
-                refs.stream()
-                    .flatMap(Collection::stream)
-                    .distinct()
-                    .collect(toList())
-        );
-
-        // If the first AddressSpace match completed exceptionally the whole
-        // browse is a failure, regardless of whether other AddressSpaces have
-        // references pointing to a NodeId that doesn't actually exist.
-        future.whenComplete((references, ex) -> {
-            if (references != null) {
-                context.success(references);
-            } else {
-                context.failure(
-                    UaException.extract(ex)
-                        .orElse(new UaException(ex))
-                );
-            }
-        });
+        return new ArrayList<>(references);
     }
 
     @Override
-    public void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId) {
-        List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
+    public List<Reference> getReferences(BrowseContext context, ViewDescription view, NodeId nodeId) {
+        var references = new LinkedHashSet<Reference>();
 
         for (AddressSpace asx : addressSpaces) {
-            BrowseContext browseContext = new BrowseContext(
+            var browseContext = new BrowseContext(
                 server,
                 context.getSession().orElse(null)
             );
 
-            asx.getReferences(browseContext, view, nodeId);
-
-            futures.add(browseContext.getFuture());
+            references.addAll(asx.getReferences(browseContext, view, nodeId));
         }
 
-        CompletableFuture<List<Reference>> references = FutureUtils.sequence(futures).thenApply(
-            refs ->
-                refs.stream()
-                    .flatMap(Collection::stream)
-                    .distinct()
-                    .collect(toList())
-        );
-
-        references
-            .exceptionally(ex -> emptyList())
-            .thenAccept(context::success);
+        return new ArrayList<>(references);
     }
 
     @Override
     public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
-        CompletableFuture<List<NodeId>> registeredNodeIds = groupMapCollate(
+        CompletableFuture<List<NodeId>> registeredNodeIds = AsyncGroupMapCollate.groupMapCollate(
             nodeIds,
             nodeId -> getAddressSpace(
                 asx ->
@@ -277,7 +234,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
 
     @Override
     public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
-        CompletableFuture<List<Unit>> units = groupMapCollate(
+        CompletableFuture<List<Unit>> units = AsyncGroupMapCollate.groupMapCollate(
             nodeIds,
             nodeId -> getAddressSpace(
                 asx ->
@@ -314,14 +271,14 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
     //region AttributeServices
 
     @Override
-    public void read(
+    public List<DataValue> read(
         ReadContext context,
         Double maxAge,
         TimestampsToReturn timestamps,
         List<ReadValueId> readValueIds
     ) {
 
-        CompletableFuture<List<DataValue>> values = groupMapCollate(
+        return groupMapCollate(
             readValueIds,
             readValueId -> getAddressSpace(
                 asx ->
@@ -337,29 +294,24 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     context.getAdditionalHeader()
                 );
 
-                asx.read(ctx, maxAge, timestamps, group);
-
-                return ctx.getFuture();
+                return asx.read(ctx, maxAge, timestamps, group);
             }
         );
-
-        values.thenAccept(context::success);
     }
 
     @Override
-    public void write(
+    public List<StatusCode> write(
         WriteContext context,
         List<WriteValue> writeValues
     ) {
 
-        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+        return groupMapCollate(
             writeValues,
             writeValue -> getAddressSpace(
                 asx ->
                     asx.getFilter().filterWrite(server, writeValue)
             ),
             (AddressSpace asx) -> group -> {
-
                 var ctx = new WriteContext(
                     server,
                     context.getSession().orElse(null),
@@ -369,13 +321,9 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     context.getAdditionalHeader()
                 );
 
-                asx.write(ctx, group);
-
-                return ctx.getFuture();
+                return asx.write(ctx, group);
             }
         );
-
-        results.thenAccept(context::success);
     }
 
     //endregion
@@ -383,21 +331,20 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
     //region AttributeHistoryServices
 
     @Override
-    public void historyRead(
+    public List<HistoryReadResult> historyRead(
         HistoryReadContext context,
         HistoryReadDetails details,
         TimestampsToReturn timestamps,
         List<HistoryReadValueId> readValueIds
     ) {
 
-        CompletableFuture<List<HistoryReadResult>> results = groupMapCollate(
+        return groupMapCollate(
             readValueIds,
             readValueId -> getAddressSpace(
                 asx ->
                     asx.getFilter().filterHistoryRead(server, readValueId)
             ),
             (AddressSpace asx) -> group -> {
-
                 var ctx = new HistoryReadContext(
                     server,
                     context.getSession().orElse(null),
@@ -407,34 +354,29 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     context.getAdditionalHeader()
                 );
 
-                asx.historyRead(
+                return asx.historyRead(
                     ctx,
                     details,
                     timestamps,
                     group
                 );
-
-                return ctx.getFuture();
             }
         );
-
-        results.thenAccept(context::success);
     }
 
     @Override
-    public void historyUpdate(
+    public List<HistoryUpdateResult> historyUpdate(
         HistoryUpdateContext context,
         List<HistoryUpdateDetails> updateDetailsList
     ) {
 
-        CompletableFuture<List<HistoryUpdateResult>> results = groupMapCollate(
+        return groupMapCollate(
             updateDetailsList,
             updateDetails -> getAddressSpace(
                 asx ->
                     asx.getFilter().filterHistoryUpdate(server, updateDetails)
             ),
             (AddressSpace asx) -> group -> {
-
                 var ctx = new HistoryUpdateContext(
                     server,
                     context.getSession().orElse(null),
@@ -444,13 +386,9 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                     context.getAdditionalHeader()
                 );
 
-                asx.historyUpdate(ctx, group);
-
-                return ctx.getFuture();
+                return asx.historyUpdate(ctx, group);
             }
         );
-
-        results.thenAccept(context::success);
     }
 
     //endregion
@@ -463,7 +401,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
         List<CallMethodRequest> requests
     ) {
 
-        CompletableFuture<List<CallMethodResult>> results = groupMapCollate(
+        CompletableFuture<List<CallMethodResult>> results = AsyncGroupMapCollate.groupMapCollate(
             requests,
             request -> getAddressSpace(
                 asx ->
@@ -663,7 +601,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
 
     @Override
     public void addNodes(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
-        CompletableFuture<List<AddNodesResult>> results = groupMapCollate(
+        CompletableFuture<List<AddNodesResult>> results = AsyncGroupMapCollate.groupMapCollate(
             nodesToAdd,
             addNodesItem -> getAddressSpace(
                 asx ->
@@ -691,7 +629,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
 
     @Override
     public void deleteNodes(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
-        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+        CompletableFuture<List<StatusCode>> results = AsyncGroupMapCollate.groupMapCollate(
             nodesToDelete,
             deleteNodesItem -> getAddressSpace(
                 asx ->
@@ -719,7 +657,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
 
     @Override
     public void addReferences(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
-        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+        CompletableFuture<List<StatusCode>> results = AsyncGroupMapCollate.groupMapCollate(
             referencesToAdd,
             addReferencesItem -> getAddressSpace(
                 asx ->
@@ -747,7 +685,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
 
     @Override
     public void deleteReferences(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
-        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+        CompletableFuture<List<StatusCode>> results = AsyncGroupMapCollate.groupMapCollate(
             referencesToDelete,
             deleteReferencesItem -> getAddressSpace(
                 asx ->

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,8 +20,8 @@ import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -64,8 +64,9 @@ public interface AddressSpace {
      * @param maxAge requested max age.
      * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
+     * @return the {@link DataValue}s read.
      */
-    void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds);
+    List<DataValue> read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds);
 
     /**
      * Write one or more values to nodes belonging to this {@link AddressSpace}.
@@ -75,7 +76,7 @@ public interface AddressSpace {
      * @param context the {@link WriteContext}.
      * @param writeValues the values to write.
      */
-    void write(WriteContext context, List<WriteValue> writeValues);
+    List<StatusCode> write(WriteContext context, List<WriteValue> writeValues);
 
     /**
      * Read history values from nodes belonging to this {@link AddressSpace}.
@@ -86,7 +87,7 @@ public interface AddressSpace {
      * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
      */
-    default void historyRead(
+    default List<HistoryReadResult> historyRead(
         HistoryReadContext context,
         HistoryReadDetails readDetails,
         TimestampsToReturn timestamps,
@@ -99,7 +100,7 @@ public interface AddressSpace {
             null
         );
 
-        context.success(Collections.nCopies(readValueIds.size(), result));
+        return Collections.nCopies(readValueIds.size(), result);
     }
 
     /**
@@ -110,7 +111,7 @@ public interface AddressSpace {
      * @param context the {@link HistoryUpdateContext}.
      * @param updateDetails the values to read.
      */
-    default void historyUpdate(
+    default List<HistoryUpdateResult> historyUpdate(
         HistoryUpdateContext context,
         List<HistoryUpdateDetails> updateDetails
     ) {
@@ -121,7 +122,7 @@ public interface AddressSpace {
             null
         );
 
-        context.success(Collections.nCopies(updateDetails.size(), result));
+        return Collections.nCopies(updateDetails.size(), result);
     }
 
     //endregion
@@ -324,22 +325,6 @@ public interface AddressSpace {
     //region View Services
 
     /**
-     * Like {@link #browse(BrowseContext, ViewDescription, NodeId)} but with a null/empty {@link ViewDescription}.
-     *
-     * @param context the {@link BrowseContext}.
-     * @param nodeId the {@link NodeId} to browse.
-     */
-    default void browse(BrowseContext context, NodeId nodeId) {
-        ViewDescription view = new ViewDescription(
-            NodeId.NULL_VALUE,
-            DateTime.NULL_VALUE,
-            uint(0)
-        );
-
-        browse(context, view, nodeId);
-    }
-
-    /**
      * Get all References for which {@code nodeId} is the source.
      * <p>
      * If a Node instance for {@code nodeId} does not exist then {@link BrowseContext#failure(StatusCode)} should be
@@ -349,7 +334,7 @@ public interface AddressSpace {
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to browse.
      */
-    void browse(BrowseContext context, ViewDescription view, NodeId nodeId);
+    List<Reference> browse(BrowseContext context, ViewDescription view, NodeId nodeId) throws UaException;
 
     /**
      * References for which {@code nodeId} is the source are being collected from all AddressSpace instances.
@@ -361,7 +346,7 @@ public interface AddressSpace {
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to get references fo.
      */
-    void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
+    List<Reference> getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
     /**
      * Register one or more {@link NodeId}s.
@@ -394,7 +379,7 @@ public interface AddressSpace {
 
     //endregion
 
-    final class ReadContext extends AsyncServiceOperationContext<ReadValueId, List<DataValue>> {
+    final class ReadContext extends ServiceOperationContext<ReadValueId> {
 
         public ReadContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -414,7 +399,7 @@ public interface AddressSpace {
 
     }
 
-    final class WriteContext extends AsyncServiceOperationContext<WriteValue, List<StatusCode>> {
+    final class WriteContext extends ServiceOperationContext<WriteValue> {
 
         public WriteContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -434,7 +419,7 @@ public interface AddressSpace {
 
     }
 
-    final class HistoryReadContext extends AsyncServiceOperationContext<HistoryReadValueId, List<HistoryReadResult>> {
+    final class HistoryReadContext extends ServiceOperationContext<HistoryReadValueId> {
 
         public HistoryReadContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -454,8 +439,7 @@ public interface AddressSpace {
 
     }
 
-    final class HistoryUpdateContext extends
-        AsyncServiceOperationContext<HistoryUpdateDetails, List<HistoryUpdateResult>> {
+    final class HistoryUpdateContext extends ServiceOperationContext<HistoryUpdateDetails> {
 
         public HistoryUpdateContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);

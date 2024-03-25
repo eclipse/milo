@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -97,25 +97,25 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     }
 
     @Override
-    public void browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
+    public List<Reference> browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) throws UaException {
         if (nodeManager.containsNode(nodeId)) {
             List<Reference> references = nodeManager.getReferences(nodeId);
 
             logger.debug("Browsed {} references for {}", references.size(), nodeId);
 
-            context.success(references);
+            return references;
         } else {
-            context.failure(StatusCodes.Bad_NodeIdUnknown);
+            throw new UaException(StatusCodes.Bad_NodeIdUnknown);
         }
     }
 
     @Override
-    public void getReferences(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
+    public List<Reference> getReferences(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
         List<Reference> references = nodeManager.getReferences(nodeId);
 
         logger.debug("Got {} references for {}", references.size(), nodeId);
 
-        context.success(references);
+        return references;
     }
 
     @Override
@@ -129,7 +129,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     }
 
     @Override
-    public void read(
+    public List<DataValue> read(
         ReadContext context,
         Double maxAge,
         TimestampsToReturn timestamps,
@@ -165,11 +165,11 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             }
         }
 
-        context.success(results);
+        return results;
     }
 
     @Override
-    public void write(
+    public List<StatusCode> write(
         WriteContext context,
         List<WriteValue> writeValues
     ) {
@@ -203,7 +203,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             }
         }
 
-        context.success(results);
+        return results;
     }
 
     /**

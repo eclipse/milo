@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -28,8 +27,10 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -46,12 +47,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.LoggerFactory;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.browseResultMasks;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.nodeClasses;
@@ -168,45 +167,45 @@ public class BrowseHelper {
                     context.getSession().orElse(null)
                 );
 
-                server.getAddressSpaceManager().browse(browseContext, view, browseDescription.getNodeId());
+                try {
+                    List<Reference> references = server.getAddressSpaceManager()
+                        .browse(browseContext, view, browseDescription.getNodeId());
 
-                CompletableFuture<List<Reference>> referencesFuture = browseContext.getFuture();
-
-                referencesFuture.whenComplete((references, ex) -> {
-                    if (references != null) {
-                        browse(references).whenComplete((result, ex2) -> {
-                            if (result != null) future.complete(result);
-                            else future.complete(NODE_ID_UNKNOWN_RESULT);
-                        });
-                    } else {
-                        future.complete(NODE_ID_UNKNOWN_RESULT);
-                    }
-                });
+                    browse(references).whenComplete((result, ex2) -> {
+                        if (result != null) {
+                            future.complete(result);
+                        } else {
+                            future.complete(NODE_ID_UNKNOWN_RESULT);
+                        }
+                    });
+                } catch (UaException e) {
+                    future.complete(NODE_ID_UNKNOWN_RESULT);
+                }
             });
 
             return future;
         }
 
         private CompletableFuture<BrowseResult> browse(List<Reference> references) {
-            List<CompletableFuture<ReferenceDescription>> fs = references.stream()
+            List<ReferenceDescription> referenceDescriptions = references.stream()
                 .filter(this::directionFilter)
                 .filter(this::referenceTypeFilter)
                 .map(this::referenceDescription)
                 .collect(toList());
 
-            return FutureUtils.sequence(fs).thenApply(referenceDescriptions -> {
-                int max = maxReferencesPerNode.longValue() == 0 ?
-                    Integer.MAX_VALUE :
-                    Ints.saturatedCast(maxReferencesPerNode.longValue());
+            int max = maxReferencesPerNode.longValue() == 0 ?
+                Integer.MAX_VALUE :
+                Ints.saturatedCast(maxReferencesPerNode.longValue());
 
-                return browseResult(
-                    max,
-                    referenceDescriptions
-                        .stream()
-                        .filter(this::nodeClassFilter)
-                        .collect(toList())
-                );
-            });
+            BrowseResult browseResult = browseResult(
+                max,
+                referenceDescriptions
+                    .stream()
+                    .filter(this::nodeClassFilter)
+                    .collect(toList())
+            );
+
+            return CompletableFuture.completedFuture(browseResult);
         }
 
         private BrowseResult browseResult(int max, List<ReferenceDescription> references) {
@@ -263,7 +262,7 @@ public class BrowseHelper {
             return nodeClasses.contains(referenceDescription.getNodeClass());
         }
 
-        private CompletableFuture<ReferenceDescription> referenceDescription(Reference reference) {
+        private ReferenceDescription referenceDescription(Reference reference) {
             EnumSet<BrowseResultMask> masks = browseResultMasks(browseDescription.getResultMask().longValue());
 
             ExpandedNodeId targetNodeId = reference.getTargetNodeId();
@@ -273,77 +272,73 @@ public class BrowseHelper {
 
             boolean forward = masks.contains(BrowseResultMask.IsForward) && reference.isForward();
 
-            return targetNodeId.toNodeId(server.getNamespaceTable()).map(nodeId -> {
-                CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId);
+            NodeId nodeId = targetNodeId.toNodeId(server.getNamespaceTable()).orElse(null);
 
-                CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {
-                    if (masks.contains(BrowseResultMask.TypeDefinition) &&
-                        (attributes.nodeClass == NodeClass.Object || attributes.nodeClass == NodeClass.Variable)) {
+            if (nodeId != null) {
+                BrowseAttributes attributes = browseAttributes(nodeId);
 
-                        // If this is an Object or Variable then we
-                        // need to browse for the TypeDefinitionId...
-                        return getTypeDefinition(nodeId).thenApply(
-                            typeDefinition ->
-                                new ReferenceDescription(
-                                    referenceTypeId,
-                                    forward,
-                                    targetNodeId,
-                                    masks.contains(BrowseResultMask.BrowseName) ?
-                                        attributes.getBrowseName() : QualifiedName.NULL_VALUE,
-                                    masks.contains(BrowseResultMask.DisplayName) ?
-                                        attributes.getDisplayName() : LocalizedText.NULL_VALUE,
-                                    masks.contains(BrowseResultMask.NodeClass) ?
-                                        attributes.getNodeClass() : NodeClass.Unspecified,
-                                    typeDefinition
-                                )
-                        );
-                    } else {
-                        // Not an Object or Variable; we're done.
-                        return completedFuture(new ReferenceDescription(
-                            referenceTypeId,
-                            forward,
-                            targetNodeId,
-                            masks.contains(BrowseResultMask.BrowseName) ?
-                                attributes.getBrowseName() : QualifiedName.NULL_VALUE,
-                            masks.contains(BrowseResultMask.DisplayName) ?
-                                attributes.getDisplayName() : LocalizedText.NULL_VALUE,
-                            masks.contains(BrowseResultMask.NodeClass) ?
-                                attributes.getNodeClass() : NodeClass.Unspecified,
-                            ExpandedNodeId.NULL_VALUE
-                        ));
+                if (masks.contains(BrowseResultMask.TypeDefinition) &&
+                    (attributes.nodeClass == NodeClass.Object || attributes.nodeClass == NodeClass.Variable)) {
+
+                    // If this is an Object or Variable then we
+                    // need to browse for the TypeDefinitionId...
+                    ExpandedNodeId typeDefinitionId;
+                    try {
+                        typeDefinitionId = getTypeDefinition(nodeId);
+                    } catch (UaException e) {
+                        LoggerFactory.getLogger(BrowseHelper.class)
+                            .warn("Error browsing for TypeDefinition for nodeId={}", nodeId, e);
+
+                        typeDefinitionId = ExpandedNodeId.NULL_VALUE;
                     }
-                });
 
-                return referenceFuture.whenComplete((r, ex) -> {
-                    if (ex != null) {
-                        LoggerFactory.getLogger(BrowseHelper.class).warn(
-                            "failed to get browse attributes for: {}",
-                            reference.getSourceNodeId(), ex
-                        );
-                    }
-                });
-            }).orElseGet(() -> {
+                    return new ReferenceDescription(
+                        referenceTypeId,
+                        forward,
+                        targetNodeId,
+                        masks.contains(BrowseResultMask.BrowseName) ?
+                            attributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                        masks.contains(BrowseResultMask.DisplayName) ?
+                            attributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                        masks.contains(BrowseResultMask.NodeClass) ?
+                            attributes.getNodeClass() : NodeClass.Unspecified,
+                        typeDefinitionId
+                    );
+                } else {
+                    // Not an Object or Variable; we're done.
+                    return new ReferenceDescription(
+                        referenceTypeId,
+                        forward,
+                        targetNodeId,
+                        masks.contains(BrowseResultMask.BrowseName) ?
+                            attributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                        masks.contains(BrowseResultMask.DisplayName) ?
+                            attributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                        masks.contains(BrowseResultMask.NodeClass) ?
+                            attributes.getNodeClass() : NodeClass.Unspecified,
+                        ExpandedNodeId.NULL_VALUE
+                    );
+                }
+            } else {
                 LoggerFactory.getLogger(BrowseHelper.class).warn(
                     "reference target not local: {} -> {}",
                     reference.getSourceNodeId(),
                     targetNodeId
                 );
 
-                return completedFuture(
-                    new ReferenceDescription(
-                        referenceTypeId,
-                        forward,
-                        targetNodeId,
-                        QualifiedName.NULL_VALUE,
-                        LocalizedText.NULL_VALUE,
-                        NodeClass.Unspecified,
-                        ExpandedNodeId.NULL_VALUE
-                    )
+                return new ReferenceDescription(
+                    referenceTypeId,
+                    forward,
+                    targetNodeId,
+                    QualifiedName.NULL_VALUE,
+                    LocalizedText.NULL_VALUE,
+                    NodeClass.Unspecified,
+                    ExpandedNodeId.NULL_VALUE
                 );
-            });
+            }
         }
 
-        private CompletableFuture<BrowseAttributes> browseAttributes(NodeId nodeId) {
+        private BrowseAttributes browseAttributes(NodeId nodeId) {
             var readValueIds = new ArrayList<ReadValueId>();
 
             readValueIds.add(new ReadValueId(nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE));
@@ -352,69 +347,65 @@ public class BrowseHelper {
 
             var context = new ReadContext(server, null);
 
-            server.getAddressSpaceManager().read(
+            List<DataValue> values = server.getAddressSpaceManager().read(
                 context,
                 0.0,
                 TimestampsToReturn.Neither,
                 readValueIds
             );
 
-            return context.getFuture().thenApply(values -> {
-                QualifiedName browseName = QualifiedName.NULL_VALUE;
-                LocalizedText displayName = LocalizedText.NULL_VALUE;
-                NodeClass nodeClass = NodeClass.Unspecified;
+            QualifiedName browseName = QualifiedName.NULL_VALUE;
+            LocalizedText displayName = LocalizedText.NULL_VALUE;
+            NodeClass nodeClass = NodeClass.Unspecified;
 
-                DataValue value0 = values.get(0);
-                if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
-                    browseName = (QualifiedName) value0.getValue().getValue();
-                }
+            DataValue value0 = values.get(0);
+            if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
+                browseName = (QualifiedName) value0.getValue().getValue();
+            }
 
-                DataValue value1 = values.get(1);
-                if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
-                    displayName = (LocalizedText) value1.getValue().getValue();
-                }
+            DataValue value1 = values.get(1);
+            if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
+                displayName = (LocalizedText) value1.getValue().getValue();
+            }
 
-                DataValue value2 = values.get(2);
-                if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
-                    nodeClass = (NodeClass) value2.getValue().getValue();
-                }
+            DataValue value2 = values.get(2);
+            if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
+                nodeClass = (NodeClass) value2.getValue().getValue();
+            }
 
-                return new BrowseAttributes(browseName, displayName, nodeClass);
-            });
+            return new BrowseAttributes(browseName, displayName, nodeClass);
         }
 
-        private CompletableFuture<ExpandedNodeId> getTypeDefinition(NodeId nodeId) {
-            Optional<ExpandedNodeId> typeDefinitionId = server.getAddressSpaceManager()
+        private ExpandedNodeId getTypeDefinition(NodeId nodeId) throws UaException {
+            ExpandedNodeId typeDefinitionId = server.getAddressSpaceManager()
                 .getManagedReferences(nodeId, Reference.HAS_TYPE_DEFINITION_PREDICATE)
                 .stream()
                 .findFirst()
-                .map(Reference::getTargetNodeId);
+                .map(Reference::getTargetNodeId)
+                .orElse(null);
 
-            return typeDefinitionId.map(CompletableFuture::completedFuture).orElseGet(() -> {
+
+            if (typeDefinitionId != null) {
+                return typeDefinitionId;
+            } else {
                 LoggerFactory.getLogger(BrowseHelper.class)
                     .trace("No managed TypeDefinition for nodeId={}, browsing...", nodeId);
 
-                BrowseContext browseContext = new BrowseContext(
+                var browseContext = new BrowseContext(
                     server,
                     context.getSession().orElse(null)
                 );
 
-                server.getAddressSpaceManager().browse(browseContext, nodeId);
+                var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
+                List<Reference> references = server.getAddressSpaceManager().browse(browseContext, view, nodeId);
 
-                CompletableFuture<List<Reference>> browseFuture = browseContext.getFuture();
-
-                return browseFuture.thenApply(
-                    references ->
-                        references.stream()
-                            .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId()))
-                            .findFirst()
-                            .map(Reference::getTargetNodeId)
-                            .orElse(ExpandedNodeId.NULL_VALUE)
-                );
-            });
-
+                return references.stream()
+                    .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId()))
+                    .findFirst()
+                    .map(Reference::getTargetNodeId)
+                    .orElse(ExpandedNodeId.NULL_VALUE);
+            }
         }
-
     }
 
     private static class BrowseNext2 {

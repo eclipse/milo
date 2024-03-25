@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -100,24 +100,29 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        session.getSessionDiagnostics().getReadCount().record(readContext.getFuture());
-        session.getSessionDiagnostics().getTotalRequestCount().record(readContext.getFuture());
+        try {
+            List<DataValue> values = server.getAddressSpaceManager().read(
+                readContext,
+                request.getMaxAge(),
+                request.getTimestampsToReturn(),
+                nodesToRead
+            );
 
-        server.getAddressSpaceManager().read(
-            readContext,
-            request.getMaxAge(),
-            request.getTimestampsToReturn(),
-            nodesToRead
-        );
-
-        return readContext.getFuture().thenApply(values -> {
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
             ResponseHeader header = createResponseHeader(request);
 
-            return new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
-        });
+            var response = new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
+
+            return CompletableFuture.completedFuture(response);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getReadCount().incrementErrorCount();
+
+            return CompletableFuture.failedFuture(e);
+        } finally {
+            session.getSessionDiagnostics().getReadCount().incrementTotalCount();
+        }
     }
 
     @Override
@@ -160,27 +165,32 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        session.getSessionDiagnostics().getHistoryReadCount().record(historyReadContext.getFuture());
-        session.getSessionDiagnostics().getTotalRequestCount().record(historyReadContext.getFuture());
+        try {
+            ExtensionObject xo = request.getHistoryReadDetails();
+            HistoryReadDetails details = (HistoryReadDetails) xo.decode(server.getEncodingContext());
 
-        ExtensionObject xo = request.getHistoryReadDetails();
-        HistoryReadDetails details = (HistoryReadDetails) xo.decode(server.getEncodingContext());
+            List<HistoryReadResult> results = server.getAddressSpaceManager().historyRead(
+                historyReadContext,
+                details,
+                request.getTimestampsToReturn(),
+                nodesToRead
+            );
 
-        server.getAddressSpaceManager().historyRead(
-            historyReadContext,
-            details,
-            request.getTimestampsToReturn(),
-            nodesToRead
-        );
-
-        return historyReadContext.getFuture().thenApply(values -> {
             ResponseHeader header = createResponseHeader(request);
 
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            return new HistoryReadResponse(header, values.toArray(HistoryReadResult[]::new), diagnosticInfos);
-        });
+            var response = new HistoryReadResponse(header, results.toArray(HistoryReadResult[]::new), diagnosticInfos);
+
+            return CompletableFuture.completedFuture(response);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getHistoryReadCount().incrementErrorCount();
+
+            return CompletableFuture.failedFuture(e);
+        } finally {
+            session.getSessionDiagnostics().getHistoryReadCount().incrementTotalCount();
+        }
     }
 
     @Override
@@ -215,19 +225,24 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        session.getSessionDiagnostics().getWriteCount().record(writeContext.getFuture());
-        session.getSessionDiagnostics().getTotalRequestCount().record(writeContext.getFuture());
+        try {
+            List<StatusCode> results = server.getAddressSpaceManager().write(writeContext, nodesToWrite);
 
-        server.getAddressSpaceManager().write(writeContext, nodesToWrite);
-
-        return writeContext.getFuture().thenApply(values -> {
             ResponseHeader header = createResponseHeader(request);
 
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToWrite);
 
-            return new WriteResponse(header, values.toArray(StatusCode[]::new), diagnosticInfos);
-        });
+            var response = new WriteResponse(header, results.toArray(StatusCode[]::new), diagnosticInfos);
+
+            return CompletableFuture.completedFuture(response);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getWriteCount().incrementErrorCount();
+
+            return CompletableFuture.failedFuture(e);
+        } finally {
+            session.getSessionDiagnostics().getWriteCount().incrementTotalCount();
+        }
     }
 
     @Override
@@ -271,16 +286,26 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        server.getAddressSpaceManager().historyUpdate(historyUpdateContext, historyUpdateDetailsList);
+        try {
+            List<HistoryUpdateResult> results = server.getAddressSpaceManager()
+                .historyUpdate(historyUpdateContext, historyUpdateDetailsList);
 
-        return historyUpdateContext.getFuture().thenApply(values -> {
             ResponseHeader header = createResponseHeader(request);
 
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(historyUpdateDetailsList);
 
-            return new HistoryUpdateResponse(header, values.toArray(HistoryUpdateResult[]::new), diagnosticInfos);
-        });
+            var response = new HistoryUpdateResponse(
+                header, results.toArray(HistoryUpdateResult[]::new), diagnosticInfos);
+
+            return CompletableFuture.completedFuture(response);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getHistoryUpdateCount().incrementErrorCount();
+
+            return CompletableFuture.failedFuture(e);
+        } finally {
+            session.getSessionDiagnostics().getHistoryUpdateCount().incrementTotalCount();
+        }
     }
 
 }

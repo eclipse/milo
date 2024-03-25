@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.google.common.math.DoubleMath;
-import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
@@ -37,6 +35,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 
 public class SubscriptionModel extends AbstractLifecycle {
 
@@ -152,7 +152,7 @@ public class SubscriptionModel extends AbstractLifecycle {
         public void run() {
             if (cancelled) return;
 
-            CompletableFuture<List<DataValue>> future = GroupMapCollate.groupMapCollate(
+            List<DataValue> values = groupMapCollate(
                 items,
                 MonitoredItem::getSession,
                 session -> sessionItems -> {
@@ -166,37 +166,36 @@ public class SubscriptionModel extends AbstractLifecycle {
 
                     var context = new ReadContext(server, session);
 
-                    addressSpace.read(context, 0d, TimestampsToReturn.Both, ids);
-
-                    return context.getFuture();
+                    return addressSpace.read(context, 0d, TimestampsToReturn.Both, ids);
                 }
             );
 
-            future.thenAcceptAsync(values -> {
-                Iterator<DataItem> ii = items.iterator();
-                Iterator<DataValue> vi = values.iterator();
+            Iterator<DataItem> ii = items.iterator();
+            Iterator<DataValue> vi = values.iterator();
 
-                while (ii.hasNext() && vi.hasNext()) {
-                    DataItem item = ii.next();
-                    DataValue value = vi.next();
+            while (ii.hasNext() && vi.hasNext()) {
+                DataItem item = ii.next();
+                DataValue value = vi.next();
 
-                    TimestampsToReturn timestamps = item.getTimestampsToReturn();
+                TimestampsToReturn timestamps = item.getTimestampsToReturn();
 
-                    if (timestamps != null) {
-                        UInteger attributeId = item.getReadValueId().getAttributeId();
+                if (timestamps != null) {
+                    UInteger attributeId = item.getReadValueId().getAttributeId();
 
-                        value = (AttributeId.Value.isEqual(attributeId)) ?
-                            DataValue.derivedValue(value, timestamps) :
-                            DataValue.derivedNonValue(value, timestamps);
-                    }
-
-                    item.setValue(value);
+                    value = (AttributeId.Value.isEqual(attributeId)) ?
+                        DataValue.derivedValue(value, timestamps) :
+                        DataValue.derivedNonValue(value, timestamps);
                 }
 
-                if (!cancelled) {
-                    scheduler.schedule(this, samplingInterval, TimeUnit.MILLISECONDS);
-                }
-            }, executor);
+                item.setValue(value);
+            }
+
+            if (!cancelled) {
+                scheduler.schedule(
+                    () -> executor.execute(this),
+                    samplingInterval, TimeUnit.MILLISECONDS
+                );
+            }
         }
 
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,7 +25,7 @@ public class AsyncServiceOperationContext<T, R> extends ServiceOperationContext<
     private final OpcUaServer server;
 
     public AsyncServiceOperationContext(OpcUaServer server, @Nullable Session session) {
-        super(session);
+        super(server, session);
 
         this.server = server;
     }
@@ -39,7 +39,7 @@ public class AsyncServiceOperationContext<T, R> extends ServiceOperationContext<
         ExtensionObject additionalHeader
     ) {
 
-        super(session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
+        super(server, session, diagnosticsContext, auditEntryId, timeoutHint, additionalHeader);
 
         this.server = server;
     }
