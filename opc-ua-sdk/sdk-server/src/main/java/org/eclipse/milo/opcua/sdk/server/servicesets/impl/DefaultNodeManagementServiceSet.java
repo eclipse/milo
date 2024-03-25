@@ -149,17 +149,17 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        server.getAddressSpaceManager().addNodes(addNodesContext, nodesToAdd);
+        List<AddNodesResult> results = server.getAddressSpaceManager().addNodes(addNodesContext, nodesToAdd);
 
-        return addNodesContext.getFuture().thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new AddNodesResponse(
-                header,
-                results.toArray(AddNodesResult[]::new),
-                new DiagnosticInfo[0]
-            );
-        });
+        var response = new AddNodesResponse(
+            header,
+            results.toArray(AddNodesResult[]::new),
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
     private CompletableFuture<DeleteNodesResponse> deleteNodes(DeleteNodesRequest request, Session session) {
@@ -182,17 +182,17 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        server.getAddressSpaceManager().deleteNodes(deleteNodesContext, nodesToDelete);
+        List<StatusCode> results = server.getAddressSpaceManager().deleteNodes(deleteNodesContext, nodesToDelete);
 
-        return deleteNodesContext.getFuture().thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new DeleteNodesResponse(
-                header,
-                results.toArray(StatusCode[]::new),
-                new DiagnosticInfo[0]
-            );
-        });
+        var response = new DeleteNodesResponse(
+            header,
+            results.toArray(StatusCode[]::new),
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
     private CompletableFuture<AddReferencesResponse> addReferences(AddReferencesRequest request, Session session) {
@@ -215,17 +215,17 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        server.getAddressSpaceManager().addReferences(addReferencesContext, referencesToAdd);
+        List<StatusCode> results = server.getAddressSpaceManager().addReferences(addReferencesContext, referencesToAdd);
 
-        return addReferencesContext.getFuture().thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new AddReferencesResponse(
-                header,
-                results.toArray(new StatusCode[0]),
-                new DiagnosticInfo[0]
-            );
-        });
+        var response = new AddReferencesResponse(
+            header,
+            results.toArray(new StatusCode[0]),
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
     private CompletableFuture<DeleteReferencesResponse> deleteReferences(
@@ -252,17 +252,18 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        server.getAddressSpaceManager().deleteReferences(deleteReferencesContext, referencesToDelete);
+        List<StatusCode> results = server.getAddressSpaceManager()
+            .deleteReferences(deleteReferencesContext, referencesToDelete);
 
-        return deleteReferencesContext.getFuture().thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new DeleteReferencesResponse(
-                header,
-                results.toArray(StatusCode[]::new),
-                new DiagnosticInfo[0]
-            );
-        });
+        var response = new DeleteReferencesResponse(
+            header,
+            results.toArray(StatusCode[]::new),
+            new DiagnosticInfo[0]
+        );
+
+        return CompletableFuture.completedFuture(response);
     }
 
 }

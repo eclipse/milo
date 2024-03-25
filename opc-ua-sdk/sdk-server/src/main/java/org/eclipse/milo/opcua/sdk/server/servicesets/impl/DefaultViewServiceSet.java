@@ -223,13 +223,14 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         var registerNodesContext = new RegisterNodesContext(server, session);
 
-        server.getAddressSpaceManager().registerNodes(registerNodesContext, nodeIds);
+        List<NodeId> registeredNodeIds =
+            server.getAddressSpaceManager().registerNodes(registerNodesContext, nodeIds);
 
-        return registerNodesContext.getFuture().thenApply(registeredNodeIds -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new RegisterNodesResponse(header, registeredNodeIds.toArray(new NodeId[0]));
-        });
+        var response = new RegisterNodesResponse(header, registeredNodeIds.toArray(new NodeId[0]));
+
+        return CompletableFuture.completedFuture(response);
     }
 
     private CompletableFuture<UnregisterNodesResponse> unregisterNodes(UnregisterNodesRequest request, Session session) {
@@ -247,11 +248,9 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         server.getAddressSpaceManager().unregisterNodes(unregisterNodesContext, nodeIds);
 
-        return unregisterNodesContext.getFuture().thenApply(registeredNodeIds -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new UnregisterNodesResponse(header);
-        });
+        return CompletableFuture.completedFuture(new UnregisterNodesResponse(header));
     }
 
 }

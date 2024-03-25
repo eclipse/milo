@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -38,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,16 +114,6 @@ public abstract class ManagedAddressSpace implements AddressSpace {
         logger.debug("Got {} references for {}", references.size(), nodeId);
 
         return references;
-    }
-
-    @Override
-    public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
-        context.success(nodeIds);
-    }
-
-    @Override
-    public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
-        context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
     }
 
     @Override
@@ -213,7 +201,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
      */
     @Override
-    public void call(CallContext context, List<CallMethodRequest> requests) {
+    public List<CallMethodResult> call(CallContext context, List<CallMethodRequest> requests) {
         var results = new ArrayList<CallMethodResult>(requests.size());
 
         Semaphore semaphore = context.getSession()
@@ -267,7 +255,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             }
         }
 
-        context.success(results);
+        return results;
     }
 
     /**

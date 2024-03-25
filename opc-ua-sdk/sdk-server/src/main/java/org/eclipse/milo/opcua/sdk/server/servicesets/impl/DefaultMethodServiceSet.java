@@ -72,16 +72,21 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        session.getSessionDiagnostics().getCallCount().record(callContext.getFuture());
-        session.getSessionDiagnostics().getTotalRequestCount().record(callContext.getFuture());
+        try {
+            List<CallMethodResult> results = server.getAddressSpaceManager().call(callContext, methodsToCall);
 
-        server.getAddressSpaceManager().call(callContext, methodsToCall);
-
-        return callContext.getFuture().thenApply(values -> {
             ResponseHeader header = createResponseHeader(request);
 
-            return new CallResponse(header, values.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
-        });
+            var response = new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
+
+            return CompletableFuture.completedFuture(response);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getCallCount().incrementErrorCount();
+
+            return CompletableFuture.failedFuture(e);
+        } finally {
+            session.getSessionDiagnostics().getCallCount().incrementTotalCount();
+        }
     }
 
 }
