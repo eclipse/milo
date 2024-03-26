@@ -491,7 +491,7 @@ public class BrowseHelper {
 
         private final List<ReferenceDescription> references;
         private final int max;
-        private final ByteString identifier;
+        public final ByteString identifier;
 
         public BrowseContinuationPoint(List<ReferenceDescription> references, int max) {
             this(references, max, generateId());

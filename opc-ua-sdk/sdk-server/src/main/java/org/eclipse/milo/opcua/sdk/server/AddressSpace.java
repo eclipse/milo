@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -316,30 +315,66 @@ public interface AddressSpace {
     //region View Services
 
     /**
-     * Get all References for which {@code nodeId} is the source.
-     * <p>
-     * If a Node instance for {@code nodeId} does not exist then a {@link UaException} with
-     * {@link StatusCodes#Bad_NodeIdUnknown} should be thrown.
+     * The result of an {@link AddressSpace} browse or gather operation.
+     *
+     * @see AddressSpace#browse(BrowseContext, ViewDescription, List)
+     * @see AddressSpace#gather(BrowseContext, ViewDescription, NodeId)
+     */
+    sealed interface ReferenceResult {
+
+        /**
+         * The NodeId being browsed is unknown to the {@link AddressSpace}.
+         */
+        record BadNodeIdUnknown() implements ReferenceResult {}
+
+        /**
+         * The {@link AddressSpace} being browsed or gathered has references to contribute.
+         *
+         * @param references the {@link Reference}s being contributed.
+         */
+        record ReferenceList(List<Reference> references) implements ReferenceResult {}
+
+        static ReferenceList of(List<Reference> references) {
+            return new ReferenceList(references);
+        }
+
+        static BadNodeIdUnknown unknown() {
+            return new BadNodeIdUnknown();
+        }
+
+    }
+
+    /**
+     * For each {@link NodeId} in {@code nodeIds} return the References for which that
+     * {@link NodeId} is the source.
+     *
+     * <p> If the NodeId is unknown to this AddressSpace then return
+     * {@link ReferenceResult.BadNodeIdUnknown}.
+     *
+     * <p> If this AddressSpace has References to contribute then return
+     * {@link ReferenceResult.ReferenceList} containing the References.
      *
      * @param context the {@link BrowseContext}.
      * @param view the {@link ViewDescription}.
-     * @param nodeId the {@link NodeId} to browse.
-     * @return a List of {@link Reference}s for which {@code nodeId} is the source.
+     * @param nodeIds the {@link NodeId}s to browse.
+     * @return a List of {@link ReferenceResult}s for each {@link NodeId}.
      */
-    List<Reference> browse(BrowseContext context, ViewDescription view, NodeId nodeId) throws UaException;
+    List<ReferenceResult> browse(BrowseContext context, ViewDescription view, List<NodeId> nodeIds);
 
     /**
-     * References for which {@code nodeId} is the source are being collected from all AddressSpace instances.
-     * Return any References where {@code nodeId} is the source this AddressSpace may have to contribute.
-     * <p>
-     * The Node identified by {@code nodeId} may be managed by another AddressSpace.
+     * References for which {@code nodeId} is the source are being gathered from all AddressSpace
+     * instances. Return any References where {@code nodeId} is the source this AddressSpace may
+     * have to contribute.
+     *
+     * <p> The Node identified by {@code nodeId} may be managed by another AddressSpace, i.e. the
+     * NodeId References are being gathered for did not pass any {@link AddressSpaceFilter}.
      *
      * @param context the {@link BrowseContext}.
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to get references fo.
-     * @return a List of {@link Reference}s for which {@code nodeId} is the source.
+     * @return a {@link ReferenceResult.ReferenceList} containing the gathered {@link Reference}s.
      */
-    List<Reference> getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
+    ReferenceResult.ReferenceList gather(BrowseContext context, ViewDescription view, NodeId nodeId);
 
     /**
      * Register one or more {@link NodeId}s.

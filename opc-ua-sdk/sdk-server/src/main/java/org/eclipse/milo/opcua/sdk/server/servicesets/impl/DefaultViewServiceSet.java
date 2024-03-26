@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.RegisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.UnregisterNodesContext;
@@ -21,6 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.ViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper2;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
@@ -186,22 +185,34 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             return failedUaFuture(StatusCodes.Bad_ViewIdUnknown);
         }
 
-        Stream<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream().map(
-            browseDescription ->
-                browseHelper.browse(
-                    () -> Optional.of(session),
-                    server,
-                    request.getView(),
-                    request.getRequestedMaxReferencesPerNode(),
-                    browseDescription
-                )
+
+        List<BrowseResult> results = BrowseHelper2.browse(server, () -> Optional.of(session), request);
+
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new BrowseResponse(
+            header,
+            results.toArray(BrowseResult[]::new),
+            new DiagnosticInfo[0]
         );
 
-        return FutureUtils.sequence(futures).thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
-
-            return new BrowseResponse(header, results.toArray(BrowseResult[]::new), new DiagnosticInfo[0]);
-        });
+        return CompletableFuture.completedFuture(response);
+//        Stream<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream().map(
+//            browseDescription ->
+//                browseHelper.browse(
+//                    () -> Optional.of(session),
+//                    server,
+//                    request.getView(),
+//                    request.getRequestedMaxReferencesPerNode(),
+//                    browseDescription
+//                )
+//        );
+//
+//        return FutureUtils.sequence(futures).thenApply(results -> {
+//            ResponseHeader header = createResponseHeader(request);
+//
+//            return new BrowseResponse(header, results.toArray(BrowseResult[]::new), new DiagnosticInfo[0]);
+//        });
     }
 
     private RegisterNodesResponse registerNodes(

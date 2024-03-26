@@ -95,25 +95,31 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     }
 
     @Override
-    public List<Reference> browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) throws UaException {
-        if (nodeManager.containsNode(nodeId)) {
-            List<Reference> references = nodeManager.getReferences(nodeId);
+    public List<ReferenceResult> browse(BrowseContext context, ViewDescription view, List<NodeId> nodeIds) {
+        var results = new ArrayList<ReferenceResult>();
 
-            logger.debug("Browsed {} references for {}", references.size(), nodeId);
+        for (NodeId nodeId : nodeIds) {
+            if (nodeManager.containsNode(nodeId)) {
+                List<Reference> references = nodeManager.getReferences(nodeId);
 
-            return references;
-        } else {
-            throw new UaException(StatusCodes.Bad_NodeIdUnknown);
+                logger.debug("Browsed {} references for {}", references.size(), nodeId);
+
+                results.add(ReferenceResult.of(references));
+            } else {
+                results.add(ReferenceResult.unknown());
+            }
         }
+
+        return results;
     }
 
     @Override
-    public List<Reference> getReferences(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
+    public ReferenceResult.ReferenceList gather(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
         List<Reference> references = nodeManager.getReferences(nodeId);
 
         logger.debug("Got {} references for {}", references.size(), nodeId);
 
-        return references;
+        return ReferenceResult.of(references);
     }
 
     @Override
