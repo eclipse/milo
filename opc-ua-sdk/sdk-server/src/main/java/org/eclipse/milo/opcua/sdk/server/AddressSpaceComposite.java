@@ -176,12 +176,6 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
         );
 
         for (AddressSpace asx : addressSpaces) {
-            // TODO re-use this context once it's not an async operation
-            browseContext = new BrowseContext(
-                getServer(),
-                context.getSession().orElse(null)
-            );
-
             references.addAll(asx.getReferences(browseContext, view, nodeId));
         }
 

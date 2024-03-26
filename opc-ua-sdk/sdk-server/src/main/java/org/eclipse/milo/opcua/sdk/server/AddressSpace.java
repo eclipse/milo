@@ -69,6 +69,7 @@ public interface AddressSpace {
      *
      * @param context the {@link WriteContext}.
      * @param writeValues the values to write.
+     * @return the {@link StatusCode}s for each write.
      */
     List<StatusCode> write(WriteContext context, List<WriteValue> writeValues);
 
@@ -78,6 +79,7 @@ public interface AddressSpace {
      * @param context the {@link HistoryReadContext}.
      * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
+     * @return the {@link HistoryReadResult}s read.
      */
     default List<HistoryReadResult> historyRead(
         HistoryReadContext context,
@@ -100,6 +102,7 @@ public interface AddressSpace {
      *
      * @param context the {@link HistoryUpdateContext}.
      * @param updateDetails the values to read.
+     * @return the {@link HistoryUpdateResult}s for each update.
      */
     default List<HistoryUpdateResult> historyUpdate(
         HistoryUpdateContext context,
@@ -124,6 +127,7 @@ public interface AddressSpace {
      *
      * @param context the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
+     * @return the {@link CallMethodResult}s for each method invocation.
      */
     default List<CallMethodResult> call(CallContext context, List<CallMethodRequest> requests) {
         CallMethodResult result = new CallMethodResult(
@@ -251,24 +255,21 @@ public interface AddressSpace {
      *
      * @param eventItems the {@link EventItem}s that were created.
      */
-    default void onEventItemsCreated(List<EventItem> eventItems) {
-    }
+    default void onEventItemsCreated(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been modified for nodes belonging to this {@link AddressSpace}.
      *
      * @param eventItems the {@link EventItem}s that were modified.
      */
-    default void onEventItemsModified(List<EventItem> eventItems) {
-    }
+    default void onEventItemsModified(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been deleted for nodes belonging to this {@link AddressSpace}.
      *
      * @param eventItems the {@link EventItem}s that were deleted.
      */
-    default void onEventItemsDeleted(List<EventItem> eventItems) {
-    }
+    default void onEventItemsDeleted(List<EventItem> eventItems) {}
 
     /**
      * {@link MonitoredItem}s have had their {@link MonitoringMode} modified by a client.
@@ -323,6 +324,7 @@ public interface AddressSpace {
      * @param context the {@link BrowseContext}.
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to browse.
+     * @return a List of {@link Reference}s for which {@code nodeId} is the source.
      */
     List<Reference> browse(BrowseContext context, ViewDescription view, NodeId nodeId) throws UaException;
 
@@ -335,6 +337,7 @@ public interface AddressSpace {
      * @param context the {@link BrowseContext}.
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to get references fo.
+     * @return a List of {@link Reference}s for which {@code nodeId} is the source.
      */
     List<Reference> getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
@@ -343,6 +346,7 @@ public interface AddressSpace {
      *
      * @param context the {@link RegisterNodesContext}.
      * @param nodeIds the {@link NodeId}s to register.
+     * @return the registered {@link NodeId}s.
      */
     default List<NodeId> registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
         return nodeIds;

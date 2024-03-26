@@ -46,8 +46,10 @@ public interface SubscriptionServiceSet {
     SetPublishingModeResponse onSetPublishingMode(
         ServiceRequestContext context, SetPublishingModeRequest request) throws UaException;
 
-    RepublishResponse onRepublish(ServiceRequestContext context, RepublishRequest request) throws UaException;
+    RepublishResponse onRepublish(
+        ServiceRequestContext context, RepublishRequest request) throws UaException;
 
-    CompletableFuture<PublishResponse> onPublish(ServiceRequestContext context, PublishRequest request);
+    CompletableFuture<PublishResponse> onPublish(
+        ServiceRequestContext context, PublishRequest request);
 
 }
