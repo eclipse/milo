@@ -179,18 +179,28 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             ReferenceResult initialResult = initialResults.get(i);
 
             if (initialResult instanceof ReferenceList rl) {
+                final var references = new LinkedHashSet<>(rl.references());
+
+                // Gather additional references from all AddressSpaces except
+                // the first, which is the one we called browse on above.
+
                 var browseContext = new BrowseContext(
                     getServer(),
                     context.getSession().orElse(null)
                 );
 
-                var references = new LinkedHashSet<>(rl.references());
+                AddressSpaceFragment first = getAddressSpace(
+                    asx ->
+                        asx.getFilter().filterBrowse(server, nodeId)
+                );
 
                 for (AddressSpace asx : addressSpaces) {
-                    ReferenceList gatherResult =
-                        asx.gather(browseContext, view, nodeId);
+                    if (asx != first) {
+                        ReferenceList gatherResult =
+                            asx.gather(browseContext, view, nodeId);
 
-                    references.addAll(gatherResult.references());
+                        references.addAll(gatherResult.references());
+                    }
                 }
 
                 finalResults.add(ReferenceResult.of(new ArrayList<>(references)));
