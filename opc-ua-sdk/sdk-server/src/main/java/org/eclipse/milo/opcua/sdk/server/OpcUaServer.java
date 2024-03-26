@@ -518,7 +518,28 @@ public class OpcUaServer extends AbstractServiceHandler {
                     AsyncServiceHandler asyncServiceHandler = (AsyncServiceHandler) serviceHandler;
 
                     CompletableFuture<UaResponseMessageType> response =
-                        asyncServiceHandler.handleAsync(context, requestMessage);
+                        asyncServiceHandler.handleAsync(context, requestMessage).whenComplete((r, ex) -> {
+                            if (ex != null) {
+                                logger.warn(
+                                    "Service request completed exceptionally: path={} handle={} service={} remote={}",
+                                    path,
+                                    requestMessage.getRequestHeader().getRequestHandle(),
+                                    service,
+                                    context.getChannel().remoteAddress(),
+                                    ex
+                                );
+                            } else {
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace(
+                                        "Service request completed: path={} handle={} service={} remote={}",
+                                        path,
+                                        requestMessage.getRequestHeader().getRequestHandle(),
+                                        service,
+                                        context.getChannel().remoteAddress()
+                                    );
+                                }
+                            }
+                        });
 
                     FutureUtils.complete(future).with(response);
                 } else {
