@@ -73,25 +73,25 @@ public abstract class AbstractServiceHandler {
     private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
 
     public void addServiceSet(String path, AttributeServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_READ,
             (context, request) ->
                 serviceSet.onRead(context, (ReadRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_HISTORY_READ,
             (context, request) ->
                 serviceSet.onHistoryRead(context, (HistoryReadRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_WRITE,
             (context, request) ->
                 serviceSet.onWrite(context, (WriteRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_HISTORY_UPDATE,
             (context, request) ->
@@ -100,31 +100,31 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, DiscoveryServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_FIND_SERVERS,
             (context, request) ->
                 serviceSet.onFindServers(context, (FindServersRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_FIND_SERVERS_ON_NETWORK,
             (context, request) ->
                 serviceSet.onFindServersOnNetwork(context, (FindServersOnNetworkRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_GET_ENDPOINTS,
             (context, request) ->
                 serviceSet.onGetEndpoints(context, (GetEndpointsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_REGISTER_SERVER,
             (context, request) ->
                 serviceSet.onRegisterServer(context, (RegisterServerRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_REGISTER_SERVER_2,
             (context, request) ->
@@ -133,7 +133,7 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, MethodServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.METHOD_CALL,
             (context, request) ->
@@ -142,31 +142,31 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, MonitoredItemServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_CREATE_MONITORED_ITEMS,
             (context, request) ->
                 serviceSet.onCreateMonitoredItems(context, (CreateMonitoredItemsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_MODIFY_MONITORED_ITEMS,
             (context, request) ->
                 serviceSet.onModifyMonitoredItems(context, (ModifyMonitoredItemsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_DELETE_MONITORED_ITEMS,
             (context, request) ->
                 serviceSet.onDeleteMonitoredItems(context, (DeleteMonitoredItemsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_SET_MONITORING_MODE,
             (context, request) ->
                 serviceSet.onSetMonitoringMode(context, (SetMonitoringModeRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_SET_TRIGGERING,
             (context, request) ->
@@ -175,25 +175,25 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, NodeManagementServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_ADD_NODES,
             (context, request) ->
                 serviceSet.onAddNodes(context, (AddNodesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_DELETE_NODES,
             (context, request) ->
                 serviceSet.onDeleteNodes(context, (DeleteNodesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_ADD_REFERENCES,
             (context, request) ->
                 serviceSet.onAddReferences(context, (AddReferencesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_DELETE_REFERENCES,
             (context, request) ->
@@ -202,25 +202,25 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, SessionServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_CREATE_SESSION,
             (context, request) ->
                 serviceSet.onCreateSession(context, (CreateSessionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_ACTIVATE_SESSION,
             (context, request) ->
                 serviceSet.onActivateSession(context, (ActivateSessionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_CLOSE_SESSION,
             (context, request) ->
                 serviceSet.onCloseSession(context, (CloseSessionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_CANCEL,
             (context, request) ->
@@ -229,68 +229,47 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, SubscriptionServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_CREATE_SUBSCRIPTION,
             (context, request) ->
                 serviceSet.onCreateSubscription(context, (CreateSubscriptionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_MODIFY_SUBSCRIPTION,
             (context, request) ->
                 serviceSet.onModifySubscription(context, (ModifySubscriptionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_DELETE_SUBSCRIPTIONS,
             (context, request) ->
                 serviceSet.onDeleteSubscriptions(context, (DeleteSubscriptionsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_TRANSFER_SUBSCRIPTIONS,
             (context, request) ->
                 serviceSet.onTransferSubscriptions(context, (TransferSubscriptionsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_SET_PUBLISHING_MODE,
             (context, request) ->
                 serviceSet.onSetPublishingMode(context, (SetPublishingModeRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_PUBLISH,
-            new AsyncServiceHandler() {
-                @Override
-                public CompletableFuture<UaResponseMessageType> handleAsync(
-                    ServiceRequestContext context, UaRequestMessageType requestMessage) {
+            (AsyncServiceHandler) (context, requestMessage) -> {
+                CompletableFuture<PublishResponse> future =
+                    serviceSet.onPublish(context, (PublishRequest) requestMessage);
 
-                    CompletableFuture<PublishResponse> future =
-                        serviceSet.onPublish(context, (PublishRequest) requestMessage);
-
-                    return future.thenApply(Function.identity());
-                }
-
-                @Override
-                public UaResponseMessageType handle(
-                    ServiceRequestContext context,
-                    UaRequestMessageType requestMessage
-                ) throws UaException {
-
-                    try {
-                        return handleAsync(context, requestMessage).get();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new UaException(StatusCodes.Bad_UnexpectedError, e);
-                    } catch (ExecutionException e) {
-                        throw UaException.extract(e).orElse(new UaException(e));
-                    }
-                }
+                return future.thenApply(Function.identity());
             }
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_REPUBLISH,
             (context, request) ->
@@ -299,31 +278,31 @@ public abstract class AbstractServiceHandler {
     }
 
     public void addServiceSet(String path, ViewServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_BROWSE,
             (context, request) ->
                 serviceSet.onBrowse(context, (BrowseRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_BROWSE_NEXT,
             (context, request) ->
                 serviceSet.onBrowseNext(context, (BrowseNextRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_TRANSLATE_BROWSE_PATHS,
             (context, request) ->
                 serviceSet.onTranslateBrowsePaths(context, (TranslateBrowsePathsToNodeIdsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_REGISTER_NODES,
             (context, request) ->
                 serviceSet.onRegisterNodes(context, (RegisterNodesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_UNREGISTER_NODES,
             (context, request) ->
@@ -342,7 +321,7 @@ public abstract class AbstractServiceHandler {
     protected interface ServiceHandler {
 
         /**
-         * Handle a service request, returning a service response.
+         * Handle a service request, returning the corresponding service response.
          *
          * @param context the {@link ServiceRequestContext}.
          * @param requestMessage the {@link UaRequestMessageType} to handle.
@@ -355,6 +334,31 @@ public abstract class AbstractServiceHandler {
 
     protected interface AsyncServiceHandler extends ServiceHandler {
 
+        @Override
+        default UaResponseMessageType handle(
+            ServiceRequestContext context,
+            UaRequestMessageType requestMessage
+        ) throws UaException {
+
+            try {
+                return handleAsync(context, requestMessage).get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+            } catch (ExecutionException e) {
+                throw UaException.extract(e).orElse(new UaException(e));
+            }
+        }
+
+        /**
+         * Handle a service request asynchronously, returning a {@link CompletableFuture} that
+         * completes with the corresponding service response.
+         *
+         * @param context the {@link ServiceRequestContext}.
+         * @param requestMessage the {@link UaRequestMessageType} to handle.
+         * @return a {@link CompletableFuture} that completes with the corresponding service
+         *     response.
+         */
         CompletableFuture<UaResponseMessageType> handleAsync(
             ServiceRequestContext context, UaRequestMessageType requestMessage);
 
