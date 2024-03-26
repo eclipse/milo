@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
@@ -26,27 +25,19 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface DiscoveryServiceSet {
 
+    FindServersResponse onFindServers(
+        ServiceRequestContext context, FindServersRequest request) throws UaException;
 
-    CompletableFuture<FindServersResponse> onFindServers(ServiceRequestContext context, FindServersRequest request);
+    FindServersOnNetworkResponse onFindServersOnNetwork(
+        ServiceRequestContext context, FindServersOnNetworkRequest request) throws UaException;
 
-    CompletableFuture<FindServersOnNetworkResponse> onFindServersOnNetwork(
-        ServiceRequestContext context,
-        FindServersOnNetworkRequest request
-    );
+    GetEndpointsResponse onGetEndpoints(
+        ServiceRequestContext context, GetEndpointsRequest request) throws UaException;
 
-    CompletableFuture<GetEndpointsResponse> onGetEndpoints(
-        ServiceRequestContext context,
-        GetEndpointsRequest request
-    );
+    RegisterServerResponse onRegisterServer(
+        ServiceRequestContext context, RegisterServerRequest request) throws UaException;
 
-    CompletableFuture<RegisterServerResponse> onRegisterServer(
-        ServiceRequestContext context,
-        RegisterServerRequest request
-    );
-
-    CompletableFuture<RegisterServer2Response> onRegisterServer2(
-        ServiceRequestContext context,
-        RegisterServer2Request request
-    );
+    RegisterServer2Response onRegisterServer2(
+        ServiceRequestContext context, RegisterServer2Request request) throws UaException;
 
 }

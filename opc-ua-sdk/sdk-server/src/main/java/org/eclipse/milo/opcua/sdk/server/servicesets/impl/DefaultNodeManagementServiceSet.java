@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddReferencesContext;
@@ -43,7 +42,6 @@ import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
 
@@ -54,90 +52,88 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     }
 
     @Override
-    public CompletableFuture<AddNodesResponse> onAddNodes(ServiceRequestContext context, AddNodesRequest request) {
-        Session session;
+    public AddNodesResponse onAddNodes(
+        ServiceRequestContext context, AddNodesRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
+            return addNodes(request, session);
         } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            session.getSessionDiagnostics().getDeleteNodesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getDeleteNodesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<AddNodesResponse> future = addNodes(request, session);
-
-        session.getSessionDiagnostics().getAddNodesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<DeleteNodesResponse> onDeleteNodes(ServiceRequestContext context, DeleteNodesRequest request) {
-        Session session;
+    public DeleteNodesResponse onDeleteNodes(
+        ServiceRequestContext context, DeleteNodesRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
+            return deleteNodes(request, session);
         } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            session.getSessionDiagnostics().getDeleteNodesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getDeleteNodesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<DeleteNodesResponse> future = deleteNodes(request, session);
-
-        session.getSessionDiagnostics().getDeleteNodesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<AddReferencesResponse> onAddReferences(ServiceRequestContext context, AddReferencesRequest request) {
-        Session session;
+    public AddReferencesResponse onAddReferences(ServiceRequestContext context, AddReferencesRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
+            return addReferences(request, session);
         } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            session.getSessionDiagnostics().getAddReferencesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getAddReferencesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<AddReferencesResponse> future = addReferences(request, session);
-
-        session.getSessionDiagnostics().getAddReferencesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<DeleteReferencesResponse> onDeleteReferences(ServiceRequestContext context, DeleteReferencesRequest request) {
-        Session session;
+    public DeleteReferencesResponse onDeleteReferences(ServiceRequestContext context, DeleteReferencesRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
+            return deleteReferences(request, session);
         } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            session.getSessionDiagnostics().getDeleteReferencesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getDeleteReferencesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<DeleteReferencesResponse> future = deleteReferences(request, session);
-
-        session.getSessionDiagnostics().getDeleteReferencesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
-    private CompletableFuture<AddNodesResponse> addNodes(AddNodesRequest request, Session session) {
+    private AddNodesResponse addNodes(
+        AddNodesRequest request, Session session) throws UaException {
+
         List<AddNodesItem> nodesToAdd = Lists.ofNullable(request.getNodesToAdd());
 
         if (nodesToAdd.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodesToAdd.size() > server.getConfig().getLimits().getMaxNodesPerNodeManagement().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var addNodesContext = new AddNodesContext(
@@ -153,24 +149,24 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         ResponseHeader header = createResponseHeader(request);
 
-        var response = new AddNodesResponse(
+        return new AddNodesResponse(
             header,
             results.toArray(AddNodesResult[]::new),
             new DiagnosticInfo[0]
         );
-
-        return CompletableFuture.completedFuture(response);
     }
 
-    private CompletableFuture<DeleteNodesResponse> deleteNodes(DeleteNodesRequest request, Session session) {
+    private DeleteNodesResponse deleteNodes(
+        DeleteNodesRequest request, Session session) throws UaException {
+
         List<DeleteNodesItem> nodesToDelete = Lists.ofNullable(request.getNodesToDelete());
 
         if (nodesToDelete.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodesToDelete.size() > server.getConfig().getLimits().getMaxNodesPerNodeManagement().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var deleteNodesContext = new DeleteNodesContext(
@@ -186,24 +182,24 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         ResponseHeader header = createResponseHeader(request);
 
-        var response = new DeleteNodesResponse(
+        return new DeleteNodesResponse(
             header,
             results.toArray(StatusCode[]::new),
             new DiagnosticInfo[0]
         );
-
-        return CompletableFuture.completedFuture(response);
     }
 
-    private CompletableFuture<AddReferencesResponse> addReferences(AddReferencesRequest request, Session session) {
+    private AddReferencesResponse addReferences(
+        AddReferencesRequest request, Session session) throws UaException {
+
         List<AddReferencesItem> referencesToAdd = Lists.ofNullable(request.getReferencesToAdd());
 
         if (referencesToAdd.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (referencesToAdd.size() > server.getConfig().getLimits().getMaxNodesPerNodeManagement().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var addReferencesContext = new AddReferencesContext(
@@ -215,32 +211,29 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        List<StatusCode> results = server.getAddressSpaceManager().addReferences(addReferencesContext, referencesToAdd);
+        List<StatusCode> results = server.getAddressSpaceManager()
+            .addReferences(addReferencesContext, referencesToAdd);
 
         ResponseHeader header = createResponseHeader(request);
 
-        var response = new AddReferencesResponse(
+        return new AddReferencesResponse(
             header,
             results.toArray(new StatusCode[0]),
             new DiagnosticInfo[0]
         );
-
-        return CompletableFuture.completedFuture(response);
     }
 
-    private CompletableFuture<DeleteReferencesResponse> deleteReferences(
-        DeleteReferencesRequest request,
-        Session session
-    ) {
+    private DeleteReferencesResponse deleteReferences(
+        DeleteReferencesRequest request, Session session) throws UaException {
 
         List<DeleteReferencesItem> referencesToDelete = Lists.ofNullable(request.getReferencesToDelete());
 
         if (referencesToDelete.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (referencesToDelete.size() > server.getConfig().getLimits().getMaxNodesPerNodeManagement().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var deleteReferencesContext = new DeleteReferencesContext(
@@ -257,13 +250,11 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         ResponseHeader header = createResponseHeader(request);
 
-        var response = new DeleteReferencesResponse(
+        return new DeleteReferencesResponse(
             header,
             results.toArray(StatusCode[]::new),
             new DiagnosticInfo[0]
         );
-
-        return CompletableFuture.completedFuture(response);
     }
 
 }

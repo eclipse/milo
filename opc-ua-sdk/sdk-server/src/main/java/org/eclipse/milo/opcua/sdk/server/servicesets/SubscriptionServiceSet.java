@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.servicesets;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
@@ -30,33 +31,23 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface SubscriptionServiceSet {
 
-    CompletableFuture<CreateSubscriptionResponse> onCreateSubscription(
-        ServiceRequestContext context,
-        CreateSubscriptionRequest request
-    );
+    CreateSubscriptionResponse onCreateSubscription(
+        ServiceRequestContext context, CreateSubscriptionRequest request) throws UaException;
 
-    CompletableFuture<ModifySubscriptionResponse> onModifySubscription(
-        ServiceRequestContext context,
-        ModifySubscriptionRequest request
-    );
+    ModifySubscriptionResponse onModifySubscription(
+        ServiceRequestContext context, ModifySubscriptionRequest request) throws UaException;
 
-    CompletableFuture<DeleteSubscriptionsResponse> onDeleteSubscriptions(
-        ServiceRequestContext context,
-        DeleteSubscriptionsRequest request
-    );
+    DeleteSubscriptionsResponse onDeleteSubscriptions(
+        ServiceRequestContext context, DeleteSubscriptionsRequest request) throws UaException;
 
-    CompletableFuture<TransferSubscriptionsResponse> onTransferSubscriptions(
-        ServiceRequestContext context,
-        TransferSubscriptionsRequest request
-    );
+    TransferSubscriptionsResponse onTransferSubscriptions(
+        ServiceRequestContext context, TransferSubscriptionsRequest request) throws UaException;
 
-    CompletableFuture<SetPublishingModeResponse> onSetPublishingMode(
-        ServiceRequestContext context,
-        SetPublishingModeRequest request
-    );
+    SetPublishingModeResponse onSetPublishingMode(
+        ServiceRequestContext context, SetPublishingModeRequest request) throws UaException;
+
+    RepublishResponse onRepublish(ServiceRequestContext context, RepublishRequest request) throws UaException;
 
     CompletableFuture<PublishResponse> onPublish(ServiceRequestContext context, PublishRequest request);
-
-    CompletableFuture<RepublishResponse> onRepublish(ServiceRequestContext context, RepublishRequest request);
 
 }

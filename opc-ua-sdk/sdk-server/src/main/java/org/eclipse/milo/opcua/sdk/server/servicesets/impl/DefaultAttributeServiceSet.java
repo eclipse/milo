@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,7 +49,6 @@ import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static java.util.Objects.requireNonNullElse;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultAttributeServiceSet extends AbstractServiceSet implements AttributeServiceSet {
 
@@ -61,32 +59,26 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
     }
 
     @Override
-    public CompletableFuture<ReadResponse> onRead(ServiceRequestContext context, ReadRequest request) {
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
-        }
+    public ReadResponse onRead(ServiceRequestContext context, ReadRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
         List<ReadValueId> nodesToRead = Lists.ofNullable(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodesToRead.size() > server.getConfig().getLimits().getMaxNodesPerRead().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         if (request.getMaxAge() < 0d) {
-            return failedUaFuture(StatusCodes.Bad_MaxAgeInvalid);
+            throw new UaException(StatusCodes.Bad_MaxAgeInvalid);
         }
 
         if (request.getTimestampsToReturn() == null) {
-            return failedUaFuture(StatusCodes.Bad_TimestampsToReturnInvalid);
+            throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
@@ -113,45 +105,35 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
 
             ResponseHeader header = createResponseHeader(request);
 
-            var response = new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
-
-            return CompletableFuture.completedFuture(response);
+            return new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
         } catch (Exception e) {
             session.getSessionDiagnostics().getReadCount().incrementErrorCount();
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         } finally {
             session.getSessionDiagnostics().getReadCount().incrementTotalCount();
         }
     }
 
     @Override
-    public CompletableFuture<HistoryReadResponse> onHistoryRead(
-        ServiceRequestContext context,
-        HistoryReadRequest request
-    ) {
+    public HistoryReadResponse onHistoryRead(
+        ServiceRequestContext context, HistoryReadRequest request) throws UaException {
 
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
-        }
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
         List<HistoryReadValueId> nodesToRead = Lists.ofNullable(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodesToRead.size() > server.getConfig().getLimits().getMaxNodesPerRead().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         if (request.getTimestampsToReturn() == null) {
-            return failedUaFuture(StatusCodes.Bad_TimestampsToReturnInvalid);
+            throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
         var diagnosticsContext = new DiagnosticsContext<HistoryReadValueId>();
@@ -181,37 +163,29 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            var response = new HistoryReadResponse(header, results.toArray(HistoryReadResult[]::new), diagnosticInfos);
-
-            return CompletableFuture.completedFuture(response);
+            return new HistoryReadResponse(header, results.toArray(HistoryReadResult[]::new), diagnosticInfos);
         } catch (Exception e) {
             session.getSessionDiagnostics().getHistoryReadCount().incrementErrorCount();
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         } finally {
             session.getSessionDiagnostics().getHistoryReadCount().incrementTotalCount();
         }
     }
 
     @Override
-    public CompletableFuture<WriteResponse> onWrite(ServiceRequestContext context, WriteRequest request) {
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
-        }
+    public WriteResponse onWrite(ServiceRequestContext context, WriteRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
         List<WriteValue> nodesToWrite = Lists.ofNullable(request.getNodesToWrite());
 
         if (nodesToWrite.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodesToWrite.size() > server.getConfig().getLimits().getMaxNodesPerWrite().intValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var diagnosticsContext = new DiagnosticsContext<WriteValue>();
@@ -233,32 +207,22 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToWrite);
 
-            var response = new WriteResponse(header, results.toArray(StatusCode[]::new), diagnosticInfos);
-
-            return CompletableFuture.completedFuture(response);
+            return new WriteResponse(header, results.toArray(StatusCode[]::new), diagnosticInfos);
         } catch (Exception e) {
             session.getSessionDiagnostics().getWriteCount().incrementErrorCount();
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         } finally {
             session.getSessionDiagnostics().getWriteCount().incrementTotalCount();
         }
     }
 
     @Override
-    public CompletableFuture<HistoryUpdateResponse> onHistoryUpdate(
-        ServiceRequestContext context,
-        HistoryUpdateRequest request
-    ) {
+    public HistoryUpdateResponse onHistoryUpdate(
+        ServiceRequestContext context, HistoryUpdateRequest request) throws UaException {
 
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
-        }
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
         var historyUpdateDetails =
             requireNonNullElse(request.getHistoryUpdateDetails(), new ExtensionObject[0]);
@@ -268,11 +232,11 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             .collect(Collectors.toList());
 
         if (historyUpdateDetailsList.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (historyUpdateDetailsList.size() > server.getConfig().getLimits().getMaxNodesPerWrite().intValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var diagnosticsContext = new DiagnosticsContext<HistoryUpdateDetails>();
@@ -295,14 +259,12 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(historyUpdateDetailsList);
 
-            var response = new HistoryUpdateResponse(
+            return new HistoryUpdateResponse(
                 header, results.toArray(HistoryUpdateResult[]::new), diagnosticInfos);
-
-            return CompletableFuture.completedFuture(response);
         } catch (Exception e) {
             session.getSessionDiagnostics().getHistoryUpdateCount().incrementErrorCount();
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         } finally {
             session.getSessionDiagnostics().getHistoryUpdateCount().incrementTotalCount();
         }

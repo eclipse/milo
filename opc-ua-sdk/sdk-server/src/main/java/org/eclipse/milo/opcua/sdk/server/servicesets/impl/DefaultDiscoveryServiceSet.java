@@ -13,13 +13,13 @@ package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.server.EndpointConfig;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.servicesets.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
 
@@ -53,7 +52,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
     }
 
     @Override
-    public CompletableFuture<GetEndpointsResponse> onGetEndpoints(ServiceRequestContext context, GetEndpointsRequest request) {
+    public GetEndpointsResponse onGetEndpoints(ServiceRequestContext context, GetEndpointsRequest request) {
         List<String> profileUris = request.getProfileUris() != null ?
             List.of(request.getProfileUris()) :
             Collections.emptyList();
@@ -83,18 +82,16 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
             .distinct()
             .collect(toList());
 
-        var response = new GetEndpointsResponse(
+        return new GetEndpointsResponse(
             createResponseHeader(request),
             matchingEndpoints.isEmpty() ?
                 allEndpoints.toArray(new EndpointDescription[0]) :
                 matchingEndpoints.toArray(new EndpointDescription[0])
         );
-
-        return CompletableFuture.completedFuture(response);
     }
 
     @Override
-    public CompletableFuture<FindServersResponse> onFindServers(ServiceRequestContext context, FindServersRequest request) {
+    public FindServersResponse onFindServers(ServiceRequestContext context, FindServersRequest request) {
         List<String> serverUris = request.getServerUris() != null ?
             List.of(request.getServerUris()) :
             Collections.emptyList();
@@ -106,31 +103,35 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
             .filter(ad -> filterServerUris(ad, serverUris))
             .collect(toList());
 
-        var response = new FindServersResponse(
+        return new FindServersResponse(
             createResponseHeader(request),
             applicationDescriptions.toArray(new ApplicationDescription[0])
         );
-
-        return CompletableFuture.completedFuture(response);
     }
 
     @Override
-    public CompletableFuture<FindServersOnNetworkResponse> onFindServersOnNetwork(ServiceRequestContext context, FindServersOnNetworkRequest request) {
-        return failedUaFuture(StatusCodes.Bad_ServiceUnsupported);
+    public FindServersOnNetworkResponse onFindServersOnNetwork(
+        ServiceRequestContext context, FindServersOnNetworkRequest request) throws UaException {
+
+        throw new UaException(StatusCodes.Bad_ServiceUnsupported);
     }
 
     @Override
-    public CompletableFuture<RegisterServerResponse> onRegisterServer(ServiceRequestContext context, RegisterServerRequest request) {
-        return failedUaFuture(StatusCodes.Bad_ServiceUnsupported);
+    public RegisterServerResponse onRegisterServer(
+        ServiceRequestContext context, RegisterServerRequest request) throws UaException {
+
+        throw new UaException(StatusCodes.Bad_ServiceUnsupported);
     }
 
     @Override
-    public CompletableFuture<RegisterServer2Response> onRegisterServer2(ServiceRequestContext context, RegisterServer2Request request) {
-        return failedUaFuture(StatusCodes.Bad_ServiceUnsupported);
+    public RegisterServer2Response onRegisterServer2(
+        ServiceRequestContext context, RegisterServer2Request request) throws UaException {
+
+        throw new UaException(StatusCodes.Bad_ServiceUnsupported);
     }
 
     private boolean filterProfileUris(EndpointDescription endpoint, List<String> profileUris) {
-        return profileUris.size() == 0 || profileUris.contains(endpoint.getTransportProfileUri());
+        return profileUris.isEmpty() || profileUris.contains(endpoint.getTransportProfileUri());
     }
 
     private boolean filterEndpointUrls(EndpointDescription endpoint, String endpointUrl) {
@@ -212,7 +213,7 @@ public class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
     }
 
     private boolean filterServerUris(ApplicationDescription ad, List<String> serverUris) {
-        return serverUris.size() == 0 || serverUris.contains(ad.getApplicationUri());
+        return serverUris.isEmpty() || serverUris.contains(ad.getApplicationUri());
     }
 
 }

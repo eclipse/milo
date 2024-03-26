@@ -59,120 +59,114 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     @Override
-    public CompletableFuture<BrowseResponse> onBrowse(ServiceRequestContext context, BrowseRequest request) {
-        Session session;
+    public BrowseResponse onBrowse(ServiceRequestContext context, BrowseRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            return browse(request, session).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getBrowseCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getBrowseCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<BrowseResponse> future = browse(request, session);
-
-        session.getSessionDiagnostics().getBrowseCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<BrowseNextResponse> onBrowseNext(
+    public BrowseNextResponse onBrowseNext(
         ServiceRequestContext context,
         BrowseNextRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            BrowseResult[] results = browseHelper.browseNext(server, session, request).get();
+            ResponseHeader header = createResponseHeader(request);
+
+            return new BrowseNextResponse(header, results, new DiagnosticInfo[0]);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getBrowseNextCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getBrowseNextCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<BrowseNextResponse> future = browseHelper.browseNext(server, session, request)
-            .thenApply(results -> {
-                ResponseHeader header = createResponseHeader(request);
-
-                return new BrowseNextResponse(header, results, new DiagnosticInfo[0]);
-            });
-
-        session.getSessionDiagnostics().getBrowseNextCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> onTranslateBrowsePaths(
+    public TranslateBrowsePathsToNodeIdsResponse onTranslateBrowsePaths(
         ServiceRequestContext context,
         TranslateBrowsePathsToNodeIdsRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
+
+            return browsePathsHelper.translateBrowsePaths(request).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
-
-        CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> future =
-            browsePathsHelper.translateBrowsePaths(request);
-
-        session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<RegisterNodesResponse> onRegisterNodes(
+    public RegisterNodesResponse onRegisterNodes(
         ServiceRequestContext context,
         RegisterNodesRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return registerNodes(request, session).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getRegisterNodesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getRegisterNodesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<RegisterNodesResponse> future = registerNodes(request, session);
-
-        session.getSessionDiagnostics().getRegisterNodesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<UnregisterNodesResponse> onUnregisterNodes(
+    public UnregisterNodesResponse onUnregisterNodes(
         ServiceRequestContext context,
         UnregisterNodesRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return unregisterNodes(request, session).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getUnregisterNodesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getUnregisterNodesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<UnregisterNodesResponse> future = unregisterNodes(request, session);
-
-        session.getSessionDiagnostics().getUnregisterNodesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     private CompletableFuture<BrowseResponse> browse(BrowseRequest request, Session session) {

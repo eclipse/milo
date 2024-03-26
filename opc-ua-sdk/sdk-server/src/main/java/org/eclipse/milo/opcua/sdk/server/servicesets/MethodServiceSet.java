@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface MethodServiceSet {
 
-    CompletableFuture<CallResponse> onCall(ServiceRequestContext context, CallRequest request);
+    CallResponse onCall(ServiceRequestContext context, CallRequest request) throws UaException;
 
 }

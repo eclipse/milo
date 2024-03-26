@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.CallContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -30,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultMethodServiceSet implements MethodServiceSet {
 
@@ -41,24 +39,18 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
     }
 
     @Override
-    public CompletableFuture<CallResponse> onCall(ServiceRequestContext context, CallRequest request) {
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
-        }
+    public CallResponse onCall(ServiceRequestContext context, CallRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
         List<CallMethodRequest> methodsToCall = Lists.ofNullable(request.getMethodsToCall());
 
         if (methodsToCall.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (methodsToCall.size() > server.getConfig().getLimits().getMaxNodesPerMethodCall().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();
@@ -77,13 +69,11 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
 
             ResponseHeader header = createResponseHeader(request);
 
-            var response = new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
-
-            return CompletableFuture.completedFuture(response);
+            return new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
         } catch (Exception e) {
             session.getSessionDiagnostics().getCallCount().incrementErrorCount();
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         } finally {
             session.getSessionDiagnostics().getCallCount().incrementTotalCount();
         }
