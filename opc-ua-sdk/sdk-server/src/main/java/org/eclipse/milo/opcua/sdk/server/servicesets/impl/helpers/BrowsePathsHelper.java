@@ -146,15 +146,15 @@ public class BrowsePathsHelper {
         } else {
             RelativePathElement e = elements.get(0);
 
-            ExpandedNodeId nextExId = next(nodeId, e);
-            if (nextExId.isNull()) {
+            ExpandedNodeId nextXni = next(nodeId, e);
+            if (nextXni.isNull()) {
                 // There was no match for the target name
                 throw new UaException(StatusCodes.Bad_NoMatch);
             }
 
             List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
-            Optional<NodeId> nextId = nextExId.toNodeId(server.getNamespaceTable());
+            Optional<NodeId> nextId = nextXni.toNodeId(server.getNamespaceTable());
 
             if (nextId.isPresent()) {
                 return follow(nextId.get(), nextElements);
@@ -162,7 +162,7 @@ public class BrowsePathsHelper {
                 UInteger remaining = nextElements.isEmpty() ?
                     UInteger.MAX : uint(nextElements.size());
 
-                return List.of(new BrowsePathTarget(nextExId, remaining));
+                return List.of(new BrowsePathTarget(nextXni, remaining));
             }
         }
     }
