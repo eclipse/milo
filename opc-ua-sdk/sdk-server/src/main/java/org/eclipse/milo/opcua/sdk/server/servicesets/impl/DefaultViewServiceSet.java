@@ -109,7 +109,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
         try {
             var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
 
-            return browsePathsHelper.translateBrowsePaths(request).get();
+            return browsePathsHelper.translateBrowsePaths(request);
         } catch (Exception e) {
             session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();

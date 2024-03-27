@@ -124,7 +124,7 @@ public class BrowseHelper {
             List<Reference> stage1Refs = references.stream()
                 .filter(r -> filterDirection(browseDescription, r))
                 .filter(r -> filterReferenceType(server, browseDescription, r))
-                .collect(Collectors.toList());
+                .toList();
 
             // The target of each of these references is going to need "BrowseAttributes" read
             // and possibly the TypeDefinition browsed for. How can we batch these up?
@@ -151,7 +151,7 @@ public class BrowseHelper {
                 BrowseAttributes attributes = browseAttributes.get(j);
                 ExpandedNodeId typeDefinitionId = typeDefinitionIds.get(j);
 
-                if (filterNodeClass(browseDescription, attributes.getNodeClass())) {
+                if (filterNodeClass(browseDescription, attributes.nodeClass())) {
                     ReferenceDescription referenceDescription = createReferenceDescription(
                         browseDescription,
                         reference,
@@ -190,11 +190,11 @@ public class BrowseHelper {
             forward,
             reference.getTargetNodeId(),
             masks.contains(BrowseResultMask.BrowseName) ?
-                browseAttributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                browseAttributes.browseName() : QualifiedName.NULL_VALUE,
             masks.contains(BrowseResultMask.DisplayName) ?
-                browseAttributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                browseAttributes.displayName() : LocalizedText.NULL_VALUE,
             masks.contains(BrowseResultMask.NodeClass) ?
-                browseAttributes.getNodeClass() : NodeClass.Unspecified,
+                browseAttributes.nodeClass() : NodeClass.Unspecified,
             typeDefinitionId
         );
     }
@@ -334,15 +334,11 @@ public class BrowseHelper {
     private static boolean filterDirection(
         BrowseDescription browseDescription, Reference reference) {
 
-        switch (browseDescription.getBrowseDirection()) {
-            case Forward:
-                return reference.isForward();
-            case Inverse:
-                return reference.isInverse();
-            case Both:
-            default:
-                return true;
-        }
+        return switch (browseDescription.getBrowseDirection()) {
+            case Forward -> reference.isForward();
+            case Inverse -> reference.isInverse();
+            default -> true;
+        };
     }
 
     private static boolean filterReferenceType(
@@ -368,35 +364,10 @@ public class BrowseHelper {
         return nodeClasses.contains(nodeClass);
     }
 
-    private static class BrowseAttributes {
-
-        private final QualifiedName browseName;
-        private final LocalizedText displayName;
-        private final NodeClass nodeClass;
-
-        private BrowseAttributes(
-            @Nullable QualifiedName browseName,
-            @Nullable LocalizedText displayName,
-            @Nullable NodeClass nodeClass
-        ) {
-
-            this.browseName = browseName;
-            this.displayName = displayName;
-            this.nodeClass = nodeClass;
-        }
-
-        public @Nullable QualifiedName getBrowseName() {
-            return browseName;
-        }
-
-        public @Nullable LocalizedText getDisplayName() {
-            return displayName;
-        }
-
-        public @Nullable NodeClass getNodeClass() {
-            return nodeClass;
-        }
-
-    }
+    private record BrowseAttributes(
+        @Nullable QualifiedName browseName,
+        @Nullable LocalizedText displayName,
+        @Nullable NodeClass nodeClass
+    ) {}
 
 }
