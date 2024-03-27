@@ -16,8 +16,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -445,11 +443,10 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
     //region MonitoredItemServices
 
     @Override
-    public void onCreateDataItem(
+    public RevisedDataItemParameters onCreateDataItem(
         ReadValueId itemToMonitor,
         Double requestedSamplingInterval,
-        UInteger requestedQueueSize,
-        BiConsumer<Double, UInteger> revisionCallback
+        UInteger requestedQueueSize
     ) {
 
         AddressSpace addressSpace = getAddressSpace(
@@ -457,20 +454,18 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                 asx.getFilter().filterOnCreateDataItem(server, itemToMonitor)
         );
 
-        addressSpace.onCreateDataItem(
+        return addressSpace.onCreateDataItem(
             itemToMonitor,
             requestedSamplingInterval,
-            requestedQueueSize,
-            revisionCallback
+            requestedQueueSize
         );
     }
 
     @Override
-    public void onModifyDataItem(
+    public RevisedDataItemParameters onModifyDataItem(
         ReadValueId itemToModify,
         Double requestedSamplingInterval,
-        UInteger requestedQueueSize,
-        BiConsumer<Double, UInteger> revisionCallback
+        UInteger requestedQueueSize
     ) {
 
         AddressSpace addressSpace = getAddressSpace(
@@ -478,19 +473,17 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                 asx.getFilter().filterOnModifyDataItem(server, itemToModify)
         );
 
-        addressSpace.onModifyDataItem(
+        return addressSpace.onModifyDataItem(
             itemToModify,
             requestedSamplingInterval,
-            requestedQueueSize,
-            revisionCallback
+            requestedQueueSize
         );
     }
 
     @Override
-    public void onCreateEventItem(
+    public RevisedEventItemParameters onCreateEventItem(
         ReadValueId itemToMonitor,
-        UInteger requestedQueueSize,
-        Consumer<UInteger> revisionCallback
+        UInteger requestedQueueSize
     ) {
 
         AddressSpace addressSpace = getAddressSpace(
@@ -498,18 +491,16 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                 asx.getFilter().filterOnCreateEventItem(server, itemToMonitor)
         );
 
-        addressSpace.onCreateEventItem(
+        return addressSpace.onCreateEventItem(
             itemToMonitor,
-            requestedQueueSize,
-            revisionCallback
+            requestedQueueSize
         );
     }
 
     @Override
-    public void onModifyEventItem(
+    public RevisedEventItemParameters onModifyEventItem(
         ReadValueId itemToModify,
-        UInteger requestedQueueSize,
-        Consumer<UInteger> revisionCallback
+        UInteger requestedQueueSize
     ) {
 
         AddressSpace addressSpace = getAddressSpace(
@@ -517,10 +508,9 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                 asx.getFilter().filterOnModifyEventItem(server, itemToModify)
         );
 
-        addressSpace.onModifyEventItem(
+        return addressSpace.onModifyEventItem(
             itemToModify,
-            requestedQueueSize,
-            revisionCallback
+            requestedQueueSize
         );
     }
 

@@ -11,8 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddReferencesContext;
@@ -161,7 +159,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see AddressSpace#onCreateDataItem(ReadValueId, Double, UInteger, BiConsumer)
+     * @see AddressSpace#onCreateDataItem(ReadValueId, Double, UInteger)
      */
     boolean filterOnCreateDataItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -173,7 +171,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see AddressSpace#onModifyDataItem(ReadValueId, Double, UInteger, BiConsumer)
+     * @see AddressSpace#onModifyDataItem(ReadValueId, Double, UInteger)
      */
     boolean filterOnModifyDataItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -185,7 +183,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see AddressSpace#onCreateEventItem(ReadValueId, UInteger, Consumer)
+     * @see AddressSpace#onCreateEventItem(ReadValueId, UInteger)
      */
     boolean filterOnCreateEventItem(OpcUaServer server, ReadValueId readValueId);
 
@@ -197,7 +195,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} from the monitored item operation.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see AddressSpace#onModifyEventItem(ReadValueId, UInteger, Consumer)
+     * @see AddressSpace#onModifyEventItem(ReadValueId, UInteger)
      */
     boolean filterOnModifyEventItem(OpcUaServer server, ReadValueId readValueId);
 

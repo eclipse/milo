@@ -12,8 +12,6 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
@@ -144,6 +142,21 @@ public interface AddressSpace {
     //region MonitoredItem Services
 
     /**
+     * Possibly revised parameter values for a {@link DataItem} that is being created or modified.
+     *
+     * @param revisedSamplingInterval the revised sampling interval.
+     * @param revisedQueueSize the revised queue size.
+     */
+    record RevisedDataItemParameters(Double revisedSamplingInterval, UInteger revisedQueueSize) {}
+
+    /**
+     * Possibly revised parameter values for an {@link EventItem} that is being created or modified.
+     *
+     * @param revisedQueueSize the revised queue size.
+     */
+    record RevisedEventItemParameters(UInteger revisedQueueSize) {}
+
+    /**
      * A {@link DataItem} is being created for a Node managed by this {@link AddressSpace}.
      * <p>
      * This is a chance to revise the requested queue size and/or sampling interval.
@@ -152,17 +165,16 @@ public interface AddressSpace {
      * value of the Minimum Sampling Interval attribute for the Node if it was present.
      *
      * @param itemToMonitor the item that will be monitored.
-     * @param requestedQueueSize the requested queue size.
      * @param requestedSamplingInterval the requested sampling interval.
-     * @param revisionCallback the callback to invoke to revise the sampling interval and queue size.
+     * @param requestedQueueSize the requested queue size.
      */
-    default void onCreateDataItem(
-        @SuppressWarnings("unused") ReadValueId itemToMonitor,
+    default RevisedDataItemParameters onCreateDataItem(
+        ReadValueId itemToMonitor,
         Double requestedSamplingInterval,
-        UInteger requestedQueueSize,
-        BiConsumer<Double, UInteger> revisionCallback) {
+        UInteger requestedQueueSize
+    ) {
 
-        revisionCallback.accept(requestedSamplingInterval, requestedQueueSize);
+        return new RevisedDataItemParameters(requestedSamplingInterval, requestedQueueSize);
     }
 
     /**
@@ -174,17 +186,16 @@ public interface AddressSpace {
      * value of the Minimum Sampling Interval attribute for the Node if it was present.
      *
      * @param itemToModify the item that will be modified.
-     * @param requestedQueueSize the requested queue size.
      * @param requestedSamplingInterval the requested sampling interval.
-     * @param revisionCallback the callback to invoke to revise the sampling interval and queue size.
+     * @param requestedQueueSize the requested queue size.
      */
-    default void onModifyDataItem(
-        @SuppressWarnings("unused") ReadValueId itemToModify,
+    default RevisedDataItemParameters onModifyDataItem(
+        ReadValueId itemToModify,
         Double requestedSamplingInterval,
-        UInteger requestedQueueSize,
-        BiConsumer<Double, UInteger> revisionCallback) {
+        UInteger requestedQueueSize
+    ) {
 
-        revisionCallback.accept(requestedSamplingInterval, requestedQueueSize);
+        return new RevisedDataItemParameters(requestedSamplingInterval, requestedQueueSize);
     }
 
     /**
@@ -194,14 +205,9 @@ public interface AddressSpace {
      *
      * @param itemToMonitor the item that will be monitored.
      * @param requestedQueueSize the requested queue size.
-     * @param revisionCallback the callback to invoke to revise the queue size.
      */
-    default void onCreateEventItem(
-        @SuppressWarnings("unused") ReadValueId itemToMonitor,
-        UInteger requestedQueueSize,
-        Consumer<UInteger> revisionCallback) {
-
-        revisionCallback.accept(requestedQueueSize);
+    default RevisedEventItemParameters onCreateEventItem(ReadValueId itemToMonitor, UInteger requestedQueueSize) {
+        return new RevisedEventItemParameters(requestedQueueSize);
     }
 
     /**
@@ -211,14 +217,9 @@ public interface AddressSpace {
      *
      * @param itemToModify the item that will be modified.
      * @param requestedQueueSize the requested queue size.
-     * @param revisionCallback the callback to invoke to revise the queue size.
      */
-    default void onModifyEventItem(
-        @SuppressWarnings("unused") ReadValueId itemToModify,
-        UInteger requestedQueueSize,
-        Consumer<UInteger> revisionCallback) {
-
-        revisionCallback.accept(requestedQueueSize);
+    default RevisedEventItemParameters onModifyEventItem(ReadValueId itemToModify, UInteger requestedQueueSize) {
+        return new RevisedEventItemParameters(requestedQueueSize);
     }
 
     /**
