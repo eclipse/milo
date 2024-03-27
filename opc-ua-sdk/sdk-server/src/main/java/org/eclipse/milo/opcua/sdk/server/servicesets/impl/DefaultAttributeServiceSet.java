@@ -63,6 +63,78 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         Session session = server.getSessionManager()
             .getSession(context, request.getRequestHeader());
 
+        try {
+            return read(request, session);
+        } catch (UaException e) {
+            session.getSessionDiagnostics().getReadCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getReadCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
+    }
+
+    @Override
+    public HistoryReadResponse onHistoryRead(
+        ServiceRequestContext context, HistoryReadRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
+        try {
+            return historyRead(request, session);
+        } catch (UaException e) {
+            session.getSessionDiagnostics().getHistoryReadCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getHistoryReadCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
+    }
+
+    @Override
+    public WriteResponse onWrite(ServiceRequestContext context, WriteRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
+        try {
+            return write(request, session);
+        } catch (UaException e) {
+            session.getSessionDiagnostics().getWriteCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getWriteCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
+    }
+
+    @Override
+    public HistoryUpdateResponse onHistoryUpdate(
+        ServiceRequestContext context, HistoryUpdateRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
+        try {
+            return historyUpdate(request, session);
+        } catch (UaException e) {
+            session.getSessionDiagnostics().getHistoryUpdateCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getHistoryUpdateCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
+    }
+
+    private ReadResponse read(ReadRequest request, Session session) throws UaException {
         List<ReadValueId> nodesToRead = Lists.ofNullable(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
@@ -92,36 +164,22 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        try {
-            List<DataValue> values = server.getAddressSpaceManager().read(
-                readContext,
-                request.getMaxAge(),
-                request.getTimestampsToReturn(),
-                nodesToRead
-            );
+        List<DataValue> values = server.getAddressSpaceManager().read(
+            readContext,
+            request.getMaxAge(),
+            request.getTimestampsToReturn(),
+            nodesToRead
+        );
 
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToRead);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
-        } catch (Exception e) {
-            session.getSessionDiagnostics().getReadCount().incrementErrorCount();
-
-            throw e;
-        } finally {
-            session.getSessionDiagnostics().getReadCount().incrementTotalCount();
-        }
+        return new ReadResponse(header, values.toArray(DataValue[]::new), diagnosticInfos);
     }
 
-    @Override
-    public HistoryReadResponse onHistoryRead(
-        ServiceRequestContext context, HistoryReadRequest request) throws UaException {
-
-        Session session = server.getSessionManager()
-            .getSession(context, request.getRequestHeader());
-
+    private HistoryReadResponse historyRead(HistoryReadRequest request, Session session) throws UaException {
         List<HistoryReadValueId> nodesToRead = Lists.ofNullable(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
@@ -147,37 +205,25 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        try {
-            ExtensionObject xo = request.getHistoryReadDetails();
-            HistoryReadDetails details = (HistoryReadDetails) xo.decode(server.getEncodingContext());
+        ExtensionObject xo = request.getHistoryReadDetails();
+        HistoryReadDetails details = (HistoryReadDetails) xo.decode(server.getEncodingContext());
 
-            List<HistoryReadResult> results = server.getAddressSpaceManager().historyRead(
-                historyReadContext,
-                details,
-                request.getTimestampsToReturn(),
-                nodesToRead
-            );
+        List<HistoryReadResult> results = server.getAddressSpaceManager().historyRead(
+            historyReadContext,
+            details,
+            request.getTimestampsToReturn(),
+            nodesToRead
+        );
 
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToRead);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            return new HistoryReadResponse(header, results.toArray(HistoryReadResult[]::new), diagnosticInfos);
-        } catch (Exception e) {
-            session.getSessionDiagnostics().getHistoryReadCount().incrementErrorCount();
-
-            throw e;
-        } finally {
-            session.getSessionDiagnostics().getHistoryReadCount().incrementTotalCount();
-        }
+        return new HistoryReadResponse(header, results.toArray(HistoryReadResult[]::new), diagnosticInfos);
     }
 
-    @Override
-    public WriteResponse onWrite(ServiceRequestContext context, WriteRequest request) throws UaException {
-        Session session = server.getSessionManager()
-            .getSession(context, request.getRequestHeader());
-
+    private WriteResponse write(WriteRequest request, Session session) throws UaException {
         List<WriteValue> nodesToWrite = Lists.ofNullable(request.getNodesToWrite());
 
         if (nodesToWrite.isEmpty()) {
@@ -199,31 +245,17 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        try {
-            List<StatusCode> results = server.getAddressSpaceManager().write(writeContext, nodesToWrite);
+        List<StatusCode> results = server.getAddressSpaceManager().write(writeContext, nodesToWrite);
 
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToWrite);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToWrite);
 
-            return new WriteResponse(header, results.toArray(StatusCode[]::new), diagnosticInfos);
-        } catch (Exception e) {
-            session.getSessionDiagnostics().getWriteCount().incrementErrorCount();
-
-            throw e;
-        } finally {
-            session.getSessionDiagnostics().getWriteCount().incrementTotalCount();
-        }
+        return new WriteResponse(header, results.toArray(StatusCode[]::new), diagnosticInfos);
     }
 
-    @Override
-    public HistoryUpdateResponse onHistoryUpdate(
-        ServiceRequestContext context, HistoryUpdateRequest request) throws UaException {
-
-        Session session = server.getSessionManager()
-            .getSession(context, request.getRequestHeader());
-
+    private HistoryUpdateResponse historyUpdate(HistoryUpdateRequest request, Session session) throws UaException {
         var historyUpdateDetails =
             requireNonNullElse(request.getHistoryUpdateDetails(), new ExtensionObject[0]);
 
@@ -250,24 +282,16 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        try {
-            List<HistoryUpdateResult> results = server.getAddressSpaceManager()
-                .historyUpdate(historyUpdateContext, historyUpdateDetailsList);
+        List<HistoryUpdateResult> results = server.getAddressSpaceManager()
+            .historyUpdate(historyUpdateContext, historyUpdateDetailsList);
 
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(historyUpdateDetailsList);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(historyUpdateDetailsList);
 
-            return new HistoryUpdateResponse(
-                header, results.toArray(HistoryUpdateResult[]::new), diagnosticInfos);
-        } catch (Exception e) {
-            session.getSessionDiagnostics().getHistoryUpdateCount().incrementErrorCount();
-
-            throw e;
-        } finally {
-            session.getSessionDiagnostics().getHistoryUpdateCount().incrementTotalCount();
-        }
+        return new HistoryUpdateResponse(
+            header, results.toArray(HistoryUpdateResult[]::new), diagnosticInfos);
     }
 
 }

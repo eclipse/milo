@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -43,6 +43,20 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         Session session = server.getSessionManager()
             .getSession(context, request.getRequestHeader());
 
+        try {
+            return call(request, session);
+        } catch (UaException e) {
+            session.getSessionDiagnostics().getCallCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getCallCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
+    }
+
+    private CallResponse call(CallRequest request, Session session) throws UaException {
         List<CallMethodRequest> methodsToCall = Lists.ofNullable(request.getMethodsToCall());
 
         if (methodsToCall.isEmpty()) {
@@ -64,19 +78,11 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        try {
-            List<CallMethodResult> results = server.getAddressSpaceManager().call(callContext, methodsToCall);
+        List<CallMethodResult> results = server.getAddressSpaceManager().call(callContext, methodsToCall);
 
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
-        } catch (Exception e) {
-            session.getSessionDiagnostics().getCallCount().incrementErrorCount();
-
-            throw e;
-        } finally {
-            session.getSessionDiagnostics().getCallCount().incrementTotalCount();
-        }
+        return new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
     }
 
 }

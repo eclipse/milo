@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -135,7 +135,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             .getSession(context, request.getRequestHeader());
 
         try {
-            return registerNodes(request, session).get();
+            return registerNodes(request, session);
         } catch (Exception e) {
             session.getSessionDiagnostics().getRegisterNodesCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
@@ -157,7 +157,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             .getSession(context, request.getRequestHeader());
 
         try {
-            return unregisterNodes(request, session).get();
+            return unregisterNodes(request, session);
         } catch (Exception e) {
             session.getSessionDiagnostics().getUnregisterNodesCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
@@ -204,15 +204,17 @@ public class DefaultViewServiceSet implements ViewServiceSet {
         });
     }
 
-    private CompletableFuture<RegisterNodesResponse> registerNodes(RegisterNodesRequest request, Session session) {
+    private RegisterNodesResponse registerNodes(
+        RegisterNodesRequest request, Session session) throws UaException {
+
         List<NodeId> nodeIds = Lists.ofNullable(request.getNodesToRegister());
 
         if (nodeIds.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodeIds.size() > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var registerNodesContext = new RegisterNodesContext(server, session);
@@ -222,20 +224,20 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         ResponseHeader header = createResponseHeader(request);
 
-        var response = new RegisterNodesResponse(header, registeredNodeIds.toArray(new NodeId[0]));
-
-        return CompletableFuture.completedFuture(response);
+        return new RegisterNodesResponse(header, registeredNodeIds.toArray(new NodeId[0]));
     }
 
-    private CompletableFuture<UnregisterNodesResponse> unregisterNodes(UnregisterNodesRequest request, Session session) {
+    private UnregisterNodesResponse unregisterNodes(
+        UnregisterNodesRequest request, Session session) throws UaException {
+
         List<NodeId> nodeIds = Lists.ofNullable(request.getNodesToUnregister());
 
         if (nodeIds.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodeIds.size() > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var unregisterNodesContext = new UnregisterNodesContext(server, session);
@@ -244,7 +246,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         ResponseHeader header = createResponseHeader(request);
 
-        return CompletableFuture.completedFuture(new UnregisterNodesResponse(header));
+        return new UnregisterNodesResponse(header);
     }
 
 }
