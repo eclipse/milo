@@ -18,8 +18,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReferenceResult.ReferenceList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -211,9 +213,14 @@ public class BrowsePathsHelper {
             context.getSession().orElse(null)
         );
 
-        try {
-            var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
-            List<Reference> references = server.getAddressSpaceManager().browse(browseContext, view, nodeId);
+        var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
+
+        AddressSpace.ReferenceResult result =
+            server.getAddressSpaceManager()
+                .browse(browseContext, view, List.of(nodeId)).get(0);
+
+        if (result instanceof ReferenceList rl) {
+            List<Reference> references = rl.references();
 
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
@@ -243,7 +250,7 @@ public class BrowsePathsHelper {
 
                 return CompletableFuture.completedFuture(ExpandedNodeId.NULL_VALUE);
             }
-        } catch (Exception e) {
+        } else {
             return failedUaFuture(StatusCodes.Bad_NoMatch);
         }
     }
@@ -262,9 +269,14 @@ public class BrowsePathsHelper {
             context.getSession().orElse(null)
         );
 
-        try {
-            var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
-            List<Reference> references = server.getAddressSpaceManager().browse(browseContext, view, nodeId);
+        var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
+
+        AddressSpace.ReferenceResult result =
+            server.getAddressSpaceManager()
+                .browse(browseContext, view, List.of(nodeId)).get(0);
+
+        if (result instanceof ReferenceList rl) {
+            List<Reference> references = rl.references();
 
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
@@ -295,7 +307,7 @@ public class BrowsePathsHelper {
 
                 return CompletableFuture.completedFuture(targets);
             }
-        } catch (Exception e) {
+        } else {
             return failedUaFuture(StatusCodes.Bad_NoMatch);
         }
     }
