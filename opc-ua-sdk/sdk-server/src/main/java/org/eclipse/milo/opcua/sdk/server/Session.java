@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.identity.Identity;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -60,7 +59,7 @@ public class Session {
 
     private final LinkedList<String> clientUserIdHistory = new LinkedList<>();
 
-    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = new ConcurrentHashMap<>();
+    private final Map<ByteString, ContinuationPoint> browseContinuationPoints = new ConcurrentHashMap<>();
 
     private final Semaphore callSemaphore = new Semaphore(CONCURRENT_CALL_LIMIT, true);
 
@@ -188,7 +187,7 @@ public class Session {
         }
     }
 
-    public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
+    public Map<ByteString, ContinuationPoint> getBrowseContinuationPoints() {
         return browseContinuationPoints;
     }
 

@@ -21,11 +21,10 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReferenceResult.ReferenceList;
 import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -156,34 +155,65 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
     //region ViewServices
 
     @Override
-    public List<Reference> browse(BrowseContext context, ViewDescription view, NodeId nodeId) throws UaException {
-        List<AddressSpaceFragment> addressSpaces = getAddressSpaces();
+    public List<ReferenceResult> browse(BrowseContext context, ViewDescription view, List<NodeId> nodeIds) {
+        List<ReferenceResult> initialResults = groupMapCollate(
+            nodeIds,
+            nodeId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterBrowse(server, nodeId)
+            ),
+            (AddressSpace asx) -> group -> {
+                var ctx = new BrowseContext(
+                    server,
+                    context.getSession().orElse(null)
+                );
 
-        AddressSpace firstMatch = addressSpaces.stream()
-            .filter(asx -> asx.getFilter().filterBrowse(server, nodeId))
-            .findFirst()
-            .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
-
-        addressSpaces.remove(firstMatch);
-
-        var browseContext = new BrowseContext(
-            getServer(),
-            context.getSession().orElse(null)
+                return asx.browse(ctx, view, group);
+            }
         );
 
-        var references = new LinkedHashSet<>(
-            firstMatch.browse(browseContext, view, nodeId)
-        );
+        final var finalResults = new ArrayList<ReferenceResult>();
 
-        for (AddressSpace asx : addressSpaces) {
-            references.addAll(asx.getReferences(browseContext, view, nodeId));
+        for (int i = 0; i < initialResults.size(); i++) {
+            NodeId nodeId = nodeIds.get(i);
+            ReferenceResult initialResult = initialResults.get(i);
+
+            if (initialResult instanceof ReferenceList rl) {
+                final var references = new LinkedHashSet<>(rl.references());
+
+                // Gather additional references from all AddressSpaces except
+                // the first, which is the one we called browse on above.
+
+                var browseContext = new BrowseContext(
+                    getServer(),
+                    context.getSession().orElse(null)
+                );
+
+                AddressSpaceFragment first = getAddressSpace(
+                    asx ->
+                        asx.getFilter().filterBrowse(server, nodeId)
+                );
+
+                for (AddressSpace asx : addressSpaces) {
+                    if (asx != first) {
+                        ReferenceList gatherResult =
+                            asx.gather(browseContext, view, nodeId);
+
+                        references.addAll(gatherResult.references());
+                    }
+                }
+
+                finalResults.add(ReferenceResult.of(new ArrayList<>(references)));
+            } else {
+                finalResults.add(initialResult);
+            }
         }
 
-        return new ArrayList<>(references);
+        return finalResults;
     }
 
     @Override
-    public List<Reference> getReferences(BrowseContext context, ViewDescription view, NodeId nodeId) {
+    public ReferenceList gather(BrowseContext context, ViewDescription view, NodeId nodeId) {
         var references = new LinkedHashSet<Reference>();
 
         for (AddressSpace asx : addressSpaces) {
@@ -192,10 +222,11 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
                 context.getSession().orElse(null)
             );
 
-            references.addAll(asx.getReferences(browseContext, view, nodeId));
+            ReferenceList result = asx.gather(browseContext, view, nodeId);
+            references.addAll(result.references());
         }
 
-        return new ArrayList<>(references);
+        return ReferenceResult.of(new ArrayList<>(references));
     }
 
     @Override

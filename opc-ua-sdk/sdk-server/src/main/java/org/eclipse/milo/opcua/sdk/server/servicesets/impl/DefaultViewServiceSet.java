@@ -10,13 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.RegisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.UnregisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.ViewServiceSet;
@@ -24,14 +25,17 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
@@ -39,7 +43,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
@@ -48,14 +51,10 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultViewServiceSet implements ViewServiceSet {
 
-    private final BrowseHelper browseHelper;
-
     private final OpcUaServer server;
 
     public DefaultViewServiceSet(OpcUaServer server) {
         this.server = server;
-
-        browseHelper = new BrowseHelper(server.getConfig().getExecutor());
     }
 
     @Override
@@ -86,10 +85,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             .getSession(context, request.getRequestHeader());
 
         try {
-            BrowseResult[] results = browseHelper.browseNext(server, session, request).get();
-            ResponseHeader header = createResponseHeader(request);
-
-            return new BrowseNextResponse(header, results, new DiagnosticInfo[0]);
+            return browseNext(request, session);
         } catch (Exception e) {
             session.getSessionDiagnostics().getBrowseNextCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
@@ -113,7 +109,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
         try {
             var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
 
-            return browsePathsHelper.translateBrowsePaths(request).get();
+            return browsePathsHelper.translateBrowsePaths(request);
         } catch (Exception e) {
             session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
@@ -186,22 +182,90 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             return failedUaFuture(StatusCodes.Bad_ViewIdUnknown);
         }
 
-        Stream<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream().map(
-            browseDescription ->
-                browseHelper.browse(
-                    () -> Optional.of(session),
-                    server,
-                    request.getView(),
-                    request.getRequestedMaxReferencesPerNode(),
-                    browseDescription
-                )
+        List<BrowseResult> results = BrowseHelper.browse(server, () -> Optional.of(session), request);
+
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new BrowseResponse(
+            header,
+            results.toArray(BrowseResult[]::new),
+            new DiagnosticInfo[0]
         );
 
-        return FutureUtils.sequence(futures).thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
+        return CompletableFuture.completedFuture(response);
+    }
 
-            return new BrowseResponse(header, results.toArray(BrowseResult[]::new), new DiagnosticInfo[0]);
-        });
+    private BrowseNextResponse browseNext(
+        BrowseNextRequest request, Session session) throws UaException {
+
+        List<ByteString> continuationPoints = Lists.ofNullable(request.getContinuationPoints());
+
+        if (continuationPoints.isEmpty()) {
+            throw new UaException(StatusCodes.Bad_NothingToDo);
+        }
+
+        if (continuationPoints.size() >
+            server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
+
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
+        }
+
+        var results = new ArrayList<BrowseResult>();
+
+        for (ByteString bs : continuationPoints) {
+            if (request.getReleaseContinuationPoints()) {
+                results.add(release(session, bs));
+            } else {
+                results.add(references(session, bs));
+            }
+        }
+
+        var header = createResponseHeader(request);
+
+        return new BrowseNextResponse(
+            header,
+            results.toArray(BrowseResult[]::new),
+            new DiagnosticInfo[0]
+        );
+    }
+
+    private static BrowseResult release(Session session, ByteString bs) {
+        ContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
+
+        return c != null ?
+            new BrowseResult(StatusCode.GOOD, null, null) :
+            new BrowseResult(new StatusCode(StatusCodes.Bad_ContinuationPointInvalid), null, null);
+    }
+
+    private static BrowseResult references(Session session, ByteString bs) {
+        ContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
+
+        if (c != null) {
+            int max = c.max();
+            List<ReferenceDescription> references = c.references();
+
+            if (references.size() > max) {
+                List<ReferenceDescription> subList = references.subList(0, max);
+                List<ReferenceDescription> current = List.copyOf(subList);
+                subList.clear();
+
+                session.getBrowseContinuationPoints().put(c.id(), c);
+
+                return new BrowseResult(
+                    StatusCode.GOOD,
+                    c.id(),
+                    current.toArray(new ReferenceDescription[0])
+                );
+            } else {
+                return new BrowseResult(
+                    StatusCode.GOOD,
+                    null,
+                    references.toArray(new ReferenceDescription[0])
+                );
+            }
+        } else {
+            return new BrowseResult(new StatusCode(StatusCodes.Bad_ContinuationPointInvalid), null, null);
+        }
     }
 
     private RegisterNodesResponse registerNodes(
