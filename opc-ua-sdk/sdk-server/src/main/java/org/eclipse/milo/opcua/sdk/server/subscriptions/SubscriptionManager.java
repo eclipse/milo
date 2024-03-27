@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -943,28 +943,26 @@ public class SubscriptionManager {
 
         var context = new ReadContext(server, session);
 
-        server.getAddressSpaceManager().read(
+        List<DataValue> attributeValues = server.getAddressSpaceManager().read(
             context,
             0.0,
             TimestampsToReturn.Neither,
             attributesToRead
         );
 
-        return context.getFuture().thenApply(attributeValues -> {
-            Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
+        Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
 
-            for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 5) {
-                monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
-                    attributeValues.get(attrIdx),
-                    attributeValues.get(attrIdx + 1),
-                    attributeValues.get(attrIdx + 2),
-                    attributeValues.get(attrIdx + 3),
-                    attributeValues.get(attrIdx + 4)
-                ));
-            }
+        for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 5) {
+            monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
+                attributeValues.get(attrIdx),
+                attributeValues.get(attrIdx + 1),
+                attributeValues.get(attrIdx + 2),
+                attributeValues.get(attrIdx + 3),
+                attributeValues.get(attrIdx + 4)
+            ));
+        }
 
-            return monitoringAttributes;
-        });
+        return CompletableFuture.completedFuture(monitoringAttributes);
     }
 
     public CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItems(

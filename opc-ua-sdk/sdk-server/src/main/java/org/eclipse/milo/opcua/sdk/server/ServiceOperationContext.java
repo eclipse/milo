@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class ServiceOperationContext<T> implements AccessContext {
 
+    private final OpcUaServer server;
     private final Session session;
     private final DiagnosticsContext<T> diagnosticsContext;
 
@@ -29,11 +30,12 @@ public class ServiceOperationContext<T> implements AccessContext {
 
     private final ExtensionObject additionalHeader;
 
-    public ServiceOperationContext(@Nullable Session session) {
-        this(session, new DiagnosticsContext<>(), "", uint(0), null);
+    public ServiceOperationContext(OpcUaServer server, @Nullable Session session) {
+        this(server, session, new DiagnosticsContext<>(), "", uint(0), null);
     }
 
     public ServiceOperationContext(
+        OpcUaServer server,
         @Nullable Session session,
         DiagnosticsContext<T> diagnosticsContext,
         @Nullable String auditEntryId,
@@ -41,11 +43,16 @@ public class ServiceOperationContext<T> implements AccessContext {
         ExtensionObject additionalHeader
     ) {
 
+        this.server = server;
         this.session = session;
         this.diagnosticsContext = diagnosticsContext;
         this.auditEntryId = auditEntryId;
         this.timeoutHint = timeoutHint;
         this.additionalHeader = additionalHeader;
+    }
+
+    public OpcUaServer getServer() {
+        return server;
     }
 
     /**

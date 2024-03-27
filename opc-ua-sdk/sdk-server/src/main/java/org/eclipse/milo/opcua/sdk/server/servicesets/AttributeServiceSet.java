@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
@@ -24,12 +23,14 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface AttributeServiceSet {
 
-    CompletableFuture<ReadResponse> onRead(ServiceRequestContext context, ReadRequest request);
+    ReadResponse onRead(ServiceRequestContext context, ReadRequest request) throws UaException;
 
-    CompletableFuture<HistoryReadResponse> onHistoryRead(ServiceRequestContext context, HistoryReadRequest request);
+    HistoryReadResponse onHistoryRead(
+        ServiceRequestContext context, HistoryReadRequest request) throws UaException;
 
-    CompletableFuture<WriteResponse> onWrite(ServiceRequestContext context, WriteRequest request);
+    WriteResponse onWrite(ServiceRequestContext context, WriteRequest request) throws UaException;
 
-    CompletableFuture<HistoryUpdateResponse> onHistoryUpdate(ServiceRequestContext context, HistoryUpdateRequest request);
+    HistoryUpdateResponse onHistoryUpdate(
+        ServiceRequestContext context, HistoryUpdateRequest request) throws UaException;
 
 }

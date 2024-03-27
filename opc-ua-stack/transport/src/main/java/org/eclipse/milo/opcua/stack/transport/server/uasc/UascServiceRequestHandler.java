@@ -36,7 +36,7 @@ public class UascServiceRequestHandler extends SimpleChannelInboundHandler<UascS
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UascServiceRequest serviceRequest) {
-        config.getExecutor().execute(() -> dispatchServiceRequest(serviceRequest));
+        dispatchServiceRequest(serviceRequest);
     }
 
     private void dispatchServiceRequest(UascServiceRequest serviceRequest) {

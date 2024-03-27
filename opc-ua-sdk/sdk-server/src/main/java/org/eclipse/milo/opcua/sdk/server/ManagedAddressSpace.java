@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -38,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,39 +95,29 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     }
 
     @Override
-    public void browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
+    public List<Reference> browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) throws UaException {
         if (nodeManager.containsNode(nodeId)) {
             List<Reference> references = nodeManager.getReferences(nodeId);
 
             logger.debug("Browsed {} references for {}", references.size(), nodeId);
 
-            context.success(references);
+            return references;
         } else {
-            context.failure(StatusCodes.Bad_NodeIdUnknown);
+            throw new UaException(StatusCodes.Bad_NodeIdUnknown);
         }
     }
 
     @Override
-    public void getReferences(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
+    public List<Reference> getReferences(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
         List<Reference> references = nodeManager.getReferences(nodeId);
 
         logger.debug("Got {} references for {}", references.size(), nodeId);
 
-        context.success(references);
+        return references;
     }
 
     @Override
-    public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
-        context.success(nodeIds);
-    }
-
-    @Override
-    public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
-        context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
-    }
-
-    @Override
-    public void read(
+    public List<DataValue> read(
         ReadContext context,
         Double maxAge,
         TimestampsToReturn timestamps,
@@ -165,11 +153,11 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             }
         }
 
-        context.success(results);
+        return results;
     }
 
     @Override
-    public void write(
+    public List<StatusCode> write(
         WriteContext context,
         List<WriteValue> writeValues
     ) {
@@ -203,7 +191,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             }
         }
 
-        context.success(results);
+        return results;
     }
 
     /**
@@ -213,7 +201,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
      */
     @Override
-    public void call(CallContext context, List<CallMethodRequest> requests) {
+    public List<CallMethodResult> call(CallContext context, List<CallMethodRequest> requests) {
         var results = new ArrayList<CallMethodResult>(requests.size());
 
         Semaphore semaphore = context.getSession()
@@ -267,7 +255,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
             }
         }
 
-        context.success(results);
+        return results;
     }
 
     /**

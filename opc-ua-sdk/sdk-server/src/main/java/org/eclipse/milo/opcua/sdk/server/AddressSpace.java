@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,8 +20,8 @@ import org.eclipse.milo.opcua.sdk.server.items.DataItem;
 import org.eclipse.milo.opcua.sdk.server.items.EventItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -45,10 +45,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jetbrains.annotations.Nullable;
 
-import static java.util.Collections.nCopies;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public interface AddressSpace {
@@ -57,36 +55,33 @@ public interface AddressSpace {
 
     /**
      * Read one or more values from nodes belonging to this {@link AddressSpace}.
-     * <p>
-     * Complete the operation with {@link ReadContext#success}.
      *
      * @param context the {@link ReadContext}.
      * @param maxAge requested max age.
      * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
+     * @return the {@link DataValue}s read.
      */
-    void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds);
+    List<DataValue> read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds);
 
     /**
      * Write one or more values to nodes belonging to this {@link AddressSpace}.
-     * <p>
-     * Complete the operation with {@link WriteContext#success}.
      *
      * @param context the {@link WriteContext}.
      * @param writeValues the values to write.
+     * @return the {@link StatusCode}s for each write.
      */
-    void write(WriteContext context, List<WriteValue> writeValues);
+    List<StatusCode> write(WriteContext context, List<WriteValue> writeValues);
 
     /**
      * Read history values from nodes belonging to this {@link AddressSpace}.
-     * <p>
-     * Complete the operation with {@link HistoryReadContext#success}.
      *
      * @param context the {@link HistoryReadContext}.
      * @param timestamps requested timestamp values.
      * @param readValueIds the values to read.
+     * @return the {@link HistoryReadResult}s read.
      */
-    default void historyRead(
+    default List<HistoryReadResult> historyRead(
         HistoryReadContext context,
         HistoryReadDetails readDetails,
         TimestampsToReturn timestamps,
@@ -99,18 +94,17 @@ public interface AddressSpace {
             null
         );
 
-        context.success(Collections.nCopies(readValueIds.size(), result));
+        return Collections.nCopies(readValueIds.size(), result);
     }
 
     /**
      * Update history values in nodes belonging to this {@link AddressSpace}.
-     * <p>
-     * Complete the operation with {@link HistoryUpdateContext#success}.
      *
      * @param context the {@link HistoryUpdateContext}.
      * @param updateDetails the values to read.
+     * @return the {@link HistoryUpdateResult}s for each update.
      */
-    default void historyUpdate(
+    default List<HistoryUpdateResult> historyUpdate(
         HistoryUpdateContext context,
         List<HistoryUpdateDetails> updateDetails
     ) {
@@ -121,7 +115,7 @@ public interface AddressSpace {
             null
         );
 
-        context.success(Collections.nCopies(updateDetails.size(), result));
+        return Collections.nCopies(updateDetails.size(), result);
     }
 
     //endregion
@@ -133,8 +127,9 @@ public interface AddressSpace {
      *
      * @param context the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
+     * @return the {@link CallMethodResult}s for each method invocation.
      */
-    default void call(CallContext context, List<CallMethodRequest> requests) {
+    default List<CallMethodResult> call(CallContext context, List<CallMethodRequest> requests) {
         CallMethodResult result = new CallMethodResult(
             new StatusCode(StatusCodes.Bad_NotImplemented),
             new StatusCode[0],
@@ -142,7 +137,7 @@ public interface AddressSpace {
             new Variant[0]
         );
 
-        context.success(nCopies(requests.size(), result));
+        return Collections.nCopies(requests.size(), result);
     }
 
     //endregion
@@ -260,24 +255,21 @@ public interface AddressSpace {
      *
      * @param eventItems the {@link EventItem}s that were created.
      */
-    default void onEventItemsCreated(List<EventItem> eventItems) {
-    }
+    default void onEventItemsCreated(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been modified for nodes belonging to this {@link AddressSpace}.
      *
      * @param eventItems the {@link EventItem}s that were modified.
      */
-    default void onEventItemsModified(List<EventItem> eventItems) {
-    }
+    default void onEventItemsModified(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been deleted for nodes belonging to this {@link AddressSpace}.
      *
      * @param eventItems the {@link EventItem}s that were deleted.
      */
-    default void onEventItemsDeleted(List<EventItem> eventItems) {
-    }
+    default void onEventItemsDeleted(List<EventItem> eventItems) {}
 
     /**
      * {@link MonitoredItem}s have had their {@link MonitoringMode} modified by a client.
@@ -292,31 +284,31 @@ public interface AddressSpace {
 
     //region NodeManagement Services
 
-    default void addNodes(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
+    default List<AddNodesResult> addNodes(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
         AddNodesResult result = new AddNodesResult(
             new StatusCode(StatusCodes.Bad_NotSupported),
             NodeId.NULL_VALUE
         );
 
-        context.success(Collections.nCopies(nodesToAdd.size(), result));
+        return Collections.nCopies(nodesToAdd.size(), result);
     }
 
-    default void deleteNodes(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
+    default List<StatusCode> deleteNodes(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
-        context.success(Collections.nCopies(nodesToDelete.size(), statusCode));
+        return Collections.nCopies(nodesToDelete.size(), statusCode);
     }
 
-    default void addReferences(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
+    default List<StatusCode> addReferences(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
-        context.success(Collections.nCopies(referencesToAdd.size(), statusCode));
+        return Collections.nCopies(referencesToAdd.size(), statusCode);
     }
 
-    default void deleteReferences(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
+    default List<StatusCode> deleteReferences(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
-        context.success(Collections.nCopies(referencesToDelete.size(), statusCode));
+        return Collections.nCopies(referencesToDelete.size(), statusCode);
     }
 
     //endregion
@@ -324,32 +316,17 @@ public interface AddressSpace {
     //region View Services
 
     /**
-     * Like {@link #browse(BrowseContext, ViewDescription, NodeId)} but with a null/empty {@link ViewDescription}.
-     *
-     * @param context the {@link BrowseContext}.
-     * @param nodeId the {@link NodeId} to browse.
-     */
-    default void browse(BrowseContext context, NodeId nodeId) {
-        ViewDescription view = new ViewDescription(
-            NodeId.NULL_VALUE,
-            DateTime.NULL_VALUE,
-            uint(0)
-        );
-
-        browse(context, view, nodeId);
-    }
-
-    /**
      * Get all References for which {@code nodeId} is the source.
      * <p>
-     * If a Node instance for {@code nodeId} does not exist then {@link BrowseContext#failure(StatusCode)} should be
-     * invoked with {@link StatusCodes#Bad_NodeIdUnknown}.
+     * If a Node instance for {@code nodeId} does not exist then a {@link UaException} with
+     * {@link StatusCodes#Bad_NodeIdUnknown} should be thrown.
      *
      * @param context the {@link BrowseContext}.
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to browse.
+     * @return a List of {@link Reference}s for which {@code nodeId} is the source.
      */
-    void browse(BrowseContext context, ViewDescription view, NodeId nodeId);
+    List<Reference> browse(BrowseContext context, ViewDescription view, NodeId nodeId) throws UaException;
 
     /**
      * References for which {@code nodeId} is the source are being collected from all AddressSpace instances.
@@ -360,17 +337,19 @@ public interface AddressSpace {
      * @param context the {@link BrowseContext}.
      * @param view the {@link ViewDescription}.
      * @param nodeId the {@link NodeId} to get references fo.
+     * @return a List of {@link Reference}s for which {@code nodeId} is the source.
      */
-    void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
+    List<Reference> getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
     /**
      * Register one or more {@link NodeId}s.
      *
      * @param context the {@link RegisterNodesContext}.
      * @param nodeIds the {@link NodeId}s to register.
+     * @return the registered {@link NodeId}s.
      */
-    default void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
-        context.success(nodeIds);
+    default List<NodeId> registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
+        return nodeIds;
     }
 
     /**
@@ -379,9 +358,7 @@ public interface AddressSpace {
      * @param context the {@link UnregisterNodesContext}.
      * @param nodeIds the {@link NodeId}s to unregister.
      */
-    default void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
-        context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
-    }
+    default void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {}
 
     /**
      * Get the number of views, if any, managed by this {@link AddressSpace} implementation.
@@ -394,7 +371,7 @@ public interface AddressSpace {
 
     //endregion
 
-    final class ReadContext extends AsyncServiceOperationContext<ReadValueId, List<DataValue>> {
+    final class ReadContext extends ServiceOperationContext<ReadValueId> {
 
         public ReadContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -414,7 +391,7 @@ public interface AddressSpace {
 
     }
 
-    final class WriteContext extends AsyncServiceOperationContext<WriteValue, List<StatusCode>> {
+    final class WriteContext extends ServiceOperationContext<WriteValue> {
 
         public WriteContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -434,7 +411,7 @@ public interface AddressSpace {
 
     }
 
-    final class HistoryReadContext extends AsyncServiceOperationContext<HistoryReadValueId, List<HistoryReadResult>> {
+    final class HistoryReadContext extends ServiceOperationContext<HistoryReadValueId> {
 
         public HistoryReadContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -454,8 +431,7 @@ public interface AddressSpace {
 
     }
 
-    final class HistoryUpdateContext extends
-        AsyncServiceOperationContext<HistoryUpdateDetails, List<HistoryUpdateResult>> {
+    final class HistoryUpdateContext extends ServiceOperationContext<HistoryUpdateDetails> {
 
         public HistoryUpdateContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -475,7 +451,7 @@ public interface AddressSpace {
 
     }
 
-    final class CallContext extends AsyncServiceOperationContext<CallMethodRequest, List<CallMethodResult>> {
+    final class CallContext extends ServiceOperationContext<CallMethodRequest> {
 
         public CallContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -495,7 +471,7 @@ public interface AddressSpace {
 
     }
 
-    final class AddNodesContext extends AsyncServiceOperationContext<AddNodesItem, List<AddNodesResult>> {
+    final class AddNodesContext extends ServiceOperationContext<AddNodesItem> {
 
         public AddNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -515,7 +491,7 @@ public interface AddressSpace {
 
     }
 
-    final class DeleteNodesContext extends AsyncServiceOperationContext<DeleteNodesItem, List<StatusCode>> {
+    final class DeleteNodesContext extends ServiceOperationContext<DeleteNodesItem> {
 
         public DeleteNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -535,7 +511,7 @@ public interface AddressSpace {
 
     }
 
-    final class AddReferencesContext extends AsyncServiceOperationContext<AddReferencesItem, List<StatusCode>> {
+    final class AddReferencesContext extends ServiceOperationContext<AddReferencesItem> {
 
         public AddReferencesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -555,7 +531,7 @@ public interface AddressSpace {
 
     }
 
-    final class DeleteReferencesContext extends AsyncServiceOperationContext<DeleteReferencesItem, List<StatusCode>> {
+    final class DeleteReferencesContext extends ServiceOperationContext<DeleteReferencesItem> {
 
         public DeleteReferencesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -575,7 +551,7 @@ public interface AddressSpace {
 
     }
 
-    final class BrowseContext extends AsyncServiceOperationContext<NodeId, List<Reference>> {
+    final class BrowseContext extends ServiceOperationContext<NodeId> {
 
         public BrowseContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -595,7 +571,7 @@ public interface AddressSpace {
 
     }
 
-    final class RegisterNodesContext extends AsyncServiceOperationContext<NodeId, List<NodeId>> {
+    final class RegisterNodesContext extends ServiceOperationContext<NodeId> {
 
         public RegisterNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);
@@ -615,7 +591,7 @@ public interface AddressSpace {
 
     }
 
-    final class UnregisterNodesContext extends AsyncServiceOperationContext<NodeId, List<Unit>> {
+    final class UnregisterNodesContext extends ServiceOperationContext<NodeId> {
 
         public UnregisterNodesContext(OpcUaServer server, @Nullable Session session) {
             super(server, session);

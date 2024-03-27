@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.MonitoredItemServiceSet;
@@ -37,105 +35,105 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
     }
 
     @Override
-    public CompletableFuture<CreateMonitoredItemsResponse> onCreateMonitoredItems(
+    public CreateMonitoredItemsResponse onCreateMonitoredItems(
         ServiceRequestContext context,
         CreateMonitoredItemsRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().createMonitoredItems(context, request).get();
+        } catch (Throwable t) {
+            session.getSessionDiagnostics().getCreateMonitoredItemsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(t).orElse(new UaException(t));
+        } finally {
+            session.getSessionDiagnostics().getCreateMonitoredItemsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<CreateMonitoredItemsResponse> future =
-            session.getSubscriptionManager().createMonitoredItems(context, request);
-
-        session.getSessionDiagnostics().getCreateMonitoredItemsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<ModifyMonitoredItemsResponse> onModifyMonitoredItems(ServiceRequestContext context, ModifyMonitoredItemsRequest request) {
-        Session session;
+    public ModifyMonitoredItemsResponse onModifyMonitoredItems(
+        ServiceRequestContext context, ModifyMonitoredItemsRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().modifyMonitoredItems(context, request).get();
+        } catch (Throwable t) {
+            session.getSessionDiagnostics().getModifyMonitoredItemsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(t).orElse(new UaException(t));
+        } finally {
+            session.getSessionDiagnostics().getModifyMonitoredItemsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<ModifyMonitoredItemsResponse> future =
-            session.getSubscriptionManager().modifyMonitoredItems(context, request);
-
-        session.getSessionDiagnostics().getModifyMonitoredItemsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<DeleteMonitoredItemsResponse> onDeleteMonitoredItems(
-        ServiceRequestContext context,
-        DeleteMonitoredItemsRequest request
-    ) {
+    public DeleteMonitoredItemsResponse onDeleteMonitoredItems(
+        ServiceRequestContext context, DeleteMonitoredItemsRequest request) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().deleteMonitoredItems(context, request).get();
+        } catch (Throwable t) {
+            session.getSessionDiagnostics().getDeleteMonitoredItemsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(t).orElse(new UaException(t));
+        } finally {
+            session.getSessionDiagnostics().getDeleteMonitoredItemsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<DeleteMonitoredItemsResponse> future =
-            session.getSubscriptionManager().deleteMonitoredItems(context, request);
-
-        session.getSessionDiagnostics().getDeleteMonitoredItemsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<SetMonitoringModeResponse> onSetMonitoringMode(ServiceRequestContext context, SetMonitoringModeRequest request) {
-        Session session;
+    public SetMonitoringModeResponse onSetMonitoringMode(
+        ServiceRequestContext context, SetMonitoringModeRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().setMonitoringMode(context, request).get();
+        } catch (Throwable t) {
+            session.getSessionDiagnostics().getSetMonitoringModeCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(t).orElse(new UaException(t));
+        } finally {
+            session.getSessionDiagnostics().getSetMonitoringModeCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<SetMonitoringModeResponse> future =
-            session.getSubscriptionManager().setMonitoringMode(context, request);
-
-        session.getSessionDiagnostics().getSetMonitoringModeCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<SetTriggeringResponse> onSetTriggering(ServiceRequestContext context, SetTriggeringRequest request) {
-        Session session;
+    public SetTriggeringResponse onSetTriggering(
+        ServiceRequestContext context, SetTriggeringRequest request) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().setTriggering(context, request).get();
+        } catch (Throwable t) {
+            session.getSessionDiagnostics().getSetTriggeringCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(t).orElse(new UaException(t));
+        } finally {
+            session.getSessionDiagnostics().getSetTriggeringCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<SetTriggeringResponse> future =
-            session.getSubscriptionManager().setTriggering(context, request);
-
-        session.getSessionDiagnostics().getSetTriggeringCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
+
 }

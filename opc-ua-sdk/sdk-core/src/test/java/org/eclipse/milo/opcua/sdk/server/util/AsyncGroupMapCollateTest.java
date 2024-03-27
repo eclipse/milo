@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,10 +19,10 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
+import static org.eclipse.milo.opcua.sdk.core.util.AsyncGroupMapCollate.groupMapCollate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GroupMapCollateTest {
+public class AsyncGroupMapCollateTest {
 
     @Test
     public void testGroupMapCollate() throws ExecutionException, InterruptedException {

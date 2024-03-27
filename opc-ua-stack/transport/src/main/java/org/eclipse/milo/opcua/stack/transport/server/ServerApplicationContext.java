@@ -57,17 +57,13 @@ public interface ServerApplicationContext {
     Long getNextSecureChannelTokenId();
 
     /**
-     * Handle an inbound service request, returning a {@link CompletableFuture} that completes
-     * with the service response.
+     * Handle an inbound service request.
      *
-     * @param context        the {@link ServiceRequestContext}.
+     * @param context the {@link ServiceRequestContext}.
      * @param requestMessage the {@link UaRequestMessageType} to handle.
-     * @return a {@link CompletableFuture} that completes successfully with the service result, or
-     * completes exceptionally if there was a service fault.
+     * @return the {@link UaResponseMessageType} service response.
      */
     CompletableFuture<UaResponseMessageType> handleServiceRequest(
-        ServiceRequestContext context,
-        UaRequestMessageType requestMessage
-    );
+        ServiceRequestContext context, UaRequestMessageType requestMessage);
 
 }

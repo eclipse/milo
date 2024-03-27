@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -41,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -209,11 +211,10 @@ public class BrowsePathsHelper {
             context.getSession().orElse(null)
         );
 
-        server.getAddressSpaceManager().browse(browseContext, nodeId);
+        try {
+            var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
+            List<Reference> references = server.getAddressSpaceManager().browse(browseContext, view, nodeId);
 
-        CompletableFuture<List<Reference>> future = browseContext.getFuture();
-
-        return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
@@ -230,19 +231,21 @@ public class BrowsePathsHelper {
             if (targetNodeIds.isEmpty()) {
                 return failedUaFuture(StatusCodes.Bad_NoMatch);
             } else {
-                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                    for (int i = 0; i < targetNodeIds.size(); i++) {
-                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                        QualifiedName browseName = browseNames.get(i);
-                        if (browseName.equals(targetName)) {
-                            return targetNodeId;
-                        }
-                    }
+                List<QualifiedName> browseNames = readTargetBrowseNames(targetNodeIds);
 
-                    return ExpandedNodeId.NULL_VALUE;
-                });
+                for (int i = 0; i < targetNodeIds.size(); i++) {
+                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                    QualifiedName browseName = browseNames.get(i);
+                    if (browseName.equals(targetName)) {
+                        return CompletableFuture.completedFuture(targetNodeId);
+                    }
+                }
+
+                return CompletableFuture.completedFuture(ExpandedNodeId.NULL_VALUE);
             }
-        });
+        } catch (Exception e) {
+            return failedUaFuture(StatusCodes.Bad_NoMatch);
+        }
     }
 
     private CompletableFuture<List<ExpandedNodeId>> target(NodeId nodeId, RelativePathElement element) {
@@ -259,11 +262,10 @@ public class BrowsePathsHelper {
             context.getSession().orElse(null)
         );
 
-        server.getAddressSpaceManager().browse(browseContext, nodeId);
+        try {
+            var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
+            List<Reference> references = server.getAddressSpaceManager().browse(browseContext, view, nodeId);
 
-        CompletableFuture<List<Reference>> future = browseContext.getFuture();
-
-        return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
@@ -280,57 +282,54 @@ public class BrowsePathsHelper {
             if (targetNodeIds.isEmpty()) {
                 return failedUaFuture(StatusCodes.Bad_NoMatch);
             } else {
-                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                    var targets = new ArrayList<ExpandedNodeId>();
+                List<QualifiedName> browseNames = readTargetBrowseNames(targetNodeIds);
+                var targets = new ArrayList<ExpandedNodeId>();
 
-                    for (int i = 0; i < targetNodeIds.size(); i++) {
-                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                        QualifiedName browseName = browseNames.get(i);
-                        if (matchesTarget(browseName, targetName)) {
-                            targets.add(targetNodeId);
-                        }
+                for (int i = 0; i < targetNodeIds.size(); i++) {
+                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                    QualifiedName browseName = browseNames.get(i);
+                    if (matchesTarget(browseName, targetName)) {
+                        targets.add(targetNodeId);
                     }
+                }
 
-                    return targets;
-                });
+                return CompletableFuture.completedFuture(targets);
             }
-        });
+        } catch (Exception e) {
+            return failedUaFuture(StatusCodes.Bad_NoMatch);
+        }
     }
 
-    private CompletableFuture<List<QualifiedName>> readTargetBrowseNames(List<ExpandedNodeId> targetNodeIds) {
-        var futures = new ArrayList<CompletableFuture<List<DataValue>>>(targetNodeIds.size());
+    private List<QualifiedName> readTargetBrowseNames(List<ExpandedNodeId> targetNodeIds) {
+        var browseNames = new ArrayList<QualifiedName>();
 
         for (ExpandedNodeId xni : targetNodeIds) {
-            CompletableFuture<List<DataValue>> future = xni.toNodeId(server.getNamespaceTable())
-                .map(nodeId -> {
-                    ReadValueId readValueId = new ReadValueId(
-                        nodeId,
-                        AttributeId.BrowseName.uid(),
-                        null,
-                        QualifiedName.NULL_VALUE
-                    );
+            try {
+                NodeId nodeId = xni.toNodeIdOrThrow(server.getNamespaceTable());
 
-                    var context = new ReadContext(server, null);
+                ReadValueId readValueId = new ReadValueId(
+                    nodeId,
+                    AttributeId.BrowseName.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                );
 
-                    server.getAddressSpaceManager().read(
-                        context,
-                        0.0,
-                        TimestampsToReturn.Neither,
-                        List.of(readValueId)
-                    );
+                var context = new ReadContext(server, null);
 
-                    return context.getFuture();
-                })
-                .orElse(completedFuture(List.of(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
+                List<DataValue> values = server.getAddressSpaceManager().read(
+                    context,
+                    0.0,
+                    TimestampsToReturn.Neither,
+                    List.of(readValueId)
+                );
 
-            futures.add(future);
+                browseNames.add((QualifiedName) values.get(0).getValue().getValue());
+            } catch (Exception ignored) {
+                browseNames.add(QualifiedName.NULL_VALUE);
+            }
         }
 
-        return sequence(futures).thenApply(values ->
-            values.stream().map(l -> {
-                DataValue v = l.get(0);
-                return (QualifiedName) v.getValue().getValue();
-            }).collect(toList()));
+        return browseNames;
     }
 
     private boolean matchesTarget(QualifiedName browseName, QualifiedName targetName) {

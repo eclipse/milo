@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.server.servicesets.AttributeServiceSet;
@@ -24,6 +25,8 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.Service;
 import org.eclipse.milo.opcua.sdk.server.servicesets.SessionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.ViewServiceSet;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
@@ -49,6 +52,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
@@ -69,249 +73,240 @@ public abstract class AbstractServiceHandler {
     private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
 
     public void addServiceSet(String path, AttributeServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_READ,
             (context, request) ->
-                serviceSet.onRead(context, (ReadRequest) request).thenApply(Function.identity())
+                serviceSet.onRead(context, (ReadRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_HISTORY_READ,
             (context, request) ->
-                serviceSet.onHistoryRead(context, (HistoryReadRequest) request).thenApply(Function.identity())
+                serviceSet.onHistoryRead(context, (HistoryReadRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_WRITE,
             (context, request) ->
-                serviceSet.onWrite(context, (WriteRequest) request).thenApply(Function.identity())
+                serviceSet.onWrite(context, (WriteRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.ATTRIBUTE_HISTORY_UPDATE,
             (context, request) ->
-                serviceSet.onHistoryUpdate(context, (HistoryUpdateRequest) request).thenApply(Function.identity())
+                serviceSet.onHistoryUpdate(context, (HistoryUpdateRequest) request)
         );
     }
 
     public void addServiceSet(String path, DiscoveryServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_FIND_SERVERS,
             (context, request) ->
-                serviceSet.onFindServers(context, (FindServersRequest) request).thenApply(Function.identity())
+                serviceSet.onFindServers(context, (FindServersRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_FIND_SERVERS_ON_NETWORK,
             (context, request) ->
                 serviceSet.onFindServersOnNetwork(context, (FindServersOnNetworkRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_GET_ENDPOINTS,
             (context, request) ->
-                serviceSet.onGetEndpoints(context, (GetEndpointsRequest) request).thenApply(Function.identity())
+                serviceSet.onGetEndpoints(context, (GetEndpointsRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_REGISTER_SERVER,
             (context, request) ->
-                serviceSet.onRegisterServer(context, (RegisterServerRequest) request).thenApply(Function.identity())
+                serviceSet.onRegisterServer(context, (RegisterServerRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.DISCOVERY_REGISTER_SERVER_2,
             (context, request) ->
-                serviceSet.onRegisterServer2(context, (RegisterServer2Request) request).thenApply(Function.identity())
+                serviceSet.onRegisterServer2(context, (RegisterServer2Request) request)
         );
     }
 
     public void addServiceSet(String path, MethodServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.METHOD_CALL,
             (context, request) ->
-                serviceSet.onCall(context, (CallRequest) request).thenApply(Function.identity())
+                serviceSet.onCall(context, (CallRequest) request)
         );
     }
 
     public void addServiceSet(String path, MonitoredItemServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_CREATE_MONITORED_ITEMS,
             (context, request) ->
                 serviceSet.onCreateMonitoredItems(context, (CreateMonitoredItemsRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_MODIFY_MONITORED_ITEMS,
             (context, request) ->
                 serviceSet.onModifyMonitoredItems(context, (ModifyMonitoredItemsRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_DELETE_MONITORED_ITEMS,
             (context, request) ->
                 serviceSet.onDeleteMonitoredItems(context, (DeleteMonitoredItemsRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_SET_MONITORING_MODE,
             (context, request) ->
                 serviceSet.onSetMonitoringMode(context, (SetMonitoringModeRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.MONITORED_ITEM_SET_TRIGGERING,
             (context, request) ->
-                serviceSet.onSetTriggering(context, (SetTriggeringRequest) request).thenApply(Function.identity())
+                serviceSet.onSetTriggering(context, (SetTriggeringRequest) request)
         );
     }
 
     public void addServiceSet(String path, NodeManagementServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_ADD_NODES,
             (context, request) ->
-                serviceSet.onAddNodes(context, (AddNodesRequest) request).thenApply(Function.identity())
+                serviceSet.onAddNodes(context, (AddNodesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_DELETE_NODES,
             (context, request) ->
-                serviceSet.onDeleteNodes(context, (DeleteNodesRequest) request).thenApply(Function.identity())
+                serviceSet.onDeleteNodes(context, (DeleteNodesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_ADD_REFERENCES,
             (context, request) ->
-                serviceSet.onAddReferences(context, (AddReferencesRequest) request).thenApply(Function.identity())
+                serviceSet.onAddReferences(context, (AddReferencesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.NODE_MANAGEMENT_DELETE_REFERENCES,
             (context, request) ->
-                serviceSet.onDeleteReferences(context, (DeleteReferencesRequest) request).thenApply(Function.identity())
+                serviceSet.onDeleteReferences(context, (DeleteReferencesRequest) request)
         );
     }
 
     public void addServiceSet(String path, SessionServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_CREATE_SESSION,
             (context, request) ->
-                serviceSet.onCreateSession(context, (CreateSessionRequest) request).thenApply(Function.identity())
+                serviceSet.onCreateSession(context, (CreateSessionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_ACTIVATE_SESSION,
             (context, request) ->
-                serviceSet.onActivateSession(context, (ActivateSessionRequest) request).thenApply(Function.identity())
+                serviceSet.onActivateSession(context, (ActivateSessionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_CLOSE_SESSION,
             (context, request) ->
-                serviceSet.onCloseSession(context, (CloseSessionRequest) request).thenApply(Function.identity())
+                serviceSet.onCloseSession(context, (CloseSessionRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SESSION_CANCEL,
             (context, request) ->
-                serviceSet.onCancel(context, (CancelRequest) request).thenApply(Function.identity())
+                serviceSet.onCancel(context, (CancelRequest) request)
         );
     }
 
     public void addServiceSet(String path, SubscriptionServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_CREATE_SUBSCRIPTION,
             (context, request) ->
                 serviceSet.onCreateSubscription(context, (CreateSubscriptionRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_MODIFY_SUBSCRIPTION,
             (context, request) ->
                 serviceSet.onModifySubscription(context, (ModifySubscriptionRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_DELETE_SUBSCRIPTIONS,
             (context, request) ->
                 serviceSet.onDeleteSubscriptions(context, (DeleteSubscriptionsRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_TRANSFER_SUBSCRIPTIONS,
             (context, request) ->
                 serviceSet.onTransferSubscriptions(context, (TransferSubscriptionsRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_SET_PUBLISHING_MODE,
             (context, request) ->
                 serviceSet.onSetPublishingMode(context, (SetPublishingModeRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_PUBLISH,
-            (context, request) ->
-                serviceSet.onPublish(context, (PublishRequest) request)
-                    .thenApply(Function.identity())
+            (AsyncServiceHandler) (context, requestMessage) -> {
+                CompletableFuture<PublishResponse> future =
+                    serviceSet.onPublish(context, (PublishRequest) requestMessage);
+
+                return future.thenApply(Function.identity());
+            }
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.SUBSCRIPTION_REPUBLISH,
             (context, request) ->
                 serviceSet.onRepublish(context, (RepublishRequest) request)
-                    .thenApply(Function.identity())
         );
     }
 
     public void addServiceSet(String path, ViewServiceSet serviceSet) {
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_BROWSE,
             (context, request) ->
-                serviceSet.onBrowse(context, (BrowseRequest) request).thenApply(Function.identity())
+                serviceSet.onBrowse(context, (BrowseRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_BROWSE_NEXT,
             (context, request) ->
-                serviceSet.onBrowseNext(context, (BrowseNextRequest) request).thenApply(Function.identity())
+                serviceSet.onBrowseNext(context, (BrowseNextRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_TRANSLATE_BROWSE_PATHS,
             (context, request) ->
                 serviceSet.onTranslateBrowsePaths(context, (TranslateBrowsePathsToNodeIdsRequest) request)
-                    .thenApply(Function.identity())
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_REGISTER_NODES,
             (context, request) ->
-                serviceSet.onRegisterNodes(context, (RegisterNodesRequest) request).thenApply(Function.identity())
+                serviceSet.onRegisterNodes(context, (RegisterNodesRequest) request)
         );
-        serviceHandlerTable.put(
+        addServiceHandler(
             path,
             Service.VIEW_UNREGISTER_NODES,
             (context, request) ->
-                serviceSet.onUnregisterNodes(context, (UnregisterNodesRequest) request).thenApply(Function.identity())
+                serviceSet.onUnregisterNodes(context, (UnregisterNodesRequest) request)
         );
     }
 
@@ -324,10 +319,49 @@ public abstract class AbstractServiceHandler {
     }
 
     protected interface ServiceHandler {
-        CompletableFuture<UaResponseMessageType> handle(
+
+        /**
+         * Handle a service request, returning the corresponding service response.
+         *
+         * @param context the {@link ServiceRequestContext}.
+         * @param requestMessage the {@link UaRequestMessageType} to handle.
+         * @return the {@link UaResponseMessageType} service response.
+         */
+        UaResponseMessageType handle(
+            ServiceRequestContext context, UaRequestMessageType requestMessage) throws UaException;
+
+    }
+
+    protected interface AsyncServiceHandler extends ServiceHandler {
+
+        @Override
+        default UaResponseMessageType handle(
             ServiceRequestContext context,
             UaRequestMessageType requestMessage
-        );
+        ) throws UaException {
+
+            try {
+                return handleAsync(context, requestMessage).get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+            } catch (ExecutionException e) {
+                throw UaException.extract(e).orElse(new UaException(e));
+            }
+        }
+
+        /**
+         * Handle a service request asynchronously, returning a {@link CompletableFuture} that
+         * completes with the corresponding service response.
+         *
+         * @param context the {@link ServiceRequestContext}.
+         * @param requestMessage the {@link UaRequestMessageType} to handle.
+         * @return a {@link CompletableFuture} that completes with the corresponding service
+         *     response.
+         */
+        CompletableFuture<UaResponseMessageType> handleAsync(
+            ServiceRequestContext context, UaRequestMessageType requestMessage);
+
     }
 
     private static class ServiceHandlerTable {
