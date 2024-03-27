@@ -334,10 +334,21 @@ public interface AddressSpace {
          */
         record ReferenceList(List<Reference> references) implements ReferenceResult {}
 
+        /**
+         * Create a {@link ReferenceList} from a List of {@link Reference}s.
+         *
+         * @param references the List of {@link Reference}s.
+         * @return a {@link ReferenceList} containing a List {@link Reference}s.
+         */
         static ReferenceList of(List<Reference> references) {
             return new ReferenceList(references);
         }
 
+        /**
+         * Create a {@link BadNodeIdUnknown} instance.
+         *
+         * @return a {@link BadNodeIdUnknown} instance.
+         */
         static BadNodeIdUnknown unknown() {
             return new BadNodeIdUnknown();
         }
