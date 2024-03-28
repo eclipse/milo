@@ -15,6 +15,7 @@ import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -344,7 +345,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
                 if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
                     if (getEndpointDescriptions().stream()
-                        .noneMatch(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri()))) {
+                        .noneMatch(e -> Objects.equals(e.getSecurityPolicyUri(), SecurityPolicy.None.getUri()))) {
 
                         var errorMessage = new ErrorMessage(
                             StatusCodes.Bad_SecurityPolicyRejected,

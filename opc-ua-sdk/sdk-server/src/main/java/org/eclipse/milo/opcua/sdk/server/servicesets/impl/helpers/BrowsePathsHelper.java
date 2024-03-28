@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,17 +14,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReferenceResult.ReferenceList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -41,14 +43,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class BrowsePathsHelper {
 
@@ -60,148 +60,120 @@ public class BrowsePathsHelper {
         this.server = server;
     }
 
-    public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> translateBrowsePaths(
+    public TranslateBrowsePathsToNodeIdsResponse translateBrowsePaths(
         TranslateBrowsePathsToNodeIdsRequest request
-    ) {
+    ) throws UaException {
 
         List<BrowsePath> browsePaths = Lists.ofNullable(request.getBrowsePaths());
 
         if (browsePaths.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
+
         if (browsePaths.size() >
             server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {
 
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var futures = new ArrayList<CompletableFuture<BrowsePathResult>>(browsePaths.size());
+        var results = new ArrayList<BrowsePathResult>(browsePaths.size());
 
         for (BrowsePath browsePath : browsePaths) {
-            futures.add(translate(browsePath));
+            results.add(translate(browsePath));
         }
 
-        return sequence(futures).thenComposeAsync(results -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            var response = new TranslateBrowsePathsToNodeIdsResponse(
-                header,
-                results.toArray(BrowsePathResult[]::new),
-                new DiagnosticInfo[0]
-            );
-
-            return CompletableFuture.completedFuture(response);
-        }, server.getExecutorService());
+        return new TranslateBrowsePathsToNodeIdsResponse(
+            header,
+            results.toArray(BrowsePathResult[]::new),
+            new DiagnosticInfo[0]
+        );
     }
 
-    private CompletableFuture<BrowsePathResult> translate(BrowsePath browsePath) {
-        CompletableFuture<BrowsePathResult> future = new CompletableFuture<>();
-
+    private BrowsePathResult translate(BrowsePath browsePath) {
         NodeId startingNode = browsePath.getStartingNode();
         RelativePath relativePath = browsePath.getRelativePath();
 
         if (startingNode.isNull()) {
-            future.complete(new BrowsePathResult(
+            return new BrowsePathResult(
                 new StatusCode(StatusCodes.Bad_NodeIdInvalid),
                 new BrowsePathTarget[0]
-            ));
-
-            return future;
+            );
         }
 
         List<RelativePathElement> relativePathElements = Lists.ofNullable(relativePath.getElements());
 
         if (relativePathElements.isEmpty()) {
-            future.complete(new BrowsePathResult(
+            return new BrowsePathResult(
                 new StatusCode(StatusCodes.Bad_NothingToDo),
                 new BrowsePathTarget[0]
-            ));
-
-            return future;
+            );
         }
 
-        follow(startingNode, relativePathElements).whenComplete((targets, ex) -> {
-            if (targets != null) {
-                BrowsePathResult result;
+        try {
+            List<BrowsePathTarget> targets = follow(startingNode, relativePathElements);
 
-                if (!targets.isEmpty()) {
-                    result = new BrowsePathResult(
-                        StatusCode.GOOD,
-                        targets.toArray(new BrowsePathTarget[0])
-                    );
-                } else {
-                    result = new BrowsePathResult(
-                        new StatusCode(StatusCodes.Bad_NoMatch),
-                        new BrowsePathTarget[0]
-                    );
-                }
-
-                future.complete(result);
+            if (!targets.isEmpty()) {
+                return new BrowsePathResult(
+                    StatusCode.GOOD,
+                    targets.toArray(new BrowsePathTarget[0])
+                );
             } else {
-                StatusCode statusCode = UaException.extractStatusCode(ex)
-                    .orElse(new StatusCode(StatusCodes.Bad_NoMatch));
-
-                BrowsePathResult result = new BrowsePathResult(
-                    statusCode,
+                return new BrowsePathResult(
+                    new StatusCode(StatusCodes.Bad_NoMatch),
                     new BrowsePathTarget[0]
                 );
-
-                future.complete(result);
             }
-        });
-
-        return future;
+        } catch (UaException e) {
+            return new BrowsePathResult(e.getStatusCode(), new BrowsePathTarget[0]);
+        }
     }
 
-    private CompletableFuture<List<BrowsePathTarget>> follow(
+    private List<BrowsePathTarget> follow(
         NodeId nodeId,
         List<RelativePathElement> elements
-    ) {
+    ) throws UaException {
 
         if (elements.isEmpty()) {
-            return completedFuture(Collections.emptyList());
+            return Collections.emptyList();
         } else if (elements.size() == 1) {
-            return target(nodeId, elements.get(0)).thenApply(targets ->
-                targets.stream()
-                    .map(n -> new BrowsePathTarget(n, UInteger.MAX))
-                    .collect(toList())
-            );
+            List<ExpandedNodeId> targets = target(nodeId, elements.get(0));
+
+            return targets.stream()
+                .map(n -> new BrowsePathTarget(n, UInteger.MAX))
+                .collect(toList());
         } else {
             RelativePathElement e = elements.get(0);
 
-            return next(nodeId, e).thenCompose(nextExId -> {
-                if (nextExId.isNull()) {
-                    // There was no match for the target name
-                    return failedUaFuture(StatusCodes.Bad_NoMatch);
-                }
+            ExpandedNodeId nextXni = next(nodeId, e);
+            if (nextXni.isNull()) {
+                // There was no match for the target name
+                throw new UaException(StatusCodes.Bad_NoMatch);
+            }
 
-                List<RelativePathElement> nextElements = elements.subList(1, elements.size());
+            List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
-                Optional<NodeId> nextId = nextExId.toNodeId(server.getNamespaceTable());
+            Optional<NodeId> nextId = nextXni.toNodeId(server.getNamespaceTable());
 
-                if (nextId.isPresent()) {
-                    return follow(nextId.get(), nextElements);
-                } else {
-                    UInteger remaining = nextElements.isEmpty() ?
-                        UInteger.MAX : uint(nextElements.size());
+            if (nextId.isPresent()) {
+                return follow(nextId.get(), nextElements);
+            } else {
+                UInteger remaining = nextElements.isEmpty() ?
+                    UInteger.MAX : uint(nextElements.size());
 
-                    List<BrowsePathTarget> targets = List.of(
-                        new BrowsePathTarget(nextExId, remaining)
-                    );
-
-                    return completedFuture(targets);
-                }
-            });
+                return List.of(new BrowsePathTarget(nextXni, remaining));
+            }
         }
     }
 
-    private CompletableFuture<ExpandedNodeId> next(NodeId nodeId, RelativePathElement element) {
+    private ExpandedNodeId next(NodeId nodeId, RelativePathElement element) throws UaException {
         NodeId referenceTypeId = element.getReferenceTypeId();
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
         if (targetName.isNull()) {
-            return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
+            throw new UaException(StatusCodes.Bad_BrowseNameInvalid);
         }
 
         var browseContext = new BrowseContext(
@@ -209,11 +181,15 @@ public class BrowsePathsHelper {
             context.getSession().orElse(null)
         );
 
-        server.getAddressSpaceManager().browse(browseContext, nodeId);
+        var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
 
-        CompletableFuture<List<Reference>> future = browseContext.getFuture();
+        AddressSpace.ReferenceResult result =
+            server.getAddressSpaceManager()
+                .browse(browseContext, view, List.of(nodeId)).get(0);
 
-        return future.thenCompose(references -> {
+        if (result instanceof ReferenceList rl) {
+            List<Reference> references = rl.references();
+
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
@@ -228,30 +204,32 @@ public class BrowsePathsHelper {
                 .collect(toList());
 
             if (targetNodeIds.isEmpty()) {
-                return failedUaFuture(StatusCodes.Bad_NoMatch);
+                throw new UaException(StatusCodes.Bad_NoMatch);
             } else {
-                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                    for (int i = 0; i < targetNodeIds.size(); i++) {
-                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                        QualifiedName browseName = browseNames.get(i);
-                        if (browseName.equals(targetName)) {
-                            return targetNodeId;
-                        }
-                    }
+                List<QualifiedName> browseNames = readTargetBrowseNames(targetNodeIds);
 
-                    return ExpandedNodeId.NULL_VALUE;
-                });
+                for (int i = 0; i < targetNodeIds.size(); i++) {
+                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                    QualifiedName browseName = browseNames.get(i);
+                    if (browseName.equals(targetName)) {
+                        return targetNodeId;
+                    }
+                }
+
+                return ExpandedNodeId.NULL_VALUE;
             }
-        });
+        } else {
+            throw new UaException(StatusCodes.Bad_NoMatch);
+        }
     }
 
-    private CompletableFuture<List<ExpandedNodeId>> target(NodeId nodeId, RelativePathElement element) {
+    private List<ExpandedNodeId> target(NodeId nodeId, RelativePathElement element) throws UaException {
         NodeId referenceTypeId = element.getReferenceTypeId();
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
         if (targetName.isNull()) {
-            return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
+            throw new UaException(StatusCodes.Bad_BrowseNameInvalid);
         }
 
         BrowseContext browseContext = new BrowseContext(
@@ -259,11 +237,15 @@ public class BrowsePathsHelper {
             context.getSession().orElse(null)
         );
 
-        server.getAddressSpaceManager().browse(browseContext, nodeId);
+        var view = new ViewDescription(NodeId.NULL_VALUE, DateTime.NULL_VALUE, UInteger.valueOf(0));
 
-        CompletableFuture<List<Reference>> future = browseContext.getFuture();
+        AddressSpace.ReferenceResult result =
+            server.getAddressSpaceManager()
+                .browse(browseContext, view, List.of(nodeId)).get(0);
 
-        return future.thenCompose(references -> {
+        if (result instanceof ReferenceList rl) {
+            List<Reference> references = rl.references();
+
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
@@ -278,59 +260,56 @@ public class BrowsePathsHelper {
                 .collect(toList());
 
             if (targetNodeIds.isEmpty()) {
-                return failedUaFuture(StatusCodes.Bad_NoMatch);
+                throw new UaException(StatusCodes.Bad_NoMatch);
             } else {
-                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                    var targets = new ArrayList<ExpandedNodeId>();
+                List<QualifiedName> browseNames = readTargetBrowseNames(targetNodeIds);
+                var targets = new ArrayList<ExpandedNodeId>();
 
-                    for (int i = 0; i < targetNodeIds.size(); i++) {
-                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                        QualifiedName browseName = browseNames.get(i);
-                        if (matchesTarget(browseName, targetName)) {
-                            targets.add(targetNodeId);
-                        }
+                for (int i = 0; i < targetNodeIds.size(); i++) {
+                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                    QualifiedName browseName = browseNames.get(i);
+                    if (matchesTarget(browseName, targetName)) {
+                        targets.add(targetNodeId);
                     }
+                }
 
-                    return targets;
-                });
+                return targets;
             }
-        });
+        } else {
+            throw new UaException(StatusCodes.Bad_NoMatch);
+        }
     }
 
-    private CompletableFuture<List<QualifiedName>> readTargetBrowseNames(List<ExpandedNodeId> targetNodeIds) {
-        var futures = new ArrayList<CompletableFuture<List<DataValue>>>(targetNodeIds.size());
+    private List<QualifiedName> readTargetBrowseNames(List<ExpandedNodeId> targetNodeIds) {
+        var browseNames = new ArrayList<QualifiedName>();
 
         for (ExpandedNodeId xni : targetNodeIds) {
-            CompletableFuture<List<DataValue>> future = xni.toNodeId(server.getNamespaceTable())
-                .map(nodeId -> {
-                    ReadValueId readValueId = new ReadValueId(
-                        nodeId,
-                        AttributeId.BrowseName.uid(),
-                        null,
-                        QualifiedName.NULL_VALUE
-                    );
+            try {
+                NodeId nodeId = xni.toNodeIdOrThrow(server.getNamespaceTable());
 
-                    var context = new ReadContext(server, null);
+                ReadValueId readValueId = new ReadValueId(
+                    nodeId,
+                    AttributeId.BrowseName.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                );
 
-                    server.getAddressSpaceManager().read(
-                        context,
-                        0.0,
-                        TimestampsToReturn.Neither,
-                        List.of(readValueId)
-                    );
+                var context = new ReadContext(server, null);
 
-                    return context.getFuture();
-                })
-                .orElse(completedFuture(List.of(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
+                List<DataValue> values = server.getAddressSpaceManager().read(
+                    context,
+                    0.0,
+                    TimestampsToReturn.Neither,
+                    List.of(readValueId)
+                );
 
-            futures.add(future);
+                browseNames.add((QualifiedName) values.get(0).getValue().getValue());
+            } catch (Exception ignored) {
+                browseNames.add(QualifiedName.NULL_VALUE);
+            }
         }
 
-        return sequence(futures).thenApply(values ->
-            values.stream().map(l -> {
-                DataValue v = l.get(0);
-                return (QualifiedName) v.getValue().getValue();
-            }).collect(toList()));
+        return browseNames;
     }
 
     private boolean matchesTarget(QualifiedName browseName, QualifiedName targetName) {

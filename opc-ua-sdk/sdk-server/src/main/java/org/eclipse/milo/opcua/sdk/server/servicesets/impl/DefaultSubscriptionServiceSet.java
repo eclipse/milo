@@ -57,109 +57,135 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     @Override
-    public CompletableFuture<CreateSubscriptionResponse> onCreateSubscription(
+    public CreateSubscriptionResponse onCreateSubscription(
         ServiceRequestContext context,
         CreateSubscriptionRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().createSubscription(request).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getCreateSubscriptionCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getCreateSubscriptionCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<CreateSubscriptionResponse> future =
-            session.getSubscriptionManager().createSubscription(request);
-
-        session.getSessionDiagnostics().getCreateSubscriptionCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<ModifySubscriptionResponse> onModifySubscription(
+    public ModifySubscriptionResponse onModifySubscription(
         ServiceRequestContext context,
         ModifySubscriptionRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().modifySubscription(request).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getModifySubscriptionCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getModifySubscriptionCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<ModifySubscriptionResponse> future =
-            session.getSubscriptionManager().modifySubscription(request);
-
-        session.getSessionDiagnostics().getModifySubscriptionCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<DeleteSubscriptionsResponse> onDeleteSubscriptions(
+    public DeleteSubscriptionsResponse onDeleteSubscriptions(
         ServiceRequestContext context,
         DeleteSubscriptionsRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().deleteSubscriptions(request).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getDeleteSubscriptionsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getDeleteSubscriptionsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<DeleteSubscriptionsResponse> future =
-            session.getSubscriptionManager().deleteSubscriptions(request);
-
-        session.getSessionDiagnostics().getDeleteSubscriptionsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<TransferSubscriptionsResponse> onTransferSubscriptions(ServiceRequestContext context, TransferSubscriptionsRequest request) {
-        Session session;
+    public TransferSubscriptionsResponse onTransferSubscriptions(
+        ServiceRequestContext context,
+        TransferSubscriptionsRequest request
+    ) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return transferSubscriptions(request, session).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getTransferSubscriptionsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getTransferSubscriptionsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<TransferSubscriptionsResponse> future = transferSubscriptions(request, session);
-
-        session.getSessionDiagnostics().getTransferSubscriptionsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<SetPublishingModeResponse> onSetPublishingMode(ServiceRequestContext context, SetPublishingModeRequest request) {
-        Session session;
+    public SetPublishingModeResponse onSetPublishingMode(
+        ServiceRequestContext context,
+        SetPublishingModeRequest request
+    ) throws UaException {
+
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return session.getSubscriptionManager().setPublishingMode(request).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getSetPublishingModeCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getSetPublishingModeCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
+    }
 
-        CompletableFuture<SetPublishingModeResponse> future =
-            session.getSubscriptionManager().setPublishingMode(request);
+    @Override
+    public RepublishResponse onRepublish(
+        ServiceRequestContext context,
+        RepublishRequest request
+    ) throws UaException {
 
-        session.getSessionDiagnostics().getSetPublishingModeCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
-        return future;
+        try {
+            return session.getSubscriptionManager().republish(request).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getRepublishCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getRepublishCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
     }
 
     @Override
@@ -176,25 +202,6 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
             session.getSubscriptionManager().publish(context, request);
 
         session.getSessionDiagnostics().getPublishCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
-    }
-
-    @Override
-    public CompletableFuture<RepublishResponse> onRepublish(ServiceRequestContext context, RepublishRequest request) {
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
-        }
-
-        CompletableFuture<RepublishResponse> future =
-            session.getSubscriptionManager().republish(request);
-
-        session.getSessionDiagnostics().getRepublishCount().record(future);
         session.getSessionDiagnostics().getTotalRequestCount().record(future);
 
         return future;

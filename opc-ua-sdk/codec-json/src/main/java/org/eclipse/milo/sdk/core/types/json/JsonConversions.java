@@ -13,6 +13,7 @@ package org.eclipse.milo.sdk.core.types.json;
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.UUID;
 
 import com.google.gson.JsonArray;
@@ -20,7 +21,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -172,9 +172,8 @@ public class JsonConversions {
     }
 
     public static JsonElement fromByteString(ByteString value) {
-        // JDK17 use HexFormat
         byte[] bs = value.bytesOrEmpty();
-        String hex = ByteBufUtil.hexDump(bs);
+        String hex = HexFormat.of().formatHex(bs);
         return new JsonPrimitive(hex);
     }
 
@@ -432,9 +431,8 @@ public class JsonConversions {
     }
 
     public static ByteString toByteString(JsonElement element) {
-        // JDK17 use HexFormat
         String hex = element.getAsString();
-        byte[] bs = ByteBufUtil.decodeHexDump(hex);
+        byte[] bs = HexFormat.of().parseHex(hex);
         return new ByteString(bs);
     }
 

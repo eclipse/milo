@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
@@ -26,23 +25,20 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface ViewServiceSet {
 
-    CompletableFuture<BrowseResponse> onBrowse(ServiceRequestContext context, BrowseRequest request);
+    BrowseResponse onBrowse(
+        ServiceRequestContext context, BrowseRequest request) throws UaException;
 
-    CompletableFuture<BrowseNextResponse> onBrowseNext(ServiceRequestContext context, BrowseNextRequest request);
+    BrowseNextResponse onBrowseNext(
+        ServiceRequestContext context, BrowseNextRequest request) throws UaException;
 
-    CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> onTranslateBrowsePaths(
+    TranslateBrowsePathsToNodeIdsResponse onTranslateBrowsePaths(
         ServiceRequestContext context,
-        TranslateBrowsePathsToNodeIdsRequest request
-    );
+        TranslateBrowsePathsToNodeIdsRequest request) throws UaException;
 
-    CompletableFuture<RegisterNodesResponse> onRegisterNodes(
-        ServiceRequestContext context,
-        RegisterNodesRequest request
-    );
+    RegisterNodesResponse onRegisterNodes(
+        ServiceRequestContext context, RegisterNodesRequest request) throws UaException;
 
-    CompletableFuture<UnregisterNodesResponse> onUnregisterNodes(
-        ServiceRequestContext context,
-        UnregisterNodesRequest request
-    );
+    UnregisterNodesResponse onUnregisterNodes(
+        ServiceRequestContext context, UnregisterNodesRequest request) throws UaException;
 
 }

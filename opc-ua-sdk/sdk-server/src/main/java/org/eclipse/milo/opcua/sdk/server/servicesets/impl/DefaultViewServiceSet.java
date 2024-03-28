@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,13 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.RegisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.UnregisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.ViewServiceSet;
@@ -24,14 +25,17 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
@@ -39,7 +43,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
@@ -48,131 +51,118 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultViewServiceSet implements ViewServiceSet {
 
-    private final BrowseHelper browseHelper;
-
     private final OpcUaServer server;
 
     public DefaultViewServiceSet(OpcUaServer server) {
         this.server = server;
-
-        browseHelper = new BrowseHelper(server.getConfig().getExecutor());
     }
 
     @Override
-    public CompletableFuture<BrowseResponse> onBrowse(ServiceRequestContext context, BrowseRequest request) {
-        Session session;
+    public BrowseResponse onBrowse(ServiceRequestContext context, BrowseRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            return browse(request, session).get();
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getBrowseCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getBrowseCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<BrowseResponse> future = browse(request, session);
-
-        session.getSessionDiagnostics().getBrowseCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<BrowseNextResponse> onBrowseNext(
+    public BrowseNextResponse onBrowseNext(
         ServiceRequestContext context,
         BrowseNextRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            return browseNext(request, session);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getBrowseNextCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getBrowseNextCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<BrowseNextResponse> future = browseHelper.browseNext(server, session, request)
-            .thenApply(results -> {
-                ResponseHeader header = createResponseHeader(request);
-
-                return new BrowseNextResponse(header, results, new DiagnosticInfo[0]);
-            });
-
-        session.getSessionDiagnostics().getBrowseNextCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> onTranslateBrowsePaths(
+    public TranslateBrowsePathsToNodeIdsResponse onTranslateBrowsePaths(
         ServiceRequestContext context,
         TranslateBrowsePathsToNodeIdsRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
+            var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
+
+            return browsePathsHelper.translateBrowsePaths(request);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        var browsePathsHelper = new BrowsePathsHelper(() -> Optional.ofNullable(session), server);
-
-        CompletableFuture<TranslateBrowsePathsToNodeIdsResponse> future =
-            browsePathsHelper.translateBrowsePaths(request);
-
-        session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<RegisterNodesResponse> onRegisterNodes(
+    public RegisterNodesResponse onRegisterNodes(
         ServiceRequestContext context,
         RegisterNodesRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return registerNodes(request, session);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getRegisterNodesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getRegisterNodesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<RegisterNodesResponse> future = registerNodes(request, session);
-
-        session.getSessionDiagnostics().getRegisterNodesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     @Override
-    public CompletableFuture<UnregisterNodesResponse> onUnregisterNodes(
+    public UnregisterNodesResponse onUnregisterNodes(
         ServiceRequestContext context,
         UnregisterNodesRequest request
-    ) {
+    ) throws UaException {
 
-        Session session;
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
+
         try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
+            return unregisterNodes(request, session);
+        } catch (Exception e) {
+            session.getSessionDiagnostics().getUnregisterNodesCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw UaException.extract(e).orElse(new UaException(e));
+        } finally {
+            session.getSessionDiagnostics().getUnregisterNodesCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
         }
-
-        CompletableFuture<UnregisterNodesResponse> future = unregisterNodes(request, session);
-
-        session.getSessionDiagnostics().getUnregisterNodesCount().record(future);
-        session.getSessionDiagnostics().getTotalRequestCount().record(future);
-
-        return future;
     }
 
     private CompletableFuture<BrowseResponse> browse(BrowseRequest request, Session session) {
@@ -192,66 +182,135 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             return failedUaFuture(StatusCodes.Bad_ViewIdUnknown);
         }
 
-        Stream<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream().map(
-            browseDescription ->
-                browseHelper.browse(
-                    () -> Optional.of(session),
-                    server,
-                    request.getView(),
-                    request.getRequestedMaxReferencesPerNode(),
-                    browseDescription
-                )
+        List<BrowseResult> results = BrowseHelper.browse(server, () -> Optional.of(session), request);
+
+        ResponseHeader header = createResponseHeader(request);
+
+        var response = new BrowseResponse(
+            header,
+            results.toArray(BrowseResult[]::new),
+            new DiagnosticInfo[0]
         );
 
-        return FutureUtils.sequence(futures).thenApply(results -> {
-            ResponseHeader header = createResponseHeader(request);
-
-            return new BrowseResponse(header, results.toArray(BrowseResult[]::new), new DiagnosticInfo[0]);
-        });
+        return CompletableFuture.completedFuture(response);
     }
 
-    private CompletableFuture<RegisterNodesResponse> registerNodes(RegisterNodesRequest request, Session session) {
+    private BrowseNextResponse browseNext(
+        BrowseNextRequest request, Session session) throws UaException {
+
+        List<ByteString> continuationPoints = Lists.ofNullable(request.getContinuationPoints());
+
+        if (continuationPoints.isEmpty()) {
+            throw new UaException(StatusCodes.Bad_NothingToDo);
+        }
+
+        if (continuationPoints.size() >
+            server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
+
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
+        }
+
+        var results = new ArrayList<BrowseResult>();
+
+        for (ByteString bs : continuationPoints) {
+            if (request.getReleaseContinuationPoints()) {
+                results.add(release(session, bs));
+            } else {
+                results.add(references(session, bs));
+            }
+        }
+
+        var header = createResponseHeader(request);
+
+        return new BrowseNextResponse(
+            header,
+            results.toArray(BrowseResult[]::new),
+            new DiagnosticInfo[0]
+        );
+    }
+
+    private static BrowseResult release(Session session, ByteString bs) {
+        ContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
+
+        return c != null ?
+            new BrowseResult(StatusCode.GOOD, null, null) :
+            new BrowseResult(new StatusCode(StatusCodes.Bad_ContinuationPointInvalid), null, null);
+    }
+
+    private static BrowseResult references(Session session, ByteString bs) {
+        ContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
+
+        if (c != null) {
+            int max = c.max();
+            List<ReferenceDescription> references = c.references();
+
+            if (references.size() > max) {
+                List<ReferenceDescription> subList = references.subList(0, max);
+                List<ReferenceDescription> current = List.copyOf(subList);
+                subList.clear();
+
+                session.getBrowseContinuationPoints().put(c.id(), c);
+
+                return new BrowseResult(
+                    StatusCode.GOOD,
+                    c.id(),
+                    current.toArray(new ReferenceDescription[0])
+                );
+            } else {
+                return new BrowseResult(
+                    StatusCode.GOOD,
+                    null,
+                    references.toArray(new ReferenceDescription[0])
+                );
+            }
+        } else {
+            return new BrowseResult(new StatusCode(StatusCodes.Bad_ContinuationPointInvalid), null, null);
+        }
+    }
+
+    private RegisterNodesResponse registerNodes(
+        RegisterNodesRequest request, Session session) throws UaException {
+
         List<NodeId> nodeIds = Lists.ofNullable(request.getNodesToRegister());
 
         if (nodeIds.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodeIds.size() > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var registerNodesContext = new RegisterNodesContext(server, session);
 
-        server.getAddressSpaceManager().registerNodes(registerNodesContext, nodeIds);
+        List<NodeId> registeredNodeIds =
+            server.getAddressSpaceManager().registerNodes(registerNodesContext, nodeIds);
 
-        return registerNodesContext.getFuture().thenApply(registeredNodeIds -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new RegisterNodesResponse(header, registeredNodeIds.toArray(new NodeId[0]));
-        });
+        return new RegisterNodesResponse(header, registeredNodeIds.toArray(new NodeId[0]));
     }
 
-    private CompletableFuture<UnregisterNodesResponse> unregisterNodes(UnregisterNodesRequest request, Session session) {
+    private UnregisterNodesResponse unregisterNodes(
+        UnregisterNodesRequest request, Session session) throws UaException {
+
         List<NodeId> nodeIds = Lists.ofNullable(request.getNodesToUnregister());
 
         if (nodeIds.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (nodeIds.size() > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var unregisterNodesContext = new UnregisterNodesContext(server, session);
 
         server.getAddressSpaceManager().unregisterNodes(unregisterNodesContext, nodeIds);
 
-        return unregisterNodesContext.getFuture().thenApply(registeredNodeIds -> {
-            ResponseHeader header = createResponseHeader(request);
+        ResponseHeader header = createResponseHeader(request);
 
-            return new UnregisterNodesResponse(header);
-        });
+        return new UnregisterNodesResponse(header);
     }
 
 }

@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
@@ -24,21 +23,16 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface SessionServiceSet {
 
-    CompletableFuture<CreateSessionResponse> onCreateSession(
-        ServiceRequestContext context,
-        CreateSessionRequest request
-    );
+    CreateSessionResponse onCreateSession(
+        ServiceRequestContext context, CreateSessionRequest request) throws UaException;
 
-    CompletableFuture<ActivateSessionResponse> onActivateSession(
-        ServiceRequestContext context,
-        ActivateSessionRequest request
-    );
+    ActivateSessionResponse onActivateSession(
+        ServiceRequestContext context, ActivateSessionRequest request) throws UaException;
 
-    CompletableFuture<CloseSessionResponse> onCloseSession(
-        ServiceRequestContext context,
-        CloseSessionRequest request
-    );
+    CloseSessionResponse onCloseSession(
+        ServiceRequestContext context, CloseSessionRequest request) throws UaException;
 
-    CompletableFuture<CancelResponse> onCancel(ServiceRequestContext context, CancelRequest request);
+    CancelResponse onCancel(
+        ServiceRequestContext context, CancelRequest request) throws UaException;
 
 }

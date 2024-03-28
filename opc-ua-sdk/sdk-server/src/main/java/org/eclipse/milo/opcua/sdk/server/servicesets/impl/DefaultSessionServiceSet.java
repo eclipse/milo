@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.SessionManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
@@ -39,7 +37,9 @@ public class DefaultSessionServiceSet implements SessionServiceSet {
     }
 
     @Override
-    public CompletableFuture<CreateSessionResponse> onCreateSession(ServiceRequestContext context, CreateSessionRequest request) {
+    public CreateSessionResponse onCreateSession(
+        ServiceRequestContext context, CreateSessionRequest request) throws UaException {
+
         ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
 
         SessionManager sessionManager = server.getSessionManager();
@@ -49,7 +49,7 @@ public class DefaultSessionServiceSet implements SessionServiceSet {
 
             serverDiagnosticsSummary.getCumulatedSessionCount().increment();
 
-            return CompletableFuture.completedFuture(response);
+            return response;
         } catch (UaException e) {
             serverDiagnosticsSummary.getRejectedSessionCount().increment();
 
@@ -57,18 +57,18 @@ public class DefaultSessionServiceSet implements SessionServiceSet {
                 serverDiagnosticsSummary.getSecurityRejectedSessionCount().increment();
             }
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         }
     }
 
     @Override
-    public CompletableFuture<ActivateSessionResponse> onActivateSession(ServiceRequestContext context, ActivateSessionRequest request) {
+    public ActivateSessionResponse onActivateSession(
+        ServiceRequestContext context, ActivateSessionRequest request) throws UaException {
+
         SessionManager sessionManager = server.getSessionManager();
 
         try {
-            ActivateSessionResponse response = sessionManager.activateSession(context, request);
-
-            return CompletableFuture.completedFuture(response);
+            return sessionManager.activateSession(context, request);
         } catch (UaException e) {
             ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
 
@@ -78,28 +78,22 @@ public class DefaultSessionServiceSet implements SessionServiceSet {
                 serverDiagnosticsSummary.getSecurityRejectedSessionCount().increment();
             }
 
-            return CompletableFuture.failedFuture(e);
+            throw e;
         }
     }
 
     @Override
-    public CompletableFuture<CloseSessionResponse> onCloseSession(ServiceRequestContext context, CloseSessionRequest request) {
+    public CloseSessionResponse onCloseSession(
+        ServiceRequestContext context, CloseSessionRequest request) throws UaException {
+
         SessionManager sessionManager = server.getSessionManager();
 
-        try {
-            CloseSessionResponse response = sessionManager.closeSession(request, context);
-
-            return CompletableFuture.completedFuture(response);
-        } catch (UaException e) {
-            return CompletableFuture.failedFuture(e);
-        }
+        return sessionManager.closeSession(request, context);
     }
 
     @Override
-    public CompletableFuture<CancelResponse> onCancel(ServiceRequestContext context, CancelRequest request) {
-        var response = new CancelResponse(createResponseHeader(request), UInteger.MIN);
-
-        return CompletableFuture.completedFuture(response);
+    public CancelResponse onCancel(ServiceRequestContext context, CancelRequest request) {
+        return new CancelResponse(createResponseHeader(request), UInteger.MIN);
     }
 
 }

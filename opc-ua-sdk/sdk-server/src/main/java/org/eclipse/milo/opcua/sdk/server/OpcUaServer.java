@@ -80,6 +80,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
@@ -462,6 +463,22 @@ public class OpcUaServer extends AbstractServiceHandler {
             UaRequestMessageType requestMessage
         ) {
 
+            var future = new CompletableFuture<UaResponseMessageType>();
+
+            getExecutorService().execute(
+                () ->
+                    handleServiceRequest(context, requestMessage, future)
+            );
+
+            return future;
+        }
+
+        private void handleServiceRequest(
+            ServiceRequestContext context,
+            UaRequestMessageType requestMessage,
+            CompletableFuture<UaResponseMessageType> future
+        ) {
+
             String path = EndpointUtil.getPath(context.getEndpointUrl());
 
             if (context.getSecureChannel().getSecurityPolicy() == SecurityPolicy.None) {
@@ -480,14 +497,13 @@ public class OpcUaServer extends AbstractServiceHandler {
 
                         context.getChannel().pipeline().fireUserEventTriggered(errorMessage);
 
-                        // won't complete, doesn't matter, we're closing down
-                        return new CompletableFuture<>();
+                        future.completeExceptionally(new UaException(StatusCodes.Bad_SecurityPolicyRejected));
+                        return;
                     }
                 }
             }
 
             Service service = Service.from(requestMessage.getTypeId());
-
             ServiceHandler serviceHandler = service != null ? getServiceHandler(path, service) : null;
 
             if (serviceHandler != null) {
@@ -501,34 +517,66 @@ public class OpcUaServer extends AbstractServiceHandler {
                     );
                 }
 
-                return serviceHandler.handle(context, requestMessage).whenComplete(
-                    (r, ex) -> {
-                        if (ex == null) {
-                            if (logger.isTraceEnabled()) {
-                                logger.trace(
-                                    "Service request completed: path={} handle={} service={} remote={}",
+                if (serviceHandler instanceof AsyncServiceHandler) {
+                    AsyncServiceHandler asyncServiceHandler = (AsyncServiceHandler) serviceHandler;
+
+                    CompletableFuture<UaResponseMessageType> response =
+                        asyncServiceHandler.handleAsync(context, requestMessage).whenComplete((r, ex) -> {
+                            if (ex != null) {
+                                logger.warn(
+                                    "Service request completed exceptionally: path={} handle={} service={} remote={}",
                                     path,
                                     requestMessage.getRequestHeader().getRequestHandle(),
                                     service,
-                                    context.getChannel().remoteAddress()
+                                    context.getChannel().remoteAddress(),
+                                    ex
                                 );
+                            } else {
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace(
+                                        "Service request completed: path={} handle={} service={} remote={}",
+                                        path,
+                                        requestMessage.getRequestHeader().getRequestHandle(),
+                                        service,
+                                        context.getChannel().remoteAddress()
+                                    );
+                                }
                             }
-                        } else {
-                            logger.warn(
-                                "Service request completed exceptionally: path={} handle={} service={} remote={}",
+                        });
+
+                    FutureUtils.complete(future).with(response);
+                } else {
+                    try {
+                        UaResponseMessageType response = serviceHandler.handle(context, requestMessage);
+
+                        if (logger.isTraceEnabled()) {
+                            logger.trace(
+                                "Service request completed: path={} handle={} service={} remote={}",
                                 path,
                                 requestMessage.getRequestHeader().getRequestHandle(),
                                 service,
-                                context.getChannel().remoteAddress(),
-                                ex
+                                context.getChannel().remoteAddress()
                             );
                         }
+
+                        future.complete(response);
+                    } catch (UaException e) {
+                        logger.warn(
+                            "Service request completed exceptionally: path={} handle={} service={} remote={}",
+                            path,
+                            requestMessage.getRequestHeader().getRequestHandle(),
+                            service,
+                            context.getChannel().remoteAddress(),
+                            e
+                        );
+
+                        future.completeExceptionally(e);
                     }
-                );
+                }
             } else {
                 logger.warn("No ServiceHandler registered for path={} service={}", path, service);
 
-                return CompletableFuture.failedFuture(new UaException(StatusCodes.Bad_NotImplemented));
+                future.completeExceptionally(new UaException(StatusCodes.Bad_NotImplemented));
             }
         }
 

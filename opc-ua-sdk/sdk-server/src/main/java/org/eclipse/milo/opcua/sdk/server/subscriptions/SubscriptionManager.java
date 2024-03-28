@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -32,6 +31,8 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.RevisedDataItemParameters;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.RevisedEventItemParameters;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
@@ -470,14 +471,12 @@ public class SubscriptionManager {
 
             MonitoringFilter filter = validateEventItemFilter(filterObject, attributeGroup);
 
-            UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
-            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+            RevisedEventItemParameters revisedParameters;
 
             try {
-                server.getAddressSpaceManager().onCreateEventItem(
+                revisedParameters = server.getAddressSpaceManager().onCreateEventItem(
                     request.getItemToMonitor(),
-                    requestedQueueSize,
-                    revisedQueueSize::set
+                    request.getRequestedParameters().getQueueSize()
                 );
             } catch (Throwable t) {
                 throw new UaException(StatusCodes.Bad_InternalError, t);
@@ -493,7 +492,7 @@ public class SubscriptionManager {
                 timestamps,
                 request.getRequestedParameters().getClientHandle(),
                 0.0,
-                revisedQueueSize.get(),
+                revisedParameters.revisedQueueSize(),
                 request.getRequestedParameters().getDiscardOldest()
             );
 
@@ -585,20 +584,13 @@ public class SubscriptionManager {
                 request.getRequestedParameters().getSamplingInterval()
             );
 
-            UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
-
-            AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
-            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+            RevisedDataItemParameters revisedParameters;
 
             try {
-                server.getAddressSpaceManager().onCreateDataItem(
+                revisedParameters = server.getAddressSpaceManager().onCreateDataItem(
                     request.getItemToMonitor(),
                     requestedSamplingInterval,
-                    requestedQueueSize,
-                    (rsi, rqs) -> {
-                        revisedSamplingInterval.set(rsi);
-                        revisedQueueSize.set(rqs);
-                    }
+                    request.getRequestedParameters().getQueueSize()
                 );
             } catch (Throwable t) {
                 throw new UaException(StatusCodes.Bad_InternalError, t);
@@ -613,8 +605,8 @@ public class SubscriptionManager {
                 request.getMonitoringMode(),
                 timestamps,
                 request.getRequestedParameters().getClientHandle(),
-                revisedSamplingInterval.get(),
-                revisedQueueSize.get(),
+                revisedParameters.revisedSamplingInterval(),
+                revisedParameters.revisedQueueSize(),
                 request.getRequestedParameters().getDiscardOldest()
             );
 
@@ -814,14 +806,12 @@ public class SubscriptionManager {
 
             MonitoringFilter filter = validateEventItemFilter(filterObject, attributeGroup);
 
-            UInteger requestedQueueSize = parameters.getQueueSize();
-            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+            RevisedEventItemParameters revisedParameters;
 
             try {
-                server.getAddressSpaceManager().onModifyEventItem(
+                revisedParameters = server.getAddressSpaceManager().onModifyEventItem(
                     monitoredItem.getReadValueId(),
-                    requestedQueueSize,
-                    revisedQueueSize::set
+                    parameters.getQueueSize()
                 );
             } catch (Throwable t) {
                 throw new UaException(StatusCodes.Bad_InternalError, t);
@@ -832,7 +822,7 @@ public class SubscriptionManager {
                 parameters.getClientHandle(),
                 monitoredItem.getSamplingInterval(),
                 filter,
-                revisedQueueSize.get(),
+                revisedParameters.revisedQueueSize(),
                 parameters.getDiscardOldest()
             );
         } else {
@@ -877,18 +867,13 @@ public class SubscriptionManager {
 
             UInteger requestedQueueSize = parameters.getQueueSize();
 
-            AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
-            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+            RevisedDataItemParameters revisedParameters;
 
             try {
-                server.getAddressSpaceManager().onModifyDataItem(
+                revisedParameters = server.getAddressSpaceManager().onModifyDataItem(
                     monitoredItem.getReadValueId(),
                     requestedSamplingInterval,
-                    requestedQueueSize,
-                    (rsi, rqs) -> {
-                        revisedSamplingInterval.set(rsi);
-                        revisedQueueSize.set(rqs);
-                    }
+                    requestedQueueSize
                 );
             } catch (Throwable t) {
                 throw new UaException(StatusCodes.Bad_InternalError, t);
@@ -897,9 +882,9 @@ public class SubscriptionManager {
             monitoredItem.modify(
                 timestamps,
                 parameters.getClientHandle(),
-                revisedSamplingInterval.get(),
+                revisedParameters.revisedSamplingInterval(),
                 filter,
-                revisedQueueSize.get(),
+                revisedParameters.revisedQueueSize(),
                 parameters.getDiscardOldest()
             );
         }
@@ -972,30 +957,28 @@ public class SubscriptionManager {
 
         var context = new ReadContext(server, session);
 
-        server.getAddressSpaceManager().read(
+        List<DataValue> attributeValues = server.getAddressSpaceManager().read(
             context,
             0.0,
             TimestampsToReturn.Neither,
             attributesToRead
         );
 
-        return context.getFuture().thenApply(attributeValues -> {
-            Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
+        Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
 
-            for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 7) {
-                monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
-                    attributeValues.get(attrIdx),
-                    attributeValues.get(attrIdx + 1),
-                    attributeValues.get(attrIdx + 2),
-                    attributeValues.get(attrIdx + 3),
-                    attributeValues.get(attrIdx + 4),
+        for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 7) {
+            monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
+                attributeValues.get(attrIdx),
+                attributeValues.get(attrIdx + 1),
+                attributeValues.get(attrIdx + 2),
+                attributeValues.get(attrIdx + 3),
+                attributeValues.get(attrIdx + 4),
                     attributeValues.get(attrIdx + 5),
                     attributeValues.get(attrIdx + 6)
-                ));
-            }
+            ));
+        }
 
-            return monitoringAttributes;
-        });
+        return CompletableFuture.completedFuture(monitoringAttributes);
     }
 
     public CompletableFuture<DeleteMonitoredItemsResponse> deleteMonitoredItems(

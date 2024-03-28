@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.CallContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -30,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultMethodServiceSet implements MethodServiceSet {
 
@@ -41,24 +39,32 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
     }
 
     @Override
-    public CompletableFuture<CallResponse> onCall(ServiceRequestContext context, CallRequest request) {
-        Session session;
-        try {
-            session = server.getSessionManager()
-                .getSession(context, request.getRequestHeader());
-        } catch (UaException e) {
-            // TODO Session-less service invocation?
-            return CompletableFuture.failedFuture(e);
-        }
+    public CallResponse onCall(ServiceRequestContext context, CallRequest request) throws UaException {
+        Session session = server.getSessionManager()
+            .getSession(context, request.getRequestHeader());
 
+        try {
+            return call(request, session);
+        } catch (UaException e) {
+            session.getSessionDiagnostics().getCallCount().incrementErrorCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
+
+            throw e;
+        } finally {
+            session.getSessionDiagnostics().getCallCount().incrementTotalCount();
+            session.getSessionDiagnostics().getTotalRequestCount().incrementTotalCount();
+        }
+    }
+
+    private CallResponse call(CallRequest request, Session session) throws UaException {
         List<CallMethodRequest> methodsToCall = Lists.ofNullable(request.getMethodsToCall());
 
         if (methodsToCall.isEmpty()) {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         if (methodsToCall.size() > server.getConfig().getLimits().getMaxNodesPerMethodCall().longValue()) {
-            return failedUaFuture(StatusCodes.Bad_TooManyOperations);
+            throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();
@@ -72,16 +78,11 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             request.getRequestHeader().getAdditionalHeader()
         );
 
-        session.getSessionDiagnostics().getCallCount().record(callContext.getFuture());
-        session.getSessionDiagnostics().getTotalRequestCount().record(callContext.getFuture());
+        List<CallMethodResult> results = server.getAddressSpaceManager().call(callContext, methodsToCall);
 
-        server.getAddressSpaceManager().call(callContext, methodsToCall);
+        ResponseHeader header = createResponseHeader(request);
 
-        return callContext.getFuture().thenApply(values -> {
-            ResponseHeader header = createResponseHeader(request);
-
-            return new CallResponse(header, values.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
-        });
+        return new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);
     }
 
 }

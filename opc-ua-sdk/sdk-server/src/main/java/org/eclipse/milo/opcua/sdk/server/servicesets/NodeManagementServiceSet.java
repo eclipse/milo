@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
@@ -24,18 +23,16 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface NodeManagementServiceSet {
 
-    CompletableFuture<AddNodesResponse> onAddNodes(ServiceRequestContext context, AddNodesRequest request);
+    AddNodesResponse onAddNodes(
+        ServiceRequestContext context, AddNodesRequest request) throws UaException;
 
-    CompletableFuture<DeleteNodesResponse> onDeleteNodes(ServiceRequestContext context, DeleteNodesRequest request);
+    DeleteNodesResponse onDeleteNodes(
+        ServiceRequestContext context, DeleteNodesRequest request) throws UaException;
 
-    CompletableFuture<AddReferencesResponse> onAddReferences(
-        ServiceRequestContext context,
-        AddReferencesRequest request
-    );
+    AddReferencesResponse onAddReferences(
+        ServiceRequestContext context, AddReferencesRequest request) throws UaException;
 
-    CompletableFuture<DeleteReferencesResponse> onDeleteReferences(
-        ServiceRequestContext context,
-        DeleteReferencesRequest request
-    );
+    DeleteReferencesResponse onDeleteReferences(
+        ServiceRequestContext context, DeleteReferencesRequest request) throws UaException;
 
 }

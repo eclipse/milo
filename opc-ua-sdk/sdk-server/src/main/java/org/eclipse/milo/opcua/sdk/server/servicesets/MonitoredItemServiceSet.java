@@ -10,8 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
@@ -26,29 +25,19 @@ import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 public interface MonitoredItemServiceSet {
 
-    CompletableFuture<CreateMonitoredItemsResponse> onCreateMonitoredItems(
-        ServiceRequestContext context,
-        CreateMonitoredItemsRequest request
-    );
+    CreateMonitoredItemsResponse onCreateMonitoredItems(
+        ServiceRequestContext context, CreateMonitoredItemsRequest request) throws UaException;
 
-    CompletableFuture<ModifyMonitoredItemsResponse> onModifyMonitoredItems(
-        ServiceRequestContext context,
-        ModifyMonitoredItemsRequest request
-    );
+    ModifyMonitoredItemsResponse onModifyMonitoredItems(
+        ServiceRequestContext context, ModifyMonitoredItemsRequest request) throws UaException;
 
-    CompletableFuture<DeleteMonitoredItemsResponse> onDeleteMonitoredItems(
-        ServiceRequestContext context,
-        DeleteMonitoredItemsRequest request
-    );
+    DeleteMonitoredItemsResponse onDeleteMonitoredItems(
+        ServiceRequestContext context, DeleteMonitoredItemsRequest request) throws UaException;
 
-    CompletableFuture<SetMonitoringModeResponse> onSetMonitoringMode(
-        ServiceRequestContext context,
-        SetMonitoringModeRequest request
-    );
+    SetMonitoringModeResponse onSetMonitoringMode(
+        ServiceRequestContext context, SetMonitoringModeRequest request) throws UaException;
 
-    CompletableFuture<SetTriggeringResponse> onSetTriggering(
-        ServiceRequestContext context,
-        SetTriggeringRequest request
-    );
+    SetTriggeringResponse onSetTriggering(
+        ServiceRequestContext context, SetTriggeringRequest request) throws UaException;
 
 }
