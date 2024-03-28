@@ -104,15 +104,15 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
         for (NodeId nodeId : nodeIds) {
             if (nodeManager.containsNode(nodeId)) {
-                if (!checkBrowsePermission(context, nodeId)) {
-                    // TODO should this be Bad_UserAccessDenied?
-                    results.add(ReferenceResult.unknown());
-                } else {
+                if (checkBrowsePermission(context, nodeId)) {
                     List<Reference> references = nodeManager.getReferences(nodeId);
 
                     logger.debug("Browsed {} references for {}", references.size(), nodeId);
 
                     results.add(ReferenceResult.of(references));
+                } else {
+                    // TODO should this be Bad_UserAccessDenied?
+                    results.add(ReferenceResult.unknown());
                 }
             } else {
                 results.add(ReferenceResult.unknown());
