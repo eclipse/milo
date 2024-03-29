@@ -14,8 +14,10 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
@@ -28,11 +30,21 @@ public class AccessControlManager {
     }
 
     public List<Boolean> checkReadPermissions(Session session, List<ReadValueId> nodesToRead) {
-        // TODO check AccessRestrictions attribute (AccessRestrictionType)
+        List<PendingPermissionCheck> allPendingChecks = nodesToRead.stream()
+            .map(PendingPermissionCheck::new)
+            .toList();
 
-        List<PermissionCheckResult> results = GroupMapCollate.groupMapCollate(
-            nodesToRead,
-            ReadValueId::getAttributeId,
+        checkAccessRestrictions(server, session, allPendingChecks);
+
+        // Filter out any nodes that have been denied by AccessRestrictions and check the rest
+        // against role permissions and/or access levels.
+        List<PendingPermissionCheck> remainingPendingChecks = allPendingChecks.stream()
+            .filter(pc -> pc.result != PermissionCheckResult.DENIED)
+            .toList();
+
+        List<PermissionCheckResult> remainingResults = GroupMapCollate.groupMapCollate(
+            remainingPendingChecks,
+            p -> p.readValueId.getAttributeId(),
             id -> group -> {
                 if (AttributeId.Value.uid().equals(id)) {
                     return checkReadPermissionsInternal(session, group);
@@ -42,13 +54,23 @@ public class AccessControlManager {
             }
         );
 
-        return results.stream().map(r -> r == PermissionCheckResult.ALLOWED).toList();
+        for (int i = 0; i < remainingPendingChecks.size(); i++) {
+            remainingPendingChecks.get(i).result = remainingResults.get(i);
+        }
+
+        return allPendingChecks.stream()
+            .map(r -> r.result == PermissionCheckResult.ALLOWED)
+            .toList();
     }
 
     private List<PermissionCheckResult> checkReadPermissionsInternal(
         Session session,
-        List<ReadValueId> nodesToRead
+        List<PendingPermissionCheck> pendingPermissionChecks
     ) {
+
+        List<ReadValueId> nodesToRead = pendingPermissionChecks.stream()
+            .map(pc -> pc.readValueId)
+            .toList();
 
         assert nodesToRead.stream()
             .allMatch(rvi -> rvi.getAttributeId().equals(AttributeId.Value.uid()));
@@ -80,6 +102,77 @@ public class AccessControlManager {
         }
 
         return pendingChecks.stream().map(pc -> pc.result).toList();
+    }
+
+    private static void checkAccessRestrictions(
+        OpcUaServer server,
+        Session session,
+        List<PendingPermissionCheck> pendingPermissionChecks
+    ) {
+
+        // TODO NamespaceMetadataType might define DefaultAccessRestrictions
+
+        List<ReadValueId> nodesToRead = pendingPermissionChecks.stream()
+            .map(pc -> pc.readValueId)
+            .toList();
+
+        List<PermissionCheckResult> results = GroupMapCollate.groupMapCollate(
+            nodesToRead,
+            rvi -> rvi.getNodeId().getNamespaceIndex(),
+            idx -> group -> {
+                List<PendingPermissionCheck> pendingChecks = group.stream()
+                    .map(PendingPermissionCheck::new)
+                    .toList();
+
+                List<ReadValueId> readValueIds = nodesToRead.stream()
+                    .map(rvi ->
+                        new ReadValueId(
+                            rvi.getNodeId(),
+                            AttributeId.AccessRestrictions.uid(),
+                            null,
+                            null
+                        )
+                    )
+                    .toList();
+
+                List<DataValue> values = server.getAddressSpaceManager().read(
+                    new ReadContext(server, session),
+                    0.0,
+                    TimestampsToReturn.Neither,
+                    readValueIds
+                );
+
+                MessageSecurityMode securityMode = session.getEndpoint().getSecurityMode();
+
+                for (int i = 0; i < readValueIds.size(); i++) {
+                    Object v = values.get(i).getValue().getValue();
+                    if (v instanceof AccessRestrictionType accessRestrictions) {
+                        if (accessRestrictions.getSigningRequired()) {
+                            if (accessRestrictions.getEncryptionRequired()) {
+                                pendingChecks.get(i).result =
+                                    securityMode == MessageSecurityMode.SignAndEncrypt ?
+                                        PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
+                            } else {
+                                pendingChecks.get(i).result =
+                                    (securityMode == MessageSecurityMode.Sign
+                                        || securityMode == MessageSecurityMode.SignAndEncrypt) ?
+                                        PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
+                            }
+                        } else {
+                            pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
+                        }
+                    } else {
+                        pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
+                    }
+                }
+
+                return pendingChecks.stream().map(pc -> pc.result).toList();
+            }
+        );
+
+        for (int i = 0; i < results.size(); i++) {
+            pendingPermissionChecks.get(i).result = results.get(i);
+        }
     }
 
     private static void checkAccessLevels(
@@ -145,6 +238,9 @@ public class AccessControlManager {
         List<ReadValueId> nodesToRead,
         List<PendingPermissionCheck> pendingChecks
     ) {
+
+        // TODO NamespaceMetadataType might define
+        //  DefaultRolePermissions and DefaultUserRolePermissions
 
         List<NodeId> roleIds = session.getRoleIds().orElse(List.of());
 
