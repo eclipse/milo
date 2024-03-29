@@ -47,7 +47,13 @@ public class AccessControlManager {
             p -> p.readValueId.getAttributeId(),
             id -> group -> {
                 if (AttributeId.Value.uid().equals(id)) {
-                    return checkReadPermissionsInternal(session, group);
+                    if (session.getRoleIds().isEmpty()) {
+                        checkAccessLevels(server, session, group);
+                    } else {
+                        checkRolePermissions(server, session, group);
+                    }
+
+                    return group.stream().map(pc -> pc.result).toList();
                 } else {
                     return Collections.nCopies(group.size(), PermissionCheckResult.ALLOWED);
                 }
@@ -61,47 +67,6 @@ public class AccessControlManager {
         return allPendingChecks.stream()
             .map(r -> r.result == PermissionCheckResult.ALLOWED)
             .toList();
-    }
-
-    private List<PermissionCheckResult> checkReadPermissionsInternal(
-        Session session,
-        List<PendingPermissionCheck> pendingPermissionChecks
-    ) {
-
-        List<ReadValueId> nodesToRead = pendingPermissionChecks.stream()
-            .map(pc -> pc.readValueId)
-            .toList();
-
-        assert nodesToRead.stream()
-            .allMatch(rvi -> rvi.getAttributeId().equals(AttributeId.Value.uid()));
-
-        List<PendingPermissionCheck> pendingChecks = nodesToRead.stream()
-            .map(PendingPermissionCheck::new)
-            .toList();
-
-        if (session.getRoleIds().isEmpty()) {
-            checkAccessLevels(server, session, nodesToRead, pendingChecks);
-        } else {
-            checkRolePermissions(server, session, nodesToRead, pendingChecks);
-
-            // Check if any permissions are still pending.
-            // This can happen if a Node's RolePermissions or UserRolePermissions was not
-            // configured even though a RoleManager is configured.
-            List<ReadValueId> noRolePermissionNodes = pendingChecks.stream()
-                .filter(pc -> pc.result == PermissionCheckResult.PENDING)
-                .map(pc -> pc.readValueId)
-                .toList();
-
-            List<PendingPermissionCheck> noRolePermissionChecks = pendingChecks.stream()
-                .filter(pc -> pc.result == PermissionCheckResult.PENDING)
-                .toList();
-
-            if (!noRolePermissionNodes.isEmpty() && !noRolePermissionChecks.isEmpty()) {
-                checkAccessLevels(server, session, noRolePermissionNodes, noRolePermissionChecks);
-            }
-        }
-
-        return pendingChecks.stream().map(pc -> pc.result).toList();
     }
 
     private static void checkAccessRestrictions(
@@ -178,9 +143,12 @@ public class AccessControlManager {
     private static void checkAccessLevels(
         OpcUaServer server,
         Session session,
-        List<ReadValueId> nodesToRead,
         List<PendingPermissionCheck> pendingChecks
     ) {
+
+        List<ReadValueId> nodesToRead = pendingChecks.stream()
+            .map(pc -> pc.readValueId)
+            .toList();
 
         // Check the AccessLevel and UserAccessLevel attributes instead.
         List<ReadValueId> readValueIds = nodesToRead.stream()
@@ -235,12 +203,15 @@ public class AccessControlManager {
     private static void checkRolePermissions(
         OpcUaServer server,
         Session session,
-        List<ReadValueId> nodesToRead,
         List<PendingPermissionCheck> pendingChecks
     ) {
 
         // TODO NamespaceMetadataType might define
         //  DefaultRolePermissions and DefaultUserRolePermissions
+
+        List<ReadValueId> nodesToRead = pendingChecks.stream()
+            .map(pc -> pc.readValueId)
+            .toList();
 
         List<NodeId> roleIds = session.getRoleIds().orElse(List.of());
 
@@ -293,10 +264,18 @@ public class AccessControlManager {
                 pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
             }
         }
+
+        List<PendingPermissionCheck> remainingChecks = pendingChecks.stream()
+            .filter(pc -> pc.result == null)
+            .toList();
+
+        if (!remainingChecks.isEmpty()) {
+            checkAccessLevels(server, session, remainingChecks);
+        }
     }
 
     private static class PendingPermissionCheck {
-        PermissionCheckResult result = PermissionCheckResult.PENDING;
+        PermissionCheckResult result = null;
         private final ReadValueId readValueId;
 
         private PendingPermissionCheck(ReadValueId readValueId) {
@@ -306,8 +285,7 @@ public class AccessControlManager {
 
     private enum PermissionCheckResult {
         ALLOWED,
-        DENIED,
-        PENDING
+        DENIED
     }
 
 }
