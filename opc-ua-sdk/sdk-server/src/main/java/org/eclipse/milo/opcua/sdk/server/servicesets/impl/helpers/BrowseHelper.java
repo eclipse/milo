@@ -84,7 +84,7 @@ public class BrowseHelper {
             .filter(pb -> pb.referenceDescriptions == null)
             .map(pb -> pb.browseDescription).toList();
 
-        List<AddressSpace.ReferenceResult> referenceLists = server.getAddressSpaceManager().browse(
+        List<AddressSpace.ReferenceResult> referenceResults = server.getAddressSpaceManager().browse(
             new BrowseContext(server, session),
             browseRequest.getView(),
             nodesToBrowse.stream()
@@ -95,7 +95,7 @@ public class BrowseHelper {
         List<List<ReferenceDescription>> referenceDescriptionLists = createReferenceDescriptions(
             server,
             nodesToBrowse,
-            referenceLists
+            referenceResults
         );
 
         for (int i = 0; i < nodesToBrowse.size(); i++) {
@@ -114,7 +114,9 @@ public class BrowseHelper {
                 .toList();
         }
 
-        referenceDescriptionLists = pending.stream().map(pb -> pb.referenceDescriptions).toList();
+        // Gather all the ReferenceDescription lists: the ones we initially filtered out due to
+        // lack of Browse permission and the ones from the actual Browse.
+        var allReferenceDescriptionLists = pending.stream().map(pb -> pb.referenceDescriptions).toList();
 
         int max = browseRequest.getRequestedMaxReferencesPerNode().longValue() == 0 ?
             Integer.MAX_VALUE :
@@ -122,7 +124,7 @@ public class BrowseHelper {
 
         var browseResults = new ArrayList<BrowseResult>();
 
-        for (List<ReferenceDescription> referenceDescriptions : referenceDescriptionLists) {
+        for (List<ReferenceDescription> referenceDescriptions : allReferenceDescriptionLists) {
             BrowseResult browseResult = createBrowseResult(
                 server,
                 context.getSession().orElse(null),
