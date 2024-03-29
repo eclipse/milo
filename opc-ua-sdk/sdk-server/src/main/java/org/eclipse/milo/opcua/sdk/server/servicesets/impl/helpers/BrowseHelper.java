@@ -11,16 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl.helpers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -44,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.jetbrains.annotations.Nullable;
@@ -60,16 +64,28 @@ public class BrowseHelper {
         BrowseRequest browseRequest
     ) {
 
-        List<BrowseDescription> nodesToBrowse =
-            Lists.ofNullable(browseRequest.getNodesToBrowse());
+        Session session = context.getSession().orElseThrow();
 
-        var browseContext = new BrowseContext(
-            server,
-            context.getSession().orElse(null)
-        );
+        List<PendingBrowse> pending = Lists.ofNullable(browseRequest.getNodesToBrowse())
+            .stream()
+            .map(PendingBrowse::new)
+            .toList();
+
+        for (PendingBrowse pb : pending) {
+            NodeId nodeId = pb.browseDescription.getNodeId();
+
+            // skip browsing for Nodes that the Session doesn't have Browse permission for
+            if (!checkBrowsePermission(server, session, nodeId)) {
+                pb.referenceDescriptions = Collections.emptyList();
+            }
+        }
+
+        List<BrowseDescription> nodesToBrowse = pending.stream()
+            .filter(pb -> pb.referenceDescriptions == null)
+            .map(pb -> pb.browseDescription).toList();
 
         List<AddressSpace.ReferenceResult> referenceLists = server.getAddressSpaceManager().browse(
-            browseContext,
+            new BrowseContext(server, session),
             browseRequest.getView(),
             nodesToBrowse.stream()
                 .map(BrowseDescription::getNodeId)
@@ -81,6 +97,24 @@ public class BrowseHelper {
             nodesToBrowse,
             referenceLists
         );
+
+        for (int i = 0; i < nodesToBrowse.size(); i++) {
+            PendingBrowse pb = pending.get(i);
+            List<ReferenceDescription> referenceDescriptions = referenceDescriptionLists.get(i);
+
+            // filter out references to Nodes that the Session doesn't have Browse permission for
+            pb.referenceDescriptions = referenceDescriptions.stream()
+                .filter(r -> {
+                    NodeId nodeId = r.getNodeId()
+                        .toNodeId(server.getNamespaceTable())
+                        .orElse(NodeId.NULL_VALUE);
+
+                    return checkBrowsePermission(server, session, nodeId);
+                })
+                .toList();
+        }
+
+        referenceDescriptionLists = pending.stream().map(pb -> pb.referenceDescriptions).toList();
 
         int max = browseRequest.getRequestedMaxReferencesPerNode().longValue() == 0 ?
             Integer.MAX_VALUE :
@@ -254,7 +288,7 @@ public class BrowseHelper {
             readValueIds.add(new ReadValueId(nodeId, AttributeId.NodeClass.uid(), null, QualifiedName.NULL_VALUE));
         }
 
-        var context = new AddressSpace.ReadContext(server, null);
+        var context = new ReadContext(server, null);
 
         List<DataValue> values = server.getAddressSpaceManager().read(
             context,
@@ -364,10 +398,70 @@ public class BrowseHelper {
         return nodeClasses.contains(nodeClass);
     }
 
+    /**
+     * Check if the current Session has Browse permission for the given {@code nodeId}.
+     *
+     * @param server the {@link OpcUaServer} instance.
+     * @param session the {@link Session} to check Browse permission for.
+     * @param nodeId the {@link NodeId} to check Browse permission for.
+     * @return {@code true} if the current Session has Browse permission for {@code nodeId}.
+     */
+    private static boolean checkBrowsePermission(OpcUaServer server, Session session, NodeId nodeId) {
+        List<NodeId> roleIds = session.getRoleIds().orElse(null);
+
+        if (roleIds != null) {
+            // If non-null, there is a Session and Server has been configured with a
+            // RoleManager that provides Identity to RoleId mappings, so we can proceed with
+            // checking the RolePermissions and UserRolePermissions attributes.
+
+            List<DataValue> values = server.getAddressSpaceManager().read(
+                new ReadContext(server, session),
+                0.0,
+                TimestampsToReturn.Neither,
+                List.of(
+                    new ReadValueId(nodeId, AttributeId.RolePermissions.uid(), null, QualifiedName.NULL_VALUE),
+                    new ReadValueId(nodeId, AttributeId.UserRolePermissions.uid(), null, QualifiedName.NULL_VALUE)
+                )
+            );
+
+            Object v0 = values.get(0).getValue().getValue();
+            Object v1 = values.get(1).getValue().getValue();
+
+            if (v0 instanceof RolePermissionType[] rolePermissions) {
+                if (Stream.of(rolePermissions)
+                    .noneMatch(rp -> rp.getPermissions().getBrowse())) {
+
+                    return false;
+                }
+            }
+
+            if (v1 instanceof RolePermissionType[] userRolePermissions) {
+                return Arrays.stream(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getBrowse());
+            }
+        }
+
+        // Node not found or no RolePermissions/UserRolePermissions attribute, so we can't make a
+        // decision.
+        return true;
+    }
+
     private record BrowseAttributes(
         @Nullable QualifiedName browseName,
         @Nullable LocalizedText displayName,
         @Nullable NodeClass nodeClass
     ) {}
+
+    private static class PendingBrowse {
+
+        List<ReferenceDescription> referenceDescriptions;
+        final BrowseDescription browseDescription;
+
+        PendingBrowse(BrowseDescription browseDescription) {
+            this.browseDescription = browseDescription;
+        }
+
+    }
 
 }
