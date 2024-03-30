@@ -1,5 +1,6 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.jetbrains.annotations.Nullable;
 
 public class AccessControlManager {
 
@@ -34,34 +36,41 @@ public class AccessControlManager {
             .map(PendingPermissionCheck::new)
             .toList();
 
-        checkAccessRestrictions(server, session, allPendingChecks);
+        List<PermissionCheckResult> accessRestrictionResults =
+            checkAccessRestrictions(server, session, nodesToRead);
+
+        for (int i = 0; i < accessRestrictionResults.size(); i++) {
+            allPendingChecks.get(i).result = accessRestrictionResults.get(i);
+        }
 
         // Filter out any nodes that have been denied by AccessRestrictions and check the rest
         // against role permissions and/or access levels.
-        List<PendingPermissionCheck> remainingPendingChecks = allPendingChecks.stream()
+        List<PendingPermissionCheck> remainingChecks = allPendingChecks.stream()
             .filter(pc -> pc.result != PermissionCheckResult.DENIED)
             .toList();
 
+        List<ReadValueId> remainingNodes = remainingChecks.stream()
+            .map(pc -> pc.readValueId)
+            .toList();
+
         List<PermissionCheckResult> remainingResults = GroupMapCollate.groupMapCollate(
-            remainingPendingChecks,
-            p -> p.readValueId.getAttributeId(),
+            remainingNodes,
+            ReadValueId::getAttributeId,
             id -> group -> {
                 if (AttributeId.Value.uid().equals(id)) {
                     if (session.getRoleIds().isEmpty()) {
-                        checkAccessLevels(server, session, group);
+                        return checkAccessLevels(server, session, group);
                     } else {
-                        checkRolePermissions(server, session, group);
+                        return checkRolePermissions(server, session, group);
                     }
-
-                    return group.stream().map(pc -> pc.result).toList();
                 } else {
                     return Collections.nCopies(group.size(), PermissionCheckResult.ALLOWED);
                 }
             }
         );
 
-        for (int i = 0; i < remainingPendingChecks.size(); i++) {
-            remainingPendingChecks.get(i).result = remainingResults.get(i);
+        for (int i = 0; i < remainingNodes.size(); i++) {
+            remainingChecks.get(i).result = remainingResults.get(i);
         }
 
         return allPendingChecks.stream()
@@ -69,16 +78,16 @@ public class AccessControlManager {
             .toList();
     }
 
-    private static void checkAccessRestrictions(
+    private static List<PermissionCheckResult> checkAccessRestrictions(
         OpcUaServer server,
         Session session,
-        List<PendingPermissionCheck> pendingPermissionChecks
+        List<ReadValueId> nodesToRead
     ) {
 
         // TODO NamespaceMetadataType might define DefaultAccessRestrictions
 
-        List<ReadValueId> nodesToRead = pendingPermissionChecks.stream()
-            .map(pc -> pc.readValueId)
+        List<PendingPermissionCheck> pending = nodesToRead.stream()
+            .map(PendingPermissionCheck::new)
             .toList();
 
         List<PermissionCheckResult> results = GroupMapCollate.groupMapCollate(
@@ -111,6 +120,7 @@ public class AccessControlManager {
 
                 for (int i = 0; i < readValueIds.size(); i++) {
                     Object v = values.get(i).getValue().getValue();
+
                     if (v instanceof AccessRestrictionType accessRestrictions) {
                         if (accessRestrictions.getSigningRequired()) {
                             if (accessRestrictions.getEncryptionRequired()) {
@@ -136,18 +146,20 @@ public class AccessControlManager {
         );
 
         for (int i = 0; i < results.size(); i++) {
-            pendingPermissionChecks.get(i).result = results.get(i);
+            pending.get(i).result = results.get(i);
         }
+
+        return pending.stream().map(pc -> pc.result).toList();
     }
 
-    private static void checkAccessLevels(
+    private static List<PermissionCheckResult> checkAccessLevels(
         OpcUaServer server,
         Session session,
-        List<PendingPermissionCheck> pendingChecks
+        List<ReadValueId> nodesToRead
     ) {
 
-        List<ReadValueId> nodesToRead = pendingChecks.stream()
-            .map(pc -> pc.readValueId)
+        List<PendingPermissionCheck> pending = nodesToRead.stream()
+            .map(PendingPermissionCheck::new)
             .toList();
 
         // Check the AccessLevel and UserAccessLevel attributes instead.
@@ -174,9 +186,9 @@ public class AccessControlManager {
         );
 
         for (int i = 0; i < readValueIds.size(); i++) {
-            Object v0 = values.get(i).getValue().getValue();
-            Object v1 = values.get(i + 1).getValue().getValue();
-            Object v2 = values.get(i + 2).getValue().getValue();
+            Object v0 = values.get((i * 3)).getValue().getValue();
+            Object v1 = values.get((i * 3) + 1).getValue().getValue();
+            Object v2 = values.get((i * 3) + 2).getValue().getValue();
 
             if (v0 instanceof NodeClass nodeClass && nodeClass == NodeClass.Variable) {
                 if (v1 instanceof UByte accessLevel
@@ -188,29 +200,31 @@ public class AccessControlManager {
                     boolean hasReadAccess = accessLevels.contains(AccessLevel.CurrentRead)
                         && userAccessLevels.contains(AccessLevel.CurrentRead);
 
-                    pendingChecks.get(i).result = hasReadAccess ?
+                    pending.get(i).result = hasReadAccess ?
                         PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
                 } else {
-                    pendingChecks.get(i).result = PermissionCheckResult.DENIED;
+                    pending.get(i).result = PermissionCheckResult.DENIED;
                 }
             } else {
                 // AccessLevel and UserAccessLevel only apply to Value attribute of Variables.
-                pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
+                pending.get(i).result = PermissionCheckResult.ALLOWED;
             }
         }
+
+        return pending.stream().map(pc -> pc.result).toList();
     }
 
-    private static void checkRolePermissions(
+    private static List<PermissionCheckResult> checkRolePermissions(
         OpcUaServer server,
         Session session,
-        List<PendingPermissionCheck> pendingChecks
+        List<ReadValueId> nodesToRead
     ) {
 
         // TODO NamespaceMetadataType might define
         //  DefaultRolePermissions and DefaultUserRolePermissions
 
-        List<ReadValueId> nodesToRead = pendingChecks.stream()
-            .map(pc -> pc.readValueId)
+        List<PendingPermissionCheck> pending = nodesToRead.stream()
+            .map(PendingPermissionCheck::new)
             .toList();
 
         List<NodeId> roleIds = session.getRoleIds().orElse(List.of());
@@ -240,38 +254,49 @@ public class AccessControlManager {
         );
 
         for (int i = 0; i < readValueIds.size(); i++) {
-            Object v0 = values.get(i).getValue().getValue();
-            Object v1 = values.get(i + 1).getValue().getValue();
-            Object v2 = values.get(i + 2).getValue().getValue();
+            Object v0 = values.get((i * 3)).getValue().getValue();
+            Object v1 = values.get((i * 3) + 1).getValue().getValue();
+            Object v2 = values.get((i * 3) + 2).getValue().getValue();
 
             if (v0 instanceof NodeClass nodeClass && nodeClass == NodeClass.Variable) {
                 if (v1 instanceof RolePermissionType[] rolePermissions
                     && v2 instanceof RolePermissionType[] userRolePermissions) {
 
                     if (Stream.of(rolePermissions).noneMatch(rp -> rp.getPermissions().getRead())) {
-                        pendingChecks.get(i).result = PermissionCheckResult.DENIED;
+                        pending.get(i).result = PermissionCheckResult.DENIED;
                     } else {
                         boolean hasReadPermission = Stream.of(userRolePermissions)
                             .filter(rp -> roleIds.contains(rp.getRoleId()))
                             .anyMatch(rp -> rp.getPermissions().getRead());
 
-                        pendingChecks.get(i).result = hasReadPermission ?
+                        pending.get(i).result = hasReadPermission ?
                             PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
                     }
                 }
                 // Else: leave it to a subsequent AccessLevel check.
             } else {
-                pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
+                pending.get(i).result = PermissionCheckResult.ALLOWED;
             }
         }
 
-        List<PendingPermissionCheck> remainingChecks = pendingChecks.stream()
+        List<PendingPermissionCheck> remainingChecks = pending.stream()
             .filter(pc -> pc.result == null)
             .toList();
 
         if (!remainingChecks.isEmpty()) {
-            checkAccessLevels(server, session, remainingChecks);
+            List<ReadValueId> remainingReadValueIds = remainingChecks.stream()
+                .map(pc -> pc.readValueId)
+                .toList();
+
+            List<PermissionCheckResult> results =
+                checkAccessLevels(server, session, remainingReadValueIds);
+
+            for (int i = 0; i < remainingChecks.size(); i++) {
+                remainingChecks.get(i).result = results.get(i);
+            }
         }
+
+        return pending.stream().map(pc -> pc.result).toList();
     }
 
     private static class PendingPermissionCheck {
