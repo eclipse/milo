@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryReadContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryUpdateContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
@@ -153,22 +156,35 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
+        Map<ReadValueId, Boolean> permissions = new AccessController(server)
+            .checkReadPermissions(session, nodesToRead);
+
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
 
-        var readContext = new ReadContext(
-            server,
-            session,
-            diagnosticsContext,
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<DataValue> values = GroupMapCollate.groupMapCollate(
+            nodesToRead,
+            permissions::get,
+            hasPermission -> group -> {
+                if (hasPermission) {
+                    var readContext = new ReadContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
 
-        List<DataValue> values = server.getAddressSpaceManager().read(
-            readContext,
-            request.getMaxAge(),
-            request.getTimestampsToReturn(),
-            nodesToRead
+                    return server.getAddressSpaceManager().read(
+                        readContext,
+                        request.getMaxAge(),
+                        request.getTimestampsToReturn(),
+                        group
+                    );
+                } else {
+                    return Collections.nCopies(group.size(), new DataValue(StatusCodes.Bad_UserAccessDenied));
+                }
+            }
         );
 
         DiagnosticInfo[] diagnosticInfos =
