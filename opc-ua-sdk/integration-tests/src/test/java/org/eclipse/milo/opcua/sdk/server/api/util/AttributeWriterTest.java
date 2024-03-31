@@ -5,12 +5,14 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +49,16 @@ public class AttributeWriterTest extends AbstractClientServerTest {
         ).get();
 
         assertEquals(new StatusCode(StatusCodes.Bad_TypeMismatch), statusCode);
+    }
+
+    @Test
+    void writeByteStringToUByteArray() throws Exception {
+        StatusCode statusCode = client.writeValue(
+            new NodeId(2, "UByteArray"),
+            DataValue.valueOnly(new Variant(ByteString.of(new byte[]{1, 2, 3})))
+        ).get();
+
+        assertEquals(StatusCode.GOOD, statusCode);
     }
 
     @BeforeAll
@@ -89,6 +101,20 @@ public class AttributeWriterTest extends AbstractClientServerTest {
                     b.setBrowseName(new QualifiedName(2, "AllowNullsNotConfigured"));
                     b.setDisplayName(LocalizedText.english("AllowNullsNotConfigured"));
                     b.setDataType(Identifiers.String);
+                    b.setAccessLevel(AccessLevel.READ_WRITE);
+                    b.setUserAccessLevel(AccessLevel.READ_WRITE);
+                    return b.buildAndAdd();
+                }
+            );
+
+            UaVariableNode.build(
+                context,
+                b -> {
+                    b.setNodeId(new NodeId(2, "UByteArray"));
+                    b.setBrowseName(new QualifiedName(2, "UByteArray"));
+                    b.setDisplayName(LocalizedText.english("UByteArray"));
+                    b.setDataType(Identifiers.Byte);
+                    b.setArrayDimensions(new UInteger[]{UInteger.valueOf(0)});
                     b.setAccessLevel(AccessLevel.READ_WRITE);
                     b.setUserAccessLevel(AccessLevel.READ_WRITE);
                     return b.buildAndAdd();
