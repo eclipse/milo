@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -119,6 +120,12 @@ public class AttributeWriter {
         );
 
         if (attributeId == AttributeId.Value) {
+            boolean allowNulls = false;
+            if (node instanceof UaVariableNode) {
+                Boolean b = ((UaVariableNode) node).getAllowNulls();
+                allowNulls = b != null ? b : false;
+            }
+
             NodeId dataType = extract(
                 node.getAttribute(
                     internalContext,
@@ -126,7 +133,7 @@ public class AttributeWriter {
             );
 
             if (dataType != null) {
-                value = validateDataType(context.getServer(), dataType, value);
+                value = validateDataType(context.getServer(), dataType, value, allowNulls);
             }
 
             Integer valueRank = extract(
@@ -206,13 +213,20 @@ public class AttributeWriter {
     private static DataValue validateDataType(
         OpcUaServer server,
         NodeId dataType,
-        DataValue value) throws UaException {
+        DataValue value,
+        boolean allowNulls
+    ) throws UaException {
 
         Variant variant = value.getValue();
-        if (variant == null) return value;
 
         Object o = variant.getValue();
-        if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
+        if (o == null) {
+            if (allowNulls) {
+                return value;
+            } else {
+                throw new UaException(StatusCodes.Bad_TypeMismatch);
+            }
+        }
 
         Class<?> valueClass = o.getClass().isArray() ?
             ArrayUtil.getType(o) : o.getClass();
