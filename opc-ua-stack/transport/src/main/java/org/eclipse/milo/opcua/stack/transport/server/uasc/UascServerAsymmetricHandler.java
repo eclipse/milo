@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -277,6 +278,57 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                             "no certificate for provided thumbprint");
                     }
                 }
+            }
+
+            // Before attempting decryption, ensure the SecurityPolicy used in the
+            // AsymmetricSecurityHeader is one that is supported by the configured
+            // endpoints.
+
+            String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
+
+            if (application.getEndpointDescriptions()
+                .stream()
+                .noneMatch(e -> {
+                    boolean transportMatch = Objects.equals(
+                        e.getTransportProfileUri(),
+                        transportProfile.getUri()
+                    );
+
+                    boolean pathMatch = Objects.equals(
+                        EndpointUtil.getPath(e.getEndpointUrl()),
+                        EndpointUtil.getPath(endpointUrl)
+                    );
+
+                    boolean securityPolicyMatch = Objects.equals(
+                        e.getSecurityPolicyUri(),
+                        secureChannel.getSecurityPolicy().getUri()
+                    );
+
+                    boolean thumbprintMatch = true;
+                    if (!header.getReceiverThumbprint().isNullOrEmpty()) {
+                        thumbprintMatch = Arrays.equals(
+                            DigestUtil.sha1(e.getServerCertificate().bytesOrEmpty()),
+                            header.getReceiverThumbprint().bytesOrEmpty()
+                        );
+                    }
+
+                    // allow a matched endpoint OR any unsecured connection, regardless of the
+                    // endpoint security, so that the receiving ServerApplication can decide if
+                    // it wants to allow unsecured Discovery services.
+                    return transportMatch && pathMatch && thumbprintMatch &&
+                        (securityPolicyMatch || secureChannel.getSecurityPolicy() == SecurityPolicy.None);
+                })
+            ) {
+
+                String message = String.format(
+                    "no matching endpoint found: " +
+                        "transportProfile=%s, endpointUrl=%s, securityPolicy=%s",
+                    transportProfile,
+                    endpointUrl,
+                    secureChannel.getSecurityPolicy()
+                );
+
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
             }
 
             int chunkSize = buffer.readerIndex(0).readableBytes();
