@@ -1,7 +1,6 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,9 +70,13 @@ public class WriteAccessController extends AccessController {
             WriteValue::getAttributeId,
             id -> group -> {
                 if (AttributeId.Value.uid().equals(id)) {
-                    return checkValueAccess(context, group, accessControlAttributes);
+                    return checkValueAttributeAccess(context, group, accessControlAttributes);
+                } else if (AttributeId.RolePermissions.uid().equals(id)) {
+                    return checkRolePermissionsAttributeAccess(context, group, accessControlAttributes);
+                } else if (AttributeId.Historizing.uid().equals(id)) {
+                    return checkHistorizingAttributeAccess(context, group, accessControlAttributes);
                 } else {
-                    return Collections.nCopies(group.size(), AccessCheckResult.ALLOWED);
+                    return checkOtherAttributeAccess(context, group, accessControlAttributes);
                 }
             }
         );
@@ -85,7 +88,7 @@ public class WriteAccessController extends AccessController {
         return allPendingChecks.stream().map(pwc -> pwc.result).toList();
     }
 
-    private static List<AccessCheckResult> checkValueAccess(
+    private static List<AccessCheckResult> checkValueAttributeAccess(
         AccessControlContext context,
         List<WriteValue> writeValues,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
@@ -117,6 +120,108 @@ public class WriteAccessController extends AccessController {
                     AccessLevel.fromValue(userAccessLevel);
 
                 if (accessLevels.contains(AccessLevel.CurrentWrite)) {
+                    results.add(AccessCheckResult.ALLOWED);
+                } else {
+                    results.add(AccessCheckResult.DENIED);
+                }
+            } else {
+                results.add(AccessCheckResult.ALLOWED);
+            }
+        }
+
+        return results;
+    }
+
+    private static List<AccessCheckResult> checkRolePermissionsAttributeAccess(
+        AccessControlContext context,
+        List<WriteValue> writeValues,
+        Map<NodeId, AccessControlAttributes> accessControlAttributes
+    ) {
+
+        var results = new ArrayList<AccessCheckResult>();
+
+        for (WriteValue writeValue : writeValues) {
+            AccessControlAttributes attributes =
+                accessControlAttributes.get(writeValue.getNodeId());
+
+            RolePermissionType[] userRolePermissions = attributes.userRolePermissions();
+
+            List<NodeId> roleIds = context.getRoleIds().orElse(null);
+
+            if (roleIds != null && userRolePermissions != null) {
+                boolean hasWritePermission = Stream.of(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getWriteRolePermissions());
+
+                if (hasWritePermission) {
+                    results.add(AccessCheckResult.ALLOWED);
+                } else {
+                    results.add(AccessCheckResult.DENIED);
+                }
+            } else {
+                results.add(AccessCheckResult.ALLOWED);
+            }
+        }
+
+        return results;
+    }
+
+    private static List<AccessCheckResult> checkHistorizingAttributeAccess(
+        AccessControlContext context,
+        List<WriteValue> writeValues,
+        Map<NodeId, AccessControlAttributes> accessControlAttributes
+    ) {
+
+        var results = new ArrayList<AccessCheckResult>();
+
+        for (WriteValue writeValue : writeValues) {
+            AccessControlAttributes attributes =
+                accessControlAttributes.get(writeValue.getNodeId());
+
+            RolePermissionType[] userRolePermissions = attributes.userRolePermissions();
+
+            List<NodeId> roleIds = context.getRoleIds().orElse(null);
+
+            if (roleIds != null && userRolePermissions != null) {
+                boolean hasWritePermission = Stream.of(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getWriteHistorizing());
+
+                if (hasWritePermission) {
+                    results.add(AccessCheckResult.ALLOWED);
+                } else {
+                    results.add(AccessCheckResult.DENIED);
+                }
+            } else {
+                results.add(AccessCheckResult.ALLOWED);
+            }
+        }
+
+        return results;
+    }
+
+    private static List<AccessCheckResult> checkOtherAttributeAccess(
+        AccessControlContext context,
+        List<WriteValue> writeValues,
+        Map<NodeId, AccessControlAttributes> accessControlAttributes
+    ) {
+
+        var results = new ArrayList<AccessCheckResult>();
+
+        for (WriteValue writeValue : writeValues) {
+            AccessControlAttributes attributes =
+                accessControlAttributes.get(writeValue.getNodeId());
+
+            RolePermissionType[] userRolePermissions = attributes.userRolePermissions();
+
+            List<NodeId> roleIds = context.getRoleIds().orElse(null);
+
+            if (roleIds != null && userRolePermissions != null) {
+                boolean hasWritePermission = Stream.of(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getWriteAttribute());
+
+                if (hasWritePermission) {
                     results.add(AccessCheckResult.ALLOWED);
                 } else {
                     results.add(AccessCheckResult.DENIED);
