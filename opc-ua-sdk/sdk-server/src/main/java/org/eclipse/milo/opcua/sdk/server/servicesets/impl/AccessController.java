@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -24,10 +25,9 @@ import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessLevelAttributes;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessRestrictionAttributes;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.RolePermissionAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessControlAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -80,6 +80,11 @@ public class AccessController {
     }
 
     static boolean checkBrowsePermission(AccessControlContext context, NodeId nodeId) {
+        Map<NodeId, AccessControlAttributes> attributes =
+            context.readAccessControlAttributes(List.of(nodeId));
+
+        // TODO AccessRestrictions might affect browse permissions.
+
         List<NodeId> roleIds = context.getRoleIds().orElse(null);
 
         if (roleIds != null) {
@@ -87,19 +92,8 @@ public class AccessController {
             // RoleManager that provides Identity to RoleId mappings, so we can proceed with
             // checking the RolePermissions and UserRolePermissions attributes.
 
-            List<RolePermissionAttributes> attributes =
-                context.readRolePermissionsAttributes(List.of(nodeId));
-
-            RolePermissionType[] rolePermissions = attributes.get(0).rolePermissions();
-            RolePermissionType[] userRolePermissions = attributes.get(0).userRolePermissions();
-
-            if (rolePermissions != null) {
-                if (Stream.of(rolePermissions)
-                    .noneMatch(rp -> rp.getPermissions().getBrowse())) {
-
-                    return false;
-                }
-            }
+            RolePermissionType[] userRolePermissions =
+                attributes.get(nodeId).userRolePermissions();
 
             if (userRolePermissions != null) {
                 return Stream.of(userRolePermissions)
@@ -117,8 +111,13 @@ public class AccessController {
             .map(PendingPermissionCheck::new)
             .toList();
 
+        Map<NodeId, AccessControlAttributes> accessControlAttributes = context.readAccessControlAttributes(
+            nodesToRead.stream()
+                .map(ReadValueId::getNodeId).toList()
+        );
+
         List<PermissionCheckResult> accessRestrictionResults =
-            checkAccessRestrictions(context, nodesToRead);
+            checkAccessRestrictions(context, nodesToRead, accessControlAttributes);
 
         for (int i = 0; i < accessRestrictionResults.size(); i++) {
             allPendingChecks.get(i).result = accessRestrictionResults.get(i);
@@ -140,9 +139,10 @@ public class AccessController {
             id -> group -> {
                 if (AttributeId.Value.uid().equals(id)) {
                     if (context.getRoleIds().isEmpty()) {
-                        return checkAccessLevels(context, group);
+                        return checkAccessLevels(group, accessControlAttributes);
                     } else {
-                        return checkRolePermissions(context, group);
+                        List<NodeId> roleIds = context.getRoleIds().orElseThrow();
+                        return checkRolePermissions(group, accessControlAttributes, roleIds);
                     }
                 } else {
                     return Collections.nCopies(group.size(), PermissionCheckResult.ALLOWED);
@@ -154,6 +154,17 @@ public class AccessController {
             remainingChecks.get(i).result = remainingResults.get(i);
         }
 
+        // The RolePermissions attribute is a special case, only SecurityAdmins can read it.
+        context.getRoleIds().ifPresent(roleIds -> {
+            for (PendingPermissionCheck ppc : allPendingChecks) {
+                if (Objects.equals(AttributeId.RolePermissions.uid(), ppc.readValueId.getAttributeId())) {
+                    if (roleIds.stream().noneMatch(id -> id.equals(NodeIds.WellKnownRole_SecurityAdmin))) {
+                        ppc.result = PermissionCheckResult.DENIED;
+                    }
+                }
+            }
+        });
+
         return allPendingChecks.stream()
             .map(r -> r.result == PermissionCheckResult.ALLOWED)
             .toList();
@@ -161,110 +172,91 @@ public class AccessController {
 
     private static List<PermissionCheckResult> checkAccessRestrictions(
         AccessControlContext context,
-        List<ReadValueId> nodesToRead
+        List<ReadValueId> nodesToRead,
+        Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        // TODO NamespaceMetadataType might define DefaultAccessRestrictions
+        var results = new ArrayList<PermissionCheckResult>();
 
-        List<PendingPermissionCheck> pending = nodesToRead.stream()
-            .map(PendingPermissionCheck::new)
-            .toList();
+        MessageSecurityMode securityMode = context.getSecurityMode();
 
-        List<PermissionCheckResult> results = GroupMapCollate.groupMapCollate(
-            nodesToRead,
-            rvi -> rvi.getNodeId().getNamespaceIndex(),
-            idx -> group -> {
-                List<PendingPermissionCheck> pendingChecks = group.stream()
-                    .map(PendingPermissionCheck::new)
-                    .toList();
+        for (ReadValueId readValueId : nodesToRead) {
+            NodeId nodeId = readValueId.getNodeId();
+            AccessControlAttributes attributes = accessControlAttributes.get(nodeId);
+            NodeClass nodeClass = attributes.nodeClass();
+            AccessRestrictionType accessRestrictions = attributes.accessRestrictions();
 
-                List<AccessRestrictionAttributes> attributes = context.readAccessRestrictionAttributes(
-                    group.stream()
-                        .map(ReadValueId::getNodeId).toList()
-                );
+            if (nodeClass == NodeClass.Variable) {
+                if (accessRestrictions != null) {
+                    if (accessRestrictions.getEncryptionRequired()) {
+                        PermissionCheckResult result =
+                            securityMode == MessageSecurityMode.SignAndEncrypt ?
+                                PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
 
-                MessageSecurityMode securityMode = context.getSecurityMode();
+                        results.add(result);
+                    } else if (accessRestrictions.getSigningRequired()) {
+                        PermissionCheckResult result =
+                            (securityMode == MessageSecurityMode.Sign
+                                || securityMode == MessageSecurityMode.SignAndEncrypt) ?
+                                PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
 
-                for (int i = 0; i < group.size(); i++) {
-                    AccessRestrictionAttributes attribute = attributes.get(i);
-                    AccessRestrictionType accessRestrictions = attribute.accessRestrictions();
-
-                    if (accessRestrictions != null) {
-                        if (accessRestrictions.getEncryptionRequired()) {
-                            pendingChecks.get(i).result =
-                                securityMode == MessageSecurityMode.SignAndEncrypt ?
-                                    PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
-                        } else if (accessRestrictions.getSigningRequired()) {
-                            pendingChecks.get(i).result =
-                                (securityMode == MessageSecurityMode.Sign
-                                    || securityMode == MessageSecurityMode.SignAndEncrypt) ?
-                                    PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
-                        } else {
-                            pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
-                        }
+                        results.add(result);
                     } else {
-                        pendingChecks.get(i).result = PermissionCheckResult.ALLOWED;
+                        results.add(PermissionCheckResult.ALLOWED);
                     }
+                } else {
+                    // TODO check if there are Namespace-level restrictions
+                    results.add(PermissionCheckResult.ALLOWED);
                 }
-
-                return pendingChecks.stream().map(pc -> pc.result).toList();
+            } else {
+                // AccessRestrictions only apply to Variables.
+                results.add(PermissionCheckResult.ALLOWED);
             }
-        );
-
-        for (int i = 0; i < results.size(); i++) {
-            pending.get(i).result = results.get(i);
         }
 
-        return pending.stream().map(pc -> pc.result).toList();
+        return results;
     }
 
     private static List<PermissionCheckResult> checkAccessLevels(
-        AccessControlContext context,
-        List<ReadValueId> nodesToRead
+        List<ReadValueId> nodesToRead,
+        Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        List<PendingPermissionCheck> pending = nodesToRead.stream()
-            .map(PendingPermissionCheck::new)
-            .toList();
+        var results = new ArrayList<PermissionCheckResult>();
 
-        List<AccessLevelAttributes> accessLevelAttributes = context.readAccessLevelAttributes(
-            nodesToRead.stream()
-                .map(ReadValueId::getNodeId).toList()
-        );
-
-        for (int i = 0; i < nodesToRead.size(); i++) {
-            AccessLevelAttributes attributes = accessLevelAttributes.get(i);
+        for (ReadValueId readValueId : nodesToRead) {
+            NodeId nodeId = readValueId.getNodeId();
+            AccessControlAttributes attributes = accessControlAttributes.get(nodeId);
             NodeClass nodeClass = attributes.nodeClass;
-            UByte accessLevel = attributes.accessLevel;
             UByte userAccessLevel = attributes.userAccessLevel;
 
             if (nodeClass == NodeClass.Variable) {
-                if (accessLevel != null && userAccessLevel != null) {
-                    Set<AccessLevel> accessLevels = AccessLevel.fromValue(accessLevel);
+                if (userAccessLevel != null) {
                     Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(userAccessLevel);
 
-                    boolean hasReadAccess = accessLevels.contains(AccessLevel.CurrentRead)
-                        && userAccessLevels.contains(AccessLevel.CurrentRead);
-
-                    pending.get(i).result = hasReadAccess ?
-                        PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
+                    if (userAccessLevels.contains(AccessLevel.CurrentRead)) {
+                        results.add(PermissionCheckResult.ALLOWED);
+                    } else {
+                        results.add(PermissionCheckResult.DENIED);
+                    }
                 } else {
                     // If these are null the Node probably doesn't exist, allow it to be read
                     // and fail later in the Read service.
-                    pending.get(i).result = PermissionCheckResult.ALLOWED;
+                    results.add(PermissionCheckResult.ALLOWED);
                 }
             } else {
                 // AccessLevel and UserAccessLevel only apply to Value attribute of Variables.
-                pending.get(i).result = PermissionCheckResult.ALLOWED;
+                results.add(PermissionCheckResult.ALLOWED);
             }
         }
 
-        return pending.stream().map(pc -> pc.result).toList();
+        return results;
     }
 
     private static List<PermissionCheckResult> checkRolePermissions(
-        AccessControlContext context,
-        List<ReadValueId> nodesToRead
+        List<ReadValueId> nodesToRead,
+        Map<NodeId, AccessControlAttributes> accessControlAttributes,
+        List<NodeId> roleIds
     ) {
 
         // TODO NamespaceMetadataType might define
@@ -274,31 +266,20 @@ public class AccessController {
             .map(PendingPermissionCheck::new)
             .toList();
 
-        List<RolePermissionAttributes> attributes = context.readRolePermissionsAttributes(
-            nodesToRead.stream()
-                .map(ReadValueId::getNodeId).toList()
-        );
-
-        List<NodeId> roleIds = context.getRoleIds().orElse(List.of());
-
         for (int i = 0; i < nodesToRead.size(); i++) {
-            RolePermissionAttributes attribute = attributes.get(i);
-            NodeClass nodeClass = attribute.nodeClass();
-            RolePermissionType[] rolePermissions = attribute.rolePermissions();
-            RolePermissionType[] userRolePermissions = attribute.userRolePermissions();
+            NodeId nodeId = nodesToRead.get(i).getNodeId();
+            AccessControlAttributes attributes = accessControlAttributes.get(nodeId);
+            NodeClass nodeClass = attributes.nodeClass();
+            RolePermissionType[] userRolePermissions = attributes.userRolePermissions();
 
             if (nodeClass == NodeClass.Variable) {
-                if (rolePermissions != null && userRolePermissions != null) {
-                    if (Stream.of(rolePermissions).noneMatch(rp -> rp.getPermissions().getRead())) {
-                        pending.get(i).result = PermissionCheckResult.DENIED;
-                    } else {
-                        boolean hasReadPermission = Stream.of(userRolePermissions)
-                            .filter(rp -> roleIds.contains(rp.getRoleId()))
-                            .anyMatch(rp -> rp.getPermissions().getRead());
+                if (userRolePermissions != null) {
+                    boolean hasReadPermission = Stream.of(userRolePermissions)
+                        .filter(rp -> roleIds.contains(rp.getRoleId()))
+                        .anyMatch(rp -> rp.getPermissions().getRead());
 
-                        pending.get(i).result = hasReadPermission ?
-                            PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
-                    }
+                    pending.get(i).result = hasReadPermission ?
+                        PermissionCheckResult.ALLOWED : PermissionCheckResult.DENIED;
                 }
                 // Else: leave it to a subsequent AccessLevel check.
             } else {
@@ -316,7 +297,7 @@ public class AccessController {
                 .toList();
 
             List<PermissionCheckResult> results =
-                checkAccessLevels(context, remainingReadValueIds);
+                checkAccessLevels(remainingReadValueIds, accessControlAttributes);
 
             for (int i = 0; i < remainingChecks.size(); i++) {
                 remainingChecks.get(i).result = results.get(i);
@@ -346,24 +327,13 @@ public class AccessController {
 
         MessageSecurityMode getSecurityMode();
 
-        List<AccessRestrictionAttributes> readAccessRestrictionAttributes(List<NodeId> nodesToRead);
+        Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds);
 
-        List<AccessLevelAttributes> readAccessLevelAttributes(List<NodeId> nodesToRead);
-
-        List<RolePermissionAttributes> readRolePermissionsAttributes(List<NodeId> nodesToRead);
-
-        record AccessRestrictionAttributes(@Nullable AccessRestrictionType accessRestrictions) {}
-
-        record AccessLevelAttributes(
+        record AccessControlAttributes(
             @Nullable NodeClass nodeClass,
-            @Nullable UByte accessLevel,
-            @Nullable UByte userAccessLevel
-        ) {}
-
-        record RolePermissionAttributes(
-            @Nullable NodeClass nodeClass,
-            @Nullable RolePermissionType[] rolePermissions,
-            @Nullable RolePermissionType[] userRolePermissions
+            @Nullable AccessRestrictionType accessRestrictions,
+            @Nullable UByte userAccessLevel,
+            RolePermissionType @Nullable [] userRolePermissions
         ) {}
 
     }
@@ -380,113 +350,25 @@ public class AccessController {
 
         @Override
         public Optional<List<NodeId>> getRoleIds() {
-            return Optional.empty();
+            return session.getRoleIds();
         }
 
         @Override
         public MessageSecurityMode getSecurityMode() {
-            return null;
+            return session.getEndpoint().getSecurityMode();
         }
 
         @Override
-        public List<AccessRestrictionAttributes> readAccessRestrictionAttributes(List<NodeId> nodesToRead) {
-            List<ReadValueId> readValueIds = nodesToRead.stream()
-                .map(id ->
-                    new ReadValueId(
-                        id,
-                        AttributeId.AccessRestrictions.uid(),
-                        null,
-                        null
-                    )
-                )
-                .toList();
-
-            List<DataValue> values = server.getAddressSpaceManager().read(
-                new ReadContext(server, session),
-                0.0,
-                TimestampsToReturn.Neither,
-                readValueIds
-            );
-
-            var attributes = new ArrayList<AccessRestrictionAttributes>();
-
-            for (int i = 0; i < readValueIds.size(); i++) {
-                Object v = values.get(i).getValue().getValue();
-                AccessRestrictionType accessRestrictions = null;
-
-                if (v instanceof AccessRestrictionType art) {
-                    accessRestrictions = art;
-                }
-
-                attributes.add(new AccessRestrictionAttributes(accessRestrictions));
-            }
-
-            return attributes;
-        }
-
-        @Override
-        public List<AccessLevelAttributes> readAccessLevelAttributes(List<NodeId> nodesToRead) {
-            List<ReadValueId> readValueIds = nodesToRead.stream()
+        public Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds) {
+            List<ReadValueId> readValueIds = nodeIds.stream()
                 .flatMap(id -> {
                     List<ReadValueId> list = List.of(
                         new ReadValueId(
                             id, AttributeId.NodeClass.uid(), null, null),
                         new ReadValueId(
-                            id, AttributeId.AccessLevel.uid(), null, null),
+                            id, AttributeId.AccessRestrictions.uid(), null, null),
                         new ReadValueId(
-                            id, AttributeId.UserAccessLevel.uid(), null, null)
-                    );
-
-                    return list.stream();
-                })
-                .toList();
-
-            List<DataValue> values = server.getAddressSpaceManager().read(
-                new ReadContext(server, session),
-                0.0,
-                TimestampsToReturn.Neither,
-                readValueIds
-            );
-
-            var attributes = new ArrayList<AccessLevelAttributes>();
-
-            for (int i = 0; i < readValueIds.size(); i += 3) {
-                Object v0 = values.get(i).getValue().getValue();
-                Object v1 = values.get(i + 1).getValue().getValue();
-                Object v2 = values.get(i + 2).getValue().getValue();
-
-                NodeClass nodeClass = null;
-                UByte accessLevel = null;
-                UByte userAccessLevel = null;
-
-                if (v0 instanceof NodeClass nc) {
-                    nodeClass = nc;
-                }
-                if (v1 instanceof UByte al) {
-                    accessLevel = al;
-                }
-                if (v2 instanceof UByte ual) {
-                    userAccessLevel = ual;
-                }
-
-                attributes.add(new AccessLevelAttributes(nodeClass, accessLevel, userAccessLevel));
-            }
-
-            return attributes;
-        }
-
-        @Override
-        public List<RolePermissionAttributes> readRolePermissionsAttributes(
-            List<NodeId> nodesToRead
-        ) {
-
-            List<ReadValueId> readValueIds = nodesToRead.stream()
-                .flatMap(id -> {
-                    List<ReadValueId> list = List.of(
-                        new ReadValueId(
-                            id, AttributeId.NodeClass.uid(), null, null),
-                        new ReadValueId(
-                            id, AttributeId.RolePermissions.uid(), null, null),
+                            id, AttributeId.UserAccessLevel.uid(), null, null),
                         new ReadValueId(
                             id, AttributeId.UserRolePermissions.uid(), null, null)
                     );
@@ -502,33 +384,42 @@ public class AccessController {
                 readValueIds
             );
 
-            var attributes = new ArrayList<RolePermissionAttributes>();
+            var attributes = new HashMap<NodeId, AccessControlAttributes>();
 
-            for (int i = 0; i < readValueIds.size(); i += 3) {
+            for (int i = 0; i < readValueIds.size(); i += 4) {
+                NodeId nodeId = readValueIds.get(i).getNodeId();
+
                 Object v0 = values.get(i).getValue().getValue();
                 Object v1 = values.get(i + 1).getValue().getValue();
                 Object v2 = values.get(i + 2).getValue().getValue();
+                Object v3 = values.get(i + 3).getValue().getValue();
 
                 NodeClass nodeClass = null;
-                RolePermissionType[] rolePermissions = null;
+                AccessRestrictionType accessRestrictions = null;
+                UByte userAccessLevel = null;
                 RolePermissionType[] userRolePermissions = null;
 
                 if (v0 instanceof NodeClass nc) {
                     nodeClass = nc;
                 }
-                if (v1 instanceof RolePermissionType[] rpt) {
-                    rolePermissions = rpt;
+                if (v1 instanceof AccessRestrictionType art) {
+                    accessRestrictions = art;
                 }
-                if (v2 instanceof RolePermissionType[] rpt) {
+                if (v2 instanceof UByte ual) {
+                    userAccessLevel = ual;
+                }
+                if (v3 instanceof RolePermissionType[] rpt) {
                     userRolePermissions = rpt;
                 }
 
-                attributes.add(new RolePermissionAttributes(nodeClass, rolePermissions, userRolePermissions));
+                AccessControlAttributes aca = new AccessControlAttributes(
+                    nodeClass, accessRestrictions, userAccessLevel, userRolePermissions);
+
+                attributes.put(nodeId, aca);
             }
 
             return attributes;
         }
-
     }
 
 }
