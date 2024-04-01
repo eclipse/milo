@@ -25,7 +25,8 @@ import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessCheckResult;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.BrowseAccessController;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -64,18 +65,24 @@ public class BrowseHelper {
 
         Session session = context.getSession().orElseThrow();
 
-        final var accessController = new AccessController(server);
+        final var accessController = new BrowseAccessController(server);
 
         List<PendingBrowse> pending = Lists.ofNullable(browseRequest.getNodesToBrowse())
             .stream()
             .map(PendingBrowse::new)
             .toList();
 
-        for (PendingBrowse pb : pending) {
-            NodeId nodeId = pb.browseDescription.getNodeId();
+        List<NodeId> nodeIds = pending.stream()
+            .map(pb -> pb.browseDescription.getNodeId()).toList();
 
-            // skip browsing for Nodes that the Session doesn't have Browse permission for
-            if (!accessController.checkBrowsePermission(session, nodeId)) {
+        List<AccessCheckResult> accessCheckResults =
+            accessController.checkBrowseAccess(session, nodeIds);
+
+        for (int i = 0; i < pending.size(); i++) {
+            PendingBrowse pb = pending.get(i);
+            AccessCheckResult result = accessCheckResults.get(i);
+
+            if (result == AccessCheckResult.DENIED) {
                 pb.referenceDescriptions = Collections.emptyList();
             }
         }
@@ -102,16 +109,25 @@ public class BrowseHelper {
             PendingBrowse pb = pending.get(i);
             List<ReferenceDescription> referenceDescriptions = referenceDescriptionLists.get(i);
 
-            // filter out references to Nodes that the Session doesn't have Browse permission for
-            pb.referenceDescriptions = referenceDescriptions.stream()
-                .filter(r -> {
-                    NodeId nodeId = r.getNodeId()
-                        .toNodeId(server.getNamespaceTable())
-                        .orElse(NodeId.NULL_VALUE);
-
-                    return accessController.checkBrowsePermission(session, nodeId);
-                })
+            List<NodeId> nodeIdsToCheck = referenceDescriptions.stream()
+                .map(r -> r.getNodeId().toNodeId(server.getNamespaceTable()).orElse(NodeId.NULL_VALUE))
                 .toList();
+
+            List<AccessCheckResult> referenceAccessCheckResults =
+                accessController.checkBrowseAccess(session, nodeIdsToCheck);
+
+            var filteredReferences = new ArrayList<ReferenceDescription>();
+
+            for (int j = 0; j < referenceDescriptions.size(); j++) {
+                ReferenceDescription reference = referenceDescriptions.get(j);
+                AccessCheckResult result = referenceAccessCheckResults.get(j);
+                if (result != AccessCheckResult.DENIED) {
+                    filteredReferences.add(reference);
+                }
+            }
+
+            // Filter out references to Nodes that the Session doesn't have Browse permission for.
+            pb.referenceDescriptions = filteredReferences;
         }
 
         // Gather all the ReferenceDescription lists: the ones we initially filtered out due to

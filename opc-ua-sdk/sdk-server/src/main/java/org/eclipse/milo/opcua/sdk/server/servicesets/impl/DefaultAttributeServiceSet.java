@@ -11,12 +11,11 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryReadContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.HistoryUpdateContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
@@ -26,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AttributeServiceSet;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessCheckResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -52,6 +52,7 @@ import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static java.util.Objects.requireNonNullElse;
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 
 public class DefaultAttributeServiceSet extends AbstractServiceSet implements AttributeServiceSet {
 
@@ -156,16 +157,21 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
-        Map<ReadValueId, Boolean> permissions = new AccessController(server)
-            .checkReadPermissions(session, nodesToRead);
+        List<AccessCheckResult> accessCheckResults =
+            new ReadAccessController(server).checkReadAccess(session, nodesToRead);
+
+        var accessCheckResultMap = new HashMap<ReadValueId, AccessCheckResult>();
+        for (int i = 0; i < nodesToRead.size(); i++) {
+            accessCheckResultMap.put(nodesToRead.get(i), accessCheckResults.get(i));
+        }
 
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
 
-        List<DataValue> values = GroupMapCollate.groupMapCollate(
+        List<DataValue> values = groupMapCollate(
             nodesToRead,
-            permissions::get,
-            hasPermission -> group -> {
-                if (hasPermission) {
+            rvi -> accessCheckResultMap.get(rvi) == AccessCheckResult.ALLOWED,
+            allowed -> group -> {
+                if (allowed) {
                     var readContext = new ReadContext(
                         server,
                         session,
@@ -250,18 +256,36 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        List<AccessCheckResult> accessCheckResults =
+            new WriteAccessController(server).checkWriteAccess(session, nodesToWrite);
+
+        var accessCheckResultMap = new HashMap<WriteValue, AccessCheckResult>();
+        for (int i = 0; i < nodesToWrite.size(); i++) {
+            accessCheckResultMap.put(nodesToWrite.get(i), accessCheckResults.get(i));
+        }
+
         var diagnosticsContext = new DiagnosticsContext<WriteValue>();
 
-        var writeContext = new WriteContext(
-            server,
-            session,
-            diagnosticsContext,
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<StatusCode> results = groupMapCollate(
+            nodesToWrite,
+            wv -> accessCheckResultMap.get(wv) == AccessCheckResult.ALLOWED,
+            allowed -> group -> {
+                if (allowed) {
+                    var writeContext = new WriteContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
 
-        List<StatusCode> results = server.getAddressSpaceManager().write(writeContext, nodesToWrite);
+                    return server.getAddressSpaceManager().write(writeContext, group);
+                } else {
+                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
+                }
+            }
+        );
 
         ResponseHeader header = createResponseHeader(request);
 
