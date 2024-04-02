@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Override;
-import java.lang.String;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.StringJoiner;
