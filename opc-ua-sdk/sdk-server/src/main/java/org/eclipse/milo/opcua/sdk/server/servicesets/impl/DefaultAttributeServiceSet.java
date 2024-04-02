@@ -158,7 +158,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         }
 
         List<AccessResult> accessResults =
-            new ReadAccessController(server).checkReadAccess(session, nodesToRead);
+            server.getAccessController().checkReadAccess(session, nodesToRead);
 
         var accessCheckResultMap = new HashMap<ReadValueId, AccessResult>();
         for (int i = 0; i < nodesToRead.size(); i++) {
@@ -257,7 +257,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
         }
 
         List<AccessResult> accessResults =
-            new WriteAccessController(server).checkWriteAccess(session, nodesToWrite);
+            server.getAccessController().checkWriteAccess(session, nodesToWrite);
 
         var accessCheckResultMap = new HashMap<WriteValue, AccessResult>();
         for (int i = 0; i < nodesToWrite.size(); i++) {

@@ -73,7 +73,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         }
 
         List<AccessResult> accessResults =
-            new CallAccessController(server).checkCallAccess(session, methodsToCall);
+            server.getAccessController().checkCallAccess(session, methodsToCall);
 
         var accessCheckResultMap = new HashMap<CallMethodRequest, AccessResult>();
         for (int i = 0; i < methodsToCall.size(); i++) {
@@ -106,7 +106,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
                 }
             }
         );
-        
+
         ResponseHeader header = createResponseHeader(request);
 
         return new CallResponse(header, results.toArray(CallMethodResult[]::new), new DiagnosticInfo[0]);

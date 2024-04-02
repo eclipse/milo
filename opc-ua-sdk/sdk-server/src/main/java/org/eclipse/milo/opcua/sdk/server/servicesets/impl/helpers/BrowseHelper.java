@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.BrowseAccessController;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -65,8 +64,6 @@ public class BrowseHelper {
 
         Session session = context.getSession().orElseThrow();
 
-        final var accessController = new BrowseAccessController(server);
-
         List<PendingBrowse> pending = Lists.ofNullable(browseRequest.getNodesToBrowse())
             .stream()
             .map(PendingBrowse::new)
@@ -76,7 +73,7 @@ public class BrowseHelper {
             .map(pb -> pb.browseDescription.getNodeId()).toList();
 
         List<AccessResult> accessResults =
-            accessController.checkBrowseAccess(session, nodeIds);
+            server.getAccessController().checkBrowseAccess(session, nodeIds);
 
         for (int i = 0; i < pending.size(); i++) {
             PendingBrowse pb = pending.get(i);
@@ -114,7 +111,7 @@ public class BrowseHelper {
                 .toList();
 
             List<AccessResult> referenceAccessResults =
-                accessController.checkBrowseAccess(session, nodeIdsToCheck);
+                server.getAccessController().checkBrowseAccess(session, nodeIdsToCheck);
 
             var filteredReferences = new ArrayList<ReferenceDescription>();
 

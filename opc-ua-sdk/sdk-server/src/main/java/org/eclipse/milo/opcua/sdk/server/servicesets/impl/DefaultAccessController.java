@@ -11,23 +11,26 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AbstractAccessController.AccessControlContext;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AbstractAccessController.AccessControlContext.AccessControlAttributes;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AbstractAccessController.DefaultAccessControlContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -355,6 +358,92 @@ public class DefaultAccessController implements AccessController {
         private PendingResult(T value) {
             this.value = value;
         }
+    }
+
+    static class DefaultAccessControlContext implements AccessControlContext {
+
+        private final OpcUaServer server;
+        private final Session session;
+
+        public DefaultAccessControlContext(OpcUaServer server, Session session) {
+            this.server = server;
+            this.session = session;
+        }
+
+        @Override
+        public Optional<List<NodeId>> getRoleIds() {
+            return session.getRoleIds();
+        }
+
+        @Override
+        public MessageSecurityMode getSecurityMode() {
+            return session.getEndpoint().getSecurityMode();
+        }
+
+        @Override
+        public Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds) {
+            List<ReadValueId> readValueIds = nodeIds.stream()
+                .distinct()
+                .flatMap(id -> {
+                    List<ReadValueId> attributes = List.of(
+                        new ReadValueId(id, AttributeId.NodeClass.uid(), null, null),
+                        new ReadValueId(id, AttributeId.AccessRestrictions.uid(), null, null),
+                        new ReadValueId(id, AttributeId.UserAccessLevel.uid(), null, null),
+                        new ReadValueId(id, AttributeId.UserRolePermissions.uid(), null, null)
+                    );
+
+                    return attributes.stream();
+                })
+                .toList();
+
+            List<DataValue> values = server.getAddressSpaceManager().read(
+                new AddressSpace.ReadContext(server, session),
+                0.0,
+                TimestampsToReturn.Neither,
+                readValueIds
+            );
+
+            var attributesMap = new HashMap<NodeId, AccessControlAttributes>();
+
+            for (int i = 0; i < readValueIds.size(); i += 4) {
+                NodeId nodeId = readValueIds.get(i).getNodeId();
+
+                Object v0 = values.get(i).getValue().getValue();
+                Object v1 = values.get(i + 1).getValue().getValue();
+                Object v2 = values.get(i + 2).getValue().getValue();
+                Object v3 = values.get(i + 3).getValue().getValue();
+
+                NodeClass nodeClass = null;
+                AccessRestrictionType accessRestrictions = null;
+                UByte userAccessLevel = null;
+                RolePermissionType[] userRolePermissions = null;
+
+                if (v0 instanceof NodeClass nc) {
+                    nodeClass = nc;
+                }
+                if (v1 instanceof AccessRestrictionType art) {
+                    accessRestrictions = art;
+                }
+                if (v2 instanceof UByte ual) {
+                    userAccessLevel = ual;
+                }
+                if (v3 instanceof RolePermissionType[] rpt) {
+                    userRolePermissions = rpt;
+                }
+
+                var attributes = new AccessControlAttributes(
+                    nodeClass,
+                    accessRestrictions,
+                    userAccessLevel,
+                    userRolePermissions
+                );
+
+                attributesMap.put(nodeId, attributes);
+            }
+
+            return attributesMap;
+        }
+
     }
 
 }

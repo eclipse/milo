@@ -11,12 +11,20 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.jetbrains.annotations.Nullable;
 
 public interface AccessController {
 
@@ -99,6 +107,23 @@ public interface AccessController {
     enum AccessResult {
         ALLOWED,
         DENIED
+    }
+
+    record AccessControlAttributes(
+        @Nullable NodeClass nodeClass,
+        @Nullable AccessRestrictionType accessRestrictions,
+        @Nullable UByte userAccessLevel,
+        RolePermissionType @Nullable [] userRolePermissions
+    ) {}
+
+    interface AccessControlContext {
+
+        Optional<List<NodeId>> getRoleIds();
+
+        MessageSecurityMode getSecurityMode();
+
+        Map<NodeId, AccessController.AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds);
+
     }
 
 }
