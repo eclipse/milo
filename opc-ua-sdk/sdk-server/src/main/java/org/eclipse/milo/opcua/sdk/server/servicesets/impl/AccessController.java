@@ -125,6 +125,7 @@ public abstract class AccessController {
         @Override
         public Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds) {
             List<ReadValueId> readValueIds = nodeIds.stream()
+                .distinct()
                 .flatMap(id -> {
                     List<ReadValueId> list = List.of(
                         new ReadValueId(
@@ -148,7 +149,7 @@ public abstract class AccessController {
                 readValueIds
             );
 
-            var attributes = new HashMap<NodeId, AccessControlAttributes>();
+            var attributesMap = new HashMap<NodeId, AccessControlAttributes>();
 
             for (int i = 0; i < readValueIds.size(); i += 4) {
                 NodeId nodeId = readValueIds.get(i).getNodeId();
@@ -176,14 +177,19 @@ public abstract class AccessController {
                     userRolePermissions = rpt;
                 }
 
-                AccessControlAttributes aca = new AccessControlAttributes(
-                    nodeClass, accessRestrictions, userAccessLevel, userRolePermissions);
+                var attributes = new AccessControlAttributes(
+                    nodeClass,
+                    accessRestrictions,
+                    userAccessLevel,
+                    userRolePermissions
+                );
 
-                attributes.put(nodeId, aca);
+                attributesMap.put(nodeId, attributes);
             }
 
-            return attributes;
+            return attributesMap;
         }
+
     }
 
 }
