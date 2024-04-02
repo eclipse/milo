@@ -12,12 +12,10 @@ package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
@@ -37,10 +35,9 @@ public interface AccessController {
      *
      * @param session the Session to check access for.
      * @param readValueIds the Nodes and Attributes to check access for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link ReadValueId}.
+     * @return a Map containing the {@link AccessResult} for each {@link ReadValueId}.
      */
-    List<AccessResult> checkReadAccess(Session session, List<ReadValueId> readValueIds);
+    Map<ReadValueId, AccessResult> checkReadAccess(Session session, List<ReadValueId> readValueIds);
 
     /**
      * Check if the current Session has write access to the Nodes and Attributes identified by
@@ -48,10 +45,9 @@ public interface AccessController {
      *
      * @param session the Session to check access for.
      * @param writeValues the Nodes and Attributes to check access for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link WriteValue}.
+     * @return a Map containing the {@link AccessResult} for each {@link WriteValue}.
      */
-    List<AccessResult> checkWriteAccess(Session session, List<WriteValue> writeValues);
+    Map<WriteValue, AccessResult> checkWriteAccess(Session session, List<WriteValue> writeValues);
 
     /**
      * Check if the current Session has permission to browse the Nodes identified by
@@ -59,10 +55,9 @@ public interface AccessController {
      *
      * @param session the Session to check access for.
      * @param nodeIds the {@link NodeId}s of Nodes to check access for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link NodeId}.
+     * @return a Map containing the {@link AccessResult} for each {@link NodeId}.
      */
-    List<AccessResult> checkBrowseAccess(Session session, List<NodeId> nodeIds);
+    Map<NodeId, AccessResult> checkBrowseAccess(Session session, List<NodeId> nodeIds);
 
     /**
      * Check if the current Session has permission to call Methods on the Objects or ObjectTypes
@@ -70,10 +65,9 @@ public interface AccessController {
      *
      * @param session the Session to check access for.
      * @param requests the {@link CallMethodRequest}s to check access for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link CallMethodRequest}.
+     * @return a Map containing the {@link AccessResult} for each {@link CallMethodRequest}.
      */
-    List<AccessResult> checkCallAccess(Session session, List<CallMethodRequest> requests);
+    Map<CallMethodRequest, AccessResult> checkCallAccess(Session session, List<CallMethodRequest> requests);
 
     /**
      * Check if the current Session has permission to add References to the Nodes identified by
@@ -82,10 +76,9 @@ public interface AccessController {
      * @param session the Session to check access for.
      * @param referencesToAdd the {@link AddReferencesItem}s identifying Nodes to check access
      *     for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link AddReferencesItem}.
+     * @return a Map containing the {@link AccessResult} for each {@link AddReferencesItem}.
      */
-    List<AccessResult> checkAddReferencesAccess(Session session, List<AddReferencesItem> referencesToAdd);
+    Map<AddReferencesItem, AccessResult> checkAddReferencesAccess(Session session, List<AddReferencesItem> referencesToAdd);
 
     /**
      * Check if the current Session has permission to delete Nodes identified by
@@ -93,10 +86,9 @@ public interface AccessController {
      *
      * @param session the Session to check access for.
      * @param nodesToDelete the {@link DeleteNodesItem}s identifying Nodes to check access for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link DeleteNodesItem}.
+     * @return a Map containing the {@link AccessResult} for each {@link DeleteNodesItem}.
      */
-    List<AccessResult> checkDeleteNodesAccess(Session session, List<DeleteNodesItem> nodesToDelete);
+    Map<DeleteNodesItem, AccessResult> checkDeleteNodesAccess(Session session, List<DeleteNodesItem> nodesToDelete);
 
     /**
      * Check if the current Session has permission to delete References from the Nodes identified
@@ -105,10 +97,9 @@ public interface AccessController {
      * @param session the Session to check access for.
      * @param referencesToDelete the {@link DeleteReferencesItem}s identifying the Nodes to check
      *     access for.
-     * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link DeleteReferencesItem}.
+     * @return a Map containing the {@link AccessResult} for each {@link DeleteReferencesItem}.
      */
-    List<AccessResult> checkDeleteReferencesAccess(Session session, List<DeleteReferencesItem> referencesToDelete);
+    Map<DeleteReferencesItem, AccessResult> checkDeleteReferencesAccess(Session session, List<DeleteReferencesItem> referencesToDelete);
 
     enum AccessResult {
         ALLOWED,
@@ -121,15 +112,5 @@ public interface AccessController {
         @Nullable UByte userAccessLevel,
         RolePermissionType @Nullable [] userRolePermissions
     ) {}
-
-    interface AccessControlContext {
-
-        Optional<List<NodeId>> getRoleIds();
-
-        MessageSecurityMode getSecurityMode();
-
-        Map<NodeId, AccessController.AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds);
-
-    }
 
 }

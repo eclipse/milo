@@ -10,13 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
-import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
@@ -35,15 +30,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
-import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
-import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
 
 public class AttributeReader {
@@ -73,64 +64,6 @@ public class AttributeReader {
 
         if (!AttributeId.getAttributes(node.getNodeClass()).contains(attributeId)) {
             return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
-        }
-
-        if (attributeId == AttributeId.Value && node instanceof VariableNode) {
-            VariableNode variableNode = (VariableNode) node;
-
-            AccessLevelExType accessLevelEx = variableNode.getAccessLevelEx();
-
-            if (accessLevelEx != null) {
-                if (!accessLevelEx.getCurrentRead()) {
-                    return new DataValue(StatusCodes.Bad_NotReadable);
-                }
-            } else {
-                Set<AccessLevel> accessLevels = AccessLevel.fromValue(variableNode.getAccessLevel());
-                if (!accessLevels.contains(AccessLevel.CurrentRead)) {
-                    return new DataValue(StatusCodes.Bad_NotReadable);
-                }
-            }
-
-            Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(
-                (UByte) requireNonNullElse(node.getAttribute(context, AttributeId.UserAccessLevel), UByte.MIN)
-            );
-            if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
-                return new DataValue(StatusCodes.Bad_UserAccessDenied);
-            }
-        }
-
-        List<NodeId> roleIds = context.getSession().flatMap(Session::getRoleIds).orElse(null);
-
-        if (roleIds != null) {
-            // If non-null, there is a Session and Server has been configured with a
-            // RoleManager that provides Identity to RoleId mappings, so we can proceed with
-            // checking the RolePermissions and UserRolePermissions attributes.
-
-            RolePermissionType[] rolePermissions = node.getRolePermissions();
-
-            if (rolePermissions != null) {
-                boolean hasReadPermission = Stream.of(rolePermissions)
-                    .anyMatch(rp -> rp.getPermissions().getRead());
-
-                if (!hasReadPermission) {
-                    return new DataValue(StatusCodes.Bad_UserAccessDenied);
-                }
-            }
-
-            RolePermissionType[] userRolePermissions = (RolePermissionType[]) node.getAttribute(
-                context,
-                AttributeId.UserRolePermissions
-            );
-
-            if (userRolePermissions != null) {
-                boolean hasReadPermission = Arrays.stream(userRolePermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
-                    .anyMatch(rp -> rp.getPermissions().getRead());
-
-                if (!hasReadPermission) {
-                    return new DataValue(StatusCodes.Bad_UserAccessDenied);
-                }
-            }
         }
 
         if (encodingName != null && encodingName.isNotNull()) {

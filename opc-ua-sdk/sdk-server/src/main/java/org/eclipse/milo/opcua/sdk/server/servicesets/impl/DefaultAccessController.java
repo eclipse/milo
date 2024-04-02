@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -51,13 +52,13 @@ public class DefaultAccessController implements AccessController {
     //region Read
 
     @Override
-    public List<AccessResult> checkReadAccess(Session session, List<ReadValueId> readValueIds) {
+    public Map<ReadValueId, AccessResult> checkReadAccess(Session session, List<ReadValueId> readValueIds) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkReadAccess(context, readValueIds);
     }
 
-    static List<AccessResult> checkReadAccess(AccessControlContext context, List<ReadValueId> readValueIds) {
+    static Map<ReadValueId, AccessResult> checkReadAccess(AccessControlContext context, List<ReadValueId> readValueIds) {
         List<PendingResult<ReadValueId>> pending =
             readValueIds.stream().map(PendingResult::new).toList();
 
@@ -104,7 +105,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().map(p -> p.result).toList();
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
     }
 
     //endregion
@@ -112,13 +113,13 @@ public class DefaultAccessController implements AccessController {
     //region Write
 
     @Override
-    public List<AccessResult> checkWriteAccess(Session session, List<WriteValue> writeValues) {
+    public Map<WriteValue, AccessResult> checkWriteAccess(Session session, List<WriteValue> writeValues) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkWriteAccess(context, writeValues);
     }
 
-    static List<AccessResult> checkWriteAccess(AccessControlContext context, List<WriteValue> writeValues) {
+    static Map<WriteValue, AccessResult> checkWriteAccess(AccessControlContext context, List<WriteValue> writeValues) {
         List<PendingResult<WriteValue>> pending =
             writeValues.stream().map(PendingResult::new).toList();
 
@@ -180,7 +181,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().map(p -> p.result).toList();
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
     }
 
     //endregion
@@ -188,13 +189,13 @@ public class DefaultAccessController implements AccessController {
     //region Browse
 
     @Override
-    public List<AccessResult> checkBrowseAccess(Session session, List<NodeId> nodeIds) {
+    public Map<NodeId, AccessResult> checkBrowseAccess(Session session, List<NodeId> nodeIds) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkBrowseAccess(context, nodeIds);
     }
 
-    static List<AccessResult> checkBrowseAccess(AccessControlContext context, List<NodeId> nodeIds) {
+    static Map<NodeId, AccessResult> checkBrowseAccess(AccessControlContext context, List<NodeId> nodeIds) {
         List<PendingResult<NodeId>> pending =
             nodeIds.stream().map(PendingResult::new).toList();
 
@@ -223,7 +224,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().map(p -> p.result).toList();
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
     }
 
     //endregion
@@ -231,13 +232,13 @@ public class DefaultAccessController implements AccessController {
     //region Call
 
     @Override
-    public List<AccessResult> checkCallAccess(Session session, List<CallMethodRequest> requests) {
+    public Map<CallMethodRequest, AccessResult> checkCallAccess(Session session, List<CallMethodRequest> requests) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkCallAccess(context, requests);
     }
 
-    static List<AccessResult> checkCallAccess(AccessControlContext context, List<CallMethodRequest> requests) {
+    static Map<CallMethodRequest, AccessResult> checkCallAccess(AccessControlContext context, List<CallMethodRequest> requests) {
         List<PendingResult<NodeId>> pending = requests.stream()
             .flatMap(r -> Stream.of(
                 new PendingResult<>(r.getObjectId()),
@@ -289,16 +290,17 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        var results = new ArrayList<AccessResult>();
+        var results = new HashMap<CallMethodRequest, AccessResult>();
 
         for (int i = 0; i < pending.size(); i += 2) {
+            CallMethodRequest request = requests.get(i / 2);
             PendingResult<NodeId> p0 = pending.get(i);
             PendingResult<NodeId> p1 = pending.get(i + 1);
 
             boolean allowed = p0.result == AccessResult.ALLOWED
                 && p1.result == AccessResult.ALLOWED;
 
-            results.add(allowed ? AccessResult.ALLOWED : AccessResult.DENIED);
+            results.put(request, allowed ? AccessResult.ALLOWED : AccessResult.DENIED);
         }
 
         return results;
@@ -309,13 +311,13 @@ public class DefaultAccessController implements AccessController {
     //region AddReferences
 
     @Override
-    public List<AccessResult> checkAddReferencesAccess(Session session, List<AddReferencesItem> referencesToAdd) {
+    public Map<AddReferencesItem, AccessResult> checkAddReferencesAccess(Session session, List<AddReferencesItem> referencesToAdd) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkAddReferencesAccess(context, referencesToAdd);
     }
 
-    static List<AccessResult> checkAddReferencesAccess(
+    static Map<AddReferencesItem, AccessResult> checkAddReferencesAccess(
         AccessControlContext context, List<AddReferencesItem> referencesToAdd) {
 
         List<PendingResult<AddReferencesItem>> pending =
@@ -349,7 +351,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().map(p -> p.result).toList();
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
     }
 
     //endregion
@@ -357,13 +359,13 @@ public class DefaultAccessController implements AccessController {
     //region DeleteNodes
 
     @Override
-    public List<AccessResult> checkDeleteNodesAccess(Session session, List<DeleteNodesItem> nodesToDelete) {
+    public Map<DeleteNodesItem, AccessResult> checkDeleteNodesAccess(Session session, List<DeleteNodesItem> nodesToDelete) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkDeleteNodesAccess(context, nodesToDelete);
     }
 
-    static List<AccessResult> checkDeleteNodesAccess(AccessControlContext context, List<DeleteNodesItem> nodesToDelete) {
+    static Map<DeleteNodesItem, AccessResult> checkDeleteNodesAccess(AccessControlContext context, List<DeleteNodesItem> nodesToDelete) {
         List<PendingResult<DeleteNodesItem>> pending =
             nodesToDelete.stream().map(PendingResult::new).toList();
 
@@ -395,7 +397,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().map(p -> p.result).toList();
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
     }
 
     //endregion DeleteNodes
@@ -403,7 +405,7 @@ public class DefaultAccessController implements AccessController {
     //region DeleteReferences
 
     @Override
-    public List<AccessResult> checkDeleteReferencesAccess(
+    public Map<DeleteReferencesItem, AccessResult> checkDeleteReferencesAccess(
         Session session, List<DeleteReferencesItem> referencesToDelete) {
 
         var context = new DefaultAccessControlContext(server, session);
@@ -411,7 +413,7 @@ public class DefaultAccessController implements AccessController {
         return checkDeleteReferencesAccess(context, referencesToDelete);
     }
 
-    static List<AccessResult> checkDeleteReferencesAccess(
+    static Map<DeleteReferencesItem, AccessResult> checkDeleteReferencesAccess(
         AccessControlContext context, List<DeleteReferencesItem> referencesToDelete) {
 
         List<PendingResult<DeleteReferencesItem>> pending =
@@ -445,7 +447,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().map(p -> p.result).toList();
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
     }
 
     //endregion
@@ -516,6 +518,16 @@ public class DefaultAccessController implements AccessController {
         private PendingResult(T value) {
             this.value = value;
         }
+    }
+
+    interface AccessControlContext {
+
+        Optional<List<NodeId>> getRoleIds();
+
+        MessageSecurityMode getSecurityMode();
+
+        Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds);
+
     }
 
     static class DefaultAccessControlContext implements AccessControlContext {

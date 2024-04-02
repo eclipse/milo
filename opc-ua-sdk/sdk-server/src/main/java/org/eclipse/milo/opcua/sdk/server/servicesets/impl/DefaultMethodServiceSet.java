@@ -11,8 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.CallContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -72,17 +72,12 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessResult> accessResults =
+        Map<CallMethodRequest, AccessResult> accessResults =
             server.getAccessController().checkCallAccess(session, methodsToCall);
-
-        var accessCheckResultMap = new HashMap<CallMethodRequest, AccessResult>();
-        for (int i = 0; i < methodsToCall.size(); i++) {
-            accessCheckResultMap.put(methodsToCall.get(i), accessResults.get(i));
-        }
 
         List<CallMethodResult> results = groupMapCollate(
             methodsToCall,
-            r -> accessCheckResultMap.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();

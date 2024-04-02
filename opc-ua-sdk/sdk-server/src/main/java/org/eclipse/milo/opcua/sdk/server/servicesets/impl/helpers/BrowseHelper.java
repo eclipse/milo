@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.common.primitives.Ints;
@@ -72,12 +73,11 @@ public class BrowseHelper {
         List<NodeId> nodeIds = pending.stream()
             .map(pb -> pb.browseDescription.getNodeId()).toList();
 
-        List<AccessResult> accessResults =
+        Map<NodeId, AccessResult> accessResults =
             server.getAccessController().checkBrowseAccess(session, nodeIds);
 
-        for (int i = 0; i < pending.size(); i++) {
-            PendingBrowse pb = pending.get(i);
-            AccessResult result = accessResults.get(i);
+        for (PendingBrowse pb : pending) {
+            AccessResult result = accessResults.get(pb.browseDescription.getNodeId());
 
             if (result == AccessResult.DENIED) {
                 pb.referenceDescriptions = Collections.emptyList();
@@ -110,14 +110,18 @@ public class BrowseHelper {
                 .map(r -> r.getNodeId().toNodeId(server.getNamespaceTable()).orElse(NodeId.NULL_VALUE))
                 .toList();
 
-            List<AccessResult> referenceAccessResults =
+            Map<NodeId, AccessResult> referenceAccessResults =
                 server.getAccessController().checkBrowseAccess(session, nodeIdsToCheck);
 
             var filteredReferences = new ArrayList<ReferenceDescription>();
 
-            for (int j = 0; j < referenceDescriptions.size(); j++) {
-                ReferenceDescription reference = referenceDescriptions.get(j);
-                AccessResult result = referenceAccessResults.get(j);
+            for (ReferenceDescription reference : referenceDescriptions) {
+                NodeId nodeId = reference.getNodeId()
+                    .toNodeId(server.getNamespaceTable())
+                    .orElse(NodeId.NULL_VALUE);
+
+                AccessResult result = referenceAccessResults.get(nodeId);
+
                 if (result != AccessResult.DENIED) {
                     filteredReferences.add(reference);
                 }

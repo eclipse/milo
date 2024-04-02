@@ -11,8 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -157,19 +157,14 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
-        List<AccessResult> accessResults =
+        Map<ReadValueId, AccessResult> accessResults =
             server.getAccessController().checkReadAccess(session, nodesToRead);
-
-        var accessCheckResultMap = new HashMap<ReadValueId, AccessResult>();
-        for (int i = 0; i < nodesToRead.size(); i++) {
-            accessCheckResultMap.put(nodesToRead.get(i), accessResults.get(i));
-        }
 
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
 
         List<DataValue> values = groupMapCollate(
             nodesToRead,
-            rvi -> accessCheckResultMap.get(rvi) == AccessResult.ALLOWED,
+            rvi -> accessResults.get(rvi) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var readContext = new ReadContext(
@@ -256,19 +251,14 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessResult> accessResults =
+        Map<WriteValue, AccessResult> accessResults =
             server.getAccessController().checkWriteAccess(session, nodesToWrite);
-
-        var accessCheckResultMap = new HashMap<WriteValue, AccessResult>();
-        for (int i = 0; i < nodesToWrite.size(); i++) {
-            accessCheckResultMap.put(nodesToWrite.get(i), accessResults.get(i));
-        }
 
         var diagnosticsContext = new DiagnosticsContext<WriteValue>();
 
         List<StatusCode> results = groupMapCollate(
             nodesToWrite,
-            wv -> accessCheckResultMap.get(wv) == AccessResult.ALLOWED,
+            wv -> accessResults.get(wv) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var writeContext = new WriteContext(

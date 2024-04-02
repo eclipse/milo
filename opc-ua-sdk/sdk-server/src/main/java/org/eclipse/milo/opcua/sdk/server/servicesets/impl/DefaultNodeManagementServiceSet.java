@@ -11,8 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddReferencesContext;
@@ -173,17 +173,12 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessResult> accessResults =
+        Map<DeleteNodesItem, AccessResult> accessResults =
             server.getAccessController().checkDeleteNodesAccess(session, nodesToDelete);
-
-        var accessResultsMap = new HashMap<DeleteNodesItem, AccessResult>();
-        for (int i = 0; i < nodesToDelete.size(); i++) {
-            accessResultsMap.put(nodesToDelete.get(i), accessResults.get(i));
-        }
 
         List<StatusCode> results = groupMapCollate(
             nodesToDelete,
-            r -> accessResultsMap.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var deleteNodesContext = new DeleteNodesContext(
@@ -224,17 +219,12 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessResult> accessResults =
+        Map<AddReferencesItem, AccessResult> accessResults =
             server.getAccessController().checkAddReferencesAccess(session, referencesToAdd);
-
-        var accessResultMap = new HashMap<AddReferencesItem, AccessResult>();
-        for (int i = 0; i < referencesToAdd.size(); i++) {
-            accessResultMap.put(referencesToAdd.get(i), accessResults.get(i));
-        }
 
         List<StatusCode> results = groupMapCollate(
             referencesToAdd,
-            r -> accessResultMap.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var addReferencesContext = new AddReferencesContext(
@@ -275,17 +265,12 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessResult> accessResults =
+        Map<DeleteReferencesItem, AccessResult> accessResults =
             server.getAccessController().checkDeleteReferencesAccess(session, referencesToDelete);
-
-        var accessResultMap = new HashMap<DeleteReferencesItem, AccessResult>();
-        for (int i = 0; i < referencesToDelete.size(); i++) {
-            accessResultMap.put(referencesToDelete.get(i), accessResults.get(i));
-        }
 
         List<StatusCode> results = groupMapCollate(
             referencesToDelete,
-            r -> accessResultMap.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var deleteReferencesContext = new DeleteReferencesContext(
