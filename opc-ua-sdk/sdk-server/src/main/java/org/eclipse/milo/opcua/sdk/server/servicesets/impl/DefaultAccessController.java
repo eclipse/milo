@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.jetbrains.annotations.Nullable;
 
 public class DefaultAccessController implements AccessController {
 
@@ -529,6 +530,13 @@ public class DefaultAccessController implements AccessController {
         Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds);
 
     }
+
+    record AccessControlAttributes(
+        @Nullable NodeClass nodeClass,
+        @Nullable AccessRestrictionType accessRestrictions,
+        @Nullable UByte userAccessLevel,
+        RolePermissionType @Nullable [] userRolePermissions
+    ) {}
 
     static class DefaultAccessControlContext implements AccessControlContext {
 
