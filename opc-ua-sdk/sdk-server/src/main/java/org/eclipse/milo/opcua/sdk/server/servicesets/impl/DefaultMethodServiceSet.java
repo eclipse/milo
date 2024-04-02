@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.MethodServiceSet;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessCheckResult;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -72,17 +72,17 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessCheckResult> accessCheckResults =
+        List<AccessResult> accessResults =
             new CallAccessController(server).checkCallAccess(session, methodsToCall);
 
-        var accessCheckResultMap = new HashMap<CallMethodRequest, AccessCheckResult>();
+        var accessCheckResultMap = new HashMap<CallMethodRequest, AccessResult>();
         for (int i = 0; i < methodsToCall.size(); i++) {
-            accessCheckResultMap.put(methodsToCall.get(i), accessCheckResults.get(i));
+            accessCheckResultMap.put(methodsToCall.get(i), accessResults.get(i));
         }
 
         List<CallMethodResult> results = groupMapCollate(
             methodsToCall,
-            r -> accessCheckResultMap.get(r) == AccessCheckResult.ALLOWED,
+            r -> accessCheckResultMap.get(r) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();

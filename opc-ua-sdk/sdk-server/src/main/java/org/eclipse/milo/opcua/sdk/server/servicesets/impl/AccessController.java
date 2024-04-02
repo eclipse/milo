@@ -10,186 +10,95 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessControlAttributes;
-import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
-import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
-public abstract class AccessController {
+public interface AccessController {
 
-    protected final OpcUaServer server;
+    /**
+     * Check if the current Session has read access to the Nodes and Attributes identified by
+     * {@code readValueIds}.
+     *
+     * @param session the Session to check access for.
+     * @param readValueIds the Nodes and Attributes to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link ReadValueId}.
+     */
+    List<AccessResult> checkReadAccess(Session session, List<ReadValueId> readValueIds);
 
-    public AccessController(OpcUaServer server) {
-        this.server = server;
-    }
+    /**
+     * Check if the current Session has write access to the Nodes and Attributes identified by
+     * {@code writeValues}.
+     *
+     * @param session the Session to check access for.
+     * @param writeValues the Nodes and Attributes to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link WriteValue}.
+     */
+    List<AccessResult> checkWriteAccess(Session session, List<WriteValue> writeValues);
 
-    protected static List<AccessCheckResult> checkAccessRestrictions(
-        AccessControlContext context,
-        List<NodeId> nodesToCheck,
-        Map<NodeId, AccessControlAttributes> accessControlAttributes
-    ) {
+    /**
+     * Check if the current Session has permission to browse the Nodes identified by
+     * {@code nodeIds}.
+     *
+     * @param session the Session to check access for.
+     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link NodeId}.
+     */
+    List<AccessResult> checkBrowseAccess(Session session, List<NodeId> nodeIds);
 
-        var results = new ArrayList<AccessCheckResult>();
+    /**
+     * Check if the current Session has permission to call Methods on the Objects or ObjectTypes
+     * identified in each {@link CallMethodRequest}.
+     *
+     * @param session the Session to check access for.
+     * @param requests the {@link CallMethodRequest}s to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link CallMethodRequest}.
+     */
+    List<AccessResult> checkCallAccess(Session session, List<CallMethodRequest> requests);
 
-        MessageSecurityMode securityMode = context.getSecurityMode();
+    /**
+     * Check if the current Session has permission to add References to the Nodes identified by
+     * {@code nodeIds}.
+     *
+     * @param session the Session to check access for.
+     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link NodeId}.
+     */
+    List<AccessResult> checkAddReferencesAccess(Session session, List<NodeId> nodeIds);
 
-        for (NodeId nodeId : nodesToCheck) {
-            AccessControlAttributes attributes = accessControlAttributes.get(nodeId);
-            AccessRestrictionType accessRestrictions = attributes.accessRestrictions();
+    /**
+     * Check if the current Session has permission to delete Nodes identified by {@code nodeIds}.
+     *
+     * @param session the Session to check access for.
+     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link NodeId}.
+     */
+    List<AccessResult> checkDeleteNodesAccess(Session session, List<NodeId> nodeIds);
 
-            if (accessRestrictions != null) {
-                if (accessRestrictions.getEncryptionRequired()) {
-                    AccessCheckResult result =
-                        securityMode == MessageSecurityMode.SignAndEncrypt ?
-                            AccessCheckResult.ALLOWED : AccessCheckResult.DENIED;
+    /**
+     * Check if the current Session has permission to delete References from the Nodes identified
+     * by {@code nodeIds}.
+     *
+     * @param session the Session to check access for.
+     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @return a List of {@link AccessResult} indicating the access status for each
+     *     {@link NodeId}.
+     */
+    List<AccessResult> checkDeleteReferencesAccess(Session session, List<NodeId> nodeIds);
 
-                    results.add(result);
-                } else if (accessRestrictions.getSigningRequired()) {
-                    AccessCheckResult result =
-                        (securityMode == MessageSecurityMode.Sign
-                            || securityMode == MessageSecurityMode.SignAndEncrypt) ?
-                            AccessCheckResult.ALLOWED : AccessCheckResult.DENIED;
-
-                    results.add(result);
-                } else {
-                    results.add(AccessCheckResult.ALLOWED);
-                }
-            } else {
-                // TODO check if there are Namespace-level restrictions
-                results.add(AccessCheckResult.ALLOWED);
-            }
-        }
-
-        return results;
-    }
-
-    public enum AccessCheckResult {
+    enum AccessResult {
         ALLOWED,
         DENIED
-    }
-
-    protected interface AccessControlContext {
-
-        Optional<List<NodeId>> getRoleIds();
-
-        MessageSecurityMode getSecurityMode();
-
-        Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds);
-
-        record AccessControlAttributes(
-            @Nullable NodeClass nodeClass,
-            @Nullable AccessRestrictionType accessRestrictions,
-            @Nullable UByte userAccessLevel,
-            RolePermissionType @Nullable [] userRolePermissions
-        ) {}
-
-    }
-
-    static class DefaultAccessControlContext implements AccessControlContext {
-
-        private final OpcUaServer server;
-        private final Session session;
-
-        public DefaultAccessControlContext(OpcUaServer server, Session session) {
-            this.server = server;
-            this.session = session;
-        }
-
-        @Override
-        public Optional<List<NodeId>> getRoleIds() {
-            return session.getRoleIds();
-        }
-
-        @Override
-        public MessageSecurityMode getSecurityMode() {
-            return session.getEndpoint().getSecurityMode();
-        }
-
-        @Override
-        public Map<NodeId, AccessControlAttributes> readAccessControlAttributes(List<NodeId> nodeIds) {
-            List<ReadValueId> readValueIds = nodeIds.stream()
-                .distinct()
-                .flatMap(id -> {
-                    List<ReadValueId> list = List.of(
-                        new ReadValueId(
-                            id, AttributeId.NodeClass.uid(), null, null),
-                        new ReadValueId(
-                            id, AttributeId.AccessRestrictions.uid(), null, null),
-                        new ReadValueId(
-                            id, AttributeId.UserAccessLevel.uid(), null, null),
-                        new ReadValueId(
-                            id, AttributeId.UserRolePermissions.uid(), null, null)
-                    );
-
-                    return list.stream();
-                })
-                .toList();
-
-            List<DataValue> values = server.getAddressSpaceManager().read(
-                new ReadContext(server, session),
-                0.0,
-                TimestampsToReturn.Neither,
-                readValueIds
-            );
-
-            var attributesMap = new HashMap<NodeId, AccessControlAttributes>();
-
-            for (int i = 0; i < readValueIds.size(); i += 4) {
-                NodeId nodeId = readValueIds.get(i).getNodeId();
-
-                Object v0 = values.get(i).getValue().getValue();
-                Object v1 = values.get(i + 1).getValue().getValue();
-                Object v2 = values.get(i + 2).getValue().getValue();
-                Object v3 = values.get(i + 3).getValue().getValue();
-
-                NodeClass nodeClass = null;
-                AccessRestrictionType accessRestrictions = null;
-                UByte userAccessLevel = null;
-                RolePermissionType[] userRolePermissions = null;
-
-                if (v0 instanceof NodeClass nc) {
-                    nodeClass = nc;
-                }
-                if (v1 instanceof AccessRestrictionType art) {
-                    accessRestrictions = art;
-                }
-                if (v2 instanceof UByte ual) {
-                    userAccessLevel = ual;
-                }
-                if (v3 instanceof RolePermissionType[] rpt) {
-                    userRolePermissions = rpt;
-                }
-
-                var attributes = new AccessControlAttributes(
-                    nodeClass,
-                    accessRestrictions,
-                    userAccessLevel,
-                    userRolePermissions
-                );
-
-                attributesMap.put(nodeId, attributes);
-            }
-
-            return attributesMap;
-        }
-
     }
 
 }

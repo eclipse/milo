@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessCheckResult;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.BrowseAccessController;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -75,14 +75,14 @@ public class BrowseHelper {
         List<NodeId> nodeIds = pending.stream()
             .map(pb -> pb.browseDescription.getNodeId()).toList();
 
-        List<AccessCheckResult> accessCheckResults =
+        List<AccessResult> accessResults =
             accessController.checkBrowseAccess(session, nodeIds);
 
         for (int i = 0; i < pending.size(); i++) {
             PendingBrowse pb = pending.get(i);
-            AccessCheckResult result = accessCheckResults.get(i);
+            AccessResult result = accessResults.get(i);
 
-            if (result == AccessCheckResult.DENIED) {
+            if (result == AccessResult.DENIED) {
                 pb.referenceDescriptions = Collections.emptyList();
             }
         }
@@ -113,15 +113,15 @@ public class BrowseHelper {
                 .map(r -> r.getNodeId().toNodeId(server.getNamespaceTable()).orElse(NodeId.NULL_VALUE))
                 .toList();
 
-            List<AccessCheckResult> referenceAccessCheckResults =
+            List<AccessResult> referenceAccessResults =
                 accessController.checkBrowseAccess(session, nodeIdsToCheck);
 
             var filteredReferences = new ArrayList<ReferenceDescription>();
 
             for (int j = 0; j < referenceDescriptions.size(); j++) {
                 ReferenceDescription reference = referenceDescriptions.get(j);
-                AccessCheckResult result = referenceAccessCheckResults.get(j);
-                if (result != AccessCheckResult.DENIED) {
+                AccessResult result = referenceAccessResults.get(j);
+                if (result != AccessResult.DENIED) {
                     filteredReferences.add(reference);
                 }
             }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2024 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.ArrayList;
@@ -7,24 +17,25 @@ import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessControlAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AbstractAccessController.AccessControlContext.AccessControlAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
-public class CallAccessController extends AccessController {
+public class CallAccessController extends AbstractAccessController {
 
     public CallAccessController(OpcUaServer server) {
         super(server);
     }
 
-    public List<AccessCheckResult> checkCallAccess(Session session, List<CallMethodRequest> requests) {
+    public List<AccessResult> checkCallAccess(Session session, List<CallMethodRequest> requests) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkCallAccess(context, requests);
     }
 
-    List<AccessCheckResult> checkCallAccess(AccessControlContext context, List<CallMethodRequest> requests) {
+    List<AccessResult> checkCallAccess(AccessControlContext context, List<CallMethodRequest> requests) {
         List<PendingCallCheck> allPendingChecks = requests.stream()
             .map(PendingCallCheck::new)
             .toList();
@@ -39,23 +50,23 @@ public class CallAccessController extends AccessController {
         Map<NodeId, AccessControlAttributes> accessControlAttributes =
             context.readAccessControlAttributes(nodeIds);
 
-        List<AccessCheckResult> accessRestrictionResults =
+        List<AccessResult> accessRestrictionResults =
             checkAccessRestrictions(context, nodeIds, accessControlAttributes);
 
         for (int i = 0, j = 0; i < allPendingChecks.size(); i++, j += 2) {
             PendingCallCheck pending = allPendingChecks.get(i);
-            AccessCheckResult r0 = accessRestrictionResults.get(j);
-            AccessCheckResult r1 = accessRestrictionResults.get(j + 1);
+            AccessResult r0 = accessRestrictionResults.get(j);
+            AccessResult r1 = accessRestrictionResults.get(j + 1);
 
-            if (r0 == AccessCheckResult.ALLOWED && r1 == AccessCheckResult.ALLOWED) {
-                pending.result = AccessCheckResult.ALLOWED;
+            if (r0 == AccessResult.ALLOWED && r1 == AccessResult.ALLOWED) {
+                pending.result = AccessResult.ALLOWED;
             } else {
-                pending.result = AccessCheckResult.DENIED;
+                pending.result = AccessResult.DENIED;
             }
         }
 
         List<PendingCallCheck> remainingChecks = allPendingChecks.stream()
-            .filter(p -> p.result != AccessCheckResult.DENIED)
+            .filter(p -> p.result != AccessResult.DENIED)
             .toList();
 
         for (PendingCallCheck pendingCheck : remainingChecks) {
@@ -80,12 +91,12 @@ public class CallAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getCall());
 
                 if (objectPermission && methodPermission) {
-                    pendingCheck.result = AccessCheckResult.ALLOWED;
+                    pendingCheck.result = AccessResult.ALLOWED;
                 } else {
-                    pendingCheck.result = AccessCheckResult.DENIED;
+                    pendingCheck.result = AccessResult.DENIED;
                 }
             } else {
-                pendingCheck.result = AccessCheckResult.ALLOWED;
+                pendingCheck.result = AccessResult.ALLOWED;
             }
         }
 
@@ -94,7 +105,7 @@ public class CallAccessController extends AccessController {
 
     private static class PendingCallCheck {
         final CallMethodRequest request;
-        AccessCheckResult result;
+        AccessResult result;
 
         PendingCallCheck(CallMethodRequest request) {
             this.request = request;

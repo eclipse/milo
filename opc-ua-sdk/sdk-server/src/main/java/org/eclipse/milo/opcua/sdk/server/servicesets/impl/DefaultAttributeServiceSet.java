@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AttributeServiceSet;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessCheckResult;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -157,19 +157,19 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
-        List<AccessCheckResult> accessCheckResults =
+        List<AccessResult> accessResults =
             new ReadAccessController(server).checkReadAccess(session, nodesToRead);
 
-        var accessCheckResultMap = new HashMap<ReadValueId, AccessCheckResult>();
+        var accessCheckResultMap = new HashMap<ReadValueId, AccessResult>();
         for (int i = 0; i < nodesToRead.size(); i++) {
-            accessCheckResultMap.put(nodesToRead.get(i), accessCheckResults.get(i));
+            accessCheckResultMap.put(nodesToRead.get(i), accessResults.get(i));
         }
 
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
 
         List<DataValue> values = groupMapCollate(
             nodesToRead,
-            rvi -> accessCheckResultMap.get(rvi) == AccessCheckResult.ALLOWED,
+            rvi -> accessCheckResultMap.get(rvi) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var readContext = new ReadContext(
@@ -256,19 +256,19 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        List<AccessCheckResult> accessCheckResults =
+        List<AccessResult> accessResults =
             new WriteAccessController(server).checkWriteAccess(session, nodesToWrite);
 
-        var accessCheckResultMap = new HashMap<WriteValue, AccessCheckResult>();
+        var accessCheckResultMap = new HashMap<WriteValue, AccessResult>();
         for (int i = 0; i < nodesToWrite.size(); i++) {
-            accessCheckResultMap.put(nodesToWrite.get(i), accessCheckResults.get(i));
+            accessCheckResultMap.put(nodesToWrite.get(i), accessResults.get(i));
         }
 
         var diagnosticsContext = new DiagnosticsContext<WriteValue>();
 
         List<StatusCode> results = groupMapCollate(
             nodesToWrite,
-            wv -> accessCheckResultMap.get(wv) == AccessCheckResult.ALLOWED,
+            wv -> accessCheckResultMap.get(wv) == AccessResult.ALLOWED,
             allowed -> group -> {
                 if (allowed) {
                     var writeContext = new WriteContext(

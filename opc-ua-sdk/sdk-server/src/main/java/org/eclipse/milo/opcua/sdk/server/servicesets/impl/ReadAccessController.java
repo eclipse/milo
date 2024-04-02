@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2024 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.ArrayList;
@@ -10,7 +20,8 @@ import java.util.stream.Stream;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessControlAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AbstractAccessController.AccessControlContext.AccessControlAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -19,7 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 
-public class ReadAccessController extends AccessController {
+public class ReadAccessController extends AbstractAccessController {
 
     public ReadAccessController(OpcUaServer server) {
         super(server);
@@ -31,16 +42,16 @@ public class ReadAccessController extends AccessController {
      *
      * @param session the Session to check access for.
      * @param readValueIds the Nodes and Attributes to check access for.
-     * @return a List of {@link AccessCheckResult} indicating the access status for each
+     * @return a List of {@link AccessResult} indicating the access status for each
      *     {@link ReadValueId}.
      */
-    public List<AccessCheckResult> checkReadAccess(Session session, List<ReadValueId> readValueIds) {
+    public List<AccessResult> checkReadAccess(Session session, List<ReadValueId> readValueIds) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkReadAccess(context, readValueIds);
     }
 
-    List<AccessCheckResult> checkReadAccess(AccessControlContext context, List<ReadValueId> readValueIds) {
+    List<AccessResult> checkReadAccess(AccessControlContext context, List<ReadValueId> readValueIds) {
         List<PendingReadCheck> allPendingChecks = readValueIds.stream()
             .map(PendingReadCheck::new)
             .toList();
@@ -51,7 +62,7 @@ public class ReadAccessController extends AccessController {
         Map<NodeId, AccessControlAttributes> accessControlAttributes =
             context.readAccessControlAttributes(nodeIds);
 
-        List<AccessCheckResult> accessRestrictionResults =
+        List<AccessResult> accessRestrictionResults =
             checkAccessRestrictions(context, nodeIds, accessControlAttributes);
 
         for (int i = 0; i < accessRestrictionResults.size(); i++) {
@@ -61,14 +72,14 @@ public class ReadAccessController extends AccessController {
         // Filter out any nodes that have been denied by AccessRestrictions and check the rest
         // against role permissions and/or access levels.
         List<PendingReadCheck> remainingChecks = allPendingChecks.stream()
-            .filter(pc -> pc.result != AccessCheckResult.DENIED)
+            .filter(pc -> pc.result != AccessResult.DENIED)
             .toList();
 
         List<ReadValueId> remainingNodes = remainingChecks.stream()
             .map(pc -> pc.readValueId)
             .toList();
 
-        List<AccessCheckResult> remainingResults = groupMapCollate(
+        List<AccessResult> remainingResults = groupMapCollate(
             remainingNodes,
             ReadValueId::getAttributeId,
             id -> group -> {
@@ -77,7 +88,7 @@ public class ReadAccessController extends AccessController {
                 } else if (AttributeId.RolePermissions.uid().equals(id)) {
                     return checkRolePermissionsAttributeAccess(context, group, accessControlAttributes);
                 } else {
-                    return Collections.nCopies(group.size(), AccessCheckResult.ALLOWED);
+                    return Collections.nCopies(group.size(), AccessResult.ALLOWED);
                 }
             }
         );
@@ -89,13 +100,13 @@ public class ReadAccessController extends AccessController {
         return allPendingChecks.stream().map(pc -> pc.result).toList();
     }
 
-    private static List<AccessCheckResult> checkValueAttributeAccess(
+    private static List<AccessResult> checkValueAttributeAccess(
         AccessControlContext context,
         List<ReadValueId> readValueIds,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        var results = new ArrayList<AccessCheckResult>();
+        var results = new ArrayList<AccessResult>();
 
         for (ReadValueId readValueId : readValueIds) {
             AccessControlAttributes attributes =
@@ -112,34 +123,34 @@ public class ReadAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getRead());
 
                 if (hasReadPermission) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else if (userAccessLevel != null) {
                 Set<AccessLevel> accessLevels =
                     AccessLevel.fromValue(userAccessLevel.byteValue());
 
                 if (accessLevels.contains(AccessLevel.CurrentRead)) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else {
-                results.add(AccessCheckResult.ALLOWED);
+                results.add(AccessResult.ALLOWED);
             }
         }
 
         return results;
     }
 
-    private static List<AccessCheckResult> checkRolePermissionsAttributeAccess(
+    private static List<AccessResult> checkRolePermissionsAttributeAccess(
         AccessControlContext context,
         List<ReadValueId> readValueIds,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        var results = new ArrayList<AccessCheckResult>();
+        var results = new ArrayList<AccessResult>();
 
         for (ReadValueId readValueId : readValueIds) {
             AccessControlAttributes attributes =
@@ -155,12 +166,12 @@ public class ReadAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getReadRolePermissions());
 
                 if (hasReadPermission) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else {
-                results.add(AccessCheckResult.ALLOWED);
+                results.add(AccessResult.ALLOWED);
             }
         }
 
@@ -168,7 +179,7 @@ public class ReadAccessController extends AccessController {
     }
 
     private static class PendingReadCheck {
-        AccessCheckResult result = null;
+        AccessResult result = null;
         final ReadValueId readValueId;
 
         protected PendingReadCheck(ReadValueId readValueId) {

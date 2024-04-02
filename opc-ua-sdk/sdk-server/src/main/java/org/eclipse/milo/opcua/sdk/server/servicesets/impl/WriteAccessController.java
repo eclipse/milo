@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2024 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
 import java.util.ArrayList;
@@ -9,7 +19,8 @@ import java.util.stream.Stream;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessControlContext.AccessControlAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AbstractAccessController.AccessControlContext.AccessControlAttributes;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -18,7 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
 import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 
-public class WriteAccessController extends AccessController {
+public class WriteAccessController extends AbstractAccessController {
 
     public WriteAccessController(OpcUaServer server) {
         super(server);
@@ -30,16 +41,16 @@ public class WriteAccessController extends AccessController {
      *
      * @param session the Session to check access for.
      * @param writeValues the Nodes and Attributes to check access for.
-     * @return a List of {@link AccessCheckResult} indicating the access status for each
+     * @return a List of {@link AccessResult} indicating the access status for each
      *     {@link WriteValue}.
      */
-    public List<AccessCheckResult> checkWriteAccess(Session session, List<WriteValue> writeValues) {
+    public List<AccessResult> checkWriteAccess(Session session, List<WriteValue> writeValues) {
         var context = new DefaultAccessControlContext(server, session);
 
         return checkWriteAccess(context, writeValues);
     }
 
-    List<AccessCheckResult> checkWriteAccess(AccessControlContext context, List<WriteValue> writeValues) {
+    List<AccessResult> checkWriteAccess(AccessControlContext context, List<WriteValue> writeValues) {
         List<PendingWriteCheck> allPendingChecks = writeValues.stream()
             .map(PendingWriteCheck::new)
             .toList();
@@ -50,7 +61,7 @@ public class WriteAccessController extends AccessController {
         Map<NodeId, AccessControlAttributes> accessControlAttributes =
             context.readAccessControlAttributes(nodeIds);
 
-        List<AccessCheckResult> accessRestrictionResults =
+        List<AccessResult> accessRestrictionResults =
             checkAccessRestrictions(context, nodeIds, accessControlAttributes);
 
         for (int i = 0; i < accessRestrictionResults.size(); i++) {
@@ -58,14 +69,14 @@ public class WriteAccessController extends AccessController {
         }
 
         List<PendingWriteCheck> remainingChecks = allPendingChecks.stream()
-            .filter(pwc -> pwc.result != AccessCheckResult.DENIED)
+            .filter(pwc -> pwc.result != AccessResult.DENIED)
             .toList();
 
         List<WriteValue> remainingWriteValues = remainingChecks.stream()
             .map(pwc -> pwc.writeValue)
             .toList();
 
-        List<AccessCheckResult> remainingResults = groupMapCollate(
+        List<AccessResult> remainingResults = groupMapCollate(
             remainingWriteValues,
             WriteValue::getAttributeId,
             id -> group -> {
@@ -88,13 +99,13 @@ public class WriteAccessController extends AccessController {
         return allPendingChecks.stream().map(pwc -> pwc.result).toList();
     }
 
-    private static List<AccessCheckResult> checkValueAttributeAccess(
+    private static List<AccessResult> checkValueAttributeAccess(
         AccessControlContext context,
         List<WriteValue> writeValues,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        var results = new ArrayList<AccessCheckResult>();
+        var results = new ArrayList<AccessResult>();
 
         for (WriteValue writeValue : writeValues) {
             AccessControlAttributes attributes =
@@ -111,34 +122,34 @@ public class WriteAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getWrite());
 
                 if (hasWritePermission) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else if (userAccessLevel != null) {
                 Set<AccessLevel> accessLevels =
                     AccessLevel.fromValue(userAccessLevel);
 
                 if (accessLevels.contains(AccessLevel.CurrentWrite)) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else {
-                results.add(AccessCheckResult.ALLOWED);
+                results.add(AccessResult.ALLOWED);
             }
         }
 
         return results;
     }
 
-    private static List<AccessCheckResult> checkRolePermissionsAttributeAccess(
+    private static List<AccessResult> checkRolePermissionsAttributeAccess(
         AccessControlContext context,
         List<WriteValue> writeValues,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        var results = new ArrayList<AccessCheckResult>();
+        var results = new ArrayList<AccessResult>();
 
         for (WriteValue writeValue : writeValues) {
             AccessControlAttributes attributes =
@@ -154,25 +165,25 @@ public class WriteAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getWriteRolePermissions());
 
                 if (hasWritePermission) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else {
-                results.add(AccessCheckResult.ALLOWED);
+                results.add(AccessResult.ALLOWED);
             }
         }
 
         return results;
     }
 
-    private static List<AccessCheckResult> checkHistorizingAttributeAccess(
+    private static List<AccessResult> checkHistorizingAttributeAccess(
         AccessControlContext context,
         List<WriteValue> writeValues,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        var results = new ArrayList<AccessCheckResult>();
+        var results = new ArrayList<AccessResult>();
 
         for (WriteValue writeValue : writeValues) {
             AccessControlAttributes attributes =
@@ -188,25 +199,25 @@ public class WriteAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getWriteHistorizing());
 
                 if (hasWritePermission) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else {
-                results.add(AccessCheckResult.ALLOWED);
+                results.add(AccessResult.ALLOWED);
             }
         }
 
         return results;
     }
 
-    private static List<AccessCheckResult> checkOtherAttributeAccess(
+    private static List<AccessResult> checkOtherAttributeAccess(
         AccessControlContext context,
         List<WriteValue> writeValues,
         Map<NodeId, AccessControlAttributes> accessControlAttributes
     ) {
 
-        var results = new ArrayList<AccessCheckResult>();
+        var results = new ArrayList<AccessResult>();
 
         for (WriteValue writeValue : writeValues) {
             AccessControlAttributes attributes =
@@ -222,12 +233,12 @@ public class WriteAccessController extends AccessController {
                     .anyMatch(rp -> rp.getPermissions().getWriteAttribute());
 
                 if (hasWritePermission) {
-                    results.add(AccessCheckResult.ALLOWED);
+                    results.add(AccessResult.ALLOWED);
                 } else {
-                    results.add(AccessCheckResult.DENIED);
+                    results.add(AccessResult.DENIED);
                 }
             } else {
-                results.add(AccessCheckResult.ALLOWED);
+                results.add(AccessResult.ALLOWED);
             }
         }
 
@@ -236,7 +247,7 @@ public class WriteAccessController extends AccessController {
 
     private static class PendingWriteCheck {
         final WriteValue writeValue;
-        AccessCheckResult result;
+        AccessResult result;
 
         PendingWriteCheck(WriteValue writeValue) {
             this.writeValue = writeValue;
