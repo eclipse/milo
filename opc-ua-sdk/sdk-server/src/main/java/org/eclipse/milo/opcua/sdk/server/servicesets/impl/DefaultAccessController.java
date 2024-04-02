@@ -32,7 +32,10 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
@@ -198,7 +201,7 @@ public class DefaultAccessController implements AccessController {
         Map<NodeId, AccessControlAttributes> attributes =
             context.readAccessControlAttributes(nodeIds);
 
-        checkAccessRestrictions(context, pending, attributes, Function.identity());
+        checkBrowseAccessRestrictions(context, pending, attributes, Function.identity());
 
         for (PendingResult<NodeId> p : pending) {
             if (p.result == AccessResult.DENIED) {
@@ -303,20 +306,149 @@ public class DefaultAccessController implements AccessController {
 
     //endregion
 
-    @Override
-    public List<AccessResult> checkAddReferencesAccess(Session session, List<NodeId> nodeIds) {
-        return null;
-    }
+    //region AddReferences
 
     @Override
-    public List<AccessResult> checkDeleteNodesAccess(Session session, List<NodeId> nodeIds) {
-        return null;
+    public List<AccessResult> checkAddReferencesAccess(Session session, List<AddReferencesItem> referencesToAdd) {
+        var context = new DefaultAccessControlContext(server, session);
+
+        return checkAddReferencesAccess(context, referencesToAdd);
     }
 
-    @Override
-    public List<AccessResult> checkDeleteReferencesAccess(Session session, List<NodeId> nodeIds) {
-        return null;
+    static List<AccessResult> checkAddReferencesAccess(
+        AccessControlContext context, List<AddReferencesItem> referencesToAdd) {
+
+        List<PendingResult<AddReferencesItem>> pending =
+            referencesToAdd.stream().map(PendingResult::new).toList();
+
+        List<NodeId> nodeIds = referencesToAdd.stream()
+            .map(AddReferencesItem::getSourceNodeId).toList();
+
+        Map<NodeId, AccessControlAttributes> attributes =
+            context.readAccessControlAttributes(nodeIds);
+
+        checkAccessRestrictions(context, pending, attributes, AddReferencesItem::getSourceNodeId);
+
+        for (PendingResult<AddReferencesItem> p : pending) {
+            if (p.result == AccessResult.DENIED) {
+                continue;
+            }
+
+            NodeId nodeId = p.value.getSourceNodeId();
+            List<NodeId> roleIds = context.getRoleIds().orElse(null);
+            RolePermissionType[] userRolePermissions = attributes.get(nodeId).userRolePermissions();
+
+            if (roleIds != null && userRolePermissions != null) {
+                boolean hasAccess = Stream.of(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getAddReference());
+
+                if (!hasAccess) {
+                    p.result = AccessResult.DENIED;
+                }
+            }
+        }
+
+        return pending.stream().map(p -> p.result).toList();
     }
+
+    //endregion
+
+    //region DeleteNodes
+
+    @Override
+    public List<AccessResult> checkDeleteNodesAccess(Session session, List<DeleteNodesItem> nodesToDelete) {
+        var context = new DefaultAccessControlContext(server, session);
+
+        return checkDeleteNodesAccess(context, nodesToDelete);
+    }
+
+    static List<AccessResult> checkDeleteNodesAccess(AccessControlContext context, List<DeleteNodesItem> nodesToDelete) {
+        List<PendingResult<DeleteNodesItem>> pending =
+            nodesToDelete.stream().map(PendingResult::new).toList();
+
+        List<NodeId> nodeIds = nodesToDelete.stream()
+            .map(DeleteNodesItem::getNodeId).toList();
+
+        Map<NodeId, AccessControlAttributes> attributes =
+            context.readAccessControlAttributes(nodeIds);
+
+        checkAccessRestrictions(context, pending, attributes, DeleteNodesItem::getNodeId);
+
+        for (PendingResult<DeleteNodesItem> p : pending) {
+            if (p.result == AccessResult.DENIED) {
+                continue;
+            }
+
+            NodeId nodeId = p.value.getNodeId();
+            List<NodeId> roleIds = context.getRoleIds().orElse(null);
+            RolePermissionType[] userRolePermissions = attributes.get(nodeId).userRolePermissions();
+
+            if (roleIds != null && userRolePermissions != null) {
+                boolean hasAccess = Stream.of(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getDeleteNode());
+
+                if (!hasAccess) {
+                    p.result = AccessResult.DENIED;
+                }
+            }
+        }
+
+        return pending.stream().map(p -> p.result).toList();
+    }
+
+    //endregion DeleteNodes
+
+    //region DeleteReferences
+
+    @Override
+    public List<AccessResult> checkDeleteReferencesAccess(
+        Session session, List<DeleteReferencesItem> referencesToDelete) {
+
+        var context = new DefaultAccessControlContext(server, session);
+
+        return checkDeleteReferencesAccess(context, referencesToDelete);
+    }
+
+    static List<AccessResult> checkDeleteReferencesAccess(
+        AccessControlContext context, List<DeleteReferencesItem> referencesToDelete) {
+
+        List<PendingResult<DeleteReferencesItem>> pending =
+            referencesToDelete.stream().map(PendingResult::new).toList();
+
+        List<NodeId> nodeIds = referencesToDelete.stream()
+            .map(DeleteReferencesItem::getSourceNodeId).toList();
+
+        Map<NodeId, AccessControlAttributes> attributes =
+            context.readAccessControlAttributes(nodeIds);
+
+        checkAccessRestrictions(context, pending, attributes, DeleteReferencesItem::getSourceNodeId);
+
+        for (PendingResult<DeleteReferencesItem> p : pending) {
+            if (p.result == AccessResult.DENIED) {
+                continue;
+            }
+
+            NodeId nodeId = p.value.getSourceNodeId();
+            List<NodeId> roleIds = context.getRoleIds().orElse(null);
+            RolePermissionType[] userRolePermissions = attributes.get(nodeId).userRolePermissions();
+
+            if (roleIds != null && userRolePermissions != null) {
+                boolean hasAccess = Stream.of(userRolePermissions)
+                    .filter(rp -> roleIds.contains(rp.getRoleId()))
+                    .anyMatch(rp -> rp.getPermissions().getRemoveReference());
+
+                if (!hasAccess) {
+                    p.result = AccessResult.DENIED;
+                }
+            }
+        }
+
+        return pending.stream().map(p -> p.result).toList();
+    }
+
+    //endregion
 
     private static <T> void checkAccessRestrictions(
         AccessControlContext context,
@@ -325,26 +457,52 @@ public class DefaultAccessController implements AccessController {
         Function<T, NodeId> getNodeId
     ) {
 
+        checkAccessRestrictions(context, pending, attributes, getNodeId, false);
+    }
+
+    private static <T> void checkBrowseAccessRestrictions(
+        AccessControlContext context,
+        List<PendingResult<T>> pending,
+        Map<NodeId, AccessControlAttributes> attributes,
+        Function<T, NodeId> getNodeId
+    ) {
+
+        checkAccessRestrictions(context, pending, attributes, getNodeId, true);
+    }
+
+    private static <T> void checkAccessRestrictions(
+        AccessControlContext context,
+        List<PendingResult<T>> pending,
+        Map<NodeId, AccessControlAttributes> attributes,
+        Function<T, NodeId> getNodeId,
+        boolean browsing
+    ) {
+
         MessageSecurityMode securityMode = context.getSecurityMode();
 
-        List<NodeId> nodeIds = pending.stream()
-            .map(p -> getNodeId.apply(p.value)).toList();
+        for (PendingResult<T> p : pending) {
+            if (p.result == AccessResult.DENIED) {
+                continue;
+            }
 
-        for (int i = 0; i < nodeIds.size(); i++) {
-            NodeId nodeId = nodeIds.get(i);
+            NodeId nodeId = getNodeId.apply(p.value);
             AccessRestrictionType accessRestrictions =
                 attributes.get(nodeId).accessRestrictions();
 
             if (accessRestrictions != null) {
+                if (browsing && !accessRestrictions.getApplyRestrictionsToBrowse()) {
+                    continue;
+                }
+
                 if (accessRestrictions.getEncryptionRequired()) {
                     if (securityMode != MessageSecurityMode.SignAndEncrypt) {
-                        pending.get(i).result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED;
                     }
                 } else if (accessRestrictions.getSigningRequired()) {
                     if (securityMode != MessageSecurityMode.Sign
                         && securityMode != MessageSecurityMode.SignAndEncrypt) {
 
-                        pending.get(i).result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED;
                     }
                 }
             }

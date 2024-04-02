@@ -20,7 +20,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
@@ -74,35 +77,38 @@ public interface AccessController {
 
     /**
      * Check if the current Session has permission to add References to the Nodes identified by
-     * {@code nodeIds}.
+     * {@code referenceToAdd}.
      *
      * @param session the Session to check access for.
-     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @param referencesToAdd the {@link AddReferencesItem}s identifying Nodes to check access
+     *     for.
      * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link NodeId}.
+     *     {@link AddReferencesItem}.
      */
-    List<AccessResult> checkAddReferencesAccess(Session session, List<NodeId> nodeIds);
+    List<AccessResult> checkAddReferencesAccess(Session session, List<AddReferencesItem> referencesToAdd);
 
     /**
-     * Check if the current Session has permission to delete Nodes identified by {@code nodeIds}.
+     * Check if the current Session has permission to delete Nodes identified by
+     * {@code nodesToDelete}.
      *
      * @param session the Session to check access for.
-     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @param nodesToDelete the {@link DeleteNodesItem}s identifying Nodes to check access for.
      * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link NodeId}.
+     *     {@link DeleteNodesItem}.
      */
-    List<AccessResult> checkDeleteNodesAccess(Session session, List<NodeId> nodeIds);
+    List<AccessResult> checkDeleteNodesAccess(Session session, List<DeleteNodesItem> nodesToDelete);
 
     /**
      * Check if the current Session has permission to delete References from the Nodes identified
-     * by {@code nodeIds}.
+     * by {@code referencesToDelete}.
      *
      * @param session the Session to check access for.
-     * @param nodeIds the {@link NodeId}s of Nodes to check access for.
+     * @param referencesToDelete the {@link DeleteReferencesItem}s identifying the Nodes to check
+     *     access for.
      * @return a List of {@link AccessResult} indicating the access status for each
-     *     {@link NodeId}.
+     *     {@link DeleteReferencesItem}.
      */
-    List<AccessResult> checkDeleteReferencesAccess(Session session, List<NodeId> nodeIds);
+    List<AccessResult> checkDeleteReferencesAccess(Session session, List<DeleteReferencesItem> referencesToDelete);
 
     enum AccessResult {
         ALLOWED,

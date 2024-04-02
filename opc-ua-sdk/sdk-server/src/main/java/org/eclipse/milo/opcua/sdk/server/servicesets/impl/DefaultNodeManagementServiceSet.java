@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
@@ -20,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -41,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
@@ -169,16 +173,34 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var deleteNodesContext = new DeleteNodesContext(
-            server,
-            session,
-            new DiagnosticsContext<>(),
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<AccessResult> accessResults =
+            server.getAccessController().checkDeleteNodesAccess(session, nodesToDelete);
 
-        List<StatusCode> results = server.getAddressSpaceManager().deleteNodes(deleteNodesContext, nodesToDelete);
+        var accessResultsMap = new HashMap<DeleteNodesItem, AccessResult>();
+        for (int i = 0; i < nodesToDelete.size(); i++) {
+            accessResultsMap.put(nodesToDelete.get(i), accessResults.get(i));
+        }
+
+        List<StatusCode> results = groupMapCollate(
+            nodesToDelete,
+            r -> accessResultsMap.get(r) == AccessResult.ALLOWED,
+            allowed -> group -> {
+                if (allowed) {
+                    var deleteNodesContext = new DeleteNodesContext(
+                        server,
+                        session,
+                        new DiagnosticsContext<>(),
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().deleteNodes(deleteNodesContext, group);
+                } else {
+                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
+                }
+            }
+        );
 
         ResponseHeader header = createResponseHeader(request);
 
