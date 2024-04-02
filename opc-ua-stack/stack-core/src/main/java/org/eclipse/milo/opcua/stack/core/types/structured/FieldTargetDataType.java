@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Class;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
 import java.util.StringJoiner;
 import java.util.UUID;
 

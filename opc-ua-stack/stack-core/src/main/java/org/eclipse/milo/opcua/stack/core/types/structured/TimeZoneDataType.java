@@ -10,12 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import java.lang.Boolean;
-import java.lang.Class;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.Short;
-import java.lang.String;
 import java.util.StringJoiner;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
