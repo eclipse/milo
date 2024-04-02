@@ -224,17 +224,34 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var addReferencesContext = new AddReferencesContext(
-            server,
-            session,
-            new DiagnosticsContext<>(),
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<AccessResult> accessResults =
+            server.getAccessController().checkAddReferencesAccess(session, referencesToAdd);
 
-        List<StatusCode> results = server.getAddressSpaceManager()
-            .addReferences(addReferencesContext, referencesToAdd);
+        var accessResultMap = new HashMap<AddReferencesItem, AccessResult>();
+        for (int i = 0; i < referencesToAdd.size(); i++) {
+            accessResultMap.put(referencesToAdd.get(i), accessResults.get(i));
+        }
+
+        List<StatusCode> results = groupMapCollate(
+            referencesToAdd,
+            r -> accessResultMap.get(r) == AccessResult.ALLOWED,
+            allowed -> group -> {
+                if (allowed) {
+                    var addReferencesContext = new AddReferencesContext(
+                        server,
+                        session,
+                        new DiagnosticsContext<>(),
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().addReferences(addReferencesContext, group);
+                } else {
+                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
+                }
+            }
+        );
 
         ResponseHeader header = createResponseHeader(request);
 
@@ -258,17 +275,34 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var deleteReferencesContext = new DeleteReferencesContext(
-            server,
-            session,
-            new DiagnosticsContext<>(),
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<AccessResult> accessResults =
+            server.getAccessController().checkDeleteReferencesAccess(session, referencesToDelete);
 
-        List<StatusCode> results = server.getAddressSpaceManager()
-            .deleteReferences(deleteReferencesContext, referencesToDelete);
+        var accessResultMap = new HashMap<DeleteReferencesItem, AccessResult>();
+        for (int i = 0; i < referencesToDelete.size(); i++) {
+            accessResultMap.put(referencesToDelete.get(i), accessResults.get(i));
+        }
+
+        List<StatusCode> results = groupMapCollate(
+            referencesToDelete,
+            r -> accessResultMap.get(r) == AccessResult.ALLOWED,
+            allowed -> group -> {
+                if (allowed) {
+                    var deleteReferencesContext = new DeleteReferencesContext(
+                        server,
+                        session,
+                        new DiagnosticsContext<>(),
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().deleteReferences(deleteReferencesContext, group);
+                } else {
+                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
+                }
+            }
+        );
 
         ResponseHeader header = createResponseHeader(request);
 
