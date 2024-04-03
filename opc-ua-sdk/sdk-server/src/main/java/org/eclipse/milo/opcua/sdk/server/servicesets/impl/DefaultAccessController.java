@@ -289,6 +289,11 @@ public class DefaultAccessController implements AccessController {
                     p1.result = AccessResult.DENIED;
                 }
             }
+
+            Boolean userExecutable = methodAttributes.userExecutable();
+            if (userExecutable != null && !userExecutable) {
+                p1.result = AccessResult.DENIED;
+            }
         }
 
         var results = new HashMap<CallMethodRequest, AccessResult>();
@@ -535,6 +540,7 @@ public class DefaultAccessController implements AccessController {
         @Nullable NodeClass nodeClass,
         @Nullable AccessRestrictionType accessRestrictions,
         @Nullable UByte userAccessLevel,
+        @Nullable Boolean userExecutable,
         RolePermissionType @Nullable [] userRolePermissions
     ) {}
 
@@ -567,6 +573,7 @@ public class DefaultAccessController implements AccessController {
                         new ReadValueId(id, AttributeId.NodeClass.uid(), null, null),
                         new ReadValueId(id, AttributeId.AccessRestrictions.uid(), null, null),
                         new ReadValueId(id, AttributeId.UserAccessLevel.uid(), null, null),
+                        new ReadValueId(id, AttributeId.UserExecutable.uid(), null, null),
                         new ReadValueId(id, AttributeId.UserRolePermissions.uid(), null, null)
                     );
 
@@ -583,17 +590,19 @@ public class DefaultAccessController implements AccessController {
 
             var attributesMap = new HashMap<NodeId, AccessControlAttributes>();
 
-            for (int i = 0; i < readValueIds.size(); i += 4) {
+            for (int i = 0; i < readValueIds.size(); i += 5) {
                 NodeId nodeId = readValueIds.get(i).getNodeId();
 
                 Object v0 = values.get(i).getValue().getValue();
                 Object v1 = values.get(i + 1).getValue().getValue();
                 Object v2 = values.get(i + 2).getValue().getValue();
                 Object v3 = values.get(i + 3).getValue().getValue();
+                Object v4 = values.get(i + 4).getValue().getValue();
 
                 NodeClass nodeClass = null;
                 AccessRestrictionType accessRestrictions = null;
                 UByte userAccessLevel = null;
+                Boolean userExecutable = null;
                 RolePermissionType[] userRolePermissions = null;
 
                 if (v0 instanceof NodeClass nc) {
@@ -602,10 +611,13 @@ public class DefaultAccessController implements AccessController {
                 if (v1 instanceof AccessRestrictionType art) {
                     accessRestrictions = art;
                 }
-                if (v2 instanceof UByte ual) {
-                    userAccessLevel = ual;
+                if (v2 instanceof UByte ub) {
+                    userAccessLevel = ub;
                 }
-                if (v3 instanceof RolePermissionType[] rpt) {
+                if (v3 instanceof Boolean b) {
+                    userExecutable = b;
+                }
+                if (v4 instanceof RolePermissionType[] rpt) {
                     userRolePermissions = rpt;
                 }
 
@@ -613,6 +625,7 @@ public class DefaultAccessController implements AccessController {
                     nodeClass,
                     accessRestrictions,
                     userAccessLevel,
+                    userExecutable,
                     userRolePermissions
                 );
 
