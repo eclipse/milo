@@ -532,49 +532,8 @@ public class SubscriptionManager {
 
             return monitoredEventItem;
         } else {
-            switch (attributes.nodeClass()) {
-                case Object:
-                    if (!AttributeId.OBJECT_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case Variable:
-                    if (!AttributeId.VARIABLE_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case Method:
-                    if (!AttributeId.METHOD_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case ObjectType:
-                    if (!AttributeId.OBJECT_TYPE_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case VariableType:
-                    if (!AttributeId.VARIABLE_TYPE_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case ReferenceType:
-                    if (!AttributeId.REFERENCE_TYPE_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case DataType:
-                    if (!AttributeId.DATA_TYPE_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                case View:
-                    if (!AttributeId.VIEW_ATTRIBUTES.contains(attributeId)) {
-                        throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                    }
-                    break;
-                default:
-                    throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
+            if (!AttributeId.getAttributes(attributes.nodeClass()).contains(attributeId)) {
+                throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
             }
 
             // Validate the requested index range by parsing it.
