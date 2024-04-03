@@ -106,7 +106,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result, (a, b) -> b));
     }
 
     //endregion
@@ -182,7 +182,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result, (a, b) -> b));
     }
 
     //endregion
@@ -225,7 +225,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result, (a, b) -> b));
     }
 
     //endregion
@@ -352,7 +352,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result, (a, b) -> b));
     }
 
     //endregion
@@ -398,7 +398,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result, (a, b) -> b));
     }
 
     //endregion DeleteNodes
@@ -448,7 +448,7 @@ public class DefaultAccessController implements AccessController {
             }
         }
 
-        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result));
+        return pending.stream().collect(Collectors.toMap(p -> p.value, p -> p.result, (a, b) -> b));
     }
 
     //endregion
