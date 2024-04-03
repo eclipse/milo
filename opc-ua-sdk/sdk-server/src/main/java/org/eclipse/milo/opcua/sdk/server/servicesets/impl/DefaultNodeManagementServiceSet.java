@@ -140,10 +140,12 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        var diagnosticsContext = new DiagnosticsContext<AddNodesItem>();
+
         var addNodesContext = new AddNodesContext(
             server,
             session,
-            new DiagnosticsContext<>(),
+            diagnosticsContext,
             request.getRequestHeader().getAuditEntryId(),
             request.getRequestHeader().getTimeoutHint(),
             request.getRequestHeader().getAdditionalHeader()
@@ -151,12 +153,15 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<AddNodesResult> results = server.getAddressSpaceManager().addNodes(addNodesContext, nodesToAdd);
 
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToAdd);
+
         ResponseHeader header = createResponseHeader(request);
 
         return new AddNodesResponse(
             header,
             results.toArray(AddNodesResult[]::new),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
@@ -173,6 +178,8 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        var diagnosticsContext = new DiagnosticsContext<DeleteNodesItem>();
+
         Map<DeleteNodesItem, AccessResult> accessResults =
             server.getAccessController().checkDeleteNodesAccess(session, nodesToDelete);
 
@@ -184,7 +191,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
                     var deleteNodesContext = new DeleteNodesContext(
                         server,
                         session,
-                        new DiagnosticsContext<>(),
+                        diagnosticsContext,
                         request.getRequestHeader().getAuditEntryId(),
                         request.getRequestHeader().getTimeoutHint(),
                         request.getRequestHeader().getAdditionalHeader()
@@ -197,12 +204,15 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             }
         );
 
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToDelete);
+
         ResponseHeader header = createResponseHeader(request);
 
         return new DeleteNodesResponse(
             header,
             results.toArray(StatusCode[]::new),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
@@ -219,6 +229,8 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        var diagnosticsContext = new DiagnosticsContext<AddReferencesItem>();
+
         Map<AddReferencesItem, AccessResult> accessResults =
             server.getAccessController().checkAddReferencesAccess(session, referencesToAdd);
 
@@ -230,7 +242,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
                     var addReferencesContext = new AddReferencesContext(
                         server,
                         session,
-                        new DiagnosticsContext<>(),
+                        diagnosticsContext,
                         request.getRequestHeader().getAuditEntryId(),
                         request.getRequestHeader().getTimeoutHint(),
                         request.getRequestHeader().getAdditionalHeader()
@@ -243,12 +255,15 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             }
         );
 
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(referencesToAdd);
+
         ResponseHeader header = createResponseHeader(request);
 
         return new AddReferencesResponse(
             header,
             results.toArray(new StatusCode[0]),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
@@ -265,6 +280,8 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        var diagnosticsContext = new DiagnosticsContext<DeleteReferencesItem>();
+
         Map<DeleteReferencesItem, AccessResult> accessResults =
             server.getAccessController().checkDeleteReferencesAccess(session, referencesToDelete);
 
@@ -276,7 +293,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
                     var deleteReferencesContext = new DeleteReferencesContext(
                         server,
                         session,
-                        new DiagnosticsContext<>(),
+                        diagnosticsContext,
                         request.getRequestHeader().getAuditEntryId(),
                         request.getRequestHeader().getTimeoutHint(),
                         request.getRequestHeader().getAdditionalHeader()
@@ -289,12 +306,15 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             }
         );
 
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(referencesToDelete);
+
         ResponseHeader header = createResponseHeader(request);
 
         return new DeleteReferencesResponse(
             header,
             results.toArray(StatusCode[]::new),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
