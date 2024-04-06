@@ -185,9 +185,11 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<StatusCode> results = groupMapCollate(
             nodesToDelete,
-            r -> accessResults.get(r).isAllowed(),
-            allowed -> group -> {
-                if (allowed) {
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
                     var deleteNodesContext = new DeleteNodesContext(
                         server,
                         session,
@@ -198,8 +200,6 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
                     );
 
                     return server.getAddressSpaceManager().deleteNodes(deleteNodesContext, group);
-                } else {
-                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
                 }
             }
         );
@@ -236,9 +236,11 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<StatusCode> results = groupMapCollate(
             referencesToAdd,
-            r -> accessResults.get(r).isAllowed(),
-            allowed -> group -> {
-                if (allowed) {
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
                     var addReferencesContext = new AddReferencesContext(
                         server,
                         session,
@@ -249,8 +251,6 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
                     );
 
                     return server.getAddressSpaceManager().addReferences(addReferencesContext, group);
-                } else {
-                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
                 }
             }
         );
@@ -287,9 +287,11 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<StatusCode> results = groupMapCollate(
             referencesToDelete,
-            r -> accessResults.get(r).isAllowed(),
-            allowed -> group -> {
-                if (allowed) {
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
                     var deleteReferencesContext = new DeleteReferencesContext(
                         server,
                         session,
@@ -300,8 +302,6 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
                     );
 
                     return server.getAddressSpaceManager().deleteReferences(deleteReferencesContext, group);
-                } else {
-                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
                 }
             }
         );

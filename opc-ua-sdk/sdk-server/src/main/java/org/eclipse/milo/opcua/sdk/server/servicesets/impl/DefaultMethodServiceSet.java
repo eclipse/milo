@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.Acces
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
@@ -77,9 +76,15 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
 
         List<CallMethodResult> results = groupMapCollate(
             methodsToCall,
-            r -> accessResults.get(r).isAllowed(),
-            allowed -> group -> {
-                if (allowed) {
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    var result = new CallMethodResult(
+                        denied.statusCode(),
+                        null, null, null
+                    );
+                    return Collections.nCopies(group.size(), result);
+                } else {
                     var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();
 
                     var callContext = new CallContext(
@@ -92,12 +97,6 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
                     );
 
                     return server.getAddressSpaceManager().call(callContext, methodsToCall);
-                } else {
-                    var result = new CallMethodResult(
-                        new StatusCode(StatusCodes.Bad_UserAccessDenied),
-                        null, null, null
-                    );
-                    return Collections.nCopies(group.size(), result);
                 }
             }
         );

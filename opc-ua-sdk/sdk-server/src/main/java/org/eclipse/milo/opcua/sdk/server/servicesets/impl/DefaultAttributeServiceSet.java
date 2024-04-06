@@ -164,9 +164,11 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
 
         List<DataValue> values = groupMapCollate(
             nodesToRead,
-            rvi -> accessResults.get(rvi).isAllowed(),
-            allowed -> group -> {
-                if (allowed) {
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), new DataValue(denied.statusCode()));
+                } else {
                     var readContext = new ReadContext(
                         server,
                         session,
@@ -182,8 +184,6 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
                         request.getTimestampsToReturn(),
                         group
                     );
-                } else {
-                    return Collections.nCopies(group.size(), new DataValue(StatusCodes.Bad_UserAccessDenied));
                 }
             }
         );
@@ -258,9 +258,11 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
 
         List<StatusCode> results = groupMapCollate(
             nodesToWrite,
-            wv -> accessResults.get(wv).isAllowed(),
-            allowed -> group -> {
-                if (allowed) {
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
                     var writeContext = new WriteContext(
                         server,
                         session,
@@ -271,8 +273,6 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
                     );
 
                     return server.getAddressSpaceManager().write(writeContext, group);
-                } else {
-                    return Collections.nCopies(group.size(), new StatusCode(StatusCodes.Bad_UserAccessDenied));
                 }
             }
         );
