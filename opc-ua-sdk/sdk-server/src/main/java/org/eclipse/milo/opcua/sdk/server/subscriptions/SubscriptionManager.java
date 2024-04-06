@@ -366,9 +366,9 @@ public class SubscriptionManager {
             itemsToCreate,
             createRequest -> accessResults.get(createRequest.getItemToMonitor()),
             accessResult -> group -> {
-                if (accessResult == AccessResult.DENIED) {
+                if (accessResult instanceof AccessResult.Denied denied) {
                     var result = new MonitoredItemCreateResult(
-                        new StatusCode(StatusCodes.Bad_UserAccessDenied),
+                        denied.statusCode(),
                         uint(0), 0.0, uint(0), null
                     );
                     return Collections.nCopies(group.size(), result);

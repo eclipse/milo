@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
@@ -96,9 +98,46 @@ public interface AccessController {
      */
     Map<DeleteReferencesItem, AccessResult> checkDeleteReferencesAccess(Session session, List<DeleteReferencesItem> referencesToDelete);
 
-    enum AccessResult {
-        ALLOWED,
-        DENIED
+
+    /**
+     * The result of an access control check.
+     */
+    sealed interface AccessResult {
+
+        AccessResult ALLOWED = new Allowed();
+        AccessResult DENIED_USER_ACCESS = new Denied(StatusCodes.Bad_UserAccessDenied);
+        AccessResult DENIED_SECURITY_MODE = new Denied(StatusCodes.Bad_SecurityModeInsufficient);
+
+        /**
+         * Access is allowed.
+         */
+        record Allowed() implements AccessResult {}
+
+        /**
+         * Access is denied for the reason described by {@code statusCode}.
+         *
+         * @param statusCode the {@link StatusCode} describing the reason access is denied.
+         */
+        record Denied(StatusCode statusCode) implements AccessResult {
+            public Denied(long code) {
+                this(new StatusCode(code));
+            }
+        }
+
+        /**
+         * @return {@code true} if access is allowed.
+         */
+        default boolean isAllowed() {
+            return this instanceof Allowed;
+        }
+
+        /**
+         * @return {@code true} if access is denied.
+         */
+        default boolean isDenied() {
+            return this instanceof Denied;
+        }
+
     }
 
 }

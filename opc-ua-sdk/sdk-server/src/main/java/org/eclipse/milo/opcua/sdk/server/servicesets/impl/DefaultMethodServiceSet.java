@@ -77,7 +77,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
 
         List<CallMethodResult> results = groupMapCollate(
             methodsToCall,
-            r -> accessResults.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r).isAllowed(),
             allowed -> group -> {
                 if (allowed) {
                     var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();

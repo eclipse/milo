@@ -90,7 +90,7 @@ class DefaultAccessControllerTest {
         AccessResult result = DefaultAccessController
             .checkReadAccess(context, List.of(readValueId)).get(readValueId);
 
-        assertEquals(AccessResult.DENIED, result);
+        assertEquals(AccessResult.DENIED_USER_ACCESS, result);
     }
 
     @Test
@@ -144,7 +144,7 @@ class DefaultAccessControllerTest {
         AccessResult result = DefaultAccessController
             .checkReadAccess(context, List.of(readValueId)).get(readValueId);
 
-        assertEquals(AccessResult.DENIED, result);
+        assertEquals(AccessResult.DENIED_USER_ACCESS, result);
     }
 
     @Test
@@ -198,7 +198,7 @@ class DefaultAccessControllerTest {
         AccessResult result = DefaultAccessController
             .checkWriteAccess(context, List.of(writeValue)).get(writeValue);
 
-        assertEquals(AccessResult.DENIED, result);
+        assertEquals(AccessResult.DENIED_USER_ACCESS, result);
     }
 
     @Test
@@ -229,7 +229,7 @@ class DefaultAccessControllerTest {
             AccessResult result = DefaultAccessController
                 .checkWriteAccess(context, List.of(writeValue)).get(writeValue);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -270,7 +270,7 @@ class DefaultAccessControllerTest {
             AccessResult result = DefaultAccessController
                 .checkWriteAccess(context, List.of(writeValue)).get(writeValue);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -305,7 +305,7 @@ class DefaultAccessControllerTest {
             AccessResult result = DefaultAccessController
                 .checkBrowseAccess(context, List.of(nodeId)).get(nodeId);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -345,7 +345,7 @@ class DefaultAccessControllerTest {
                 List.of(callMethodRequest)
             ).get(callMethodRequest);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -390,7 +390,7 @@ class DefaultAccessControllerTest {
                 List.of(callMethodRequest)
             ).get(callMethodRequest);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -445,7 +445,7 @@ class DefaultAccessControllerTest {
                 List.of(addReferencesItem)
             ).get(addReferencesItem);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -484,7 +484,7 @@ class DefaultAccessControllerTest {
                 List.of(deleteNodesItem)
             ).get(deleteNodesItem);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {
@@ -531,7 +531,7 @@ class DefaultAccessControllerTest {
                 List.of(deleteReferencesItem)
             ).get(deleteReferencesItem);
 
-            assertEquals(AccessResult.DENIED, result);
+            assertEquals(AccessResult.DENIED_USER_ACCESS, result);
         }
 
         {

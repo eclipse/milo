@@ -185,7 +185,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<StatusCode> results = groupMapCollate(
             nodesToDelete,
-            r -> accessResults.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r).isAllowed(),
             allowed -> group -> {
                 if (allowed) {
                     var deleteNodesContext = new DeleteNodesContext(
@@ -236,7 +236,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<StatusCode> results = groupMapCollate(
             referencesToAdd,
-            r -> accessResults.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r).isAllowed(),
             allowed -> group -> {
                 if (allowed) {
                     var addReferencesContext = new AddReferencesContext(
@@ -287,7 +287,7 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<StatusCode> results = groupMapCollate(
             referencesToDelete,
-            r -> accessResults.get(r) == AccessResult.ALLOWED,
+            r -> accessResults.get(r).isAllowed(),
             allowed -> group -> {
                 if (allowed) {
                     var deleteReferencesContext = new DeleteReferencesContext(

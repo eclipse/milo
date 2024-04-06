@@ -164,7 +164,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
 
         List<DataValue> values = groupMapCollate(
             nodesToRead,
-            rvi -> accessResults.get(rvi) == AccessResult.ALLOWED,
+            rvi -> accessResults.get(rvi).isAllowed(),
             allowed -> group -> {
                 if (allowed) {
                     var readContext = new ReadContext(
@@ -258,7 +258,7 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
 
         List<StatusCode> results = groupMapCollate(
             nodesToWrite,
-            wv -> accessResults.get(wv) == AccessResult.ALLOWED,
+            wv -> accessResults.get(wv).isAllowed(),
             allowed -> group -> {
                 if (allowed) {
                     var writeContext = new WriteContext(

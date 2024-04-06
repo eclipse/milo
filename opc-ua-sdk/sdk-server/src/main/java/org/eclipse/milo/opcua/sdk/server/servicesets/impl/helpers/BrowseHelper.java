@@ -79,7 +79,7 @@ public class BrowseHelper {
         for (PendingBrowse pb : pending) {
             AccessResult result = accessResults.get(pb.browseDescription.getNodeId());
 
-            if (result == AccessResult.DENIED) {
+            if (result.isDenied()) {
                 pb.referenceDescriptions = Collections.emptyList();
             }
         }
@@ -122,7 +122,7 @@ public class BrowseHelper {
 
                 AccessResult result = referenceAccessResults.get(nodeId);
 
-                if (result != AccessResult.DENIED) {
+                if (result.isAllowed()) {
                     filteredReferences.add(reference);
                 }
             }

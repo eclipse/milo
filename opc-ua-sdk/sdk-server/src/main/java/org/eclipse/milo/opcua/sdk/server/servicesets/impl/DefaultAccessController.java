@@ -72,7 +72,7 @@ public class DefaultAccessController implements AccessController {
         checkAccessRestrictions(context, pending, attributes, ReadValueId::getNodeId);
 
         for (PendingResult<ReadValueId> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -85,7 +85,7 @@ public class DefaultAccessController implements AccessController {
                 if (userAccessLevel != null) {
                     Set<AccessLevel> accessLevels = AccessLevel.fromValue(userAccessLevel);
                     if (!accessLevels.contains(AccessLevel.CurrentRead)) {
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_USER_ACCESS;
                     }
                 }
             } else if (AttributeId.RolePermissions.uid().equals(attributeId)) {
@@ -100,7 +100,7 @@ public class DefaultAccessController implements AccessController {
                         .anyMatch(rp -> rp.getPermissions().getReadRolePermissions());
 
                     if (!hasAccess) {
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_USER_ACCESS;
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class DefaultAccessController implements AccessController {
         checkAccessRestrictions(context, pending, attributes, WriteValue::getNodeId);
 
         for (PendingResult<WriteValue> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -146,7 +146,7 @@ public class DefaultAccessController implements AccessController {
                 if (userAccessLevel != null) {
                     Set<AccessLevel> accessLevels = AccessLevel.fromValue(userAccessLevel);
                     if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_USER_ACCESS;
                     }
                 }
             } else if (AttributeId.RolePermissions.uid().equals(attributeId)) {
@@ -161,7 +161,7 @@ public class DefaultAccessController implements AccessController {
                         .anyMatch(rp -> rp.getPermissions().getWriteRolePermissions());
 
                     if (!hasAccess) {
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_USER_ACCESS;
                     }
                 }
             } else if (AttributeId.Historizing.uid().equals(attributeId)) {
@@ -176,7 +176,7 @@ public class DefaultAccessController implements AccessController {
                         .anyMatch(rp -> rp.getPermissions().getWriteHistorizing());
 
                     if (!hasAccess) {
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_USER_ACCESS;
                     }
                 }
             }
@@ -206,7 +206,7 @@ public class DefaultAccessController implements AccessController {
         checkBrowseAccessRestrictions(context, pending, attributes, Function.identity());
 
         for (PendingResult<NodeId> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -220,7 +220,7 @@ public class DefaultAccessController implements AccessController {
                     .anyMatch(rp -> rp.getPermissions().getBrowse());
 
                 if (!hasAccess) {
-                    p.result = AccessResult.DENIED;
+                    p.result = AccessResult.DENIED_USER_ACCESS;
                 }
             }
         }
@@ -263,7 +263,7 @@ public class DefaultAccessController implements AccessController {
             PendingResult<NodeId> p0 = pending.get(i);
             PendingResult<NodeId> p1 = pending.get(i + 1);
 
-            if (p0.result == AccessResult.DENIED || p1.result == AccessResult.DENIED) {
+            if (p0.result.isDenied() || p1.result.isDenied()) {
                 continue;
             }
 
@@ -285,14 +285,14 @@ public class DefaultAccessController implements AccessController {
                     .anyMatch(rp -> rp.getPermissions().getCall());
 
                 if (!objectPermission || !methodPermission) {
-                    p0.result = AccessResult.DENIED;
-                    p1.result = AccessResult.DENIED;
+                    p0.result = AccessResult.DENIED_USER_ACCESS;
+                    p1.result = AccessResult.DENIED_USER_ACCESS;
                 }
             }
 
             Boolean userExecutable = methodAttributes.userExecutable();
             if (userExecutable != null && !userExecutable) {
-                p1.result = AccessResult.DENIED;
+                p1.result = AccessResult.DENIED_USER_ACCESS;
             }
         }
 
@@ -303,10 +303,9 @@ public class DefaultAccessController implements AccessController {
             PendingResult<NodeId> p0 = pending.get(i);
             PendingResult<NodeId> p1 = pending.get(i + 1);
 
-            boolean allowed = p0.result == AccessResult.ALLOWED
-                && p1.result == AccessResult.ALLOWED;
+            boolean allowed = p0.result.isAllowed() && p1.result.isAllowed();
 
-            results.put(request, allowed ? AccessResult.ALLOWED : AccessResult.DENIED);
+            results.put(request, allowed ? AccessResult.ALLOWED : AccessResult.DENIED_USER_ACCESS);
         }
 
         return results;
@@ -338,7 +337,7 @@ public class DefaultAccessController implements AccessController {
         checkAccessRestrictions(context, pending, attributes, AddReferencesItem::getSourceNodeId);
 
         for (PendingResult<AddReferencesItem> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -352,7 +351,7 @@ public class DefaultAccessController implements AccessController {
                     .anyMatch(rp -> rp.getPermissions().getAddReference());
 
                 if (!hasAccess) {
-                    p.result = AccessResult.DENIED;
+                    p.result = AccessResult.DENIED_USER_ACCESS;
                 }
             }
         }
@@ -384,7 +383,7 @@ public class DefaultAccessController implements AccessController {
         checkAccessRestrictions(context, pending, attributes, DeleteNodesItem::getNodeId);
 
         for (PendingResult<DeleteNodesItem> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -398,7 +397,7 @@ public class DefaultAccessController implements AccessController {
                     .anyMatch(rp -> rp.getPermissions().getDeleteNode());
 
                 if (!hasAccess) {
-                    p.result = AccessResult.DENIED;
+                    p.result = AccessResult.DENIED_USER_ACCESS;
                 }
             }
         }
@@ -434,7 +433,7 @@ public class DefaultAccessController implements AccessController {
         checkAccessRestrictions(context, pending, attributes, DeleteReferencesItem::getSourceNodeId);
 
         for (PendingResult<DeleteReferencesItem> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -448,7 +447,7 @@ public class DefaultAccessController implements AccessController {
                     .anyMatch(rp -> rp.getPermissions().getRemoveReference());
 
                 if (!hasAccess) {
-                    p.result = AccessResult.DENIED;
+                    p.result = AccessResult.DENIED_USER_ACCESS;
                 }
             }
         }
@@ -489,7 +488,7 @@ public class DefaultAccessController implements AccessController {
         MessageSecurityMode securityMode = context.getSecurityMode();
 
         for (PendingResult<T> p : pending) {
-            if (p.result == AccessResult.DENIED) {
+            if (p.result.isDenied()) {
                 continue;
             }
 
@@ -504,13 +503,13 @@ public class DefaultAccessController implements AccessController {
 
                 if (accessRestrictions.getEncryptionRequired()) {
                     if (securityMode != MessageSecurityMode.SignAndEncrypt) {
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_SECURITY_MODE;
                     }
                 } else if (accessRestrictions.getSigningRequired()) {
                     if (securityMode != MessageSecurityMode.Sign
                         && securityMode != MessageSecurityMode.SignAndEncrypt) {
 
-                        p.result = AccessResult.DENIED;
+                        p.result = AccessResult.DENIED_SECURITY_MODE;
                     }
                 }
             }
