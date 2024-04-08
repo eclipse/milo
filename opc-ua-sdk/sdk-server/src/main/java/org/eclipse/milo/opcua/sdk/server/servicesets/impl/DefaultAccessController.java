@@ -96,7 +96,6 @@ public class DefaultAccessController implements AccessController {
 
                 if (roleIds != null && userRolePermissions != null) {
                     boolean hasAccess = Stream.of(userRolePermissions)
-                        .filter(rp -> roleIds.contains(rp.getRoleId()))
                         .anyMatch(rp -> rp.getPermissions().getReadRolePermissions());
 
                     if (!hasAccess) {
@@ -157,7 +156,6 @@ public class DefaultAccessController implements AccessController {
 
                 if (roleIds != null && userRolePermissions != null) {
                     boolean hasAccess = Stream.of(userRolePermissions)
-                        .filter(rp -> roleIds.contains(rp.getRoleId()))
                         .anyMatch(rp -> rp.getPermissions().getWriteRolePermissions());
 
                     if (!hasAccess) {
@@ -172,7 +170,6 @@ public class DefaultAccessController implements AccessController {
 
                 if (roleIds != null && userRolePermissions != null) {
                     boolean hasAccess = Stream.of(userRolePermissions)
-                        .filter(rp -> roleIds.contains(rp.getRoleId()))
                         .anyMatch(rp -> rp.getPermissions().getWriteHistorizing());
 
                     if (!hasAccess) {
@@ -216,7 +213,6 @@ public class DefaultAccessController implements AccessController {
 
             if (roleIds != null && userRolePermissions != null) {
                 boolean hasAccess = Stream.of(userRolePermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
                     .anyMatch(rp -> rp.getPermissions().getBrowse());
 
                 if (!hasAccess) {
@@ -277,11 +273,9 @@ public class DefaultAccessController implements AccessController {
 
             if (roleIds != null && objectPermissions != null && methodPermissions != null) {
                 boolean objectPermission = Stream.of(objectPermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
                     .anyMatch(rp -> rp.getPermissions().getCall());
 
                 boolean methodPermission = Stream.of(methodPermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
                     .anyMatch(rp -> rp.getPermissions().getCall());
 
                 if (!objectPermission || !methodPermission) {
@@ -347,7 +341,6 @@ public class DefaultAccessController implements AccessController {
 
             if (roleIds != null && userRolePermissions != null) {
                 boolean hasAccess = Stream.of(userRolePermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
                     .anyMatch(rp -> rp.getPermissions().getAddReference());
 
                 if (!hasAccess) {
@@ -393,7 +386,6 @@ public class DefaultAccessController implements AccessController {
 
             if (roleIds != null && userRolePermissions != null) {
                 boolean hasAccess = Stream.of(userRolePermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
                     .anyMatch(rp -> rp.getPermissions().getDeleteNode());
 
                 if (!hasAccess) {
@@ -443,7 +435,6 @@ public class DefaultAccessController implements AccessController {
 
             if (roleIds != null && userRolePermissions != null) {
                 boolean hasAccess = Stream.of(userRolePermissions)
-                    .filter(rp -> roleIds.contains(rp.getRoleId()))
                     .anyMatch(rp -> rp.getPermissions().getRemoveReference());
 
                 if (!hasAccess) {
