@@ -53,7 +53,7 @@ public class OpcUaServerConfigBuilder {
 
     private CertificateManager certificateManager;
 
-    private RoleManager roleManager;
+    private RoleMapper roleMapper;
 
     private ExecutorService executor;
     private ScheduledExecutorService scheduledExecutor;
@@ -104,8 +104,8 @@ public class OpcUaServerConfigBuilder {
         return this;
     }
 
-    public OpcUaServerConfigBuilder setRoleManager(RoleManager roleManager) {
-        this.roleManager = roleManager;
+    public OpcUaServerConfigBuilder setRoleMapper(RoleMapper roleMapper) {
+        this.roleMapper = roleMapper;
         return this;
     }
 
@@ -137,7 +137,7 @@ public class OpcUaServerConfigBuilder {
             encodingLimits,
             limits,
             certificateManager,
-            roleManager,
+            roleMapper,
             executor,
             scheduledExecutor
         );
@@ -155,7 +155,7 @@ public class OpcUaServerConfigBuilder {
         private final EncodingLimits encodingLimits;
         private final OpcUaServerConfigLimits limits;
         private final CertificateManager certificateManager;
-        private final RoleManager roleManager;
+        private final RoleMapper roleMapper;
         private final ExecutorService executor;
         private final ScheduledExecutorService scheduledExecutorService;
 
@@ -169,7 +169,7 @@ public class OpcUaServerConfigBuilder {
             EncodingLimits encodingLimits,
             OpcUaServerConfigLimits limits,
             CertificateManager certificateManager,
-            RoleManager roleManager,
+            RoleMapper roleMapper,
             ExecutorService executor,
             ScheduledExecutorService scheduledExecutorService
         ) {
@@ -183,7 +183,7 @@ public class OpcUaServerConfigBuilder {
             this.encodingLimits = encodingLimits;
             this.limits = limits;
             this.certificateManager = certificateManager;
-            this.roleManager = roleManager;
+            this.roleMapper = roleMapper;
             this.executor = executor;
             this.scheduledExecutorService = scheduledExecutorService;
         }
@@ -234,8 +234,8 @@ public class OpcUaServerConfigBuilder {
         }
 
         @Override
-        public Optional<RoleManager> getRoleManager() {
-            return Optional.ofNullable(roleManager);
+        public Optional<RoleMapper> getRoleMapper() {
+            return Optional.ofNullable(roleMapper);
         }
 
         @Override

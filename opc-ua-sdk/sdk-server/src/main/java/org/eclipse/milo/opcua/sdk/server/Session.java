@@ -155,9 +155,9 @@ public class Session {
     }
 
     public Optional<List<NodeId>> getRoleIds() {
-        return server.getRoleManager().map(
-            roleManager ->
-                roleManager.getRoleIds(identity, clientDescription.getApplicationUri(), endpoint)
+        return server.getRoleMapper().map(
+            roleMapper ->
+                roleMapper.getRoleIds(identity, clientDescription.getApplicationUri(), endpoint)
         );
     }
 

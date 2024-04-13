@@ -127,7 +127,7 @@ public interface OpcUaServerConfig {
      */
     CertificateManager getCertificateManager();
 
-    Optional<RoleManager> getRoleManager();
+    Optional<RoleMapper> getRoleMapper();
 
     /**
      * @return the {@link ExecutorService} for this server.

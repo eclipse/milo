@@ -16,20 +16,20 @@ import org.eclipse.milo.opcua.sdk.server.identity.Identity;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
-public interface RoleManager {
+public interface RoleMapper {
 
     /**
-     * Grant roles to a Client based on {@link Identity}.
+     * Grant Roles to a Client based on {@link Identity}.
      *
      * @param identity the {@link Identity} of the Client.
-     * @return the {@link NodeId}s of the roles granted to the Client.
+     * @return the {@link NodeId}s of the Roles granted to the Client.
      */
     List<NodeId> getRoleIds(Identity identity);
 
     /**
-     * Grant roles to a Client.
+     * Grant Roles to a Client.
      * <p>
-     * The standard mapping rules allow roles to be granted based on:
+     * The standard mapping rules allow Roles to be granted based on:
      * <ul>
      *     <li>user identity</li>
      *     <li>application identity</li>

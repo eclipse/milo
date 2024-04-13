@@ -433,8 +433,8 @@ public class OpcUaServer extends AbstractServiceHandler {
         return referenceTypes;
     }
 
-    public Optional<RoleManager> getRoleManager() {
-        return config.getRoleManager();
+    public Optional<RoleMapper> getRoleMapper() {
+        return config.getRoleMapper();
     }
 
     private class ServerApplicationContextImpl implements ServerApplicationContext {
