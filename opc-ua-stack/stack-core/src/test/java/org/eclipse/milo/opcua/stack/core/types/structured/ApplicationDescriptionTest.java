@@ -10,11 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
 
 public class ApplicationDescriptionTest {
 

@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.client.config;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +25,7 @@ import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.testng.annotations.Test;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class UaStackClientConfigTest extends SecurityFixture {
 

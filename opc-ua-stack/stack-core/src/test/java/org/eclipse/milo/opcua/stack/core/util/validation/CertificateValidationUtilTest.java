@@ -10,6 +10,18 @@
 
 package org.eclipse.milo.opcua.stack.core.util.validation;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.emptySet;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -33,19 +45,8 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Collections.emptySet;
-import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
-import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.expectThrows;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class CertificateValidationUtilTest {
 
@@ -66,7 +67,7 @@ public class CertificateValidationUtilTest {
     private X509Certificate leafIntermediateSigned;
     private X509Certificate uriWithSpaces;
 
-    @BeforeSuite
+    @BeforeAll
     public void loadKeyStore() throws Exception {
         keyStore = KeyStore.getInstance("PKCS12");
 
@@ -99,7 +100,7 @@ public class CertificateValidationUtilTest {
     public void testBuildTrustedCertPath_LeafSelfSigned_NotTrusted() {
         List<X509Certificate> certificateChain = newArrayList(leafSelfSigned);
 
-        expectThrows(
+        assertThrows(
             UaException.class,
             () -> buildTrustedCertPath(
                 certificateChain,
@@ -196,7 +197,7 @@ public class CertificateValidationUtilTest {
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
-            UaException e = expectThrows(UaException.class, () -> {
+            UaException e = assertThrows(UaException.class, () -> {
                 HashSet<X509CRL> x509CRLS = newHashSet(
                     generateCrl(
                         caIntermediate,
@@ -239,7 +240,7 @@ public class CertificateValidationUtilTest {
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
-            UaException e = expectThrows(UaException.class, () -> {
+            UaException e = assertThrows(UaException.class, () -> {
                 HashSet<X509CRL> x509CRLS = newHashSet(
                     generateCrl(
                         caRoot,
@@ -277,7 +278,7 @@ public class CertificateValidationUtilTest {
 
     @Test
     public void testBuildTrustedCertPath_NoTrusted_NoIssuers() {
-        expectThrows(UaException.class, () ->
+    	assertThrows(UaException.class, () ->
             buildTrustedCertPath(
                 newArrayList(leafSelfSigned),
                 emptySet(),
@@ -285,7 +286,7 @@ public class CertificateValidationUtilTest {
             )
         );
 
-        expectThrows(UaException.class, () ->
+    	assertThrows(UaException.class, () ->
             buildTrustedCertPath(
                 newArrayList(leafIntermediateSigned),
                 emptySet(),
@@ -293,7 +294,7 @@ public class CertificateValidationUtilTest {
             )
         );
 
-        expectThrows(UaException.class, () ->
+    	assertThrows(UaException.class, () ->
             buildTrustedCertPath(
                 newArrayList(leafIntermediateSigned, caIntermediate),
                 emptySet(),
@@ -301,7 +302,7 @@ public class CertificateValidationUtilTest {
             )
         );
 
-        expectThrows(UaException.class, () ->
+    	assertThrows(UaException.class, () ->
             buildTrustedCertPath(
                 newArrayList(leafIntermediateSigned, caIntermediate, caRoot),
                 emptySet(),
@@ -361,7 +362,7 @@ public class CertificateValidationUtilTest {
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
-            UaException e = expectThrows(UaException.class, () -> {
+            UaException e = assertThrows(UaException.class, () -> {
                 HashSet<X509CRL> x509CRLS = newHashSet(
                     generateCrl(
                         caRoot,

@@ -10,14 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
+import org.junit.jupiter.api.Test;
 
 abstract class AbstractConversionTest<S> {
 

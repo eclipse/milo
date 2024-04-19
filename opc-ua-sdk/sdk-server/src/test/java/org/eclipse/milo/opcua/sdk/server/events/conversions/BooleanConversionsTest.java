@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToByte;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToDouble;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToFloat;
@@ -27,7 +25,9 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class BooleanConversionsTest {
 

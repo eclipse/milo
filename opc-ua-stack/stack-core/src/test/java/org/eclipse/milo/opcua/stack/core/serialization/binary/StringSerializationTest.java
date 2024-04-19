@@ -10,15 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class StringSerializationTest extends BinarySerializationFixture {
 
-    @DataProvider(name = "StringProvider")
-    public Object[][] getStrings() {
+    public static Object[][] getStrings() {
         return new Object[][]{
             {null},
             {""},
@@ -27,7 +26,8 @@ public class StringSerializationTest extends BinarySerializationFixture {
         };
     }
 
-    @Test(dataProvider = "StringProvider")
+    @ParameterizedTest
+    @MethodSource("getStrings")
     public void testStringRoundTrip(String value) {
         writer.writeString(value);
         String decoded = reader.readString();

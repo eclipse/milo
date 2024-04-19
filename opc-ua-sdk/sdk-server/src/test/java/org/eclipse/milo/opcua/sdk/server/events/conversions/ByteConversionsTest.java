@@ -10,10 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.byteToBoolean;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.byteToDouble;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.byteToFloat;
@@ -30,9 +26,13 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.junit.jupiter.api.Test;
 
 public class ByteConversionsTest {
 

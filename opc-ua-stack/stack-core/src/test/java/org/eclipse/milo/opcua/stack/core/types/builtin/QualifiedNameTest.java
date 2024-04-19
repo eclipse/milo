@@ -10,8 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class QualifiedNameTest {
 
@@ -27,7 +28,7 @@ public class QualifiedNameTest {
 
     private void assertSymmetry(String string) {
         String reString = QualifiedName.parse(string).toParseableString();
-        Assert.assertEquals(reString, string);
+        assertEquals(reString, string);
     }
 
 }

@@ -10,12 +10,15 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_CHUNK_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.util.ReferenceCountUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
@@ -31,15 +34,15 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_CHUNK_SIZE;
-import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import io.netty.buffer.ByteBuf;
+import io.netty.util.ReferenceCountUtil;
+
 
 public class ChunkSerializationTest extends SecureChannelFixture {
 
@@ -95,8 +98,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
     );
 
 
-    @DataProvider
-    public Object[][] getAsymmetricSecurityParameters() {
+    public static Object[][] getAsymmetricSecurityParameters() {
         return new Object[][]{
             {SecurityPolicy.None, MessageSecurityMode.None, 128},
             {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign, 128},
@@ -251,7 +253,8 @@ public class ChunkSerializationTest extends SecureChannelFixture {
     }
 
 
-    @Test(dataProvider = "getAsymmetricSecurityParameters")
+    @ParameterizedTest
+    @MethodSource("getAsymmetricSecurityParameters")
     public void testAsymmetricMessage(SecurityPolicy securityPolicy,
                                       MessageSecurityMode messageSecurity,
                                       int messageSize) throws Exception {
@@ -324,8 +327,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         }
     }
 
-    @DataProvider
-    public Object[][] getSymmetricSecurityParameters() {
+    public static Object[][] getSymmetricSecurityParameters() {
         return new Object[][]{
             {SecurityPolicy.None, MessageSecurityMode.None},
             {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign},
@@ -341,7 +343,8 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         };
     }
 
-    @Test(dataProvider = "getSymmetricSecurityParameters")
+    @ParameterizedTest
+    @MethodSource("getSymmetricSecurityParameters")
     public void testSymmetricMessage(SecurityPolicy securityPolicy,
                                      MessageSecurityMode messageSecurity) throws Exception {
 

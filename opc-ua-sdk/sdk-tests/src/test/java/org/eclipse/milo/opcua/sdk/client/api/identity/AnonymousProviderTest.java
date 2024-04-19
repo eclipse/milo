@@ -10,17 +10,17 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertThrows;
-import static org.testng.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class AnonymousProviderTest {
 
@@ -105,7 +105,7 @@ public class AnonymousProviderTest {
 
         AnonymousProvider p = new AnonymousProvider();
 
-        assertThrows(() -> p.getIdentityToken(endpoint, ByteString.NULL_VALUE));
+        assertThrows(Exception.class, () -> p.getIdentityToken(endpoint, ByteString.NULL_VALUE));
     }
 
 }

@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,13 +40,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 public class NodeFactoryTest {
 
@@ -51,7 +51,7 @@ public class NodeFactoryTest {
     private UaNodeManager nodeManager;
     private NodeFactory nodeFactory;
 
-    @BeforeTest
+    @BeforeEach
     public void setup() throws Exception {
         server = Mockito.mock(OpcUaServer.class);
 

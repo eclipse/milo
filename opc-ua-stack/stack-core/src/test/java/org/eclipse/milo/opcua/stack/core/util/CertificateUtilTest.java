@@ -15,11 +15,11 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CertificateUtilTest {
 

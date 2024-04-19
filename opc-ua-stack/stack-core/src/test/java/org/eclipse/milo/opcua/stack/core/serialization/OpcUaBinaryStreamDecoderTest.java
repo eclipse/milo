@@ -10,12 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.junit.jupiter.api.Test;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertThrows;
 
 public class OpcUaBinaryStreamDecoderTest {
 

@@ -10,14 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertThrows;
-import static org.testng.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class NonceUtilTest {
 
@@ -52,7 +52,7 @@ public class NonceUtilTest {
     public void testShortNonceThrows() {
         ByteString nonce = NonceUtil.generateNonce(NonceUtil.MINIMUM_NONCE_LENGTH - 1);
 
-        assertThrows(() -> NonceUtil.validateNonce(nonce));
+        assertThrows(Exception.class, () -> NonceUtil.validateNonce(nonce));
     }
 
     @Test

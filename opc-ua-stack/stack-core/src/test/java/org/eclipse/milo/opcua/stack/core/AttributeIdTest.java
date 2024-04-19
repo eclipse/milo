@@ -10,13 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
-import com.google.common.collect.Lists;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import com.google.common.collect.Lists;
 
 public class AttributeIdTest {
 

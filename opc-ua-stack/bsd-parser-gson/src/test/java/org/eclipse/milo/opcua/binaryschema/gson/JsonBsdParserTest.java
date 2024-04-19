@@ -10,14 +10,15 @@
 
 package org.eclipse.milo.opcua.binaryschema.gson;
 
+import org.eclipse.milo.opcua.binaryschema.BsdParserTest;
+import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.junit.jupiter.api.Test;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import org.eclipse.milo.opcua.binaryschema.BsdParserTest;
-import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.testng.annotations.Test;
 
 public class JsonBsdParserTest extends BsdParserTest {
 

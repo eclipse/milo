@@ -10,14 +10,15 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
+import io.netty.buffer.ByteBufUtil;
 
 public class ByteStringConversionsTest {
 

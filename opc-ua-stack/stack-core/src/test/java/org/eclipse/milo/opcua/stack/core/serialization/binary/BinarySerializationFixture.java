@@ -15,7 +15,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BinarySerializationFixture {
 
@@ -23,7 +23,7 @@ public abstract class BinarySerializationFixture {
     OpcUaBinaryStreamEncoder writer;
     OpcUaBinaryStreamDecoder reader;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() {
         buffer = Unpooled.buffer();
 

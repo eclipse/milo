@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
-import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
+import org.junit.jupiter.api.Test;
 
 public class CefactEngineeringUnitsTest {
 

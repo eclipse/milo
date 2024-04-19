@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotEquals;
+import org.junit.jupiter.api.Test;
 
 public class ByteStringTest {
 

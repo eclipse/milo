@@ -15,17 +15,17 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExpandedNodeIdSerializationTest extends BinarySerializationFixture {
 
-    @DataProvider
-    public Object[][] getExpandedNodeIds() {
+    public static Object[][] getExpandedNodeIds() {
         return new Object[][]{
             {new ExpandedNodeId(ushort(0), null, uint(0))},
             {new ExpandedNodeId(ushort(0), null, "hello, world")},
@@ -42,7 +42,9 @@ public class ExpandedNodeIdSerializationTest extends BinarySerializationFixture 
         };
     }
 
-    @Test(dataProvider = "getExpandedNodeIds", description = "ExpandedNodeId is round-trip serializable.")
+    @ParameterizedTest
+    @MethodSource("getExpandedNodeIds")
+    @DisplayName("ExpandedNodeId is round-trip serializable.")
     public void testExpandedNodeIdRoundTrip(ExpandedNodeId nodeId) throws Exception {
         writer.writeExpandedNodeId(nodeId);
         ExpandedNodeId decoded = reader.readExpandedNodeId();

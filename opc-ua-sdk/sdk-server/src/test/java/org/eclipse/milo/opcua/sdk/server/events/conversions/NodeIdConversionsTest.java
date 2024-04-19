@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.NodeIdConversions.nodeIdToExpandedNodeId;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.NodeIdConversions.nodeIdToString;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.junit.jupiter.api.Test;
 
 public class NodeIdConversionsTest {
 

@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -20,11 +22,9 @@ import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertTrue;
 
 public class ClientCertificateValidatorIT extends StackIntegrationTest {
 

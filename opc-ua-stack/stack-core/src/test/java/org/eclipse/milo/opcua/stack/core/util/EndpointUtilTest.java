@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.stack.core.util.EndpointUtil.updateUrl;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class EndpointUtilTest {
 

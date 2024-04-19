@@ -10,21 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class OpcUaBinaryStreamEncoderTest {
 
     ByteBuf buffer;
     OpcUaBinaryStreamEncoder writer;
 
-    @BeforeTest
+    @BeforeAll
     public void initializeTest() {
         buffer = Unpooled.buffer();
         writer = new OpcUaBinaryStreamEncoder(new TestSerializationContext()).setBuffer(buffer);

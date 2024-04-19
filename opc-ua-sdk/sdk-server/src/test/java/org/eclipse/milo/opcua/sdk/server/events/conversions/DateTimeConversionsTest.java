@@ -10,14 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Calendar;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import org.junit.jupiter.api.Test;
 
 public class DateTimeConversionsTest {
 

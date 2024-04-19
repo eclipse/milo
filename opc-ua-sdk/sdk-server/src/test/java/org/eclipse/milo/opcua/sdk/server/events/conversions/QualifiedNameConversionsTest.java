@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.QualifiedNameConversions.qualifiedNameToLocalizedText;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.QualifiedNameConversions.qualifiedNameToString;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.junit.jupiter.api.Test;
 
 public class QualifiedNameConversionsTest {
 

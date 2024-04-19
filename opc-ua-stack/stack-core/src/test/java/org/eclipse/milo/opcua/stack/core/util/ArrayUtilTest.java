@@ -10,17 +10,17 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Array;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ArrayUtilTest {
 
-    @DataProvider(name = "arrays")
-    public Object[][] getArrays() {
+    public static Object[][] getArrays() {
         return new Object[][]{
                 {new Integer[]{0, 1, 2, 3, 4, 5, 6, 7}},
                 {new int[]{0, 1, 2, 3, 4, 5, 6, 7}},
@@ -29,15 +29,20 @@ public class ArrayUtilTest {
         };
     }
 
-    @Test(dataProvider = "arrays")
+    @ParameterizedTest
+    @MethodSource("getArrays")
     public void testRoundTrip(Object array) throws Exception {
         Object flattened = ArrayUtil.flatten(array);
         Object unflattened = ArrayUtil.unflatten(flattened, ArrayUtil.getDimensions(array));
-
-        assertEquals(unflattened, array);
+        if (array instanceof Object[]) {
+        	assertArrayEquals((Object[]) unflattened, (Object[]) array);
+        } else if (array instanceof int[]){
+        	assertArrayEquals((int[]) unflattened, (int[]) array);
+        }
     }
 
-    @Test(dataProvider = "arrays")
+    @ParameterizedTest
+    @MethodSource("getArrays")
     public void testFlatten(Object array) throws Exception {
         Object flattened = ArrayUtil.flatten(array);
 
@@ -46,8 +51,7 @@ public class ArrayUtilTest {
         }
     }
 
-    @DataProvider(name = "dimensions")
-    public Object[][] getDimensions() {
+    public static Object[][] getDimensions() {
         return new Object[][]{
                 {new int[0], new int[]{0}},
                 {new int[1], new int[]{1}},
@@ -58,13 +62,13 @@ public class ArrayUtilTest {
         };
     }
 
-    @Test(dataProvider = "dimensions")
+    @ParameterizedTest
+    @MethodSource("getDimensions")
     public void testGetDimensions(Object array, int[] dimensions) throws Exception {
-        assertEquals(ArrayUtil.getDimensions(array), dimensions);
+        assertArrayEquals(ArrayUtil.getDimensions(array), dimensions);
     }
 
-    @DataProvider(name = "typedArrays")
-    public Object[][] getTypedArrays() {
+    public static Object[][] getTypedArrays() {
         return new Object[][]{
                 {new int[1], int.class},
                 {new int[2][2], int.class},
@@ -78,7 +82,8 @@ public class ArrayUtilTest {
         };
     }
 
-    @Test(dataProvider = "typedArrays")
+    @ParameterizedTest
+    @MethodSource("getTypedArrays")
     public void testGetType(Object array, Class<?> type) throws Exception {
         assertEquals(ArrayUtil.getType(array), type);
     }

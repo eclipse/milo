@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 public class VariantTest {
 
@@ -24,14 +26,14 @@ public class VariantTest {
         new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)});
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void variantCannotContainVariant() {
-        new Variant(new Variant(null));
+        assertThrows(IllegalArgumentException.class, () -> new Variant(new Variant(null)));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void variantCannotContainDiagnosticInfo() {
-        new Variant(DiagnosticInfo.NULL_VALUE);
+    	 assertThrows(IllegalArgumentException.class, () -> new Variant(DiagnosticInfo.NULL_VALUE));
     }
 
 }

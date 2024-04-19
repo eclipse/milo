@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class LifecycleManagerTest {
 

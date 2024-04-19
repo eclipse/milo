@@ -10,11 +10,9 @@
 
 package org.eclipse.milo.opcua.binaryschema;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -28,10 +26,14 @@ import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
-import org.testng.annotations.BeforeSuite;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 
 public abstract class BsdParserTest {
 
@@ -105,7 +107,7 @@ public abstract class BsdParserTest {
      */
     protected abstract BsdParser createBsdParser();
 
-    @BeforeSuite
+    @BeforeEach
     public void parseTypeDictionary() throws Exception {
         BsdParser parser = createBsdParser();
 

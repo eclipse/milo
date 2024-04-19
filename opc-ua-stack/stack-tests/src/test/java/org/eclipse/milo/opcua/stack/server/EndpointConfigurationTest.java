@@ -10,21 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
-import com.google.common.collect.ImmutableList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.expectThrows;
+import com.google.common.collect.ImmutableList;
 
 public class EndpointConfigurationTest {
 
     @Test
     public void securityMismatchThrows() {
-        expectThrows(
+        assertThrows(
             IllegalArgumentException.class,
             () ->
                 // mismatch between securityPolicy and securityMode
@@ -34,7 +35,7 @@ public class EndpointConfigurationTest {
                     .build()
         );
 
-        expectThrows(
+        assertThrows(
             IllegalArgumentException.class,
             () ->
                 // mismatch between securityPolicy and securityMode
@@ -47,7 +48,7 @@ public class EndpointConfigurationTest {
 
     @Test
     public void missingCertificateThrows() {
-        expectThrows(
+    	assertThrows(
             IllegalStateException.class,
             () ->
                 // missing certificate
@@ -60,7 +61,7 @@ public class EndpointConfigurationTest {
 
     @Test
     public void unsupportedTransportThrows() {
-        expectThrows(
+    	assertThrows(
             IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
@@ -68,7 +69,7 @@ public class EndpointConfigurationTest {
                     .build()
         );
 
-        expectThrows(
+    	assertThrows(
             IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
@@ -76,7 +77,7 @@ public class EndpointConfigurationTest {
                     .build()
         );
 
-        expectThrows(
+    	assertThrows(
             IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
@@ -84,7 +85,7 @@ public class EndpointConfigurationTest {
                     .build()
         );
 
-        expectThrows(
+    	assertThrows(
             IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
