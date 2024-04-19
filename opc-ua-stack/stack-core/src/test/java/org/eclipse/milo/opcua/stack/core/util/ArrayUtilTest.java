@@ -35,9 +35,9 @@ public class ArrayUtilTest {
         Object flattened = ArrayUtil.flatten(array);
         Object unflattened = ArrayUtil.unflatten(flattened, ArrayUtil.getDimensions(array));
         if (array instanceof Object[]) {
-        	assertArrayEquals((Object[]) unflattened, (Object[]) array);
+        	assertArrayEquals((Object[]) array, (Object[]) unflattened);
         } else if (array instanceof int[]){
-        	assertArrayEquals((int[]) unflattened, (int[]) array);
+        	assertArrayEquals((int[]) array, (int[]) unflattened);
         }
     }
 
@@ -65,7 +65,7 @@ public class ArrayUtilTest {
     @ParameterizedTest
     @MethodSource("getDimensions")
     public void testGetDimensions(Object array, int[] dimensions) throws Exception {
-        assertArrayEquals(ArrayUtil.getDimensions(array), dimensions);
+        assertArrayEquals(dimensions, ArrayUtil.getDimensions(array));
     }
 
     public static Object[][] getTypedArrays() {

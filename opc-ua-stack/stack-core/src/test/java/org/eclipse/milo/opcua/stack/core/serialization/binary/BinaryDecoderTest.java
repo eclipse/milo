@@ -74,7 +74,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         writer.writeEnumArray(null, array);
         ApplicationType[] decoded = (ApplicationType[]) reader.readEnumArray(null, ApplicationType.class);
 
-        assertArrayEquals(decoded, array);
+        assertArrayEquals(array, decoded);
     }
 
 }

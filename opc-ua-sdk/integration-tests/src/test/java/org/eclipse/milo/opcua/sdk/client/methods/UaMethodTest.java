@@ -63,8 +63,8 @@ public class UaMethodTest extends AbstractClientServerTest {
 
         UInteger[] expected0 = {dataItem.getMonitoredItem().getMonitoredItemId()};
         UInteger[] expected1 = {dataItem.getMonitoredItem().getClientHandle()};
-        assertArrayEquals(expected0, (UInteger[]) outputs[0].getValue());
-        assertArrayEquals(expected1, (UInteger[]) outputs[1].getValue());
+        assertArrayEquals((UInteger[]) outputs[0].getValue(), expected0);
+        assertArrayEquals((UInteger[]) outputs[1].getValue(), expected1);
     }
 
     @Test
@@ -85,8 +85,8 @@ public class UaMethodTest extends AbstractClientServerTest {
 
         UInteger[] expected0 = {dataItem.getMonitoredItem().getMonitoredItemId()};
         UInteger[] expected1 = {dataItem.getMonitoredItem().getClientHandle()};
-        assertArrayEquals(expected0, (UInteger[]) outputs[0].getValue());
-        assertArrayEquals(expected1, (UInteger[]) outputs[1].getValue());
+        assertArrayEquals((UInteger[]) outputs[0].getValue(), expected0);
+        assertArrayEquals((UInteger[]) outputs[1].getValue(), expected1);
     }
 
     @Test

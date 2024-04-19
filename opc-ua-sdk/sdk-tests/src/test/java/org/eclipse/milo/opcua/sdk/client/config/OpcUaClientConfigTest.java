@@ -108,7 +108,7 @@ public class OpcUaClientConfigTest {
         assertEquals(uint(2), copy.getKeepAliveFailuresAllowed());
         assertEquals(uint(10000), copy.getKeepAliveInterval());
         assertEquals(uint(15000), copy.getKeepAliveTimeout());
-        assertArrayEquals(copy.getSessionLocaleIds(), new String[]{"en", "es"});
+        assertArrayEquals(new String[]{"en", "es"}, copy.getSessionLocaleIds());
         assertEquals(3.0, copy.getSubscriptionWatchdogMultiplier());
     }
 
