@@ -28,7 +28,7 @@ public class QualifiedNameTest {
 
     private void assertSymmetry(String string) {
         String reString = QualifiedName.parse(string).toParseableString();
-        assertEquals(reString, string);
+        assertEquals(string, reString);
     }
 
 }

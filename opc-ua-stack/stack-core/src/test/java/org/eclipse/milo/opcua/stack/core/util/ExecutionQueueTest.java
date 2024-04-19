@@ -62,7 +62,7 @@ public class ExecutionQueueTest {
         }
 
         latch.await();
-        assertEquals(count.get(), 100000);
+        assertEquals(100000, count.get());
     }
 
 }

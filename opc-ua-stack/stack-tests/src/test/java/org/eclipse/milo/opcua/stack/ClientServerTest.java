@@ -464,7 +464,7 @@ public class ClientServerTest extends SecurityFixture {
                 .extractStatusCode(t)
                 .orElse(StatusCode.BAD);
 
-            assertEquals(statusCode.getValue(), StatusCodes.Bad_Timeout);
+            assertEquals(StatusCodes.Bad_Timeout, statusCode.getValue());
         }
     }
 
@@ -520,7 +520,7 @@ public class ClientServerTest extends SecurityFixture {
         FutureUtils.sequence(responses).get().forEach(response -> {
             Variant value = l(response.getResults()).get(0).getValue();
 
-            assertEquals(value, input);
+            assertEquals(input, value);
         });
 
         client.disconnect().get();

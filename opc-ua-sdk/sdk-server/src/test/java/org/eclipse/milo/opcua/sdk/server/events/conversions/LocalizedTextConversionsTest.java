@@ -22,7 +22,7 @@ public class LocalizedTextConversionsTest {
     public void testLocalizedTextToString() {
         LocalizedText text = new LocalizedText("en-us", "foo");
 
-        assertEquals(localizedTextToString(text), "foo");
+        assertEquals("foo", localizedTextToString(text));
     }
 
 }

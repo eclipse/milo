@@ -23,7 +23,7 @@ public class CefactEngineeringUnitsTest {
         assertTrue(CefactEngineeringUnits.getAll().length > 0);
 
         for (EUInformation eu : CefactEngineeringUnits.getAll()) {
-            assertEquals(CefactEngineeringUnits.getByUnitId(eu.getUnitId()), eu);
+            assertEquals(eu, CefactEngineeringUnits.getByUnitId(eu.getUnitId()));
         }
     }
 

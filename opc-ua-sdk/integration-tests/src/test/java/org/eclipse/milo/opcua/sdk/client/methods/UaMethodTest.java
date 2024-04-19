@@ -49,11 +49,11 @@ public class UaMethodTest extends AbstractClientServerTest {
         Argument[] inputArguments = getMonitoredItems.getInputArguments();
         Argument[] outputArguments = getMonitoredItems.getOutputArguments();
 
-        assertEquals(1, inputArguments.length);
-        assertEquals("SubscriptionId", inputArguments[0].getName());
-        assertEquals(2, outputArguments.length);
-        assertEquals("ServerHandles", outputArguments[0].getName());
-        assertEquals("ClientHandles", outputArguments[1].getName());
+        assertEquals(inputArguments.length, 1);
+        assertEquals(inputArguments[0].getName(), "SubscriptionId");
+        assertEquals(outputArguments.length, 2);
+        assertEquals(outputArguments[0].getName(), "ServerHandles");
+        assertEquals(outputArguments[1].getName(), "ClientHandles");
 
         Variant[] outputs = getMonitoredItems.call(
             new Variant[]{
@@ -127,7 +127,7 @@ public class UaMethodTest extends AbstractClientServerTest {
             new Variant[]{new Variant(16.0)}
         );
 
-        assertEquals(4.0, outputs[0].getValue());
+        assertEquals(outputs[0].getValue(), 4.0);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class UaMethodTest extends AbstractClientServerTest {
             new Variant[]{new Variant(16.0)}
         );
 
-        assertEquals(4.0, outputs[0].getValue());
+        assertEquals(outputs[0].getValue(), 4.0);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class UaMethodTest extends AbstractClientServerTest {
             new Variant[0]
         );
 
-        assertEquals(0, outputs.length);
+        assertEquals(outputs.length, 0);
     }
 
     @Test

@@ -49,7 +49,7 @@ public class UaNodeTest extends AbstractClientServerTest {
             .build();
 
         List<ReferenceDescription> references = serverNode.browse(browseOptions);
-        assertEquals(5, references.size());
+        assertEquals(references.size(), 5);
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_ServerArray)));
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_NamespaceArray)));
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_ServiceLevel)));
@@ -69,7 +69,7 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         List<? extends UaNode> nodes = serverNode.browseNodes(browseOptions);
 
-        assertEquals(5, nodes.size());
+        assertEquals(nodes.size(), 5);
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
@@ -109,7 +109,7 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         Integer i2 = (Integer) testNode.readValue().getValue().getValue();
 
-        assertEquals(i1 + 1, i2);
+        assertEquals(i2, i1 + 1);
 
         StatusCode statusCode = testNode.writeAttribute(
             AttributeId.Value,
@@ -146,7 +146,7 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         testNode.synchronize(EnumSet.of(AttributeId.Value));
 
-        assertEquals(42, testNode.readValue().getValue().getValue());
+        assertEquals(testNode.readValue().getValue().getValue(), 42);
     }
 
     @Test
@@ -161,7 +161,7 @@ public class UaNodeTest extends AbstractClientServerTest {
         BuildInfo buildInfo2 = serverNode.getServerStatusNode().readBuildInfo();
         assertNotNull(buildInfo2);
 
-        assertEquals(buildInfo1, buildInfo2);
+        assertEquals(buildInfo2, buildInfo1);
     }
 
     @Test

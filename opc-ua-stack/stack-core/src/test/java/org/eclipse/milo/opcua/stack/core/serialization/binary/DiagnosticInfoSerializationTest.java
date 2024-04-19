@@ -39,7 +39,7 @@ public class DiagnosticInfoSerializationTest extends BinarySerializationFixture 
         writer.writeDiagnosticInfo(diagnosticInfo);
         DiagnosticInfo decoded = reader.readDiagnosticInfo();
 
-        assertEquals(decoded, diagnosticInfo);
+        assertEquals(diagnosticInfo, decoded);
     }
 
 }

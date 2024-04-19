@@ -47,7 +47,7 @@ public class ArrayUtilTest {
         Object flattened = ArrayUtil.flatten(array);
 
         for (int i = 0; i < Array.getLength(flattened); i++) {
-            assertEquals(Array.get(flattened, i), i);
+            assertEquals(i, Array.get(flattened, i));
         }
     }
 
@@ -85,7 +85,7 @@ public class ArrayUtilTest {
     @ParameterizedTest
     @MethodSource("getTypedArrays")
     public void testGetType(Object array, Class<?> type) throws Exception {
-        assertEquals(ArrayUtil.getType(array), type);
+        assertEquals(type, ArrayUtil.getType(array));
     }
 
 }

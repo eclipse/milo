@@ -28,13 +28,13 @@ public class NonceUtilTest {
 
             switch (securityPolicy) {
                 case None:
-                    assertEquals(nonce.length(), 0);
+                    assertEquals(0, nonce.length());
                     break;
                 case Basic128Rsa15:
-                    assertEquals(nonce.length(), 16);
+                    assertEquals(16, nonce.length());
                     break;
                 default:
-                    assertEquals(nonce.length(), 32);
+                    assertEquals(32, nonce.length());
             }
         }
     }
@@ -43,7 +43,7 @@ public class NonceUtilTest {
     public void testNonceGeneration() throws UaException {
         for (int i = 32; i < 256; i++) {
             ByteString nonce = NonceUtil.generateNonce(i);
-            assertEquals(nonce.length(), i);
+            assertEquals(i, nonce.length());
             NonceUtil.validateNonce(nonce);
         }
     }

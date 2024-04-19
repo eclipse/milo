@@ -20,10 +20,10 @@ public class AccessLevelTest {
     @Test
     public void testToValue() {
         for (AccessLevel accessLevel : AccessLevel.values()) {
-            assertEquals(AccessLevel.toValue(accessLevel), ubyte(accessLevel.getValue()));
+            assertEquals(ubyte(accessLevel.getValue()), AccessLevel.toValue(accessLevel));
         }
 
-        assertEquals(AccessLevel.toValue(AccessLevel.NONE), ubyte(0));
+        assertEquals(ubyte(0), AccessLevel.toValue(AccessLevel.NONE));
 
         assertEquals(
             AccessLevel.toValue(AccessLevel.READ_ONLY).intValue(),
@@ -48,7 +48,7 @@ public class AccessLevelTest {
 
     @Test
     public void testFromValue() {
-        assertEquals(AccessLevel.fromValue(0), AccessLevel.NONE);
+        assertEquals(AccessLevel.NONE, AccessLevel.fromValue(0));
 
         assertEquals(
             AccessLevel.fromValue(

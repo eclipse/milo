@@ -49,7 +49,7 @@ public class GroupMapCollateTest {
             List<String> strings = stringsFuture.get();
 
             for (int j = 0; j < strings.size(); j++) {
-                assertEquals(String.valueOf(j), strings.get(j));
+                assertEquals(strings.get(j), String.valueOf(j));
             }
             System.out.println("--");
         }

@@ -44,8 +44,8 @@ public class LifecycleManagerTest {
         manager.startup();
         manager.shutdown();
 
-        assertEquals(startupCount.get(), 2);
-        assertEquals(shutdownCount.get(), 2);
+        assertEquals(2, startupCount.get());
+        assertEquals(2, shutdownCount.get());
     }
 
     @Test
@@ -76,8 +76,8 @@ public class LifecycleManagerTest {
         Lifecycle shutdown = manager.addShutdownTask(shutdownCount::incrementAndGet);
         manager.removeLifecycle(shutdown);
 
-        assertEquals(startupCount.get(), 0);
-        assertEquals(shutdownCount.get(), 0);
+        assertEquals(0, startupCount.get());
+        assertEquals(0, shutdownCount.get());
     }
 
     @Test
@@ -85,9 +85,9 @@ public class LifecycleManagerTest {
         LifecycleManager manager = new LifecycleManager();
 
         AtomicInteger i = new AtomicInteger(0);
-        manager.addStartupTask(() -> assertEquals(i.getAndIncrement(), 0));
-        manager.addStartupTask(() -> assertEquals(i.getAndIncrement(), 1));
-        manager.addStartupTask(() -> assertEquals(i.getAndIncrement(), 2));
+        manager.addStartupTask(() -> assertEquals(0), i.getAndIncrement());
+        manager.addStartupTask(() -> assertEquals(1), i.getAndIncrement());
+        manager.addStartupTask(() -> assertEquals(2), i.getAndIncrement());
 
         manager.startup();
         manager.shutdown();
@@ -98,9 +98,9 @@ public class LifecycleManagerTest {
         LifecycleManager manager = new LifecycleManager();
 
         AtomicInteger i = new AtomicInteger(0);
-        manager.addShutdownTask(() -> assertEquals(i.getAndIncrement(), 0));
-        manager.addShutdownTask(() -> assertEquals(i.getAndIncrement(), 1));
-        manager.addShutdownTask(() -> assertEquals(i.getAndIncrement(), 2));
+        manager.addShutdownTask(() -> assertEquals(0), i.getAndIncrement());
+        manager.addShutdownTask(() -> assertEquals(1), i.getAndIncrement());
+        manager.addShutdownTask(() -> assertEquals(2), i.getAndIncrement());
 
         manager.startup();
         manager.shutdown();
@@ -111,9 +111,9 @@ public class LifecycleManagerTest {
         LifecycleManager manager = new LifecycleManager(LifecycleManager.ShutdownOrder.INVERSE);
 
         AtomicInteger i = new AtomicInteger(0);
-        manager.addShutdownTask(() -> assertEquals(i.getAndIncrement(), 2));
-        manager.addShutdownTask(() -> assertEquals(i.getAndIncrement(), 1));
-        manager.addShutdownTask(() -> assertEquals(i.getAndIncrement(), 0));
+        manager.addShutdownTask(() -> assertEquals(2), i.getAndIncrement());
+        manager.addShutdownTask(() -> assertEquals(1), i.getAndIncrement());
+        manager.addShutdownTask(() -> assertEquals(0), i.getAndIncrement());
 
         manager.startup();
         manager.shutdown();

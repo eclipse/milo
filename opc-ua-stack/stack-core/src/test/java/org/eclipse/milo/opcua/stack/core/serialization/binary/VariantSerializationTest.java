@@ -53,7 +53,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         writer.writeVariant(variant);
         Variant decoded = reader.readVariant();
 
-        assertEquals(decoded, variant);
+        assertEquals(variant, decoded);
     }
 
     @Test
@@ -70,8 +70,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         ExtensionObject extensionObject = (ExtensionObject) decoded.getValue();
         ServiceCounterDataType sc2 = (ServiceCounterDataType) extensionObject.decode(new TestSerializationContext());
 
-        assertEquals(sc1.getTotalCount(), sc2.getTotalCount());
-        assertEquals(sc1.getErrorCount(), sc2.getErrorCount());
+        assertEquals(sc2.getTotalCount(), sc1.getTotalCount());
+        assertEquals(sc2.getErrorCount(), sc1.getErrorCount());
     }
 
     public static Object[][] getPrimitiveArrayVariants() {
@@ -97,7 +97,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         writer.writeVariant(variant);
         Variant decoded = reader.readVariant();
 
-        assertEquals(decoded, expected);
+        assertEquals(expected, decoded);
     }
 
     @Test

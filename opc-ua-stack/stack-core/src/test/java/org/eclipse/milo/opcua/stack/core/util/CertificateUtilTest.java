@@ -65,26 +65,26 @@ public class CertificateUtilTest {
             .getSubjectAltNameField(certificate, CertificateUtil.SUBJECT_ALT_NAME_IP_ADDRESS)
             .get(0);
 
-        assertEquals(uri, "urn:eclipse:milo:test");
-        assertEquals(dnsName, "localhost");
-        assertEquals(ipAddress, "127.0.0.1");
+        assertEquals("urn:eclipse:milo:test", uri);
+        assertEquals("localhost", dnsName);
+        assertEquals("127.0.0.1", ipAddress);
     }
 
     @Test
     public void testGetSanUri() {
-        assertEquals(CertificateUtil.getSanUri(certificate).orElse(null), "urn:eclipse:milo:test");
+        assertEquals("urn:eclipse:milo:test", CertificateUtil.getSanUri(certificate).orElse(null));
     }
 
     @Test
     public void testGetSanDnsNames() {
         List<String> sanDnsNames = CertificateUtil.getSanDnsNames(certificate);
-        assertEquals(sanDnsNames, newArrayList("localhost", "hostname"));
+        assertEquals(newArrayList("localhost", "hostname"), sanDnsNames);
     }
 
     @Test
     public void testGetSanIpAddresses() {
         List<String> sanDnsNames = CertificateUtil.getSanIpAddresses(certificate);
-        assertEquals(sanDnsNames, newArrayList("127.0.0.1", "127.0.0.2"));
+        assertEquals(newArrayList("127.0.0.1", "127.0.0.2"), sanDnsNames);
     }
 
 }

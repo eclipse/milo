@@ -63,7 +63,7 @@ public class AttributeFilterChainTest {
         );
 
         DataValue value = (DataValue) chain.getAttribute(null, AttributeId.Value);
-        assertEquals(value.getValue().getValue(), "B");
+        assertEquals("B", value.getValue().getValue());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AttributeFilterChainTest {
         );
 
         DataValue value = (DataValue) chain.getAttribute(null, AttributeId.Value);
-        assertEquals(value.getValue().getValue(), "Last");
+        assertEquals("Last", value.getValue().getValue());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class AttributeFilterChainTest {
         node.setValue(new DataValue(new Variant("foo")));
 
         DataValue value = (DataValue) node.getFilterChain().getAttribute(node, AttributeId.Value);
-        assertEquals(value.getValue().getValue(), "foo");
+        assertEquals("foo", value.getValue().getValue());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class AttributeFilterChainTest {
             )
         );
 
-        assertEquals(node.getValue().getValue().getValue(), "foo");
+        assertEquals("foo", node.getValue().getValue().getValue());
 
         assertTrue(observed.get());
     }

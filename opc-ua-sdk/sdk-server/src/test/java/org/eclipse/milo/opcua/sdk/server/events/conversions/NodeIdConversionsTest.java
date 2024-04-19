@@ -25,14 +25,14 @@ public class NodeIdConversionsTest {
         NodeId nodeId = new NodeId(0, "foo");
         ExpandedNodeId expanded = nodeId.expanded();
 
-        assertEquals(nodeIdToExpandedNodeId(nodeId), expanded);
+        assertEquals(expanded, nodeIdToExpandedNodeId(nodeId));
     }
 
     @Test
     public void testNodeIdToString() {
         NodeId nodeId = new NodeId(0, "foo");
 
-        assertEquals(nodeIdToString(nodeId), nodeId.toParseableString());
+        assertEquals(nodeId.toParseableString(), nodeIdToString(nodeId));
     }
 
 }

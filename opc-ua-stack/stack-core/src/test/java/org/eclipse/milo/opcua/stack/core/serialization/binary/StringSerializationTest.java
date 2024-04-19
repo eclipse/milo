@@ -32,7 +32,7 @@ public class StringSerializationTest extends BinarySerializationFixture {
         writer.writeString(value);
         String decoded = reader.readString();
 
-        assertEquals(decoded, value);
+        assertEquals(value, decoded);
     }
 
 }

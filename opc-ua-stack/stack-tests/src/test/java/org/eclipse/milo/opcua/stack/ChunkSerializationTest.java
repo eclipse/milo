@@ -179,7 +179,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                 ByteBuf message = decodedMessage.getMessage();
 
                 messageBuffer.readerIndex(0);
-                assertEquals(message, messageBuffer);
+                assertEquals(messageBuffer, message);
 
                 ReferenceCountUtil.release(message);
                 ReferenceCountUtil.release(messageBuffer);
@@ -242,7 +242,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                 ByteBuf message = decodedMessage.getMessage();
 
                 messageBuffer.readerIndex(0);
-                assertEquals(message, messageBuffer);
+                assertEquals(messageBuffer, message);
 
                 ReferenceCountUtil.release(message);
                 ReferenceCountUtil.release(messageBuffer);
@@ -317,7 +317,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                 ByteBuf message = decodedMessage.getMessage();
 
                 messageBuffer.readerIndex(0);
-                assertEquals(message, messageBuffer);
+                assertEquals(messageBuffer, message);
 
                 ReferenceCountUtil.release(message);
                 ReferenceCountUtil.release(messageBuffer);
@@ -415,7 +415,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                     ByteBuf message = decodedMessage.getMessage();
 
                     messageBuffer.readerIndex(0);
-                    assertEquals(message, messageBuffer);
+                    assertEquals(messageBuffer, message);
 
                     ReferenceCountUtil.release(messageBuffer);
                     ReferenceCountUtil.release(message);

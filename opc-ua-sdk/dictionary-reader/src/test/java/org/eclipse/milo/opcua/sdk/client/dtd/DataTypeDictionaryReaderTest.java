@@ -124,7 +124,7 @@ class DataTypeDictionaryReaderTest {
             fragmentSize
         ).get();
 
-        Assertions.assertEquals(typeDictionaryBs, dictionary);
+        Assertions.assertEquals(dictionary, typeDictionaryBs);
     }
 
 }

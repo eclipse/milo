@@ -148,7 +148,7 @@ public abstract class BsdParserTest {
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
         Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
-        assertEquals(decodedValue, originalValue);
+        assertEquals(originalValue, decodedValue);
         System.out.println("decodedValue:\t" + decodedValue);
     }
 
@@ -175,7 +175,7 @@ public abstract class BsdParserTest {
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
         Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
-        assertEquals(decodedValue.toString(), originalValue.toString());
+        assertEquals(originalValue.toString(), decodedValue.toString());
         System.out.println("decodedValue:\t" + decodedValue);
     }
 

@@ -49,7 +49,7 @@ public class ExpandedNodeIdSerializationTest extends BinarySerializationFixture 
         writer.writeExpandedNodeId(nodeId);
         ExpandedNodeId decoded = reader.readExpandedNodeId();
 
-        assertEquals(decoded, nodeId);
+        assertEquals(nodeId, decoded);
     }
 
 }

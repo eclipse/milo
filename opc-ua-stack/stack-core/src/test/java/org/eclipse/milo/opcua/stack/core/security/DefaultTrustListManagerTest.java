@@ -54,19 +54,19 @@ public class DefaultTrustListManagerTest {
 
         File[] rejectedFiles = rejectedDir.listFiles();
         assertNotNull(rejectedFiles);
-        assertEquals(rejectedFiles.length, DefaultTrustListManager.MAX_REJECTED_CERTIFICATES);
+        assertEquals(DefaultTrustListManager.MAX_REJECTED_CERTIFICATES, rejectedFiles.length);
 
         trustListManager.pruneOldRejectedCertificates();
         rejectedFiles = rejectedDir.listFiles();
         assertNotNull(rejectedFiles);
-        assertEquals(rejectedFiles.length, DefaultTrustListManager.MAX_REJECTED_CERTIFICATES - 1);
+        assertEquals(DefaultTrustListManager.MAX_REJECTED_CERTIFICATES - 1, rejectedFiles.length);
     }
 
     @Test
     public void testSanitizeForUseInFilename_Wildcard() throws Exception {
         String sanitized = DefaultTrustListManager.sanitizeForUseInFilename("*.digitalpetri.com");
 
-        assertEquals(sanitized, "_.digitalpetri.com");
+        assertEquals("_.digitalpetri.com", sanitized);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DefaultTrustListManagerTest {
          */
         String sanitized = DefaultTrustListManager.sanitizeForUseInFilename("<>:\"/\\|?*");
 
-        assertEquals(sanitized, "%3C%3E%3A%22%2F%5C%7C%3F_");
+        assertEquals("%3C%3E%3A%22%2F%5C%7C%3F_", sanitized);
     }
 
 }

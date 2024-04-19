@@ -31,14 +31,14 @@ public class GuidConversionsTest {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(msb).putLong(lsb);
 
-        assertEquals(bs, ByteString.of(bb.array()));
+        assertEquals(ByteString.of(bb.array()), bs);
     }
 
     @Test
     public void testGuidToString() {
         UUID uuid = UUID.randomUUID();
 
-        assertEquals(uuid.toString(), GuidConversions.guidToString(uuid));
+        assertEquals(GuidConversions.guidToString(uuid), uuid.toString());
     }
 
 }

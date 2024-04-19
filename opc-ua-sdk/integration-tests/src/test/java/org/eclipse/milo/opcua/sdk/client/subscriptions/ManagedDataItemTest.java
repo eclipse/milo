@@ -43,19 +43,19 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
         assertTrue(dataItem1.getStatusCode().isGood());
 
         ManagedDataItem dataItem2 = subscription.createDataItem(NodeId.parse("ns=2;s=FooBarDoesNotExist"));
-        assertEquals(StatusCodes.Bad_NodeIdUnknown, dataItem2.getStatusCode().getValue());
+        assertEquals(dataItem2.getStatusCode().getValue(), StatusCodes.Bad_NodeIdUnknown);
     }
 
     @Test
     public void samplingInterval() throws Exception {
         ManagedDataItem dataItem1 = createManagedItem();
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getSamplingInterval());
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRevisedSamplingInterval());
+        assertEquals(dataItem1.getSamplingInterval(), subscription.getDefaultSamplingInterval());
+        assertEquals(dataItem1.getMonitoredItem().getRequestedSamplingInterval(), subscription.getDefaultSamplingInterval());
+        assertEquals(dataItem1.getMonitoredItem().getRevisedSamplingInterval(), subscription.getDefaultSamplingInterval());
 
-        assertEquals(5000.0, dataItem1.setSamplingInterval(5000.0));
-        assertEquals(5000.0, dataItem1.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(5000.0, dataItem1.getMonitoredItem().getRevisedSamplingInterval());
+        assertEquals(dataItem1.setSamplingInterval(5000.0), 5000.0);
+        assertEquals(dataItem1.getMonitoredItem().getRequestedSamplingInterval(), 5000.0);
+        assertEquals(dataItem1.getMonitoredItem().getRevisedSamplingInterval(), 5000.0);
     }
 
     @Test
@@ -64,9 +64,9 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
 
         subscription.getDataItems().forEach(
             item -> {
-                assertEquals(1000.0, item.getSamplingInterval());
-                assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
-                assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                assertEquals(item.getSamplingInterval(), 1000.0);
+                assertEquals(item.getMonitoredItem().getRequestedSamplingInterval(), 1000.0);
+                assertEquals(item.getMonitoredItem().getRevisedSamplingInterval(), 1000.0);
             }
         );
 
@@ -85,18 +85,18 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
 
             futures.forEach(f -> {
                 assertTrue(f.isDone() && !f.isCompletedExceptionally());
-                f.thenAccept(v -> assertEquals(5000.0, v));
+                f.thenAccept(v -> assertEquals(v), 5000.0);
             });
 
             subscription.getDataItems().forEach(
                 item -> {
-                    assertEquals(5000.0, item.getSamplingInterval());
-                    assertEquals(5000.0, item.getMonitoredItem().getRequestedSamplingInterval());
-                    assertEquals(5000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                    assertEquals(item.getSamplingInterval(), 5000.0);
+                    assertEquals(item.getMonitoredItem().getRequestedSamplingInterval(), 5000.0);
+                    assertEquals(item.getMonitoredItem().getRevisedSamplingInterval(), 5000.0);
                 }
             );
 
-            assertEquals(1, batch.getServiceInvocationCount());
+            assertEquals(batch.getServiceInvocationCount(), 1);
         }
 
         {
@@ -113,13 +113,13 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
 
             subscription.getDataItems().forEach(
                 item -> {
-                    assertEquals(1000.0, item.getSamplingInterval());
-                    assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
-                    assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                    assertEquals(item.getSamplingInterval(), 1000.0);
+                    assertEquals(item.getMonitoredItem().getRequestedSamplingInterval(), 1000.0);
+                    assertEquals(item.getMonitoredItem().getRevisedSamplingInterval(), 1000.0);
                 }
             );
 
-            assertEquals(1, batch.getServiceInvocationCount());
+            assertEquals(batch.getServiceInvocationCount(), 1);
         }
     }
 

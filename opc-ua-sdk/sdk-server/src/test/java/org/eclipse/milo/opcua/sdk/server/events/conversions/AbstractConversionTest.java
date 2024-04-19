@@ -44,7 +44,7 @@ abstract class AbstractConversionTest<S> {
                 System.out.println(String.format("%s -> %s [%s]", sourceType, targetType, conversionType));
 
                 for (Conversion conversion : conversions) {
-                    assertEquals(targetType, conversion.targetType);
+                    assertEquals(conversion.targetType, targetType);
 
                     S fromValue = getSourceClass().cast(conversion.fromValue);
                     Object targetValue = conversion.targetValue;
@@ -53,7 +53,7 @@ abstract class AbstractConversionTest<S> {
 
                     System.out.println(String.format("\tfromValue=%s targetValue=%s", fromValue, targetValue));
 
-                    assertEquals(convertedValue, targetValue);
+                    assertEquals(targetValue, convertedValue);
                 }
             } else {
                 if (conversions.length != 0) {
@@ -101,7 +101,7 @@ abstract class AbstractConversionTest<S> {
                         "[%s] fromValue=%s targetType=%s targetValue=%s",
                         conversionType, fromValue, targetType, conversion.targetValue));
 
-                    assertEquals(convertedValue, conversion.targetValue);
+                    assertEquals(conversion.targetValue, convertedValue);
                 }
             }
         }

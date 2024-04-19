@@ -35,7 +35,7 @@ public class LocalizedTextSerializationTest extends BinarySerializationFixture {
         writer.writeLocalizedText(localizedText);
         LocalizedText decoded = reader.readLocalizedText();
 
-        assertEquals(decoded, localizedText);
+        assertEquals(localizedText, decoded);
     }
 
 }

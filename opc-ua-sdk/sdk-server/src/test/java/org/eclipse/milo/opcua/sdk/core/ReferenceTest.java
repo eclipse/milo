@@ -36,7 +36,7 @@ public class ReferenceTest {
             reference1.getDirection()
         );
 
-        assertEquals(reference1, reference2);
+        assertEquals(reference2, reference1);
     }
 
 }

@@ -24,7 +24,7 @@ public class QualifiedNameConversionsTest {
     public void testQualifiedNameToString() {
         QualifiedName name = new QualifiedName(0, "foo");
 
-        assertEquals(qualifiedNameToString(name), "foo");
+        assertEquals("foo", qualifiedNameToString(name));
     }
 
     @Test
@@ -33,8 +33,8 @@ public class QualifiedNameConversionsTest {
 
         LocalizedText text = qualifiedNameToLocalizedText(name);
 
-        assertEquals(text.getLocale(), "");
-        assertEquals(text.getText(), "foo");
+        assertEquals("", text.getLocale());
+        assertEquals("foo", text.getText());
     }
 
 }

@@ -230,7 +230,7 @@ public class CertificateValidationUtilTest {
                 );
             });
 
-            assertEquals(e.getStatusCode(), new StatusCode(StatusCodes.Bad_CertificateRevoked));
+            assertEquals(new StatusCode(StatusCodes.Bad_CertificateRevoked), e.getStatusCode());
         }
 
         // chain: leaf
@@ -272,7 +272,7 @@ public class CertificateValidationUtilTest {
                 );
             });
 
-            assertEquals(e.getStatusCode(), new StatusCode(StatusCodes.Bad_CertificateIssuerRevoked));
+            assertEquals(new StatusCode(StatusCodes.Bad_CertificateIssuerRevoked), e.getStatusCode());
         }
     }
 
@@ -394,7 +394,7 @@ public class CertificateValidationUtilTest {
                 );
             });
 
-            assertEquals(e.getStatusCode(), new StatusCode(StatusCodes.Bad_CertificateIssuerRevoked));
+            assertEquals(new StatusCode(StatusCodes.Bad_CertificateIssuerRevoked), e.getStatusCode());
         }
     }
 

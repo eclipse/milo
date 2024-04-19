@@ -42,7 +42,7 @@ public class UaObjectNodeTest extends AbstractClientServerTest {
 
         UaObjectTypeNode objectTypeNode = objectNode.getTypeDefinition();
 
-        assertEquals(Identifiers.ServerType, objectTypeNode.getNodeId());
+        assertEquals(objectTypeNode.getNodeId(), Identifiers.ServerType);
     }
 
 }

@@ -120,13 +120,13 @@ public class ExpandedNodeIdTest {
     @Test
     public void testToParseableString() {
         String withoutNamespaceUri = new ExpandedNodeId(ushort(1), null, uint(0)).toParseableString();
-        assertEquals(withoutNamespaceUri, "ns=1;i=0");
+        assertEquals("ns=1;i=0", withoutNamespaceUri);
 
         String withNamespaceUri = new ExpandedNodeId(ushort(0), "urn:test", uint(0)).toParseableString();
-        assertEquals(withNamespaceUri, "nsu=urn:test;i=0");
+        assertEquals("nsu=urn:test;i=0", withNamespaceUri);
 
         String withServerIndex = new ExpandedNodeId(ushort(0), "urn:test", uint(0), uint(1)).toParseableString();
-        assertEquals(withServerIndex, "svr=1;nsu=urn:test;i=0");
+        assertEquals("svr=1;nsu=urn:test;i=0", withServerIndex);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class ExpandedNodeIdTest {
 
         ExpandedNodeId absolute = xni.absolute(new NamespaceTable()).orElseThrow(RuntimeException::new);
         assertTrue(absolute.isAbsolute());
-        assertEquals(Namespaces.OPC_UA, absolute.getNamespaceUri());
+        assertEquals(absolute.getNamespaceUri(), Namespaces.OPC_UA);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ExpandedNodeIdTest {
         ExpandedNodeId relative = xni.relative(new NamespaceTable()).orElseThrow(RuntimeException::new);
         assertTrue(relative.isRelative());
         assertNull(relative.getNamespaceUri());
-        assertEquals(ushort(0), relative.getNamespaceIndex());
+        assertEquals(relative.getNamespaceIndex(), ushort(0));
     }
 
     @Test
@@ -155,14 +155,14 @@ public class ExpandedNodeIdTest {
         ExpandedNodeId xni = ExpandedNodeId.parse("i=2256");
 
         assertNotNull(xni);
-        assertEquals(xni.getNamespaceIndex(), ushort(0));
+        assertEquals(ushort(0), xni.getNamespaceIndex());
     }
 
     @Test
     public void toParseableExplicitNamespaceZero() {
         ExpandedNodeId xni = new ExpandedNodeId(ushort(0), null, "test");
 
-        assertEquals("ns=0;s=test", xni.toParseableString());
+        assertEquals(xni.toParseableString(), "ns=0;s=test");
     }
 
     @Test
@@ -176,7 +176,7 @@ public class ExpandedNodeIdTest {
             "http://softing.com/dataFEEDSIS/nsuri?conn=Demo&uri=http://opcfoundation.org/UA/"
         );
 
-        assertEquals(xni.getIdentifier(), uint(85));
+        assertEquals(uint(85), xni.getIdentifier());
     }
 
     @Test
@@ -185,8 +185,8 @@ public class ExpandedNodeIdTest {
             "nsu=http://foo.com/bar;s=O=::/#pc;B=::/#pc;S=pc;"
         );
 
-        assertEquals(xni.getNamespaceUri(), "http://foo.com/bar");
-        assertEquals(xni.getIdentifier(), "O=::/#pc;B=::/#pc;S=pc;");
+        assertEquals("http://foo.com/bar", xni.getNamespaceUri());
+        assertEquals("O=::/#pc;B=::/#pc;S=pc;", xni.getIdentifier());
     }
 
     @Test
@@ -199,7 +199,7 @@ public class ExpandedNodeIdTest {
 
         ExpandedNodeId xni2 = xni1.reindex(namespaceTable, "test2");
 
-        assertEquals(ushort(2), xni2.getNamespaceIndex());
+        assertEquals(xni2.getNamespaceIndex(), ushort(2));
     }
 
 }

@@ -33,68 +33,68 @@ public class BooleanConversionsTest {
 
     @Test
     public void testBooleanToByte() {
-        assertEquals(booleanToByte(false), ubyte(0));
-        assertEquals(booleanToByte(true), ubyte(1));
+        assertEquals(ubyte(0), booleanToByte(false));
+        assertEquals(ubyte(1), booleanToByte(true));
     }
 
     @Test
     public void testBooleanToDouble() {
-        assertEquals(booleanToDouble(false), 0.0);
-        assertEquals(booleanToDouble(true), 1.0);
+        assertEquals(0.0, booleanToDouble(false));
+        assertEquals(1.0, booleanToDouble(true));
     }
 
     @Test
     public void testBooleanToFloat() {
-        assertEquals(booleanToFloat(false), 0.0f);
-        assertEquals(booleanToFloat(true), 1.0f);
+        assertEquals(0.0f, booleanToFloat(false));
+        assertEquals(1.0f, booleanToFloat(true));
     }
 
     @Test
     public void testBooleanToInt16() {
-        assertEquals((short) booleanToInt16(false), 0);
-        assertEquals((short) booleanToInt16(true), 1);
+        assertEquals(0, (short) booleanToInt16(false));
+        assertEquals(1, (short) booleanToInt16(true));
     }
 
     @Test
     public void testBooleanToInt32() {
-        assertEquals((int) booleanToInt32(false), 0);
-        assertEquals((int) booleanToInt32(true), 1);
+        assertEquals(0, (int) booleanToInt32(false));
+        assertEquals(1, (int) booleanToInt32(true));
     }
 
     @Test
     public void testBooleanToInt64() {
-        assertEquals((long) booleanToInt64(false), 0);
-        assertEquals((long) booleanToInt64(true), 1);
+        assertEquals(0, (long) booleanToInt64(false));
+        assertEquals(1, (long) booleanToInt64(true));
     }
 
     @Test
     public void testBooleanToSByte() {
-        assertEquals((byte) booleanToSByte(false), 0);
-        assertEquals((byte) booleanToSByte(true), 1);
+        assertEquals(0, (byte) booleanToSByte(false));
+        assertEquals(1, (byte) booleanToSByte(true));
     }
 
     @Test
     public void testBooleanToString() {
-        assertEquals(booleanToString(true), "1");
-        assertEquals(booleanToString(false), "0");
+        assertEquals("1", booleanToString(true));
+        assertEquals("0", booleanToString(false));
     }
 
     @Test
     public void testBooleanToUInt16() {
-        assertEquals(booleanToUInt16(false), ushort(0));
-        assertEquals(booleanToUInt16(true), ushort(1));
+        assertEquals(ushort(0), booleanToUInt16(false));
+        assertEquals(ushort(1), booleanToUInt16(true));
     }
 
     @Test
     public void testBooleanToUInt32() {
-        assertEquals(booleanToUInt32(false), uint(0));
-        assertEquals(booleanToUInt32(true), uint(1));
+        assertEquals(uint(0), booleanToUInt32(false));
+        assertEquals(uint(1), booleanToUInt32(true));
     }
 
     @Test
     public void testBooleanToUInt64() {
-        assertEquals(booleanToUInt64(false), ulong(0));
-        assertEquals(booleanToUInt64(true), ulong(1));
+        assertEquals(ulong(0), booleanToUInt64(false));
+        assertEquals(ulong(1), booleanToUInt64(true));
     }
 
 }

@@ -41,7 +41,7 @@ public class DataValueSerializationTest {
         decoder.setBuffer(buffer);
         DataValue decodedValue = decoder.readDataValue();
 
-        assertEquals(decodedValue, value);
+        assertEquals(value, decodedValue);
     }
 
     public static Object[][] getValues() {

@@ -40,7 +40,7 @@ public class NodeIdTest {
         NodeId nodeId = NodeId.parse("ns=1;i=" + i);
 
         assertNotNull(nodeId);
-        assertEquals(nodeId.getIdentifier(), uint(i));
+        assertEquals(uint(i), nodeId.getIdentifier());
     }
 
     @Test
@@ -65,8 +65,8 @@ public class NodeIdTest {
         for (int i = 0; i < UShort.MAX_VALUE; i++) {
             NodeId nodeId = NodeId.parseOrNull("ns=" + i + ";i=" + i);
             assertNotNull(nodeId);
-            assertEquals(nodeId.getNamespaceIndex(), ushort(i));
-            assertEquals(nodeId.getIdentifier(), uint(i));
+            assertEquals(ushort(i), nodeId.getNamespaceIndex());
+            assertEquals(uint(i), nodeId.getIdentifier());
         }
     }
 
@@ -95,12 +95,12 @@ public class NodeIdTest {
             {
                 NodeId nodeId = NodeId.parseOrNull("g=" + uuid.toString());
                 assertNotNull(nodeId);
-                assertEquals(nodeId.getIdentifier(), uuid);
+                assertEquals(uuid, nodeId.getIdentifier());
             }
             {
                 NodeId nodeId = NodeId.parseOrNull("ns=0;g=" + uuid.toString());
                 assertNotNull(nodeId);
-                assertEquals(nodeId.getIdentifier(), uuid);
+                assertEquals(uuid, nodeId.getIdentifier());
             }
         }
     }
@@ -117,12 +117,12 @@ public class NodeIdTest {
             {
                 NodeId nodeId = NodeId.parseOrNull("b=" + bss);
                 assertNotNull(nodeId);
-                assertEquals(nodeId.getIdentifier(), ByteString.of(bs));
+                assertEquals(ByteString.of(bs), nodeId.getIdentifier());
             }
             {
                 NodeId nodeId = NodeId.parseOrNull("ns=0;b=" + bss);
                 assertNotNull(nodeId);
-                assertEquals(nodeId.getIdentifier(), ByteString.of(bs));
+                assertEquals(ByteString.of(bs), nodeId.getIdentifier());
             }
         }
     }
@@ -181,15 +181,15 @@ public class NodeIdTest {
         NodeId nodeId = new NodeId(1, "foo");
         ExpandedNodeId xni = nodeId.expanded(namespaceTable);
 
-        assertEquals(xni.getNamespaceUri(), "urn:test");
+        assertEquals("urn:test", xni.getNamespaceUri());
     }
 
     @Test
     public void parseIdentifierContainingSemiColons() {
         NodeId nodeId = NodeId.parse("ns=14;s=O=::/#pc;B=::/#pc;S=pc;");
 
-        assertEquals(nodeId.getNamespaceIndex(), ushort(14));
-        assertEquals(nodeId.getIdentifier(), "O=::/#pc;B=::/#pc;S=pc;");
+        assertEquals(ushort(14), nodeId.getNamespaceIndex());
+        assertEquals("O=::/#pc;B=::/#pc;S=pc;", nodeId.getIdentifier());
     }
 
 }

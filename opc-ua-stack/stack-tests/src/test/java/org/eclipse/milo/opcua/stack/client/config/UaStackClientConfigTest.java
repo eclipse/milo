@@ -77,16 +77,16 @@ public class UaStackClientConfigTest extends SecurityFixture {
 
         UaStackClientConfig copy = UaStackClientConfig.copy(original).build();
 
-        assertEquals(copy.getKeyPair(), original.getKeyPair());
-        assertEquals(copy.getCertificate(), original.getCertificate());
-        assertEquals(copy.getCertificateChain(), original.getCertificateChain());
-        assertEquals(copy.getCertificateValidator(), original.getCertificateValidator());
-        assertEquals(copy.getEncodingLimits(), original.getEncodingLimits());
-        assertEquals(copy.getChannelLifetime(), original.getChannelLifetime());
-        assertEquals(copy.getExecutor(), original.getExecutor());
-        assertEquals(copy.getEventLoop(), original.getEventLoop());
-        assertEquals(copy.getWheelTimer(), original.getWheelTimer());
-        assertEquals(copy.getAcknowledgeTimeout(), original.getAcknowledgeTimeout());
+        assertEquals(original.getKeyPair(), copy.getKeyPair());
+        assertEquals(original.getCertificate(), copy.getCertificate());
+        assertEquals(original.getCertificateChain(), copy.getCertificateChain());
+        assertEquals(original.getCertificateValidator(), copy.getCertificateValidator());
+        assertEquals(original.getEncodingLimits(), copy.getEncodingLimits());
+        assertEquals(original.getChannelLifetime(), copy.getChannelLifetime());
+        assertEquals(original.getExecutor(), copy.getExecutor());
+        assertEquals(original.getEventLoop(), copy.getEventLoop());
+        assertEquals(original.getWheelTimer(), copy.getWheelTimer());
+        assertEquals(original.getAcknowledgeTimeout(), copy.getAcknowledgeTimeout());
     }
 
     @Test
@@ -116,13 +116,13 @@ public class UaStackClientConfigTest extends SecurityFixture {
                     .setAcknowledgeTimeout(uint(12345))
         );
 
-        assertEquals(copy.getKeyPair(), Optional.empty());
-        assertEquals(copy.getCertificate(), Optional.empty());
-        assertEquals(copy.getCertificateChain(), Optional.empty());
-        assertEquals(copy.getCertificateValidator(), null);
-        assertEquals(copy.getEncodingLimits(), null);
-        assertEquals(copy.getChannelLifetime(), uint(0));
-        assertEquals(copy.getAcknowledgeTimeout(), uint(12345));
+        assertEquals(Optional.empty(), copy.getKeyPair());
+        assertEquals(Optional.empty(), copy.getCertificate());
+        assertEquals(Optional.empty(), copy.getCertificateChain());
+        assertEquals(null, copy.getCertificateValidator());
+        assertEquals(null, copy.getEncodingLimits());
+        assertEquals(uint(0), copy.getChannelLifetime());
+        assertEquals(uint(12345), copy.getAcknowledgeTimeout());
     }
 
 }

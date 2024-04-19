@@ -100,8 +100,8 @@ public class EndpointConfigurationTest {
             EndpointConfiguration.newBuilder().build();
 
         ImmutableList<UserTokenPolicy> tokenPolicies = endpointConfiguration.getTokenPolicies();
-        assertEquals(tokenPolicies.size(), 1);
-        assertEquals(tokenPolicies.get(0), EndpointConfiguration.Builder.USER_TOKEN_POLICY_ANONYMOUS);
+        assertEquals(1, tokenPolicies.size());
+        assertEquals(EndpointConfiguration.Builder.USER_TOKEN_POLICY_ANONYMOUS, tokenPolicies.get(0));
     }
 
 }

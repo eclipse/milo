@@ -71,7 +71,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
             List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-            assertEquals(1, nodes.size());
+            assertEquals(nodes.size(), 1);
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.ObjectsFolder)));
         }
 
@@ -84,7 +84,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
             List<? extends UaNode> nodes = addressSpace.browseNodes(objectsFolderNode, browseOptions);
 
-            assertEquals(7, nodes.size());
+            assertEquals(nodes.size(), 7);
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.RootFolder)));
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server)));
         }
@@ -103,7 +103,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
         List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-        assertEquals(5, nodes.size());
+        assertEquals(nodes.size(), 5);
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
@@ -214,7 +214,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
         ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getObjectNode(Identifiers.Server);
 
         assertNotNull(serverNode);
-        assertEquals(Identifiers.Server, serverNode.getNodeId());
+        assertEquals(serverNode.getNodeId(), Identifiers.Server);
 
         // should be cached now, check instance equality
         assertSame(serverNode, addressSpace.getObjectNode(Identifiers.Server));
@@ -237,7 +237,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
             addressSpace.getVariableNode(Identifiers.Server_ServerStatus);
 
         assertNotNull(serverNode);
-        assertEquals(Identifiers.Server_ServerStatus, serverNode.getNodeId());
+        assertEquals(serverNode.getNodeId(), Identifiers.Server_ServerStatus);
 
         // should be cached now, check instance equality
         assertSame(serverNode, addressSpace.getVariableNode(Identifiers.Server_ServerStatus));
@@ -260,7 +260,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
             () -> client.getAddressSpace().getNode(NodeId.parse("ns=2;s=DoesNotExist"))
         );
 
-        assertEquals(StatusCodes.Bad_NodeIdUnknown, exception.getStatusCode().getValue());
+        assertEquals(exception.getStatusCode().getValue(), StatusCodes.Bad_NodeIdUnknown);
     }
 
 }

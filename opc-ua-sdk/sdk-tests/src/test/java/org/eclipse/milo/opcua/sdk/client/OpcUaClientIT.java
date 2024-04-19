@@ -424,7 +424,7 @@
 //        Thread.sleep(5000);
 //
 //        // one update for the initial subscribe, another after transfer
-//        assertEquals(updateCount.get(), 2);
+//        assertEquals(2, updateCount.get());
 //
 //        assertTrue(subscriptionTransferred.get());
 //
@@ -686,7 +686,7 @@
 //                .map(UaException::getStatusCode)
 //                .orElse(StatusCode.BAD);
 //
-//            assertEquals(statusCode.getValue(), StatusCodes.Bad_SessionIdInvalid);
+//            assertEquals(StatusCodes.Bad_SessionIdInvalid, statusCode.getValue());
 //        }
 //
 //        Thread.sleep(1000);

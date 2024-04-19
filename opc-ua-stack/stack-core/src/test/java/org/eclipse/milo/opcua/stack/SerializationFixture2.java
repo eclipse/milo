@@ -28,7 +28,7 @@ public class SerializationFixture2 {
 
         T decoded = decoder.apply(encoder.apply(encoded, buffer));
 
-        assertEquals(encoded, decoded);
+        assertEquals(decoded, encoded);
     }
 
 }

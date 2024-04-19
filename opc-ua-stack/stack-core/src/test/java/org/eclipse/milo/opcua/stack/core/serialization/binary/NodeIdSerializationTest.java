@@ -53,7 +53,7 @@ public class NodeIdSerializationTest extends BinarySerializationFixture {
         writer.writeNodeId(nodeId);
         NodeId decoded = reader.readNodeId();
 
-        assertEquals(decoded, nodeId);
+        assertEquals(nodeId, decoded);
     }
 
 }

@@ -41,7 +41,7 @@ public class ApplicationDescriptionTest {
             new String[]{"a", "b", "c"}
         );
 
-        assertEquals(applicationDescription1, applicationDescription2);
+        assertEquals(applicationDescription2, applicationDescription1);
     }
 
 }

@@ -52,7 +52,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         codec.encode(new TestSerializationContext(), writer, argument);
         Argument decoded = codec.decode(new TestSerializationContext(), reader);
 
-        assertEquals(decoded.getName(), argument.getName());
+        assertEquals(argument.getName(), decoded.getName());
 
         assertNull(decoded.getArrayDimensions());
     }
@@ -62,7 +62,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         writer.writeEnum(null, ApplicationType.Client);
         ApplicationType decoded = reader.readEnum(null, ApplicationType.class);
 
-        assertEquals(decoded, ApplicationType.Client);
+        assertEquals(ApplicationType.Client, decoded);
     }
 
     @Test
