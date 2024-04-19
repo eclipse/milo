@@ -44,7 +44,7 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
             .getSession(context, request.getRequestHeader());
 
         try {
-            return session.getSubscriptionManager().createMonitoredItems(context, request).get();
+            return session.getSubscriptionManager().createMonitoredItems(context, request);
         } catch (Throwable t) {
             session.getSessionDiagnostics().getCreateMonitoredItemsCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();
@@ -64,7 +64,7 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
             .getSession(context, request.getRequestHeader());
 
         try {
-            return session.getSubscriptionManager().modifyMonitoredItems(context, request).get();
+            return session.getSubscriptionManager().modifyMonitoredItems(context, request);
         } catch (Throwable t) {
             session.getSessionDiagnostics().getModifyMonitoredItemsCount().incrementErrorCount();
             session.getSessionDiagnostics().getTotalRequestCount().incrementErrorCount();

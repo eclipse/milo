@@ -117,7 +117,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     public ReferenceResult.ReferenceList gather(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
         List<Reference> references = nodeManager.getReferences(nodeId);
 
-        logger.debug("Got {} references for {}", references.size(), nodeId);
+        logger.debug("Gathered {} references for {}", references.size(), nodeId);
 
         return ReferenceResult.of(references);
     }
@@ -279,13 +279,9 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
         UaMethodNode methodNode = null;
 
-        if (node instanceof UaObjectNode) {
-            UaObjectNode objectNode = (UaObjectNode) node;
-
+        if (node instanceof UaObjectNode objectNode) {
             methodNode = objectNode.findMethodNode(methodId);
-        } else if (node instanceof UaObjectTypeNode) {
-            UaObjectTypeNode objectTypeNode = (UaObjectTypeNode) node;
-
+        } else if (node instanceof UaObjectTypeNode objectTypeNode) {
             methodNode = objectTypeNode.findMethodNode(methodId);
         }
 

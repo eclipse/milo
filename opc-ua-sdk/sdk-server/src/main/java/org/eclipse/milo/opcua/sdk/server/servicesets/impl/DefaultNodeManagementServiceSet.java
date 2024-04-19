@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddNodesContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.AddReferencesContext;
@@ -20,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -41,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
@@ -136,10 +140,12 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        var diagnosticsContext = new DiagnosticsContext<AddNodesItem>();
+
         var addNodesContext = new AddNodesContext(
             server,
             session,
-            new DiagnosticsContext<>(),
+            diagnosticsContext,
             request.getRequestHeader().getAuditEntryId(),
             request.getRequestHeader().getTimeoutHint(),
             request.getRequestHeader().getAdditionalHeader()
@@ -147,12 +153,15 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
         List<AddNodesResult> results = server.getAddressSpaceManager().addNodes(addNodesContext, nodesToAdd);
 
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToAdd);
+
         ResponseHeader header = createResponseHeader(request);
 
         return new AddNodesResponse(
             header,
             results.toArray(AddNodesResult[]::new),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
@@ -169,23 +178,41 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var deleteNodesContext = new DeleteNodesContext(
-            server,
-            session,
-            new DiagnosticsContext<>(),
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
+        var diagnosticsContext = new DiagnosticsContext<DeleteNodesItem>();
+
+        Map<DeleteNodesItem, AccessResult> accessResults =
+            server.getAccessController().checkDeleteNodesAccess(session, nodesToDelete);
+
+        List<StatusCode> results = groupMapCollate(
+            nodesToDelete,
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
+                    var deleteNodesContext = new DeleteNodesContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().deleteNodes(deleteNodesContext, group);
+                }
+            }
         );
 
-        List<StatusCode> results = server.getAddressSpaceManager().deleteNodes(deleteNodesContext, nodesToDelete);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(nodesToDelete);
 
         ResponseHeader header = createResponseHeader(request);
 
         return new DeleteNodesResponse(
             header,
             results.toArray(StatusCode[]::new),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
@@ -202,24 +229,41 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var addReferencesContext = new AddReferencesContext(
-            server,
-            session,
-            new DiagnosticsContext<>(),
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
+        var diagnosticsContext = new DiagnosticsContext<AddReferencesItem>();
+
+        Map<AddReferencesItem, AccessResult> accessResults =
+            server.getAccessController().checkAddReferencesAccess(session, referencesToAdd);
+
+        List<StatusCode> results = groupMapCollate(
+            referencesToAdd,
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
+                    var addReferencesContext = new AddReferencesContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().addReferences(addReferencesContext, group);
+                }
+            }
         );
 
-        List<StatusCode> results = server.getAddressSpaceManager()
-            .addReferences(addReferencesContext, referencesToAdd);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(referencesToAdd);
 
         ResponseHeader header = createResponseHeader(request);
 
         return new AddReferencesResponse(
             header,
             results.toArray(new StatusCode[0]),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 
@@ -236,24 +280,41 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var deleteReferencesContext = new DeleteReferencesContext(
-            server,
-            session,
-            new DiagnosticsContext<>(),
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
+        var diagnosticsContext = new DiagnosticsContext<DeleteReferencesItem>();
+
+        Map<DeleteReferencesItem, AccessResult> accessResults =
+            server.getAccessController().checkDeleteReferencesAccess(session, referencesToDelete);
+
+        List<StatusCode> results = groupMapCollate(
+            referencesToDelete,
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
+                    var deleteReferencesContext = new DeleteReferencesContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().deleteReferences(deleteReferencesContext, group);
+                }
+            }
         );
 
-        List<StatusCode> results = server.getAddressSpaceManager()
-            .deleteReferences(deleteReferencesContext, referencesToDelete);
+        DiagnosticInfo[] diagnosticInfos =
+            diagnosticsContext.getDiagnosticInfos(referencesToDelete);
 
         ResponseHeader header = createResponseHeader(request);
 
         return new DeleteReferencesResponse(
             header,
             results.toArray(StatusCode[]::new),
-            new DiagnosticInfo[0]
+            diagnosticInfos
         );
     }
 

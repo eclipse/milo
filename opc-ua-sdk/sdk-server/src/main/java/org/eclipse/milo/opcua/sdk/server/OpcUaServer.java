@@ -42,6 +42,8 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.servicesets.Service;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultAccessController;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultAttributeServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultDiscoveryServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultMethodServiceSet;
@@ -156,6 +158,8 @@ public class OpcUaServer extends AbstractServiceHandler {
     private final OpcUaNamespace opcUaNamespace;
     private final ServerNamespace serverNamespace;
 
+    private AccessController accessController;
+
 
     private final OpcUaServerConfig config;
     private final OpcServerTransportFactory transportFactory;
@@ -228,6 +232,8 @@ public class OpcUaServer extends AbstractServiceHandler {
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
         }
+
+        accessController = new DefaultAccessController(this);
     }
 
     public CompletableFuture<OpcUaServer> startup() {
@@ -293,6 +299,10 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     public OpcUaServerConfig getConfig() {
         return config;
+    }
+
+    public AccessController getAccessController() {
+        return accessController;
     }
 
     public ServerApplicationContext getApplicationContext() {
@@ -423,6 +433,9 @@ public class OpcUaServer extends AbstractServiceHandler {
         return referenceTypes;
     }
 
+    public Optional<RoleMapper> getRoleMapper() {
+        return config.getRoleMapper();
+    }
 
     private class ServerApplicationContextImpl implements ServerApplicationContext {
 

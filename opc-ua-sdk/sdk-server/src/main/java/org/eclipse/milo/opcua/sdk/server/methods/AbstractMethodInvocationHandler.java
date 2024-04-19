@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
@@ -58,8 +57,6 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
     @Override
     public final CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request) {
         try {
-            checkExecutableAttributes(accessContext);
-
             Variant[] inputArgumentValues =
                 requireNonNullElse(request.getInputArguments(), new Variant[0]);
 
@@ -94,9 +91,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                             ExtensionObject xo = (ExtensionObject) value;
                             Object decoded = xo.decode(node.getNodeContext().getServer().getEncodingContext());
 
-                            if (decoded instanceof UaStructuredType) {
-                                UaStructuredType structuredType = (UaStructuredType) decoded;
-
+                            if (decoded instanceof UaStructuredType structuredType) {
                                 valueDataTypeId = structuredType.getTypeId()
                                     .toNodeId(node.getNodeContext().getNamespaceTable())
                                     .orElse(NodeId.NULL_VALUE);
@@ -190,26 +185,6 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
             );
         } catch (UaException e) {
             return new CallMethodResult(e.getStatusCode(), new StatusCode[0], new DiagnosticInfo[0], new Variant[0]);
-        }
-    }
-
-    /**
-     * Check that the Executable and UserExecutable attributes are {@code true}.
-     *
-     * @param accessContext the {@link AccessContext}.
-     * @throws UaException if either Executable or UserExecutable attributes are not {@code true}.
-     */
-    protected void checkExecutableAttributes(AccessContext accessContext) throws UaException {
-        Boolean executable = node.isExecutable();
-
-        if (executable == null || !executable) {
-            throw new UaException(StatusCode.BAD);
-        }
-
-        Boolean userExecutable = (Boolean) node.getAttribute(accessContext, AttributeId.UserExecutable);
-
-        if (userExecutable == null || !userExecutable) {
-            throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
     }
 

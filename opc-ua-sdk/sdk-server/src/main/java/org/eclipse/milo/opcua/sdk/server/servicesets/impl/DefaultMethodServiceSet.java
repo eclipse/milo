@@ -10,13 +10,16 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.CallContext;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.MethodServiceSet;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -28,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 import static org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet.createResponseHeader;
 
 public class DefaultMethodServiceSet implements MethodServiceSet {
@@ -67,18 +71,35 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();
+        Map<CallMethodRequest, AccessResult> accessResults =
+            server.getAccessController().checkCallAccess(session, methodsToCall);
 
-        var callContext = new CallContext(
-            server,
-            session,
-            diagnosticsContext,
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
+        List<CallMethodResult> results = groupMapCollate(
+            methodsToCall,
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    var result = new CallMethodResult(
+                        denied.statusCode(),
+                        null, null, null
+                    );
+                    return Collections.nCopies(group.size(), result);
+                } else {
+                    var diagnosticsContext = new DiagnosticsContext<CallMethodRequest>();
+
+                    var callContext = new CallContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
+
+                    return server.getAddressSpaceManager().call(callContext, methodsToCall);
+                }
+            }
         );
-
-        List<CallMethodResult> results = server.getAddressSpaceManager().call(callContext, methodsToCall);
 
         ResponseHeader header = createResponseHeader(request);
 

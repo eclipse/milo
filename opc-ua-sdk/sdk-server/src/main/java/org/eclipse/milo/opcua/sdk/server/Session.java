@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -143,16 +144,30 @@ public class Session {
         return identity;
     }
 
-    @Nullable
-    public UserIdentityToken getIdentityToken() {
+    public @Nullable UserIdentityToken getIdentityToken() {
         return identityToken;
     }
 
-    @Nullable
-    public UserTokenType getTokenType() {
+    public @Nullable UserTokenType getTokenType() {
         UserIdentityToken token = identityToken;
 
         return token != null ? getTokenType(token) : null;
+    }
+
+    /**
+     * If this Server has a {@link RoleMapper} configured, use it to get the Roles mapped to
+     * this Session.
+     *
+     * @return a List of Roles mapped to this Session, or an empty list if no
+     *     {@link RoleMapper} is configured.
+     * @see RoleMapper#getRoleIds(Identity)
+     * @see RoleMapper#getRoleIds(Identity, String, EndpointDescription)
+     */
+    public Optional<List<NodeId>> getRoleIds() {
+        return server.getRoleMapper().map(
+            roleMapper ->
+                roleMapper.getRoleIds(identity, clientDescription.getApplicationUri(), endpoint)
+        );
     }
 
     /**
@@ -171,8 +186,7 @@ public class Session {
      *
      * @return the clientUserId of this {@link Session}.
      */
-    @Nullable
-    public String getClientUserId() {
+    public @Nullable String getClientUserId() {
         return getClientUserId(identityToken);
     }
 

@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.servicesets.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AbstractServiceSet;
 import org.eclipse.milo.opcua.sdk.server.servicesets.AttributeServiceSet;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -49,6 +52,7 @@ import org.eclipse.milo.opcua.stack.core.util.Lists;
 import org.eclipse.milo.opcua.stack.transport.server.ServiceRequestContext;
 
 import static java.util.Objects.requireNonNullElse;
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 
 public class DefaultAttributeServiceSet extends AbstractServiceSet implements AttributeServiceSet {
 
@@ -153,22 +157,35 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
         }
 
+        Map<ReadValueId, AccessResult> accessResults =
+            server.getAccessController().checkReadAccess(session, nodesToRead);
+
         var diagnosticsContext = new DiagnosticsContext<ReadValueId>();
 
-        var readContext = new ReadContext(
-            server,
-            session,
-            diagnosticsContext,
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<DataValue> values = groupMapCollate(
+            nodesToRead,
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), new DataValue(denied.statusCode()));
+                } else {
+                    var readContext = new ReadContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
 
-        List<DataValue> values = server.getAddressSpaceManager().read(
-            readContext,
-            request.getMaxAge(),
-            request.getTimestampsToReturn(),
-            nodesToRead
+                    return server.getAddressSpaceManager().read(
+                        readContext,
+                        request.getMaxAge(),
+                        request.getTimestampsToReturn(),
+                        group
+                    );
+                }
+            }
         );
 
         DiagnosticInfo[] diagnosticInfos =
@@ -234,18 +251,31 @@ public class DefaultAttributeServiceSet extends AbstractServiceSet implements At
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
+        Map<WriteValue, AccessResult> accessResults =
+            server.getAccessController().checkWriteAccess(session, nodesToWrite);
+
         var diagnosticsContext = new DiagnosticsContext<WriteValue>();
 
-        var writeContext = new WriteContext(
-            server,
-            session,
-            diagnosticsContext,
-            request.getRequestHeader().getAuditEntryId(),
-            request.getRequestHeader().getTimeoutHint(),
-            request.getRequestHeader().getAdditionalHeader()
-        );
+        List<StatusCode> results = groupMapCollate(
+            nodesToWrite,
+            accessResults::get,
+            accessResult -> group -> {
+                if (accessResult instanceof AccessResult.Denied denied) {
+                    return Collections.nCopies(group.size(), denied.statusCode());
+                } else {
+                    var writeContext = new WriteContext(
+                        server,
+                        session,
+                        diagnosticsContext,
+                        request.getRequestHeader().getAuditEntryId(),
+                        request.getRequestHeader().getTimeoutHint(),
+                        request.getRequestHeader().getAdditionalHeader()
+                    );
 
-        List<StatusCode> results = server.getAddressSpaceManager().write(writeContext, nodesToWrite);
+                    return server.getAddressSpaceManager().write(writeContext, group);
+                }
+            }
+        );
 
         ResponseHeader header = createResponseHeader(request);
 

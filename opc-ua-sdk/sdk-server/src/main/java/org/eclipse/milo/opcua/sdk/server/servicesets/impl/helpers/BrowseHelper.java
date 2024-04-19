@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.common.primitives.Ints;
@@ -21,9 +22,11 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.ContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.servicesets.impl.AccessController.AccessResult;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -60,16 +63,33 @@ public class BrowseHelper {
         BrowseRequest browseRequest
     ) {
 
-        List<BrowseDescription> nodesToBrowse =
-            Lists.ofNullable(browseRequest.getNodesToBrowse());
+        Session session = context.getSession().orElseThrow();
 
-        var browseContext = new BrowseContext(
-            server,
-            context.getSession().orElse(null)
-        );
+        List<PendingBrowse> pending = Lists.ofNullable(browseRequest.getNodesToBrowse())
+            .stream()
+            .map(PendingBrowse::new)
+            .toList();
 
-        List<AddressSpace.ReferenceResult> referenceLists = server.getAddressSpaceManager().browse(
-            browseContext,
+        List<NodeId> nodeIds = pending.stream()
+            .map(pb -> pb.browseDescription.getNodeId()).toList();
+
+        Map<NodeId, AccessResult> accessResults =
+            server.getAccessController().checkBrowseAccess(session, nodeIds);
+
+        for (PendingBrowse pb : pending) {
+            AccessResult result = accessResults.get(pb.browseDescription.getNodeId());
+
+            if (result.isDenied()) {
+                pb.referenceDescriptions = Collections.emptyList();
+            }
+        }
+
+        List<BrowseDescription> nodesToBrowse = pending.stream()
+            .filter(pb -> pb.referenceDescriptions == null)
+            .map(pb -> pb.browseDescription).toList();
+
+        List<AddressSpace.ReferenceResult> referenceResults = server.getAddressSpaceManager().browse(
+            new BrowseContext(server, session),
             browseRequest.getView(),
             nodesToBrowse.stream()
                 .map(BrowseDescription::getNodeId)
@@ -79,8 +99,41 @@ public class BrowseHelper {
         List<List<ReferenceDescription>> referenceDescriptionLists = createReferenceDescriptions(
             server,
             nodesToBrowse,
-            referenceLists
+            referenceResults
         );
+
+        for (int i = 0; i < nodesToBrowse.size(); i++) {
+            PendingBrowse pb = pending.get(i);
+            List<ReferenceDescription> referenceDescriptions = referenceDescriptionLists.get(i);
+
+            List<NodeId> nodeIdsToCheck = referenceDescriptions.stream()
+                .map(r -> r.getNodeId().toNodeId(server.getNamespaceTable()).orElse(NodeId.NULL_VALUE))
+                .toList();
+
+            Map<NodeId, AccessResult> referenceAccessResults =
+                server.getAccessController().checkBrowseAccess(session, nodeIdsToCheck);
+
+            var filteredReferences = new ArrayList<ReferenceDescription>();
+
+            for (ReferenceDescription reference : referenceDescriptions) {
+                NodeId nodeId = reference.getNodeId()
+                    .toNodeId(server.getNamespaceTable())
+                    .orElse(NodeId.NULL_VALUE);
+
+                AccessResult result = referenceAccessResults.get(nodeId);
+
+                if (result.isAllowed()) {
+                    filteredReferences.add(reference);
+                }
+            }
+
+            // Filter out references to Nodes that the Session doesn't have Browse permission for.
+            pb.referenceDescriptions = filteredReferences;
+        }
+
+        // Gather all the ReferenceDescription lists: the ones we initially filtered out due to
+        // lack of Browse permission and the ones from the actual Browse.
+        var allReferenceDescriptionLists = pending.stream().map(pb -> pb.referenceDescriptions).toList();
 
         int max = browseRequest.getRequestedMaxReferencesPerNode().longValue() == 0 ?
             Integer.MAX_VALUE :
@@ -88,7 +141,7 @@ public class BrowseHelper {
 
         var browseResults = new ArrayList<BrowseResult>();
 
-        for (List<ReferenceDescription> referenceDescriptions : referenceDescriptionLists) {
+        for (List<ReferenceDescription> referenceDescriptions : allReferenceDescriptionLists) {
             BrowseResult browseResult = createBrowseResult(
                 server,
                 context.getSession().orElse(null),
@@ -254,7 +307,7 @@ public class BrowseHelper {
             readValueIds.add(new ReadValueId(nodeId, AttributeId.NodeClass.uid(), null, QualifiedName.NULL_VALUE));
         }
 
-        var context = new AddressSpace.ReadContext(server, null);
+        var context = new ReadContext(server, null);
 
         List<DataValue> values = server.getAddressSpaceManager().read(
             context,
@@ -369,5 +422,16 @@ public class BrowseHelper {
         @Nullable LocalizedText displayName,
         @Nullable NodeClass nodeClass
     ) {}
+
+    private static class PendingBrowse {
+
+        List<ReferenceDescription> referenceDescriptions;
+        final BrowseDescription browseDescription;
+
+        PendingBrowse(BrowseDescription browseDescription) {
+            this.browseDescription = browseDescription;
+        }
+
+    }
 
 }

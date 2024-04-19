@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
@@ -36,7 +35,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import org.jetbrains.annotations.Nullable;
@@ -79,52 +77,28 @@ public class AttributeWriter {
             return new StatusCode(StatusCodes.Bad_AttributeIdInvalid);
         }
 
-        if (attributeId == AttributeId.Value && node instanceof VariableNode) {
-            VariableNode variableNode = (VariableNode) node;
+        if (attributeId == AttributeId.UserRolePermissions) {
+            // Part 3, section 5.2.10
+            // https://reference.opcfoundation.org/v104/Core/docs/Part3/5.2.10/
+            // The value of this Attribute is derived from the rules used by the Server to
+            // map Sessions to Roles. This mapping may be vendor specific, or it may use the
+            // standard Role model defined in 4.8.
+            //
+            // This Attribute shall not be writeable.
+            return new StatusCode(StatusCodes.Bad_NotWritable);
+        } else if (attributeId != AttributeId.Value) {
+            WriteMask writeMask = writeMaskForAttribute(attributeId);
 
-            AccessLevelExType accessLevelEx = variableNode.getAccessLevelEx();
-
-            if (accessLevelEx != null) {
-                if (!accessLevelEx.getCurrentWrite()) {
-                    return new StatusCode(StatusCodes.Bad_NotWritable);
-                }
-            } else {
-                Set<AccessLevel> accessLevels = AccessLevel.fromValue(variableNode.getAccessLevel());
-                if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
-                    return new StatusCode(StatusCodes.Bad_NotWritable);
-                }
-            }
-
-            Set<AccessLevel> userAccessLevels = AccessLevel.fromValue(
-                (UByte) requireNonNullElse(node.getAttribute(context, AttributeId.UserAccessLevel), UByte.MIN)
-            );
-            if (!userAccessLevels.contains(AccessLevel.CurrentWrite)) {
-                return new StatusCode(StatusCodes.Bad_UserAccessDenied);
-            }
-        } else {
-            if (attributeId == AttributeId.UserRolePermissions) {
-                // Part 3, section 5.2.10
-                // https://reference.opcfoundation.org/v104/Core/docs/Part3/5.2.10/
-                // The value of this Attribute is derived from the rules used by the Server to
-                // map Sessions to Roles. This mapping may be vendor specific, or it may use the
-                // standard Role model defined in 4.8.
-                //
-                // This Attribute shall not be writeable.
+            Set<WriteMask> writeMasks = WriteMask.fromMask(node.getWriteMask());
+            if (!writeMasks.contains(writeMask)) {
                 return new StatusCode(StatusCodes.Bad_NotWritable);
-            } else {
-                WriteMask writeMask = writeMaskForAttribute(attributeId);
+            }
 
-                Set<WriteMask> writeMasks = WriteMask.fromMask(node.getWriteMask());
-                if (!writeMasks.contains(writeMask)) {
-                    return new StatusCode(StatusCodes.Bad_NotWritable);
-                }
-
-                Set<WriteMask> userWriteMasks = WriteMask.fromMask(
-                    (UInteger) requireNonNullElse(node.getAttribute(context, AttributeId.UserWriteMask), UInteger.MIN)
-                );
-                if (!userWriteMasks.contains(writeMask)) {
-                    return new StatusCode(StatusCodes.Bad_UserAccessDenied);
-                }
+            Set<WriteMask> userWriteMasks = WriteMask.fromMask(
+                (UInteger) requireNonNullElse(node.getAttribute(context, AttributeId.UserWriteMask), UInteger.MIN)
+            );
+            if (!userWriteMasks.contains(writeMask)) {
+                return new StatusCode(StatusCodes.Bad_UserAccessDenied);
             }
         }
 

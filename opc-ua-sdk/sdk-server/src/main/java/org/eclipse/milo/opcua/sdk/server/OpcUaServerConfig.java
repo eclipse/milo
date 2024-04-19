@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2023 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -126,6 +127,8 @@ public interface OpcUaServerConfig {
      */
     CertificateManager getCertificateManager();
 
+    Optional<RoleMapper> getRoleMapper();
+
     /**
      * @return the {@link ExecutorService} for this server.
      */
@@ -173,7 +176,7 @@ public interface OpcUaServerConfig {
      * Copy the values from an existing {@link OpcUaServerConfig} into a new {@link OpcUaServerConfigBuilder} and then
      * submit the builder to the provided consumer for modification.
      *
-     * @param config   the {@link OpcUaServerConfig} to copy from.
+     * @param config the {@link OpcUaServerConfig} to copy from.
      * @param consumer a {@link Consumer} that may modify the builder.
      * @return a {@link OpcUaServerConfig} built from the builder provided to {@code consumer}.
      */
