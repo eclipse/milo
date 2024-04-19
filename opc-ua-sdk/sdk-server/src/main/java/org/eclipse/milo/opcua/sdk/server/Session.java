@@ -154,6 +154,15 @@ public class Session {
         return token != null ? getTokenType(token) : null;
     }
 
+    /**
+     * If this Server has a {@link RoleMapper} configured, use it to get the Roles mapped to
+     * this Session.
+     *
+     * @return a List of Roles mapped to this Session, or an empty list if no
+     *     {@link RoleMapper} is configured.
+     * @see RoleMapper#getRoleIds(Identity)
+     * @see RoleMapper#getRoleIds(Identity, String, EndpointDescription)
+     */
     public Optional<List<NodeId>> getRoleIds() {
         return server.getRoleMapper().map(
             roleMapper ->
