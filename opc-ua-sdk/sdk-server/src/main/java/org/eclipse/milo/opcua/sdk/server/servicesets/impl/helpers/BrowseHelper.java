@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
@@ -397,13 +398,14 @@ public class BrowseHelper {
     private static boolean filterReferenceType(
         OpcUaServer server, BrowseDescription browseDescription, Reference reference) {
 
+        ReferenceTypeTree referenceTypeTree = server.getReferenceTypeTree();
         NodeId referenceTypeId = browseDescription.getReferenceTypeId();
 
         boolean includeAny = referenceTypeId == null || referenceTypeId.isNull();
         boolean includeSubtypes = browseDescription.getIncludeSubtypes();
 
         return includeAny || reference.getReferenceTypeId().equals(referenceTypeId)
-            || (includeSubtypes && reference.subtypeOf(referenceTypeId, server.getReferenceTypes()));
+            || (includeSubtypes && referenceTypeTree.isSubtypeOf(reference.getReferenceTypeId(), referenceTypeId));
     }
 
     private static boolean filterNodeClass(

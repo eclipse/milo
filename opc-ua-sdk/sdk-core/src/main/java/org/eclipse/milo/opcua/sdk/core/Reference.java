@@ -10,19 +10,15 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.slf4j.LoggerFactory;
 
 public class Reference {
 
@@ -135,35 +131,6 @@ public class Reference {
             newTargetNodeId,
             direction
         );
-    }
-
-    /**
-     * Check if this reference is a subtype of the built-in reference identified by {@code superTypeId}.
-     *
-     * @param superTypeId the {@link NodeId} of the supertype.
-     * @return {@code true} if this reference is a subtype of the built-in reference type identified by
-     * {@code superTypeId}.
-     * @see BuiltinReferenceType
-     */
-    public boolean subtypeOf(NodeId superTypeId) {
-        return subtypeOf(superTypeId, BuiltinReferenceType.getReferenceMap());
-    }
-
-    public boolean subtypeOf(NodeId superTypeId, Map<NodeId, ReferenceType> referenceTypes) {
-        return subtypeOf(referenceTypeId, superTypeId, referenceTypes);
-    }
-
-    private boolean subtypeOf(NodeId typeId, NodeId superTypeId, Map<NodeId, ReferenceType> referenceTypes) {
-        ReferenceType referenceType = referenceTypes.get(typeId);
-
-        if (referenceType == null) {
-            LoggerFactory.getLogger(getClass()).warn("Unknown reference type: {}", typeId);
-            return false;
-        }
-
-        return referenceType.getSuperTypeId()
-            .map(id -> id.equals(superTypeId) || subtypeOf(id, superTypeId, referenceTypes))
-            .orElse(false);
     }
 
     @Override

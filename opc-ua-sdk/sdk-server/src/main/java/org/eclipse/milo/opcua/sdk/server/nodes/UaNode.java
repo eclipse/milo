@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -332,11 +333,14 @@ public abstract class UaNode implements UaServerNode {
      */
     public final void delete() {
         NodeManager<UaNode> nodeManager = context.getNodeManager();
+        ReferenceTypeTree referenceTypeTree = context.getServer().getReferenceTypeTree();
 
         nodeManager.removeNode(getNodeId());
 
         for (Reference reference : nodeManager.getReferences(getNodeId())) {
-            if (reference.isForward() && reference.subtypeOf(NodeIds.HasChild)) {
+            if (reference.isForward()
+                && referenceTypeTree.isSubtypeOf(reference.getReferenceTypeId(), NodeIds.HasChild)) {
+
                 Optional<UaNode> targetNode = nodeManager.getNode(
                     reference.getTargetNodeId(),
                     getNodeContext().getServer().getNamespaceTable()

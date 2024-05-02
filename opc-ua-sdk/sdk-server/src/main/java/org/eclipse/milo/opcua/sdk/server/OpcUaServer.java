@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
@@ -54,9 +55,8 @@ import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultSubscriptionSer
 import org.eclipse.milo.opcua.sdk.server.servicesets.impl.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.typetree.DataTypeTreeBuilder;
-import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
+import org.eclipse.milo.opcua.sdk.server.typetree.ReferenceTypeTreeBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -129,10 +129,10 @@ public class OpcUaServer extends AbstractServiceHandler {
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
     private final Lazy<DataTypeTree> dataTypeTree = new Lazy<>();
+    private final Lazy<ReferenceTypeTree> referenceTypeTree = new Lazy<>();
 
     private final DataTypeManager dataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
-    private final Map<NodeId, ReferenceType> referenceTypes = new ConcurrentHashMap<>();
 
     private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
 
@@ -158,8 +158,7 @@ public class OpcUaServer extends AbstractServiceHandler {
     private final OpcUaNamespace opcUaNamespace;
     private final ServerNamespace serverNamespace;
 
-    private AccessController accessController;
-
+    private final AccessController accessController;
 
     private final OpcUaServerConfig config;
     private final OpcServerTransportFactory transportFactory;
@@ -228,10 +227,6 @@ public class OpcUaServer extends AbstractServiceHandler {
 
         serverNamespace = new ServerNamespace(this);
         serverNamespace.startup();
-
-        for (ReferenceType referenceType : BuiltinReferenceType.values()) {
-            referenceTypes.put(referenceType.getNodeId(), referenceType);
-        }
 
         accessController = new DefaultAccessController(this);
     }
@@ -397,6 +392,15 @@ public class OpcUaServer extends AbstractServiceHandler {
         return dataTypeTree.get(() -> DataTypeTreeBuilder.build(this));
     }
 
+    /**
+     * Get the Server's {@link ReferenceTypeTree}.
+     *
+     * @return the Server's {@link ReferenceTypeTree}.
+     */
+    public ReferenceTypeTree getReferenceTypeTree() {
+        return referenceTypeTree.get(() -> ReferenceTypeTreeBuilder.build(this));
+    }
+
     public Set<NodeId> getRegisteredViews() {
         return registeredViews;
     }
@@ -427,10 +431,6 @@ public class OpcUaServer extends AbstractServiceHandler {
 
     public ScheduledExecutorService getScheduledExecutorService() {
         return config.getScheduledExecutorService();
-    }
-
-    public Map<NodeId, ReferenceType> getReferenceTypes() {
-        return referenceTypes;
     }
 
     public Optional<RoleMapper> getRoleMapper() {

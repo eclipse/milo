@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
@@ -42,10 +43,13 @@ class Util {
             return String.join(".", browseNames);
         }
 
+        ReferenceTypeTree referenceTypeTree = node.getNodeContext().getServer().getReferenceTypeTree();
+
         browseNames.add(node.getBrowseName().toParseableString());
 
         Optional<Reference> referenceToParent = node.getReferences().stream()
-            .filter(r -> r.isInverse() && r.subtypeOf(NodeIds.HierarchicalReferences))
+            .filter(r -> r.isInverse()
+                && referenceTypeTree.isSubtypeOf(r.getReferenceTypeId(), NodeIds.HierarchicalReferences))
             .findFirst();
 
         Optional<UaNode> parentNode = referenceToParent

@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -180,9 +181,11 @@ public class EventContentFilter {
         Predicate<UaNode> nodePredicate = n ->
             n.getNodeClass() == NodeClass.Object || n.getNodeClass() == NodeClass.Variable;
 
+        ReferenceTypeTree referenceTypeTree = startingNode.getNodeContext().getServer().getReferenceTypeTree();
+
         Predicate<Reference> referencePredicate = r ->
             r.isForward() &&
-                r.subtypeOf(NodeIds.HierarchicalReferences, context.getServer().getReferenceTypes());
+                referenceTypeTree.isSubtypeOf(r.getReferenceTypeId(), NodeIds.HierarchicalReferences);
 
         // find the Node relative to eventNode using browsePath.
         for (QualifiedName targetBrowsePath : browsePath) {
@@ -445,9 +448,11 @@ public class EventContentFilter {
             Predicate<UaNode> nodePredicate = n ->
                 n.getNodeClass() == NodeClass.Object || n.getNodeClass() == NodeClass.Variable;
 
+            ReferenceTypeTree referenceTypeTree = eventNode.getNodeContext().getServer().getReferenceTypeTree();
+
             Predicate<Reference> referencePredicate = r ->
                 r.isForward() &&
-                    r.subtypeOf(NodeIds.HierarchicalReferences, context.getServer().getReferenceTypes());
+                    referenceTypeTree.isSubtypeOf(r.getReferenceTypeId(), NodeIds.HierarchicalReferences);
 
             // find the Node relative to eventNode using browsePath.
             for (QualifiedName targetBrowsePath : browsePath) {

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.BrowseContext;
@@ -190,11 +191,13 @@ public class BrowsePathsHelper {
         if (result instanceof ReferenceList rl) {
             List<Reference> references = rl.references();
 
+            ReferenceTypeTree referenceTypeTree = server.getReferenceTypeTree();
+
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
                     r.getReferenceTypeId().equals(referenceTypeId) ||
-                    (includeSubtypes && r.subtypeOf(referenceTypeId, server.getReferenceTypes())))
+                    (includeSubtypes && referenceTypeTree.isSubtypeOf(r.getReferenceTypeId(), referenceTypeId)))
 
                 /* Filter for reference direction... */
                 .filter(r -> r.isInverse() == element.getIsInverse())
@@ -246,11 +249,13 @@ public class BrowsePathsHelper {
         if (result instanceof ReferenceList rl) {
             List<Reference> references = rl.references();
 
+            ReferenceTypeTree referenceTypeTree = server.getReferenceTypeTree();
+
             List<ExpandedNodeId> targetNodeIds = references.stream()
                 /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
                     r.getReferenceTypeId().equals(referenceTypeId) ||
-                    (includeSubtypes && r.subtypeOf(referenceTypeId, server.getReferenceTypes())))
+                    (includeSubtypes && referenceTypeTree.isSubtypeOf(r.getReferenceTypeId(), referenceTypeId)))
 
                 /* Filter for reference direction... */
                 .filter(r -> r.isInverse() == element.getIsInverse())
