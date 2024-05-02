@@ -393,12 +393,34 @@ public class OpcUaServer extends AbstractServiceHandler {
     }
 
     /**
+     * Re-build and return the Server's {@link DataTypeTree}.
+     *
+     * @return the re-built {@link DataTypeTree}.
+     */
+    public DataTypeTree updateDataTypeTree() {
+        dataTypeTree.reset();
+
+        return getDataTypeTree();
+    }
+
+    /**
      * Get the Server's {@link ReferenceTypeTree}.
      *
      * @return the Server's {@link ReferenceTypeTree}.
      */
     public ReferenceTypeTree getReferenceTypeTree() {
         return referenceTypeTree.get(() -> ReferenceTypeTreeBuilder.build(this));
+    }
+
+    /**
+     * Re-build and return the Server's {@link ReferenceTypeTree}.
+     *
+     * @return the re-built {@link ReferenceTypeTree}.
+     */
+    public ReferenceTypeTree updateReferenceTypeTree() {
+        referenceTypeTree.reset();
+
+        return getReferenceTypeTree();
     }
 
     public Set<NodeId> getRegisteredViews() {
