@@ -56,59 +56,33 @@ public class JsonConversions {
      * @throws IllegalArgumentException if the {@link BuiltinDataType} is not supported.
      */
     public static JsonElement from(Object value, BuiltinDataType dataType) {
-        switch (dataType) {
-            case Boolean:
-                return fromBoolean((Boolean) value);
-            case SByte:
-                return fromSByte((Byte) value);
-            case Byte:
-                return fromByte((UByte) value);
-            case Int16:
-                return fromInt16((Short) value);
-            case UInt16:
-                return fromUInt16((UShort) value);
-            case Int32:
-                return fromInt32((Integer) value);
-            case UInt32:
-                return fromUInt32((UInteger) value);
-            case Int64:
-                return fromInt64((Long) value);
-            case UInt64:
-                return fromUInt64((ULong) value);
-            case Float:
-                return fromFloat((Float) value);
-            case Double:
-                return fromDouble((Double) value);
-            case String:
-                return fromString((String) value);
-            case DateTime:
-                return fromDateTime((DateTime) value);
-            case Guid:
-                return fromGuid((UUID) value);
-            case ByteString:
-                return fromByteString((ByteString) value);
-            case XmlElement:
-                return fromXmlElement((XmlElement) value);
-            case NodeId:
-                return fromNodeId((NodeId) value);
-            case ExpandedNodeId:
-                return fromExpandedNodeId((ExpandedNodeId) value);
-            case StatusCode:
-                return fromStatusCode((StatusCode) value);
-            case QualifiedName:
-                return fromQualifiedName((QualifiedName) value);
-            case LocalizedText:
-                return fromLocalizedText((LocalizedText) value);
-            case ExtensionObject:
-                return fromExtensionObject((ExtensionObject) value);
-            case DataValue:
-                return fromDataValue((DataValue) value);
-            case Variant:
-                return fromVariant((Variant) value);
-            case DiagnosticInfo:
-            default:
-                throw new IllegalArgumentException("dataType: " + dataType);
-        }
+        return switch (dataType) {
+            case Boolean -> fromBoolean((Boolean) value);
+            case SByte -> fromSByte((Byte) value);
+            case Byte -> fromByte((UByte) value);
+            case Int16 -> fromInt16((Short) value);
+            case UInt16 -> fromUInt16((UShort) value);
+            case Int32 -> fromInt32((Integer) value);
+            case UInt32 -> fromUInt32((UInteger) value);
+            case Int64 -> fromInt64((Long) value);
+            case UInt64 -> fromUInt64((ULong) value);
+            case Float -> fromFloat((Float) value);
+            case Double -> fromDouble((Double) value);
+            case String -> fromString((String) value);
+            case DateTime -> fromDateTime((DateTime) value);
+            case Guid -> fromGuid((UUID) value);
+            case ByteString -> fromByteString((ByteString) value);
+            case XmlElement -> fromXmlElement((XmlElement) value);
+            case NodeId -> fromNodeId((NodeId) value);
+            case ExpandedNodeId -> fromExpandedNodeId((ExpandedNodeId) value);
+            case StatusCode -> fromStatusCode((StatusCode) value);
+            case QualifiedName -> fromQualifiedName((QualifiedName) value);
+            case LocalizedText -> fromLocalizedText((LocalizedText) value);
+            case ExtensionObject -> fromExtensionObject((ExtensionObject) value);
+            case DataValue -> fromDataValue((DataValue) value);
+            case Variant -> fromVariant((Variant) value);
+            default -> throw new IllegalArgumentException("dataType: " + dataType);
+        };
     }
 
     public static JsonElement fromBoolean(Boolean value) {
@@ -279,9 +253,7 @@ public class JsonConversions {
                 jsonArray.add(from(arrayValue, dataType));
             }
             jsonObject.add("Body", jsonArray);
-        } else if (valueObject instanceof Matrix) {
-            Matrix matrix = (Matrix) valueObject;
-
+        } else if (valueObject instanceof Matrix matrix) {
             Object flatArray = matrix.getElements();
             var jsonArray = new JsonArray();
             for (int i = 0; i < Array.getLength(flatArray); i++) {
@@ -316,62 +288,37 @@ public class JsonConversions {
      * @throws IllegalArgumentException if the {@link BuiltinDataType} is not supported.
      */
     public static Object to(JsonElement element, BuiltinDataType dataType) {
-        switch (dataType) {
-            case Boolean:
-                return toBoolean(element);
-            case SByte:
-                return toSByte(element);
-            case Byte:
-                return toByte(element);
-            case Int16:
-                return toInt16(element);
-            case UInt16:
-                return toUInt16(element);
-            case Int32:
-                return toInt32(element);
-            case UInt32:
-                return toUInt32(element);
-            case Int64:
-                return toInt64(element);
-            case UInt64:
-                return toUInt64(element);
-            case Float:
-                return toFloat(element);
-            case Double:
-                return toDouble(element);
-            case String:
-                return toString(element);
-            case DateTime:
-                return toDateTime(element);
-            case Guid:
-                return toGuid(element);
-            case ByteString:
-                return toByteString(element);
-            case XmlElement:
-                return toXmlElement(element);
-            case NodeId:
-                return toNodeId(element);
-            case ExpandedNodeId:
-                return toExpandedNodeId(element);
-            case StatusCode:
-                return toStatusCode(element);
-            case QualifiedName:
-                return toQualifiedName(element);
-            case LocalizedText:
-                return toLocalizedText(element);
-            case ExtensionObject:
-                return toExtensionObject(element);
-            case DataValue:
-                return toDataValue(element);
-            case Variant:
-                return toVariant(element);
-            case DiagnosticInfo:
-            default:
+        return switch (dataType) {
+            case Boolean -> toBoolean(element);
+            case SByte -> toSByte(element);
+            case Byte -> toByte(element);
+            case Int16 -> toInt16(element);
+            case UInt16 -> toUInt16(element);
+            case Int32 -> toInt32(element);
+            case UInt32 -> toUInt32(element);
+            case Int64 -> toInt64(element);
+            case UInt64 -> toUInt64(element);
+            case Float -> toFloat(element);
+            case Double -> toDouble(element);
+            case String -> toString(element);
+            case DateTime -> toDateTime(element);
+            case Guid -> toGuid(element);
+            case ByteString -> toByteString(element);
+            case XmlElement -> toXmlElement(element);
+            case NodeId -> toNodeId(element);
+            case ExpandedNodeId -> toExpandedNodeId(element);
+            case StatusCode -> toStatusCode(element);
+            case QualifiedName -> toQualifiedName(element);
+            case LocalizedText -> toLocalizedText(element);
+            case ExtensionObject -> toExtensionObject(element);
+            case DataValue -> toDataValue(element);
+            case Variant -> toVariant(element);
+            default ->
                 // note: shouldn't be possible to get here.
                 // DiagnosticInfo is not allowed in Variant.
                 // All other types should be handled above.
                 throw new IllegalArgumentException("dataType: " + dataType);
-        }
+        };
     }
 
     public static Boolean toBoolean(JsonElement element) {
@@ -498,22 +445,21 @@ public class JsonConversions {
             encoding = jsonObject.get("Encoding").getAsInt();
         }
 
-        switch (encoding) {
-            case 0: {
+        return switch (encoding) {
+            case 0 -> {
                 String body = jsonObject.get("Body").toString();
-                return new ExtensionObject(body, typeId);
+                yield new ExtensionObject(body, typeId);
             }
-            case 1: {
+            case 1 -> {
                 ByteString body = toByteString(jsonObject.get("Body"));
-                return new ExtensionObject(body, typeId);
+                yield new ExtensionObject(body, typeId);
             }
-            case 2: {
+            case 2 -> {
                 XmlElement body = toXmlElement(jsonObject.get("Body"));
-                return new ExtensionObject(body, typeId);
+                yield new ExtensionObject(body, typeId);
             }
-            default:
-                throw new IllegalArgumentException("unknown encoding: " + encoding);
-        }
+            default -> throw new IllegalArgumentException("unknown encoding: " + encoding);
+        };
     }
 
     public static DataValue toDataValue(JsonElement element) {

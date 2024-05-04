@@ -86,20 +86,10 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
 
     @Override
     public JsonStruct decodeType(EncodingContext context, UaDecoder decoder) throws UaSerializationException {
-        switch (definition.getStructureType()) {
-            case Structure:
-            case StructureWithOptionalFields:
-            case StructureWithSubtypedValues:
-                return decodeStruct(decoder);
-
-            case Union:
-            case UnionWithSubtypedValues:
-                return decodeUnion(decoder);
-
-            default:
-                throw new IllegalArgumentException(
-                    "unsupported structure type: " + definition.getStructureType());
-        }
+        return switch (definition.getStructureType()) {
+            case Structure, StructureWithOptionalFields, StructureWithSubtypedValues -> decodeStruct(decoder);
+            case Union, UnionWithSubtypedValues -> decodeUnion(decoder);
+        };
     }
 
     private JsonStruct decodeStruct(UaDecoder decoder) throws UaSerializationException {
@@ -265,60 +255,33 @@ public class JsonStructCodec extends GenericDataTypeCodec<JsonStruct> {
     }
 
     private static JsonElement decodeBuiltinDataType(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
-        switch (dataType) {
-            case Boolean:
-                return JsonConversions.fromBoolean(decoder.decodeBoolean(fieldName));
-            case SByte:
-                return JsonConversions.fromSByte(decoder.decodeSByte(fieldName));
-            case Byte:
-                return JsonConversions.fromByte(decoder.decodeByte(fieldName));
-            case Int16:
-                return JsonConversions.fromInt16(decoder.decodeInt16(fieldName));
-            case UInt16:
-                return JsonConversions.fromUInt16(decoder.decodeUInt16(fieldName));
-            case Int32:
-                return JsonConversions.fromInt32(decoder.decodeInt32(fieldName));
-            case UInt32:
-                return JsonConversions.fromUInt32(decoder.decodeUInt32(fieldName));
-            case Int64:
-                return JsonConversions.fromInt64(decoder.decodeInt64(fieldName));
-            case UInt64:
-                return JsonConversions.fromUInt64(decoder.decodeUInt64(fieldName));
-            case Float:
-                return JsonConversions.fromFloat(decoder.decodeFloat(fieldName));
-            case Double:
-                return JsonConversions.fromDouble(decoder.decodeDouble(fieldName));
-            case String:
-                return JsonConversions.fromString(decoder.decodeString(fieldName));
-            case DateTime:
-                return JsonConversions.fromDateTime(decoder.decodeDateTime(fieldName));
-            case Guid:
-                return JsonConversions.fromGuid(decoder.decodeGuid(fieldName));
-            case ByteString:
-                return JsonConversions.fromByteString(decoder.decodeByteString(fieldName));
-            case XmlElement:
-                return JsonConversions.fromXmlElement(decoder.decodeXmlElement(fieldName));
-            case NodeId:
-                return JsonConversions.fromNodeId(decoder.decodeNodeId(fieldName));
-            case ExpandedNodeId:
-                return JsonConversions.fromExpandedNodeId(decoder.decodeExpandedNodeId(fieldName));
-            case StatusCode:
-                return JsonConversions.fromStatusCode(decoder.decodeStatusCode(fieldName));
-            case QualifiedName:
-                return JsonConversions.fromQualifiedName(decoder.decodeQualifiedName(fieldName));
-            case LocalizedText:
-                return JsonConversions.fromLocalizedText(decoder.decodeLocalizedText(fieldName));
-            case ExtensionObject:
-                return JsonConversions.fromExtensionObject(decoder.decodeExtensionObject(fieldName));
-            case DataValue:
-                return JsonConversions.fromDataValue(decoder.decodeDataValue(fieldName));
-            case Variant:
-                return JsonConversions.fromVariant(decoder.decodeVariant(fieldName));
-
-            case DiagnosticInfo:
-            default:
-                return JsonNull.INSTANCE;
-        }
+        return switch (dataType) {
+            case Boolean -> JsonConversions.fromBoolean(decoder.decodeBoolean(fieldName));
+            case SByte -> JsonConversions.fromSByte(decoder.decodeSByte(fieldName));
+            case Byte -> JsonConversions.fromByte(decoder.decodeByte(fieldName));
+            case Int16 -> JsonConversions.fromInt16(decoder.decodeInt16(fieldName));
+            case UInt16 -> JsonConversions.fromUInt16(decoder.decodeUInt16(fieldName));
+            case Int32 -> JsonConversions.fromInt32(decoder.decodeInt32(fieldName));
+            case UInt32 -> JsonConversions.fromUInt32(decoder.decodeUInt32(fieldName));
+            case Int64 -> JsonConversions.fromInt64(decoder.decodeInt64(fieldName));
+            case UInt64 -> JsonConversions.fromUInt64(decoder.decodeUInt64(fieldName));
+            case Float -> JsonConversions.fromFloat(decoder.decodeFloat(fieldName));
+            case Double -> JsonConversions.fromDouble(decoder.decodeDouble(fieldName));
+            case String -> JsonConversions.fromString(decoder.decodeString(fieldName));
+            case DateTime -> JsonConversions.fromDateTime(decoder.decodeDateTime(fieldName));
+            case Guid -> JsonConversions.fromGuid(decoder.decodeGuid(fieldName));
+            case ByteString -> JsonConversions.fromByteString(decoder.decodeByteString(fieldName));
+            case XmlElement -> JsonConversions.fromXmlElement(decoder.decodeXmlElement(fieldName));
+            case NodeId -> JsonConversions.fromNodeId(decoder.decodeNodeId(fieldName));
+            case ExpandedNodeId -> JsonConversions.fromExpandedNodeId(decoder.decodeExpandedNodeId(fieldName));
+            case StatusCode -> JsonConversions.fromStatusCode(decoder.decodeStatusCode(fieldName));
+            case QualifiedName -> JsonConversions.fromQualifiedName(decoder.decodeQualifiedName(fieldName));
+            case LocalizedText -> JsonConversions.fromLocalizedText(decoder.decodeLocalizedText(fieldName));
+            case ExtensionObject -> JsonConversions.fromExtensionObject(decoder.decodeExtensionObject(fieldName));
+            case DataValue -> JsonConversions.fromDataValue(decoder.decodeDataValue(fieldName));
+            case Variant -> JsonConversions.fromVariant(decoder.decodeVariant(fieldName));
+            default -> JsonNull.INSTANCE;
+        };
     }
 
     private static JsonElement decodeBuiltinDataTypeArray(UaDecoder decoder, String fieldName, BuiltinDataType dataType) {
