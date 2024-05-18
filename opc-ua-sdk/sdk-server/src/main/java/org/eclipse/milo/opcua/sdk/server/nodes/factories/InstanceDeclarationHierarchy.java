@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.typetree.ReferenceTypeTree;
 import org.eclipse.milo.opcua.sdk.server.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -112,7 +112,7 @@ public class InstanceDeclarationHierarchy {
             List<Reference> forwardReferences = addressSpaceManager.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference::isForward)
-                .collect(Collectors.toList());
+                .toList();
 
             forwardReferences.forEach(reference ->
                 addressSpaceManager.getManagedNode(reference.getTargetNodeId()).ifPresent(node -> {
@@ -122,13 +122,15 @@ public class InstanceDeclarationHierarchy {
 
                     BrowsePath browsePath = new BrowsePath(parentPath, node.getBrowseName());
 
+                    ReferenceTypeTree referenceTypeTree = node.getNodeContext().getServer().getReferenceTypeTree();
+
                     if (isInstanceDeclaration(node)) {
                         nodeTable.addNode(browsePath, node.getNodeId());
                         referenceTable.addReference(parentPath, reference.getReferenceTypeId(), browsePath);
 
                         node.getReferences()
                             .stream()
-                            .filter(r -> r.subtypeOf(NodeIds.NonHierarchicalReferences))
+                            .filter(r -> referenceTypeTree.isSubtypeOf(r.getReferenceTypeId(), NodeIds.NonHierarchicalReferences))
                             .forEach(r -> referenceTable
                                 .addReference(browsePath, r.getReferenceTypeId(), r.getTargetNodeId()));
 
