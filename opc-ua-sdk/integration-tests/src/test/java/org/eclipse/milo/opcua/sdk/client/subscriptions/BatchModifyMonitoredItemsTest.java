@@ -74,14 +74,14 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
             if (i % 2 == 0) {
                 assertTrue(result.isOperationResultGood());
                 assertTrue(future.get().isOperationResultGood());
-                assertEquals(5000.0, items.get(i).getRevisedSamplingInterval());
+                assertEquals(items.get(i).getRevisedSamplingInterval(), 5000.0);
             } else {
                 assertFalse(result.isOperationResultGood());
                 assertFalse(future.get().isOperationResultGood());
             }
         }
 
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
     @Test
@@ -113,12 +113,12 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         }
 
-        assertEquals(TimestampsToReturn.Server, item1.getTimestampsToReturn());
-        assertEquals(TimestampsToReturn.Both, item2.getTimestampsToReturn());
-        assertEquals(TimestampsToReturn.Neither, item3.getTimestampsToReturn());
-        assertEquals(TimestampsToReturn.Source, item4.getTimestampsToReturn());
+        assertEquals(item1.getTimestampsToReturn(), TimestampsToReturn.Server);
+        assertEquals(item2.getTimestampsToReturn(), TimestampsToReturn.Both);
+        assertEquals(item3.getTimestampsToReturn(), TimestampsToReturn.Neither);
+        assertEquals(item4.getTimestampsToReturn(), TimestampsToReturn.Source);
 
-        assertEquals(4, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 4);
     }
 
     @Test
@@ -141,8 +141,8 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
         // test case there are 3 operations to the same item, which only
         // results in underlying modify operation but the batch should return
         // an operation result for each.
-        assertEquals(3, batch.execute().size());
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.execute().size(), 3);
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
 }

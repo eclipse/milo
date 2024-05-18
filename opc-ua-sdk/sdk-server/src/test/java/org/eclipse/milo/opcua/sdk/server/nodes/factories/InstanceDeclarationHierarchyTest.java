@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +27,9 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertNotNull;
 
 public class InstanceDeclarationHierarchyTest {
 

@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
 import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -35,14 +38,11 @@ import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
 import org.eclipse.milo.opcua.stack.server.UaStackServerConfigBuilder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public abstract class StackIntegrationTest extends SecurityFixture {
 
@@ -66,7 +66,7 @@ public abstract class StackIntegrationTest extends SecurityFixture {
     protected UaStackClient stackClient;
     protected UaStackServer stackServer;
 
-    @BeforeSuite
+    @BeforeEach
     public void setUpClientServer() throws Exception {
         super.setUp();
 
@@ -173,7 +173,7 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         stackClient.connect().get();
     }
 
-    @AfterSuite
+    @AfterEach
     public void tearDownClientServer() throws Exception {
         stackClient.disconnect().get();
         stackServer.shutdown().get();

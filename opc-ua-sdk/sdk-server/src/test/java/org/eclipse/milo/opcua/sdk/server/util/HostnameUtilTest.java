@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import java.util.Set;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertNotEquals;
+import org.junit.jupiter.api.Test;
 
 public class HostnameUtilTest {
 

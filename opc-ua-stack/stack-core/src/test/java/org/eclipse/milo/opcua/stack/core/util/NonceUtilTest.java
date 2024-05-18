@@ -10,14 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertThrows;
-import static org.testng.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class NonceUtilTest {
 
@@ -28,13 +28,13 @@ public class NonceUtilTest {
 
             switch (securityPolicy) {
                 case None:
-                    assertEquals(nonce.length(), 0);
+                    assertEquals(0, nonce.length());
                     break;
                 case Basic128Rsa15:
-                    assertEquals(nonce.length(), 16);
+                    assertEquals(16, nonce.length());
                     break;
                 default:
-                    assertEquals(nonce.length(), 32);
+                    assertEquals(32, nonce.length());
             }
         }
     }
@@ -43,7 +43,7 @@ public class NonceUtilTest {
     public void testNonceGeneration() throws UaException {
         for (int i = 32; i < 256; i++) {
             ByteString nonce = NonceUtil.generateNonce(i);
-            assertEquals(nonce.length(), i);
+            assertEquals(i, nonce.length());
             NonceUtil.validateNonce(nonce);
         }
     }
@@ -52,7 +52,7 @@ public class NonceUtilTest {
     public void testShortNonceThrows() {
         ByteString nonce = NonceUtil.generateNonce(NonceUtil.MINIMUM_NONCE_LENGTH - 1);
 
-        assertThrows(() -> NonceUtil.validateNonce(nonce));
+        assertThrows(Exception.class, () -> NonceUtil.validateNonce(nonce));
     }
 
     @Test

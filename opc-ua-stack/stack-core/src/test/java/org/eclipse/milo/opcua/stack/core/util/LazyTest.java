@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+import org.junit.jupiter.api.Test;
 
 public class LazyTest {
 
@@ -27,10 +27,10 @@ public class LazyTest {
         Object instance = new Object();
 
         Object o1 = lazy.getOrCompute(() -> instance);
-        assertEquals(o1, instance);
+        assertEquals(instance, o1);
 
         Object o2 = lazy.getOrCompute(() -> instance);
-        assertEquals(o2, instance);
+        assertEquals(instance, o2);
     }
 
     @Test
@@ -62,10 +62,10 @@ public class LazyTest {
         };
 
         Object o1 = lazy.getOrCompute(supplier);
-        assertEquals(o1, instance);
+        assertEquals(instance, o1);
 
         Object o2 = lazy.getOrCompute(supplier);
-        assertEquals(o2, instance);
+        assertEquals(instance, o2);
     }
 
     @Test
@@ -91,12 +91,12 @@ public class LazyTest {
         };
 
         Object o1 = lazy.getOrCompute(supplier);
-        assertEquals(o1, instance1);
+        assertEquals(instance1, o1);
 
         lazy.reset();
 
         Object o2 = lazy.getOrCompute(supplier);
-        assertEquals(o2, instance2);
+        assertEquals(instance2, o2);
     }
 
 }

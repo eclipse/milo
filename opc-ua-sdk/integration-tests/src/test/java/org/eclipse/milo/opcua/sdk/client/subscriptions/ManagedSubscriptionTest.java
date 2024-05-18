@@ -98,9 +98,9 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
         ManagedDataItem dataItem = subscription.createDataItem(5000.0, readValueId);
 
-        assertEquals(5000.0, dataItem.getSamplingInterval());
-        assertEquals(5000.0, dataItem.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(5000.0, dataItem.getMonitoredItem().getRevisedSamplingInterval());
+        assertEquals(dataItem.getSamplingInterval(), 5000.0);
+        assertEquals(dataItem.getMonitoredItem().getRequestedSamplingInterval(), 5000.0);
+        assertEquals(dataItem.getMonitoredItem().getRevisedSamplingInterval(), 5000.0);
     }
 
     @Test
@@ -108,10 +108,10 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         double original = subscription.getPublishingInterval();
 
         double revised1 = subscription.setPublishingInterval(100.0);
-        assertEquals(100.0, revised1);
+        assertEquals(revised1, 100.0);
 
         double revised2 = subscription.setPublishingInterval(original);
-        assertEquals(original, revised2);
+        assertEquals(revised2, original);
     }
 
     @Test
@@ -128,24 +128,24 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedDataItem dataItem1 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(MonitoringMode.Reporting, dataItem1.getMonitoringMode());
-        assertEquals(MonitoringMode.Reporting, dataItem1.getMonitoredItem().getMonitoringMode());
+        assertEquals(dataItem1.getMonitoringMode(), MonitoringMode.Reporting);
+        assertEquals(dataItem1.getMonitoredItem().getMonitoringMode(), MonitoringMode.Reporting);
 
         subscription.setDefaultMonitoringMode(MonitoringMode.Sampling);
 
         ManagedDataItem dataItem2 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(MonitoringMode.Sampling, dataItem2.getMonitoringMode());
-        assertEquals(MonitoringMode.Sampling, dataItem2.getMonitoredItem().getMonitoringMode());
+        assertEquals(dataItem2.getMonitoringMode(), MonitoringMode.Sampling);
+        assertEquals(dataItem2.getMonitoredItem().getMonitoringMode(), MonitoringMode.Sampling);
 
         subscription.setDefaultMonitoringMode(MonitoringMode.Disabled);
 
         ManagedDataItem dataItem3 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(MonitoringMode.Disabled, dataItem3.getMonitoringMode());
-        assertEquals(MonitoringMode.Disabled, dataItem3.getMonitoredItem().getMonitoringMode());
+        assertEquals(dataItem3.getMonitoringMode(), MonitoringMode.Disabled);
+        assertEquals(dataItem3.getMonitoredItem().getMonitoringMode(), MonitoringMode.Disabled);
     }
 
     @Test
@@ -153,22 +153,22 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedDataItem dataItem1 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRevisedSamplingInterval());
+        assertEquals(dataItem1.getMonitoredItem().getRequestedSamplingInterval(), subscription.getDefaultSamplingInterval());
+        assertEquals(dataItem1.getMonitoredItem().getRevisedSamplingInterval(), subscription.getDefaultSamplingInterval());
 
         subscription.setDefaultSamplingInterval(100.0);
         ManagedDataItem dataItem2 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem2.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem2.getMonitoredItem().getRevisedSamplingInterval());
+        assertEquals(dataItem2.getMonitoredItem().getRequestedSamplingInterval(), subscription.getDefaultSamplingInterval());
+        assertEquals(dataItem2.getMonitoredItem().getRevisedSamplingInterval(), subscription.getDefaultSamplingInterval());
 
         subscription.setDefaultSamplingInterval(5000.0);
         ManagedDataItem dataItem3 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem3.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(subscription.getDefaultSamplingInterval(), dataItem3.getMonitoredItem().getRevisedSamplingInterval());
+        assertEquals(dataItem3.getMonitoredItem().getRequestedSamplingInterval(), subscription.getDefaultSamplingInterval());
+        assertEquals(dataItem3.getMonitoredItem().getRevisedSamplingInterval(), subscription.getDefaultSamplingInterval());
     }
 
     @Test
@@ -176,15 +176,15 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedDataItem dataItem1 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultQueueSize(), dataItem1.getMonitoredItem().getRequestedQueueSize());
-        assertEquals(subscription.getDefaultQueueSize(), dataItem1.getMonitoredItem().getRevisedQueueSize());
+        assertEquals(dataItem1.getMonitoredItem().getRequestedQueueSize(), subscription.getDefaultQueueSize());
+        assertEquals(dataItem1.getMonitoredItem().getRevisedQueueSize(), subscription.getDefaultQueueSize());
 
         subscription.setDefaultQueueSize(uint(subscription.getDefaultQueueSize().intValue() + 1));
         ManagedDataItem dataItem2 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultQueueSize(), dataItem2.getMonitoredItem().getRequestedQueueSize());
-        assertEquals(subscription.getDefaultQueueSize(), dataItem2.getMonitoredItem().getRevisedQueueSize());
+        assertEquals(dataItem2.getMonitoredItem().getRequestedQueueSize(), subscription.getDefaultQueueSize());
+        assertEquals(dataItem2.getMonitoredItem().getRevisedQueueSize(), subscription.getDefaultQueueSize());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedDataItem dataItem1 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultDataFilter(), dataItem1.getMonitoredItem().getMonitoringFilter());
+        assertEquals(dataItem1.getMonitoredItem().getMonitoringFilter(), subscription.getDefaultDataFilter());
 
         subscription.setDefaultDataFilter(
             new DataChangeFilter(
@@ -206,7 +206,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
             Identifiers.Server_ServerStatus_CurrentTime
         );
 
-        assertEquals(subscription.getDefaultDataFilter(), dataItem2.getMonitoredItem().getMonitoringFilter());
+        assertEquals(dataItem2.getMonitoredItem().getMonitoringFilter(), subscription.getDefaultDataFilter());
     }
 
     @Test
@@ -214,13 +214,13 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedDataItem dataItem1 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultTimestamps(), dataItem1.getMonitoredItem().getTimestamps());
+        assertEquals(dataItem1.getMonitoredItem().getTimestamps(), subscription.getDefaultTimestamps());
 
         subscription.setDefaultTimestamps(TimestampsToReturn.Neither);
         ManagedDataItem dataItem2 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
-        assertEquals(subscription.getDefaultTimestamps(), dataItem2.getMonitoredItem().getTimestamps());
+        assertEquals(dataItem2.getMonitoredItem().getTimestamps(), subscription.getDefaultTimestamps());
     }
 
     @Test

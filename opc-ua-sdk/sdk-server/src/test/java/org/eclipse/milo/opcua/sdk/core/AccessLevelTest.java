@@ -10,20 +10,20 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class AccessLevelTest {
 
     @Test
     public void testToValue() {
         for (AccessLevel accessLevel : AccessLevel.values()) {
-            assertEquals(AccessLevel.toValue(accessLevel), ubyte(accessLevel.getValue()));
+            assertEquals(ubyte(accessLevel.getValue()), AccessLevel.toValue(accessLevel));
         }
 
-        assertEquals(AccessLevel.toValue(AccessLevel.NONE), ubyte(0));
+        assertEquals(ubyte(0), AccessLevel.toValue(AccessLevel.NONE));
 
         assertEquals(
             AccessLevel.toValue(AccessLevel.READ_ONLY).intValue(),
@@ -48,7 +48,7 @@ public class AccessLevelTest {
 
     @Test
     public void testFromValue() {
-        assertEquals(AccessLevel.fromValue(0), AccessLevel.NONE);
+        assertEquals(AccessLevel.NONE, AccessLevel.fromValue(0));
 
         assertEquals(
             AccessLevel.fromValue(

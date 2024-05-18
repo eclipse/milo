@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.LocalizedTextConversions.localizedTextToString;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.junit.jupiter.api.Test;
 
 public class LocalizedTextConversionsTest {
 
@@ -22,7 +22,7 @@ public class LocalizedTextConversionsTest {
     public void testLocalizedTextToString() {
         LocalizedText text = new LocalizedText("en-us", "foo");
 
-        assertEquals(localizedTextToString(text), "foo");
+        assertEquals("foo", localizedTextToString(text));
     }
 
 }

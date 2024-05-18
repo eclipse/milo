@@ -46,7 +46,7 @@ public class UaVariableNodeTest extends AbstractClientServerTest {
 
         UaVariableTypeNode variableTypeNode = variableNode.getTypeDefinition();
 
-        assertEquals(Identifiers.ServerStatusType, variableTypeNode.getNodeId());
+        assertEquals(variableTypeNode.getNodeId(), Identifiers.ServerStatusType);
     }
 
     @Test

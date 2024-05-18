@@ -27,7 +27,7 @@ public class AttributeWriterTest extends AbstractClientServerTest {
             DataValue.valueOnly(Variant.NULL_VALUE)
         ).get();
 
-        assertEquals(StatusCode.GOOD, statusCode);
+        assertEquals(statusCode, StatusCode.GOOD);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class AttributeWriterTest extends AbstractClientServerTest {
             DataValue.valueOnly(Variant.NULL_VALUE)
         ).get();
 
-        assertEquals(new StatusCode(StatusCodes.Bad_TypeMismatch), statusCode);
+        assertEquals(statusCode, new StatusCode(StatusCodes.Bad_TypeMismatch));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class AttributeWriterTest extends AbstractClientServerTest {
             DataValue.valueOnly(Variant.NULL_VALUE)
         ).get();
 
-        assertEquals(new StatusCode(StatusCodes.Bad_TypeMismatch), statusCode);
+        assertEquals(statusCode, new StatusCode(StatusCodes.Bad_TypeMismatch));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class AttributeWriterTest extends AbstractClientServerTest {
             DataValue.valueOnly(new Variant(ByteString.of(new byte[]{1, 2, 3})))
         ).get();
 
-        assertEquals(StatusCode.GOOD, statusCode);
+        assertEquals(statusCode, StatusCode.GOOD);
     }
 
     @BeforeAll

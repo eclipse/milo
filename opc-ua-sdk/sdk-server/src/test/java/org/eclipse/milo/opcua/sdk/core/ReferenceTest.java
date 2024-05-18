@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class ReferenceTest {
 
@@ -36,7 +36,7 @@ public class ReferenceTest {
             reference1.getDirection()
         );
 
-        assertEquals(reference1, reference2);
+        assertEquals(reference2, reference1);
     }
 
 }

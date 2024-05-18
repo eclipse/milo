@@ -48,11 +48,11 @@ public class BatchSetMonitoringModeTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         }
 
-        assertEquals(MonitoringMode.Sampling, item1.getMonitoringMode());
-        assertEquals(MonitoringMode.Sampling, item2.getMonitoringMode());
-        assertEquals(MonitoringMode.Sampling, item3.getMonitoringMode());
+        assertEquals(item1.getMonitoringMode(), MonitoringMode.Sampling);
+        assertEquals(item2.getMonitoringMode(), MonitoringMode.Sampling);
+        assertEquals(item3.getMonitoringMode(), MonitoringMode.Sampling);
 
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
     @Test
@@ -81,11 +81,11 @@ public class BatchSetMonitoringModeTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         }
 
-        assertEquals(MonitoringMode.Sampling, item1.getMonitoringMode());
-        assertEquals(MonitoringMode.Reporting, item2.getMonitoringMode());
-        assertEquals(MonitoringMode.Disabled, item3.getMonitoringMode());
+        assertEquals(item1.getMonitoringMode(), MonitoringMode.Sampling);
+        assertEquals(item2.getMonitoringMode(), MonitoringMode.Reporting);
+        assertEquals(item3.getMonitoringMode(), MonitoringMode.Disabled);
 
-        assertEquals(3, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 3);
     }
 
 }

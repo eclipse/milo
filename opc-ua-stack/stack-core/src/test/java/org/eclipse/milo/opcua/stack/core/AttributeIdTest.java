@@ -10,13 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
-import com.google.common.collect.Lists;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import com.google.common.collect.Lists;
 
 public class AttributeIdTest {
 
@@ -25,7 +26,7 @@ public class AttributeIdTest {
         for (AttributeId attributeId : AttributeId.values()) {
             int id = attributeId.id();
 
-            assertEquals(attributeId, AttributeId.from(id).get());
+            assertEquals(AttributeId.from(id).get(), attributeId);
         }
 
         assertFalse(AttributeId.from(-1).isPresent());
@@ -37,19 +38,19 @@ public class AttributeIdTest {
     public void testOrdering() {
         List<AttributeId> attributes = Lists.newArrayList(AttributeId.VARIABLE_TYPE_ATTRIBUTES);
 
-        assertEquals(AttributeId.NodeId, attributes.get(0));
-        assertEquals(AttributeId.NodeClass, attributes.get(1));
-        assertEquals(AttributeId.BrowseName, attributes.get(2));
-        assertEquals(AttributeId.DisplayName, attributes.get(3));
-        assertEquals(AttributeId.Description, attributes.get(4));
-        assertEquals(AttributeId.WriteMask, attributes.get(5));
-        assertEquals(AttributeId.UserWriteMask, attributes.get(6));
+        assertEquals(attributes.get(0), AttributeId.NodeId);
+        assertEquals(attributes.get(1), AttributeId.NodeClass);
+        assertEquals(attributes.get(2), AttributeId.BrowseName);
+        assertEquals(attributes.get(3), AttributeId.DisplayName);
+        assertEquals(attributes.get(4), AttributeId.Description);
+        assertEquals(attributes.get(5), AttributeId.WriteMask);
+        assertEquals(attributes.get(6), AttributeId.UserWriteMask);
 
-        assertEquals(AttributeId.Value, attributes.get(7));
-        assertEquals(AttributeId.DataType, attributes.get(8));
-        assertEquals(AttributeId.ValueRank, attributes.get(9));
-        assertEquals(AttributeId.ArrayDimensions, attributes.get(10));
-        assertEquals(AttributeId.IsAbstract, attributes.get(11));
+        assertEquals(attributes.get(7), AttributeId.Value);
+        assertEquals(attributes.get(8), AttributeId.DataType);
+        assertEquals(attributes.get(9), AttributeId.ValueRank);
+        assertEquals(attributes.get(10), AttributeId.ArrayDimensions);
+        assertEquals(attributes.get(11), AttributeId.IsAbstract);
     }
 
 }

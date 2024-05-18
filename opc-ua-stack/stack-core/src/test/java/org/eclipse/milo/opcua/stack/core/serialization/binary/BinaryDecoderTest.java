@@ -10,6 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
@@ -19,15 +24,13 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class BinaryDecoderTest extends BinarySerializationFixture {
 
-    @Test(description = "a null array, once encoded, should decode to a null array")
+    @Test
+    @DisplayName("a null array, once encoded, should decode to a null array")
     public void testDecodeNullArray() {
         Argument argument = new Argument(
             "test",
@@ -49,7 +52,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         codec.encode(new TestSerializationContext(), writer, argument);
         Argument decoded = codec.decode(new TestSerializationContext(), reader);
 
-        assertEquals(decoded.getName(), argument.getName());
+        assertEquals(argument.getName(), decoded.getName());
 
         assertNull(decoded.getArrayDimensions());
     }
@@ -59,7 +62,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         writer.writeEnum(null, ApplicationType.Client);
         ApplicationType decoded = reader.readEnum(null, ApplicationType.class);
 
-        assertEquals(decoded, ApplicationType.Client);
+        assertEquals(ApplicationType.Client, decoded);
     }
 
     @Test
@@ -71,7 +74,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         writer.writeEnumArray(null, array);
         ApplicationType[] decoded = (ApplicationType[]) reader.readEnumArray(null, ApplicationType.class);
 
-        assertEquals(decoded, array);
+        assertArrayEquals(array, decoded);
     }
 
 }

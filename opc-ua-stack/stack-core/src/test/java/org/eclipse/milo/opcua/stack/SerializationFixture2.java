@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-
-import static org.testng.Assert.assertEquals;
 
 public class SerializationFixture2 {
 
@@ -28,7 +28,7 @@ public class SerializationFixture2 {
 
         T decoded = decoder.apply(encoder.apply(encoded, buffer));
 
-        assertEquals(encoded, decoded);
+        assertEquals(decoded, encoded);
     }
 
 }

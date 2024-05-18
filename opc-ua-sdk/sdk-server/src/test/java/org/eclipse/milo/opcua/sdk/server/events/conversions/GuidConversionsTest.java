@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class GuidConversionsTest {
 
@@ -31,14 +31,14 @@ public class GuidConversionsTest {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(msb).putLong(lsb);
 
-        assertEquals(bs, ByteString.of(bb.array()));
+        assertEquals(ByteString.of(bb.array()), bs);
     }
 
     @Test
     public void testGuidToString() {
         UUID uuid = UUID.randomUUID();
 
-        assertEquals(uuid.toString(), GuidConversions.guidToString(uuid));
+        assertEquals(GuidConversions.guidToString(uuid), uuid.toString());
     }
 
 }

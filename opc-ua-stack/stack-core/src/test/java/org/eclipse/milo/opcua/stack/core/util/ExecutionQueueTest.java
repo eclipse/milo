@@ -10,16 +10,16 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import org.junit.jupiter.api.Test;
 
 public class ExecutionQueueTest {
 
@@ -62,7 +62,7 @@ public class ExecutionQueueTest {
         }
 
         latch.await();
-        assertEquals(count.get(), 100000);
+        assertEquals(100000, count.get());
     }
 
 }

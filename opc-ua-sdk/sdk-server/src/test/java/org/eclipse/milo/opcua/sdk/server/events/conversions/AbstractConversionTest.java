@@ -10,14 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
+import org.junit.jupiter.api.Test;
 
 abstract class AbstractConversionTest<S> {
 
@@ -44,7 +44,7 @@ abstract class AbstractConversionTest<S> {
                 System.out.println(String.format("%s -> %s [%s]", sourceType, targetType, conversionType));
 
                 for (Conversion conversion : conversions) {
-                    assertEquals(targetType, conversion.targetType);
+                    assertEquals(conversion.targetType, targetType);
 
                     S fromValue = getSourceClass().cast(conversion.fromValue);
                     Object targetValue = conversion.targetValue;
@@ -53,7 +53,7 @@ abstract class AbstractConversionTest<S> {
 
                     System.out.println(String.format("\tfromValue=%s targetValue=%s", fromValue, targetValue));
 
-                    assertEquals(convertedValue, targetValue);
+                    assertEquals(targetValue, convertedValue);
                 }
             } else {
                 if (conversions.length != 0) {
@@ -101,7 +101,7 @@ abstract class AbstractConversionTest<S> {
                         "[%s] fromValue=%s targetType=%s targetValue=%s",
                         conversionType, fromValue, targetType, conversion.targetValue));
 
-                    assertEquals(convertedValue, conversion.targetValue);
+                    assertEquals(conversion.targetValue, convertedValue);
                 }
             }
         }

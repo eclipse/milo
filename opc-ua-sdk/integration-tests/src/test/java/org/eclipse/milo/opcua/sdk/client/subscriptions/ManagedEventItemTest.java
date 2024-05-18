@@ -67,7 +67,7 @@ public class ManagedEventItemTest extends AbstractManagedItemTest {
             NodeId.parse("ns=2;s=FooBarDoesNotExist"),
             eventFilter
         );
-        assertEquals(StatusCodes.Bad_NodeIdUnknown, dataItem2.getStatusCode().getValue());
+        assertEquals(dataItem2.getStatusCode().getValue(), StatusCodes.Bad_NodeIdUnknown);
     }
 
     @Test

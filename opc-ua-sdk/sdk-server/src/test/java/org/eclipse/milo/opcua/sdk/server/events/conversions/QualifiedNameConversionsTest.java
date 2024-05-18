@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.QualifiedNameConversions.qualifiedNameToLocalizedText;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.QualifiedNameConversions.qualifiedNameToString;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.junit.jupiter.api.Test;
 
 public class QualifiedNameConversionsTest {
 
@@ -24,7 +24,7 @@ public class QualifiedNameConversionsTest {
     public void testQualifiedNameToString() {
         QualifiedName name = new QualifiedName(0, "foo");
 
-        assertEquals(qualifiedNameToString(name), "foo");
+        assertEquals("foo", qualifiedNameToString(name));
     }
 
     @Test
@@ -33,8 +33,8 @@ public class QualifiedNameConversionsTest {
 
         LocalizedText text = qualifiedNameToLocalizedText(name);
 
-        assertEquals(text.getLocale(), "");
-        assertEquals(text.getText(), "foo");
+        assertEquals("", text.getLocale());
+        assertEquals("foo", text.getText());
     }
 
 }

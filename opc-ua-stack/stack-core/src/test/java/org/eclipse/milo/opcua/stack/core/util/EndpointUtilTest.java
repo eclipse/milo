@@ -10,34 +10,33 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.stack.core.util.EndpointUtil.updateUrl;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class EndpointUtilTest {
 
     @Test
     public void testGetPath() {
-        assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/foo"), "/foo");
-        assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/foo/"), "/foo");
-        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840/foo"), "/foo");
-        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840/foo/"), "/foo");
+        assertEquals("/foo", EndpointUtil.getPath("opc.tcp://localhost:4840/foo"));
+        assertEquals("/foo", EndpointUtil.getPath("opc.tcp://localhost:4840/foo/"));
+        assertEquals("/foo", EndpointUtil.getPath("opc.tcp://invalid_host:4840/foo"));
+        assertEquals("/foo", EndpointUtil.getPath("opc.tcp://invalid_host:4840/foo/"));
     }
 
     @Test
     public void testGetPath_EmptyAndSlash() {
-        assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840"), "/");
-        assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/"), "/");
-        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840"), "/");
-        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840/"), "/");
+        assertEquals("/", EndpointUtil.getPath("opc.tcp://localhost:4840"));
+        assertEquals("/", EndpointUtil.getPath("opc.tcp://localhost:4840/"));
+        assertEquals("/", EndpointUtil.getPath("opc.tcp://invalid_host:4840"));
+        assertEquals("/", EndpointUtil.getPath("opc.tcp://invalid_host:4840/"));
     }
 
 
     @Test
     public void testGetPath_Invalid() {
-        assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/no spaces allowed"),
-            "/no spaces allowed");
+        assertEquals("/no spaces allowed", EndpointUtil.getPath("opc.tcp://localhost:4840/no spaces allowed"));
     }
 
     @Test
@@ -59,17 +58,17 @@ public class EndpointUtilTest {
         String withPath = "opc.tcp://[fe80::9289:e377:bacb:f608%enp0s31f6]:4840/foo";
         String withoutPath = "opc.tcp://[fe80::9289:e377:bacb:f608%enp0s31f6]:4840";
 
-        assertEquals(EndpointUtil.getScheme(withPath), "opc.tcp");
-        assertEquals(EndpointUtil.getScheme(withoutPath), "opc.tcp");
+        assertEquals("opc.tcp", EndpointUtil.getScheme(withPath));
+        assertEquals("opc.tcp", EndpointUtil.getScheme(withoutPath));
 
-        assertEquals(EndpointUtil.getHost(withPath), "[fe80::9289:e377:bacb:f608%enp0s31f6]");
-        assertEquals(EndpointUtil.getHost(withoutPath), "[fe80::9289:e377:bacb:f608%enp0s31f6]");
+        assertEquals("[fe80::9289:e377:bacb:f608%enp0s31f6]", EndpointUtil.getHost(withPath));
+        assertEquals("[fe80::9289:e377:bacb:f608%enp0s31f6]", EndpointUtil.getHost(withoutPath));
 
-        assertEquals(EndpointUtil.getPort(withPath), 4840);
-        assertEquals(EndpointUtil.getPort(withoutPath), 4840);
+        assertEquals(4840, EndpointUtil.getPort(withPath));
+        assertEquals(4840, EndpointUtil.getPort(withoutPath));
 
-        assertEquals(EndpointUtil.getPath(withPath), "/foo");
-        assertEquals(EndpointUtil.getPath(withoutPath), "/");
+        assertEquals("/foo", EndpointUtil.getPath(withPath));
+        assertEquals("/", EndpointUtil.getPath(withoutPath));
 
     }
 

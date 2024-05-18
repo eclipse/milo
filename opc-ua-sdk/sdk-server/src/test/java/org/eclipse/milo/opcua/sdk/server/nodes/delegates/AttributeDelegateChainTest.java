@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class AttributeDelegateChainTest {
 
@@ -102,12 +102,12 @@ public class AttributeDelegateChainTest {
         node.setValue(new DataValue(new Variant("foo")));
 
         DataValue value = delegate.getValue(new AttributeContext(null, null), node);
-        assertEquals(value.getValue().getValue(), "foo");
+        assertEquals("foo", value.getValue().getValue());
 
-        assertEquals(list.get(0), "child3");
-        assertEquals(list.get(1), "child2");
-        assertEquals(list.get(2), "child1");
-        assertEquals(list.get(3), "root");
+        assertEquals("child3", list.get(0));
+        assertEquals("child2", list.get(1));
+        assertEquals("child1", list.get(2));
+        assertEquals("root", list.get(3));
     }
 
 }

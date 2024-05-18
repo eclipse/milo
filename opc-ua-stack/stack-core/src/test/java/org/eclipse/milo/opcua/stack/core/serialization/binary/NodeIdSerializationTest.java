@@ -10,19 +10,19 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class NodeIdSerializationTest extends BinarySerializationFixture {
 
-    @DataProvider
-    public Object[][] getNodeIds() {
+    public static Object[][] getNodeIds() {
         return new Object[][]{
             {new NodeId(0, 0)},
             {new NodeId(0, 1)},
@@ -46,12 +46,14 @@ public class NodeIdSerializationTest extends BinarySerializationFixture {
         };
     }
 
-    @Test(dataProvider = "getNodeIds", description = "NodeId is round-trip serializable.")
+    @ParameterizedTest
+    @MethodSource("getNodeIds")
+    @DisplayName("NodeId is round-trip serializable.")
     public void testNodeIdRoundTrip(NodeId nodeId) throws Exception {
         writer.writeNodeId(nodeId);
         NodeId decoded = reader.readNodeId();
 
-        assertEquals(decoded, nodeId);
+        assertEquals(nodeId, decoded);
     }
 
 }

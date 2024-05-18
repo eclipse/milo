@@ -40,8 +40,8 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
             new Variant[]{new Variant(1)}
         )).get();
 
-        assertEquals(StatusCode.GOOD, result.getStatusCode());
-        assertEquals(0, result.getInputArgumentResults().length);
+        assertEquals(result.getStatusCode(), StatusCode.GOOD);
+        assertEquals(result.getInputArgumentResults().length, 0);
     }
 
     @Test
@@ -59,8 +59,8 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
             System.out.println("result: " + e.getStatusCode());
             System.out.println("inputArgumentResults: " + Arrays.toString(e.getInputArgumentResults()));
 
-            assertEquals(StatusCodes.Bad_InvalidArgument, e.getStatusCode().getValue());
-            assertEquals(StatusCodes.Bad_OutOfRange, e.getInputArgumentResults()[0].getValue());
+            assertEquals(e.getStatusCode().getValue(), StatusCodes.Bad_InvalidArgument);
+            assertEquals(e.getInputArgumentResults()[0].getValue(), StatusCodes.Bad_OutOfRange);
         }
     }
 
@@ -74,7 +74,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
                 new Variant[]{}
             )).get();
 
-            assertEquals(StatusCodes.Bad_ArgumentsMissing, result.getStatusCode().getValue());
+            assertEquals(result.getStatusCode().getValue(), StatusCodes.Bad_ArgumentsMissing);
         }
 
         // too many arguments
@@ -85,7 +85,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
                 new Variant[]{new Variant(1), new Variant(2)}
             )).get();
 
-            assertEquals(StatusCodes.Bad_TooManyArguments, result.getStatusCode().getValue());
+            assertEquals(result.getStatusCode().getValue(), StatusCodes.Bad_TooManyArguments);
         }
     }
 

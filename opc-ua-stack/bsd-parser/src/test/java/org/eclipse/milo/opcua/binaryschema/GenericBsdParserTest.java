@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.binaryschema;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class GenericBsdParserTest extends BsdParserTest {
 

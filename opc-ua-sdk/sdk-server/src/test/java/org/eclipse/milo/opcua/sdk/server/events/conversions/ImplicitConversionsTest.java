@@ -10,12 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.testng.annotations.Test;
-
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ImplicitConversions.convert;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.junit.jupiter.api.Test;
 
 public class ImplicitConversionsTest {
 

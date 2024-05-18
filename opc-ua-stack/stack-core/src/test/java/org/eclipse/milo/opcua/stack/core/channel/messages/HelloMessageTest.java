@@ -10,13 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.junit.jupiter.api.Test;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.eclipse.milo.opcua.stack.core.UaException;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertThrows;
 
 public class HelloMessageTest {
 

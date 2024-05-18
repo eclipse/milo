@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.StringReader;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertNotNull;
+import org.junit.jupiter.api.Test;
 
 public class OpcUaXmlStreamDecoderTest {
     @Test

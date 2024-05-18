@@ -10,23 +10,23 @@
 
 package org.eclipse.milo.opcua.stack.core.security;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.expectThrows;
+import org.junit.jupiter.api.Test;
 
 public class DefaultCertificateManagerTest {
 
     @Test
     public void testNullPrivateKeyOrCertificateFails() {
-        expectThrows(
-            Exception.class,
+    	assertThrows(
+    		Exception.class,
             () -> new DefaultCertificateManager((KeyPair) null, (X509Certificate) null)
         );
 
-        expectThrows(
+    	assertThrows(
             Exception.class,
             () -> new DefaultCertificateManager().add(null, (X509Certificate) null)
         );

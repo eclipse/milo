@@ -10,21 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class OpcUaBinaryStreamEncoderTest {
 
     ByteBuf buffer;
     OpcUaBinaryStreamEncoder writer;
 
-    @BeforeTest
+    @BeforeAll
     public void initializeTest() {
         buffer = Unpooled.buffer();
         writer = new OpcUaBinaryStreamEncoder(new TestSerializationContext()).setBuffer(buffer);
@@ -41,7 +42,7 @@ public class OpcUaBinaryStreamEncoderTest {
             writer.writeBit(0);
             writer.writeBit(0);
             writer.writeBit(0);
-            assertEquals(buffer.readUnsignedByte(), 0b00001111);
+            assertEquals(0b00001111, buffer.readUnsignedByte());
         }
         {
             writer.writeBit(0);
@@ -52,7 +53,7 @@ public class OpcUaBinaryStreamEncoderTest {
             writer.writeBit(1);
             writer.writeBit(1);
             writer.writeBit(1);
-            assertEquals(buffer.readUnsignedByte(), 0b11110000);
+            assertEquals(0b11110000, buffer.readUnsignedByte());
         }
         {
             writer.writeBit(0);
@@ -63,7 +64,7 @@ public class OpcUaBinaryStreamEncoderTest {
             writer.writeBit(1);
             writer.writeBit(0);
             writer.writeBit(1);
-            assertEquals(buffer.readUnsignedByte(), 0b10101010);
+            assertEquals(0b10101010, buffer.readUnsignedByte());
         }
         {
             writer.writeBit(1);
@@ -74,7 +75,7 @@ public class OpcUaBinaryStreamEncoderTest {
             writer.writeBit(0);
             writer.writeBit(1);
             writer.writeBit(0);
-            assertEquals(buffer.readUnsignedByte(), 0b01010101);
+            assertEquals(0b01010101, buffer.readUnsignedByte());
         }
     }
 

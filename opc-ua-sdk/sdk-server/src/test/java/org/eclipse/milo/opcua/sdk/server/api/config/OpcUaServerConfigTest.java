@@ -10,20 +10,21 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.google.common.io.Files;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
+import com.google.common.io.Files;
 
 public class OpcUaServerConfigTest {
 
@@ -45,10 +46,10 @@ public class OpcUaServerConfigTest {
 
         OpcUaServerConfig copy = OpcUaServerConfig.copy(original).build();
 
-        assertEquals(copy.getIdentityValidator(), original.getIdentityValidator());
-        assertEquals(copy.getBuildInfo(), original.getBuildInfo());
-        assertEquals(copy.getLimits(), original.getLimits());
-        assertEquals(copy.getScheduledExecutorService(), original.getScheduledExecutorService());
+        assertEquals(original.getIdentityValidator(), copy.getIdentityValidator());
+        assertEquals(original.getBuildInfo(), copy.getBuildInfo());
+        assertEquals(original.getLimits(), copy.getLimits());
+        assertEquals(original.getScheduledExecutorService(), copy.getScheduledExecutorService());
     }
 
 }

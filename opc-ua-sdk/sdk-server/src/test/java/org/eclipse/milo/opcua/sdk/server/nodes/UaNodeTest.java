@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -28,19 +32,15 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 public class UaNodeTest {
 
     private OpcUaServer server;
 
-    @BeforeTest
+    @BeforeEach
     public void setup() throws Exception {
         server = Mockito.mock(OpcUaServer.class);
 
@@ -102,7 +102,7 @@ public class UaNodeTest {
         };
 
         assertFalse(nodeManager.containsNode(nodeId));
-        assertEquals(0, nodeManager.getReferences(nodeId).size());
+        assertEquals(nodeManager.getReferences(nodeId).size(), 0);
 
         UaObjectNode objectNode = UaObjectNode.builder(nodeContext)
             .setNodeId(nodeId)
@@ -127,8 +127,8 @@ public class UaNodeTest {
         objectNode.delete();
 
         assertFalse(nodeManager.containsNode(nodeId));
-        assertEquals(0, nodeManager.getReferences(nodeId).size());
-        assertEquals(0, nodeManager.getReferences(Identifiers.ObjectNode).size());
+        assertEquals(nodeManager.getReferences(nodeId).size(), 0);
+        assertEquals(nodeManager.getReferences(Identifiers.ObjectNode).size(), 0);
     }
 
     @Test
@@ -139,7 +139,7 @@ public class UaNodeTest {
         server.getAddressSpaceManager().register(nodeManager);
 
         assertFalse(nodeManager.containsNode(nodeId));
-        assertEquals(0, nodeManager.getReferences(nodeId).size());
+        assertEquals(nodeManager.getReferences(nodeId).size(), 0);
 
         NodeFactory nodeFactory = new NodeFactory(
             new UaNodeContext() {
@@ -172,7 +172,7 @@ public class UaNodeTest {
         analogItem.delete();
 
         assertFalse(nodeManager.containsNode(nodeId));
-        assertEquals(0, nodeManager.getReferences(nodeId).size());
+        assertEquals(nodeManager.getReferences(nodeId).size(), 0);
     }
 
 }

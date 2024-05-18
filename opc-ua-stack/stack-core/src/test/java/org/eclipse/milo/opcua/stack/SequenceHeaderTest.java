@@ -10,15 +10,16 @@
 
 package org.eclipse.milo.opcua.stack;
 
-import com.google.common.primitives.UnsignedInteger;
 import org.eclipse.milo.opcua.stack.core.channel.headers.SequenceHeader;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.primitives.UnsignedInteger;
 
 public class SequenceHeaderTest extends SerializationFixture2 {
 
-    @DataProvider(name = "parameters")
-    public Object[][] getParameters() {
+    public static Object[][] getParameters() {
         return new Object[][]{
                 {0, 0},
                 {Integer.MAX_VALUE - 1, Integer.MAX_VALUE - 1},
@@ -28,7 +29,9 @@ public class SequenceHeaderTest extends SerializationFixture2 {
         };
     }
 
-    @Test(dataProvider = "parameters", description = "SequenceHeader is serializable.")
+    @ParameterizedTest
+    @MethodSource("getParameters")
+    @DisplayName("SequenceHeader is serializable.")
     public void testSerialization(long sequenceNumber, long requestId) {
         SequenceHeader header = new SequenceHeader(sequenceNumber, requestId);
 

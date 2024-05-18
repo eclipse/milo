@@ -91,7 +91,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         nodeIdNode.traverse(dataType -> {
             Class<?> backingClass = dataTypeTree.getBackingClass(dataType.getNodeId());
             System.out.println(dataType.getBrowseName().toParseableString() + " : " + backingClass);
-            assertEquals(expectedBackingClass, backingClass);
+            assertEquals(backingClass, expectedBackingClass);
         });
     }
 
@@ -101,21 +101,21 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         for (BuiltinDataType expectedType : BuiltinDataType.values()) {
             BuiltinDataType builtinType = dataTypeTree.getBuiltinType(expectedType.getNodeId());
 
-            assertEquals(expectedType, builtinType);
+            assertEquals(builtinType, expectedType);
         }
 
         // Check that subtypes resolve to their builtin types
-        assertEquals(BuiltinDataType.String, dataTypeTree.getBuiltinType(Identifiers.NumericRange));
-        assertEquals(BuiltinDataType.DateTime, dataTypeTree.getBuiltinType(Identifiers.Date));
-        assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(Identifiers.Image));
-        assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(Identifiers.ImageBMP));
-        assertEquals(BuiltinDataType.NodeId, dataTypeTree.getBuiltinType(Identifiers.SessionAuthenticationToken));
-        assertEquals(BuiltinDataType.ExtensionObject, dataTypeTree.getBuiltinType(Identifiers.TrustListDataType));
-        assertEquals(BuiltinDataType.Double, dataTypeTree.getBuiltinType(Identifiers.Duration));
-        assertEquals(BuiltinDataType.UInt32, dataTypeTree.getBuiltinType(Identifiers.IntegerId));
-        assertEquals(BuiltinDataType.UInt64, dataTypeTree.getBuiltinType(Identifiers.BitFieldMaskDataType));
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.NumericRange), BuiltinDataType.String);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.Date), BuiltinDataType.DateTime);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.Image), BuiltinDataType.ByteString);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.ImageBMP), BuiltinDataType.ByteString);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.SessionAuthenticationToken), BuiltinDataType.NodeId);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.TrustListDataType), BuiltinDataType.ExtensionObject);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.Duration), BuiltinDataType.Double);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.IntegerId), BuiltinDataType.UInt32);
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.BitFieldMaskDataType), BuiltinDataType.UInt64);
         // note: enumerations resolve to BaseDataType aka Variant
-        assertEquals(BuiltinDataType.Variant, dataTypeTree.getBuiltinType(Identifiers.NamingRuleType));
+        assertEquals(dataTypeTree.getBuiltinType(Identifiers.NamingRuleType), BuiltinDataType.Variant);
     }
 
     @Test

@@ -10,6 +10,17 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -19,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import com.beust.jcommander.internal.Lists;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
@@ -57,23 +67,15 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertThrows;
-import static org.testng.Assert.fail;
+import com.google.common.collect.Lists;
 
 public class ClientServerTest extends SecurityFixture {
 
@@ -85,8 +87,7 @@ public class ClientServerTest extends SecurityFixture {
 
     private static final UInteger DEFAULT_TIMEOUT_HINT = uint(60000);
 
-    @DataProvider
-    public Object[][] getVariants() {
+    public static Object[][] getVariants() {
         return new Object[][]{
             {new Variant(true)},
             {new Variant((byte) 1)},
@@ -122,7 +123,7 @@ public class ClientServerTest extends SecurityFixture {
 
     private UaStackServer server;
 
-    @BeforeSuite
+    @BeforeEach
     public void setUpClientServer() throws Exception {
         super.setUp();
 
@@ -143,7 +144,7 @@ public class ClientServerTest extends SecurityFixture {
             .toArray(new EndpointDescription[0]);
     }
 
-    @AfterSuite
+    @AfterEach
     public void tearDownClientServer() throws Exception {
         server.shutdown().get();
     }
@@ -170,7 +171,8 @@ public class ClientServerTest extends SecurityFixture {
         });
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_NoSecurity(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[0];
 
@@ -182,7 +184,8 @@ public class ClientServerTest extends SecurityFixture {
         connectAndTest(input, client);
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_Basic128Rsa15_Sign(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[1];
 
@@ -194,7 +197,8 @@ public class ClientServerTest extends SecurityFixture {
         connectAndTest(input, client);
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_Basic256_Sign(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[2];
 
@@ -206,7 +210,8 @@ public class ClientServerTest extends SecurityFixture {
         connectAndTest(input, client);
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_Basic256Sha256_Sign(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[3];
 
@@ -218,7 +223,8 @@ public class ClientServerTest extends SecurityFixture {
         connectAndTest(input, client);
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_Basic128Rsa15_SignAndEncrypt(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[4];
 
@@ -230,7 +236,8 @@ public class ClientServerTest extends SecurityFixture {
         connectAndTest(input, client);
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_Basic256_SignAndEncrypt(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[5];
 
@@ -242,7 +249,8 @@ public class ClientServerTest extends SecurityFixture {
         connectAndTest(input, client);
     }
 
-    @Test(dataProvider = "getVariants")
+    @ParameterizedTest
+    @MethodSource("getVariants")
     public void testClientServerRoundTrip_TestStack_Basic256Sha256_SignAndEncrypt(Variant input) throws Exception {
         EndpointDescription endpoint = endpoints[6];
 
@@ -339,7 +347,7 @@ public class ClientServerTest extends SecurityFixture {
 
         client.disconnect().get();
 
-        assertThrows(() -> client.sendRequest(request).get());
+        assertThrows(Exception.class, () -> client.sendRequest(request).get());
     }
 
     @Test
@@ -456,7 +464,7 @@ public class ClientServerTest extends SecurityFixture {
                 .extractStatusCode(t)
                 .orElse(StatusCode.BAD);
 
-            assertEquals(statusCode.getValue(), StatusCodes.Bad_Timeout);
+            assertEquals(StatusCodes.Bad_Timeout, statusCode.getValue());
         }
     }
 
@@ -512,7 +520,7 @@ public class ClientServerTest extends SecurityFixture {
         FutureUtils.sequence(responses).get().forEach(response -> {
             Variant value = l(response.getResults()).get(0).getValue();
 
-            assertEquals(value, input);
+            assertEquals(input, value);
         });
 
         client.disconnect().get();

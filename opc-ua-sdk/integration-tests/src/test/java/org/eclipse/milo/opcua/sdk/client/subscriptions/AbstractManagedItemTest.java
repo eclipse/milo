@@ -57,16 +57,16 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
     @Test
     public void monitoringMode() throws UaException {
         ManagedItem managedItem = createManagedItem();
-        assertEquals(MonitoringMode.Reporting, managedItem.getMonitoringMode());
+        assertEquals(managedItem.getMonitoringMode(), MonitoringMode.Reporting);
 
         managedItem.setMonitoringMode(MonitoringMode.Sampling);
-        assertEquals(MonitoringMode.Sampling, managedItem.getMonitoringMode());
+        assertEquals(managedItem.getMonitoringMode(), MonitoringMode.Sampling);
 
         managedItem.setMonitoringMode(MonitoringMode.Disabled);
-        assertEquals(MonitoringMode.Disabled, managedItem.getMonitoringMode());
+        assertEquals(managedItem.getMonitoringMode(), MonitoringMode.Disabled);
 
         managedItem.setMonitoringMode(MonitoringMode.Reporting);
-        assertEquals(MonitoringMode.Reporting, managedItem.getMonitoringMode());
+        assertEquals(managedItem.getMonitoringMode(), MonitoringMode.Reporting);
     }
 
     @Test
@@ -85,12 +85,12 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         });
 
-        assertEquals(Unit.VALUE, f1.get());
-        assertEquals(Unit.VALUE, f2.get());
-        assertEquals(MonitoringMode.Sampling, managedItem1.getMonitoringMode());
-        assertEquals(MonitoringMode.Sampling, managedItem2.getMonitoringMode());
+        assertEquals(f1.get(), Unit.VALUE);
+        assertEquals(f2.get(), Unit.VALUE);
+        assertEquals(managedItem1.getMonitoringMode(), MonitoringMode.Sampling);
+        assertEquals(managedItem2.getMonitoringMode(), MonitoringMode.Sampling);
 
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
     @Test
@@ -98,11 +98,11 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
         UInteger initialQueueSize = subscription.getDefaultQueueSize();
 
         ManagedItem managedItem = createManagedItem();
-        assertEquals(initialQueueSize, managedItem.getQueueSize());
+        assertEquals(managedItem.getQueueSize(), initialQueueSize);
 
         UInteger newQueueSize = initialQueueSize.add(1);
-        assertEquals(newQueueSize, managedItem.setQueueSize(newQueueSize));
-        assertEquals(newQueueSize, managedItem.getQueueSize());
+        assertEquals(managedItem.setQueueSize(newQueueSize), newQueueSize);
+        assertEquals(managedItem.getQueueSize(), newQueueSize);
     }
 
     @Test
@@ -122,13 +122,13 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         });
 
-        assertEquals(uint(10), f1.get());
-        assertEquals(uint(10), managedItem1.getQueueSize());
+        assertEquals(f1.get(), uint(10));
+        assertEquals(managedItem1.getQueueSize(), uint(10));
 
-        assertEquals(uint(20), f2.get());
-        assertEquals(uint(20), managedItem2.getQueueSize());
+        assertEquals(f2.get(), uint(20));
+        assertEquals(managedItem2.getQueueSize(), uint(20));
 
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
     @Test
@@ -136,13 +136,13 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
         TimestampsToReturn timestamps = subscription.getDefaultTimestamps();
 
         ManagedItem managedItem = createManagedItem();
-        assertEquals(timestamps, managedItem.getTimestampsToReturn());
+        assertEquals(managedItem.getTimestampsToReturn(), timestamps);
 
         TimestampsToReturn newTimestamps = TimestampsToReturn.Neither;
         assertNotEquals(timestamps, newTimestamps);
 
         managedItem.setTimestampsToReturn(newTimestamps);
-        assertEquals(newTimestamps, managedItem.getTimestampsToReturn());
+        assertEquals(managedItem.getTimestampsToReturn(), newTimestamps);
     }
 
     @Test
@@ -162,13 +162,13 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         });
 
-        assertEquals(Unit.VALUE, f1.get());
-        assertEquals(TimestampsToReturn.Neither, managedItem1.getTimestampsToReturn());
+        assertEquals(f1.get(), Unit.VALUE);
+        assertEquals(managedItem1.getTimestampsToReturn(), TimestampsToReturn.Neither);
 
-        assertEquals(Unit.VALUE, f2.get());
-        assertEquals(TimestampsToReturn.Neither, managedItem2.getTimestampsToReturn());
+        assertEquals(f2.get(), Unit.VALUE);
+        assertEquals(managedItem2.getTimestampsToReturn(), TimestampsToReturn.Neither);
 
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
     @Test
@@ -177,10 +177,10 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
         ManagedItem managedItem = createManagedItem();
 
-        assertEquals(defaultDiscardOldest, managedItem.getDiscardOldest());
+        assertEquals(managedItem.getDiscardOldest(), defaultDiscardOldest);
 
         managedItem.setDiscardOldest(!defaultDiscardOldest);
-        assertEquals(!defaultDiscardOldest, managedItem.getDiscardOldest());
+        assertEquals(managedItem.getDiscardOldest(), !defaultDiscardOldest);
     }
 
     @Test
@@ -200,13 +200,13 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
             assertTrue(result.isOperationResultGood());
         });
 
-        assertEquals(Unit.VALUE, f1.get());
+        assertEquals(f1.get(), Unit.VALUE);
         assertFalse(managedItem1.getDiscardOldest());
 
-        assertEquals(Unit.VALUE, f2.get());
+        assertEquals(f2.get(), Unit.VALUE);
         assertFalse(managedItem2.getDiscardOldest());
 
-        assertEquals(1, batch.getServiceInvocationCount());
+        assertEquals(batch.getServiceInvocationCount(), 1);
     }
 
 }
