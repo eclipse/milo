@@ -320,12 +320,14 @@ public class DataTypeTreeBuilder {
 
             if (definitionValue.getStatusCode() != null && definitionValue.getStatusCode().isGood()) {
                 Object o = definitionValue.getValue().getValue();
-                if (o instanceof ExtensionObject) {
-                    Object decoded = ((ExtensionObject) o).decode(
-                        client.getStaticEncodingContext()
-                    );
+                if (o instanceof ExtensionObject xo) {
+                    try {
+                        Object decoded = xo.decode(client.getStaticEncodingContext());
 
-                    definition = (DataTypeDefinition) decoded;
+                        definition = (DataTypeDefinition) decoded;
+                    } catch (Exception e) {
+                        LOGGER.debug("Error decoding DataTypeDefinition: {}", e.getMessage());
+                    }
                 }
             }
 
