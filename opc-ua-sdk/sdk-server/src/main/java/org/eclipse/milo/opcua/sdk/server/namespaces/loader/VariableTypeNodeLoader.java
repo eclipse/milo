@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -552,6 +552,18 @@ class VariableTypeNodeLoader {
     }
 
     void loadNode54() {
+        var node = new UaVariableTypeNode(this.context, new NodeId(0, 32244), new QualifiedName(0, "AlarmStateVariableType"), new LocalizedText("", "AlarmStateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 32251), -1, null, false);
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 46), new NodeId(0, 32245).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 46), new NodeId(0, 32246).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 46), new NodeId(0, 32247).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 46), new NodeId(0, 32248).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 46), new NodeId(0, 32249).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 46), new NodeId(0, 32250).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32244), new NodeId(0, 45), new NodeId(0, 63).expanded(), false));
+        this.nodeManager.addNode(node);
+    }
+
+    void loadNode55() {
         var node = new UaVariableTypeNode(this.context, new NodeId(0, 2380), new QualifiedName(0, "ProgramDiagnosticType"), new LocalizedText("", "ProgramDiagnosticType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 894), -1, null, false);
         node.addReference(new Reference(new NodeId(0, 2380), new NodeId(0, 46), new NodeId(0, 2381).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 2380), new NodeId(0, 46), new NodeId(0, 2382).expanded(), true));
@@ -567,7 +579,7 @@ class VariableTypeNodeLoader {
         this.nodeManager.addNode(node);
     }
 
-    void loadNode55() {
+    void loadNode56() {
         var node = new UaVariableTypeNode(this.context, new NodeId(0, 15383), new QualifiedName(0, "ProgramDiagnostic2Type"), new LocalizedText("", "ProgramDiagnostic2Type"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 24033), -1, null, false);
         node.addReference(new Reference(new NodeId(0, 15383), new NodeId(0, 47), new NodeId(0, 15384).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 15383), new NodeId(0, 47), new NodeId(0, 15385).expanded(), true));
@@ -585,7 +597,7 @@ class VariableTypeNodeLoader {
         this.nodeManager.addNode(node);
     }
 
-    void loadNode56() {
+    void loadNode57() {
         var node = new UaVariableTypeNode(this.context, new NodeId(0, 19725), new QualifiedName(0, "PubSubDiagnosticsCounterType"), new LocalizedText("", "PubSubDiagnosticsCounterType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 7), -1, null, false);
         node.addReference(new Reference(new NodeId(0, 19725), new NodeId(0, 46), new NodeId(0, 19726).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19725), new NodeId(0, 46), new NodeId(0, 19727).expanded(), true));
@@ -595,7 +607,7 @@ class VariableTypeNodeLoader {
         this.nodeManager.addNode(node);
     }
 
-    void loadNode57() {
+    void loadNode58() {
         var node = new UaVariableTypeNode(this.context, new NodeId(0, 19077), new QualifiedName(0, "MultiStateDictionaryEntryDiscreteBaseType"), new LocalizedText("", "MultiStateDictionaryEntryDiscreteBaseType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 26), -1, null, false);
         node.addReference(new Reference(new NodeId(0, 19077), new NodeId(0, 46), new NodeId(0, 19082).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19077), new NodeId(0, 46), new NodeId(0, 19083).expanded(), true));
@@ -603,10 +615,17 @@ class VariableTypeNodeLoader {
         this.nodeManager.addNode(node);
     }
 
-    void loadNode58() {
+    void loadNode59() {
         var node = new UaVariableTypeNode(this.context, new NodeId(0, 19084), new QualifiedName(0, "MultiStateDictionaryEntryDiscreteType"), new LocalizedText("", "MultiStateDictionaryEntryDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 26), -1, null, false);
         node.addReference(new Reference(new NodeId(0, 19084), new NodeId(0, 46), new NodeId(0, 19090).expanded(), true));
         node.addReference(new Reference(new NodeId(0, 19084), new NodeId(0, 45), new NodeId(0, 19077).expanded(), false));
+        this.nodeManager.addNode(node);
+    }
+
+    void loadNode60() {
+        var node = new UaVariableTypeNode(this.context, new NodeId(0, 32657), new QualifiedName(0, "ReferenceDescriptionVariableType"), new LocalizedText("", "ReferenceDescriptionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), null, null, new AccessRestrictionType(UShort.valueOf(0)), new DataValue(Variant.NULL_VALUE), new NodeId(0, 32659), -1, null, false);
+        node.addReference(new Reference(new NodeId(0, 32657), new NodeId(0, 46), new NodeId(0, 32658).expanded(), true));
+        node.addReference(new Reference(new NodeId(0, 32657), new NodeId(0, 45), new NodeId(0, 63).expanded(), false));
         this.nodeManager.addNode(node);
     }
 
@@ -670,5 +689,7 @@ class VariableTypeNodeLoader {
         loadNode56();
         loadNode57();
         loadNode58();
+        loadNode59();
+        loadNode60();
     }
 }
