@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -55,6 +55,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
@@ -319,10 +320,17 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     ) {
 
         T invocationHandler = f.apply(methodNode);
+        Argument[] inputArguments = invocationHandler.getInputArguments();
+        Argument[] outputArguments = invocationHandler.getOutputArguments();
 
         methodNode.setInvocationHandler(invocationHandler);
-        methodNode.setInputArguments(invocationHandler.getInputArguments());
-        methodNode.setOutputArguments(invocationHandler.getOutputArguments());
+
+        if (inputArguments != null && inputArguments.length > 0) {
+            methodNode.setInputArguments(inputArguments);
+        }
+        if (outputArguments != null && outputArguments.length > 0) {
+            methodNode.setOutputArguments(outputArguments);
+        }
     }
 
     private static class ConditionRefreshMethodImpl extends ConditionType.ConditionRefreshMethod {
