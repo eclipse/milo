@@ -215,6 +215,45 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                             StatusCodes.Bad_SecurityChecksFailed,
                             "no certificate for provided thumbprint");
                     }
+
+                    // Before attempting decryption, ensure the SecurityPolicy used in the
+                    // AsymmetricSecurityHeader is one that is supported by the configured
+                    // endpoints.
+
+                    String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
+
+                    if (stackServer.getEndpointDescriptions()
+                        .stream()
+                        .noneMatch(e -> {
+                            boolean transportMatch = Objects.equals(
+                                e.getTransportProfileUri(),
+                                transportProfile.getUri()
+                            );
+
+                            boolean pathMatch = Objects.equals(
+                                EndpointUtil.getPath(e.getEndpointUrl()),
+                                EndpointUtil.getPath(endpointUrl)
+                            );
+
+                            boolean securityPolicyMatch = Objects.equals(
+                                e.getSecurityPolicyUri(),
+                                secureChannel.getSecurityPolicy().getUri()
+                            );
+
+                            return transportMatch && pathMatch && securityPolicyMatch;
+                        })
+                    ) {
+
+                        String message = String.format(
+                            "no matching endpoint found: " +
+                                "transportProfile=%s, endpointUrl=%s, securityPolicy=%s",
+                            transportProfile,
+                            endpointUrl,
+                            secureChannel.getSecurityPolicy()
+                        );
+
+                        throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
+                    }
                 }
             }
 
