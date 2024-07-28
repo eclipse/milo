@@ -70,10 +70,11 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
             }
 
-            if (algorithm != SecurityAlgorithm.Rsa15 &&
-                algorithm != SecurityAlgorithm.RsaOaepSha1 &&
-                algorithm != SecurityAlgorithm.RsaOaepSha256) {
+            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(tokenPolicy.getSecurityPolicyUri());
 
+            // Don't allow the Client to specify a different algorithm than the one defined by the
+            // SecurityPolicy in the UserTokenPolicy.
+            if (!securityPolicy.getAsymmetricEncryptionAlgorithm().equals(algorithm)) {
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
             }
         }
