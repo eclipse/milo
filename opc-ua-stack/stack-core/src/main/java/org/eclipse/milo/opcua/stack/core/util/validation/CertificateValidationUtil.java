@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -83,12 +83,12 @@ public class CertificateValidationUtil {
      * {@link #validateTrustedCertPath(CertPath, TrustAnchor, Collection, Set, boolean)}, which can return more detailed
      * failure {@link StatusCodes} in its exceptions because it is dealing with a known trusted path.
      *
-     * @param certificateChain    a possibly partial certificate chain to build a trusted path from.
+     * @param certificateChain a possibly partial certificate chain to build a trusted path from.
      * @param trustedCertificates a collection of known trusted certificates.
-     * @param issuerCertificates  a collection of known CAs that can be used in path building but are not considered
-     *                            "trusted" when it comes to determining if the resulting path is "trusted".
+     * @param issuerCertificates a collection of known CAs that can be used in path building but are not considered
+     *     "trusted" when it comes to determining if the resulting path is "trusted".
      * @return a {@link PKIXCertPathBuilderResult} with a {@link TrustAnchor} and {@link CertPath}, which combined
-     * make up the full trusted path.
+     *     make up the full trusted path.
      * @throws UaException if a trusted path cannot be built.
      */
     public static PKIXCertPathBuilderResult buildTrustedCertPath(
@@ -107,8 +107,22 @@ public class CertificateValidationUtil {
 
         Set<TrustAnchor> trustAnchors = new HashSet<>();
         for (X509Certificate c : trustedCertificates) {
-            if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
-                trustAnchors.add(new TrustAnchor(c, null));
+            if (certificateIsSelfSigned(c)) {
+                if (certificateChain.size() == 1 && certificateChain.get(0).equals(c)) {
+                    // The end-entity certificate is self-signed and trusted.
+                    // OPC UA self-signed certificates should indicate that they are not CA
+                    // certificates, though ones that do are accepted for backwards compatibility.
+                    trustAnchors.add(new TrustAnchor(c, null));
+
+                    if (c.getBasicConstraints() != -1) {
+                        LOGGER.warn(
+                            "self-signed certificate '{}' has BasicConstraint cA bit set",
+                            c.getSubjectX500Principal().getName()
+                        );
+                    }
+                } else if (certificateIsCa(c)) {
+                    trustAnchors.add(new TrustAnchor(c, null));
+                }
             }
         }
         for (X509Certificate c : issuerCertificates) {
@@ -160,12 +174,12 @@ public class CertificateValidationUtil {
      * The function is meant to be used in conjunction with {@link #buildTrustedCertPath(List, Collection, Collection)},
      * the result of which contains a {@link CertPath} and {@link TrustAnchor} that form a trusted certificate path.
      *
-     * @param certPath          a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
-     * @param trustAnchor       a {@link TrustAnchor} containing the root of trust for the path being validated.
-     * @param crls              a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
-     *                          leaf should have a CRL, though whether that's enforced or not depends on
-     *                          {@link ValidationCheck#REVOCATION_LISTS} being present.
-     * @param validationChecks  the set of {@link ValidationCheck}s to enforce.
+     * @param certPath a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
+     * @param trustAnchor a {@link TrustAnchor} containing the root of trust for the path being validated.
+     * @param crls a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
+     *     leaf should have a CRL, though whether that's enforced or not depends on
+     *     {@link ValidationCheck#REVOCATION_LISTS} being present.
+     * @param validationChecks the set of {@link ValidationCheck}s to enforce.
      * @param endEntityIsClient {@code true} if the end-entity is a client, {@code false} if it is a server.
      * @throws UaException if a check from the set of {@link ValidationCheck}s failed.
      */
@@ -455,7 +469,7 @@ public class CertificateValidationUtil {
      * Check that {@code certificate} is valid (the current date and time are within the validity period).
      *
      * @param certificate the {@link X509Certificate} to check.
-     * @param endEntity   {@code true} if the certificate is the end entity, {@code false} if it's an issuer.
+     * @param endEntity {@code true} if the certificate is the end entity, {@code false} if it's an issuer.
      * @throws UaException if the certificate is not valid.
      */
     public static void checkValidity(X509Certificate certificate, boolean endEntity) throws UaException {
@@ -486,7 +500,7 @@ public class CertificateValidationUtil {
      * Validate that one of {@code hostNames} matches a SubjectAltName DNSName or IPAddress entry in the certificate.
      *
      * @param certificate the certificate to validate against.
-     * @param hostNames   the host names or ip addresses to look for.
+     * @param hostNames the host names or ip addresses to look for.
      * @throws UaException if there is no matching DNSName or IPAddress entry.
      */
     public static void checkHostnameOrIpAddress(
@@ -537,6 +551,7 @@ public class CertificateValidationUtil {
         boolean nonRepudiation = keyUsage[1];
         boolean keyEncipherment = keyUsage[2];
         boolean dataEncipherment = keyUsage[3];
+        boolean keyCertSign = keyUsage[5];
 
         if (!digitalSignature) {
             throw new UaException(
@@ -563,6 +578,13 @@ public class CertificateValidationUtil {
             throw new UaException(
                 StatusCodes.Bad_CertificateUseNotAllowed,
                 "required KeyUsage 'dataEncipherment' not found"
+            );
+        }
+
+        if (!keyCertSign && certificateIsSelfSigned(certificate)) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "required KeyUsage 'keyCertSign' not found"
             );
         }
     }
@@ -603,7 +625,7 @@ public class CertificateValidationUtil {
     /**
      * Validate that the application URI matches the SubjectAltName URI in the given certificate.
      *
-     * @param certificate    the certificate to validate against.
+     * @param certificate the certificate to validate against.
      * @param applicationUri the URI to validate.
      * @throws UaException if the certificate is invalid, does not contain a uri, or contains a uri that does not match.
      */
@@ -644,8 +666,8 @@ public class CertificateValidationUtil {
     /**
      * Test the value of some SubjectAlternativeNames field against a predicate.
      *
-     * @param certificate    an {@link X509Certificate}.
-     * @param field          the field id.
+     * @param certificate an {@link X509Certificate}.
+     * @param field the field id.
      * @param fieldPredicate a predicate to test the field value.
      * @return {@code true} if the field was found and the predicate tested true.
      * @throws UaException if SubjectAlternativeNames can't be obtained from the certificate.
