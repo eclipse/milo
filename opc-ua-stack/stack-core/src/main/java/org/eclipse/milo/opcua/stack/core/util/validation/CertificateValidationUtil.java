@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -104,8 +104,22 @@ public class CertificateValidationUtil {
 
         Set<TrustAnchor> trustAnchors = new HashSet<>();
         for (X509Certificate c : trustedCertificates) {
-            if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
-                trustAnchors.add(new TrustAnchor(c, null));
+            if (certificateIsSelfSigned(c)) {
+                if (certificateChain.size() == 1 && certificateChain.get(0).equals(c)) {
+                    // The end-entity certificate is self-signed and trusted.
+                    // OPC UA self-signed certificates should indicate that they are not CA
+                    // certificates, though ones that do are accepted for backwards compatibility.
+                    trustAnchors.add(new TrustAnchor(c, null));
+
+                    if (c.getBasicConstraints() != -1) {
+                        LOGGER.warn(
+                            "self-signed certificate '{}' has BasicConstraint cA bit set",
+                            c.getSubjectX500Principal().getName()
+                        );
+                    }
+                } else if (certificateIsCa(c)) {
+                    trustAnchors.add(new TrustAnchor(c, null));
+                }
             }
         }
         for (X509Certificate c : issuerCertificates) {
@@ -536,6 +550,7 @@ public class CertificateValidationUtil {
         boolean nonRepudiation = keyUsage[1];
         boolean keyEncipherment = keyUsage[2];
         boolean dataEncipherment = keyUsage[3];
+        boolean keyCertSign = keyUsage[5];
 
         if (!digitalSignature) {
             throw new UaException(
@@ -562,6 +577,13 @@ public class CertificateValidationUtil {
             throw new UaException(
                 StatusCodes.Bad_CertificateUseNotAllowed,
                 "required KeyUsage 'dataEncipherment' not found"
+            );
+        }
+
+        if (!keyCertSign && certificateIsSelfSigned(certificate)) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "required KeyUsage 'keyCertSign' not found"
             );
         }
     }

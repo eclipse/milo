@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util.validation;
 
 import java.io.InputStream;
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -33,6 +34,8 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -80,6 +83,41 @@ public class CertificateValidationUtilTest {
         leafSelfSigned = getCertificate(ALIAS_LEAF_SELF_SIGNED);
         leafIntermediateSigned = getCertificate(ALIAS_LEAF_INTERMEDIATE_SIGNED);
         uriWithSpaces = getCertificate(ALIAS_URI_WITH_SPACES);
+    }
+
+    @Test
+    void selfSignedCertificateOpcUa105() throws Exception {
+        KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+
+        SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
+            .setApplicationUri("urn:eclipse:milo:test")
+            .addDnsName("localhost")
+            .addDnsName("hostname")
+            .addIpAddress("127.0.0.1");
+
+        X509Certificate certificate = builder.build();
+
+        PKIXCertPathBuilderResult result = buildTrustedCertPath(
+            List.of(certificate),
+            Set.of(certificate),
+            emptySet()
+        );
+
+        validateTrustedCertPath(
+            result.getCertPath(),
+            result.getTrustAnchor(),
+            emptySet(),
+            ValidationCheck.ALL_OPTIONAL_CHECKS,
+            false
+        );
+
+        validateTrustedCertPath(
+            result.getCertPath(),
+            result.getTrustAnchor(),
+            emptySet(),
+            ValidationCheck.ALL_OPTIONAL_CHECKS,
+            true
+        );
     }
 
     @Test
