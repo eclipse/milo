@@ -135,10 +135,10 @@ public class AttributeReader {
                 return dvb.applyTimestamps(attributeId, timestamps).build();
             }
         } else {
-            // These attributes are either structures or primitive types, and should
-            // not expose a null value to clients, so if they are null in the Node
-            // that means they are not implemented/supported for the node, and we need
-            // to return Bad_AttributeIdInvalid.
+            // These attributes are either structures/primitive types, and should not expose a
+            // null value to clients, or they are optional attributes.
+            // In either case a null value means that they are not implemented/supported for the
+            // node, and we need to return Bad_AttributeIdInvalid.
 
             switch (attributeId) {
                 case DataTypeDefinition:
@@ -146,6 +146,7 @@ public class AttributeReader {
                 case UserRolePermissions:
                 case AccessRestrictions:
                 case AccessLevelEx:
+                case InverseName:
                     if (value == null) {
                         return new DataValue(StatusCodes.Bad_AttributeIdInvalid);
                     }

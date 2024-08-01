@@ -26,7 +26,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
     private Boolean isAbstract;
     private Boolean symmetric;
-    private LocalizedText inverseName;
+    private @Nullable LocalizedText inverseName;
 
     public UaReferenceTypeNode(
         UaNodeContext context,
@@ -38,7 +38,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         UInteger userWriteMask,
         Boolean isAbstract,
         Boolean symmetric,
-        LocalizedText inverseName
+        @Nullable LocalizedText inverseName
     ) {
 
         super(
@@ -70,7 +70,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         AccessRestrictionType accessRestrictions,
         Boolean isAbstract,
         Boolean symmetric,
-        LocalizedText inverseName
+        @Nullable LocalizedText inverseName
     ) {
 
         super(
@@ -103,7 +103,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    public LocalizedText getInverseName() {
+    public @Nullable LocalizedText getInverseName() {
         return (LocalizedText) filterChain.getAttribute(this, AttributeId.InverseName);
     }
 
