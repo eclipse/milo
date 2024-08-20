@@ -18,17 +18,19 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.digitalpetri.fsm.Fsm;
+import com.digitalpetri.fsm.FsmContext;
+import com.digitalpetri.fsm.dsl.ActionContext;
+import com.digitalpetri.fsm.dsl.FsmBuilder;
 import com.digitalpetri.netty.fsm.ChannelFsm;
-import com.digitalpetri.strictmachine.Fsm;
-import com.digitalpetri.strictmachine.FsmContext;
-import com.digitalpetri.strictmachine.dsl.ActionContext;
-import com.digitalpetri.strictmachine.dsl.FsmBuilder;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
 import io.netty.channel.Channel;
@@ -101,14 +103,18 @@ public class SessionFsmFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionFsm.LOGGER_NAME);
 
+    private static final AtomicLong INSTANCE_ID = new AtomicLong();
+
     private static final int MAX_WAIT_SECONDS = 16;
 
     private SessionFsmFactory() {}
 
     public static SessionFsm newSessionFsm(OpcUaClient client) {
         FsmBuilder<State, Event> builder = new FsmBuilder<>(
+            SessionFsm.LOGGER_NAME,
+            Map.of("instance-id", String.valueOf(INSTANCE_ID.incrementAndGet())),
             client.getTransport().getConfig().getExecutor(),
-            SessionFsm.LOGGER_NAME
+            null
         );
 
         configureSessionFsm(builder, client);
@@ -278,11 +284,12 @@ public class SessionFsmFactory {
                 //noinspection Duplicates
                 createSession(ctx, client).whenComplete((csr, ex) -> {
                     if (csr != null) {
-                        LOGGER.debug("[{}] CreateSession succeeded: {}", ctx.getInstanceId(), csr.getSessionId());
+
+                        LOGGER.debug("CreateSession succeeded: {}", csr.getSessionId());
 
                         ctx.fireEvent(new Event.CreateSessionSuccess(csr));
                     } else {
-                        LOGGER.debug("[{}] CreateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
+                        LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -296,11 +303,11 @@ public class SessionFsmFactory {
                 //noinspection Duplicates
                 createSession(ctx, client).whenComplete((csr, ex) -> {
                     if (csr != null) {
-                        LOGGER.debug("[{}] CreateSession succeeded: {}", ctx.getInstanceId(), csr.getSessionId());
+                        LOGGER.debug("CreateSession succeeded: {}", csr.getSessionId());
 
                         ctx.fireEvent(new Event.CreateSessionSuccess(csr));
                     } else {
-                        LOGGER.debug("[{}] CreateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
+                        LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -350,11 +357,11 @@ public class SessionFsmFactory {
 
                 activateSession(ctx, client, event.response).whenComplete((session, ex) -> {
                     if (session != null) {
-                        LOGGER.debug("[{}] Session activated: {}", ctx.getInstanceId(), session);
+                        LOGGER.debug("Session activated: {}", session);
 
                         ctx.fireEvent(new Event.ActivateSessionSuccess(session));
                     } else {
-                        LOGGER.debug("[{}] ActivateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
+                        LOGGER.debug("ActivateSession failed: {}", ex.getMessage(), ex);
 
                         ctx.fireEvent(new Event.ActivateSessionFailure(ex));
                     }
@@ -404,13 +411,11 @@ public class SessionFsmFactory {
 
                 transferSubscriptions(ctx, client, event.session).whenComplete((u, ex) -> {
                     if (u != null) {
-                        LOGGER.debug("[{}] TransferSubscriptions succeeded", ctx.getInstanceId());
+                        LOGGER.debug("TransferSubscriptions succeeded");
 
                         ctx.fireEvent(new Event.TransferSubscriptionsSuccess(event.session));
                     } else {
-                        LOGGER.debug(
-                            "[{}] TransferSubscriptions failed: {}",
-                            ctx.getInstanceId(), ex.getMessage(), ex);
+                        LOGGER.debug("TransferSubscriptions failed: {}", ex.getMessage(), ex);
 
                         ctx.fireEvent(new Event.TransferSubscriptionsFailure(ex));
                     }
@@ -462,11 +467,11 @@ public class SessionFsmFactory {
 
                 initialize(ctx, client, session).whenComplete((u, ex) -> {
                     if (u != null) {
-                        LOGGER.debug("[{}] Initialization succeeded: {}", ctx.getInstanceId(), session);
+                        LOGGER.debug("Initialization succeeded: {}", session);
 
                         ctx.fireEvent(new Event.InitializeSuccess(session));
                     } else {
-                        LOGGER.warn("[{}] Initialization failed: {}", ctx.getInstanceId(), session, ex);
+                        LOGGER.warn("Initialization failed: {}", session, ex);
 
                         ctx.fireEvent(new Event.InitializeFailure(ex));
                     }
@@ -624,7 +629,7 @@ public class SessionFsmFactory {
                             Object value = results[0].getValue().getValue();
                             if (value instanceof Integer) {
                                 ServerState state = ServerState.from((Integer) value);
-                                LOGGER.debug("[{}] ServerState: {}", ctx.getInstanceId(), state);
+                                LOGGER.debug("ServerState: {}", state);
                             }
                         }
 
@@ -644,8 +649,8 @@ public class SessionFsmFactory {
 
                         if (keepAliveFailureCount > keepAliveFailuresAllowed) {
                             LOGGER.warn(
-                                "[{}] Keep Alive failureCount={} exceeds failuresAllowed={}",
-                                ctx.getInstanceId(), keepAliveFailureCount, keepAliveFailuresAllowed
+                                "Keep Alive failureCount={} exceeds failuresAllowed={}",
+                                keepAliveFailureCount, keepAliveFailuresAllowed
                             );
 
                             ctx.fireEvent(new Event.KeepAliveFailure());
@@ -663,10 +668,7 @@ public class SessionFsmFactory {
                                 }
                             }
                         } else {
-                            LOGGER.debug(
-                                "[{}] Keep Alive failureCount={}",
-                                ctx.getInstanceId(), keepAliveFailureCount, ex
-                            );
+                            LOGGER.debug("Keep Alive failureCount={}", keepAliveFailureCount, ex);
                         }
                     }
                 });
@@ -705,9 +707,9 @@ public class SessionFsmFactory {
 
                 closeSession(ctx, client, session).whenComplete((u, ex) -> {
                     if (u != null) {
-                        LOGGER.debug("[{}] Session closed: {}", ctx.getInstanceId(), session);
+                        LOGGER.debug("Session closed: {}", session);
                     } else {
-                        LOGGER.debug("[{}] CloseSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
+                        LOGGER.debug("CloseSession failed: {}", ex.getMessage(), ex);
                     }
 
                     ctx.fireEvent(new Event.CloseSessionSuccess());
@@ -792,7 +794,7 @@ public class SessionFsmFactory {
 
         CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
 
-        LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
+        LOGGER.debug("Sending CloseSessionRequest...");
 
         client.getTransport().sendRequestMessage(request).whenCompleteAsync(
             (csr, ex2) -> closeFuture.complete(Unit.VALUE),
@@ -853,7 +855,7 @@ public class SessionFsmFactory {
             client.getConfig().getMaxResponseMessageSize()
         );
 
-        LOGGER.debug("[{}] Sending CreateSessionRequest...", ctx.getInstanceId());
+        LOGGER.debug("Sending CreateSessionRequest...");
 
         return client.getTransport()
             .sendRequestMessage(request)
@@ -941,7 +943,7 @@ public class SessionFsmFactory {
                 userTokenSignature
             );
 
-            LOGGER.debug("[{}] Sending ActivateSessionRequest...", ctx.getInstanceId());
+            LOGGER.debug("Sending ActivateSessionRequest...");
 
             return client.getTransport()
                 .sendRequestMessage(request)
@@ -995,7 +997,7 @@ public class SessionFsmFactory {
             true
         );
 
-        LOGGER.debug("[{}] Sending TransferSubscriptionsRequest...", ctx.getInstanceId());
+        LOGGER.debug("Sending TransferSubscriptionsRequest...");
 
         client.getTransport()
             .sendRequestMessage(request)
@@ -1005,8 +1007,8 @@ public class SessionFsmFactory {
                     TransferResult[] results = requireNonNull(tsr.getResults());
 
                     LOGGER.debug(
-                        "[{}] TransferSubscriptions supported: {}",
-                        ctx.getInstanceId(), tsr.getResponseHeader().getServiceResult());
+                        "TransferSubscriptions supported: {}",
+                        tsr.getResponseHeader().getServiceResult());
 
                     if (LOGGER.isDebugEnabled()) {
                         try {
@@ -1024,11 +1026,9 @@ public class SessionFsmFactory {
                                         .map(sa -> sa[0]).orElse(s.toString()))
                             ).toArray(String[]::new);
 
-                            LOGGER.debug(
-                                "[{}] TransferSubscriptions results: {}",
-                                ctx.getInstanceId(), Arrays.toString(ss));
+                            LOGGER.debug("TransferSubscriptions results: {}", Arrays.toString(ss));
                         } catch (Throwable t) {
-                            LOGGER.error("[{}] error logging TransferSubscription results", ctx.getInstanceId(), t);
+                            LOGGER.error("error logging TransferSubscription results", t);
                         }
                     }
 
@@ -1050,7 +1050,7 @@ public class SessionFsmFactory {
                         .map(UaException::getStatusCode)
                         .orElse(StatusCode.BAD);
 
-                    LOGGER.debug("[{}] TransferSubscriptions not supported: {}", ctx.getInstanceId(), statusCode);
+                    LOGGER.debug("TransferSubscriptions not supported: {}", statusCode);
 
                     client.getTransport().getConfig().getExecutor().execute(() -> {
                         for (OpcUaSubscription subscription : subscriptions) {
@@ -1213,7 +1213,7 @@ public class SessionFsmFactory {
             StatusCode serviceResult = serviceFault.getResponseHeader().getServiceResult();
 
             if (SESSION_ERROR.or(SECURE_CHANNEL_ERROR).test(serviceResult)) {
-                logger.debug("[{}] ServiceFault: {}", fsm.getFromContext(FsmContext::getInstanceId), serviceResult);
+                logger.debug("ServiceFault: {}", serviceResult);
 
                 fsm.fireEvent(new Event.ServiceFault(serviceResult));
             }
