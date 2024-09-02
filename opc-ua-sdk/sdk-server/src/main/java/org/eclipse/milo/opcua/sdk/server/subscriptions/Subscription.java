@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -937,6 +937,7 @@ public class Subscription {
                 /* Subscription State Table Row 9 */
                 setState(State.KeepAlive);
                 resetKeepAliveCounter();
+                keepAliveCounter--;
             } else {
                 throw new IllegalStateException("unhandled subscription state");
             }
