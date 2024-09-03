@@ -11,16 +11,18 @@
 package org.eclipse.milo.opcua.stack.transport.client.tcp;
 
 import java.net.ConnectException;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
+import com.digitalpetri.fsm.FsmContext;
 import com.digitalpetri.netty.fsm.ChannelActions;
 import com.digitalpetri.netty.fsm.ChannelFsm;
 import com.digitalpetri.netty.fsm.ChannelFsmConfig;
 import com.digitalpetri.netty.fsm.ChannelFsmFactory;
 import com.digitalpetri.netty.fsm.Event;
 import com.digitalpetri.netty.fsm.State;
-import com.digitalpetri.strictmachine.FsmContext;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -59,6 +61,7 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
         new FsmContext.Key<>("clientApplication", ClientApplicationContext.class);
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
+    private static final AtomicLong INSTANCE_ID = new AtomicLong();
 
     private final ChannelFsm channelFsm;
 
@@ -78,6 +81,7 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
             .setExecutor(config.getExecutor())
             .setScheduler(config.getScheduledExecutor())
             .setLoggerName(CHANNEL_FSM_LOGGER_NAME)
+            .setLoggingContext(Map.of("instance-id", String.valueOf(INSTANCE_ID.incrementAndGet())))
             .build();
 
         var factory = new ChannelFsmFactory(fsmConfig);
@@ -197,7 +201,8 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
             channel.pipeline().addFirst(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void channelInactive(ChannelHandlerContext channelContext) throws Exception {
-                    logger.debug("[{}] channelInactive() disconnect complete", ctx.getInstanceId());
+                    // TODO MDC?
+                    logger.debug("channelInactive() disconnect complete");
                     timeout.cancel();
                     disconnectFuture.complete(null);
                     super.channelInactive(channelContext);
@@ -214,7 +219,8 @@ public class OpcTcpClientTransport extends AbstractUascClientTransport {
                 null
             );
 
-            logger.debug("[{}] Sending CloseSecureChannelRequest...", ctx.getInstanceId());
+            // TODO MDC?
+            logger.debug("Sending CloseSecureChannelRequest...");
 
             channel.pipeline().fireUserEventTriggered(new CloseSecureChannelRequest(requestHeader));
 

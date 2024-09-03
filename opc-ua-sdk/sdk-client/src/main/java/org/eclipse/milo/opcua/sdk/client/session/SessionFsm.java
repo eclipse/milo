@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
-import com.digitalpetri.strictmachine.Fsm;
-import com.digitalpetri.strictmachine.FsmContext;
+import com.digitalpetri.fsm.Fsm;
+import com.digitalpetri.fsm.FsmContext;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
