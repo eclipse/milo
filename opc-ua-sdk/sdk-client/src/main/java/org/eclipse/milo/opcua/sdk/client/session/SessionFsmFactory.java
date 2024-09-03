@@ -10,6 +10,29 @@
 
 package org.eclipse.milo.opcua.sdk.client.session;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_CLOSE_FUTURE;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_KEEP_ALIVE_FAILURE_COUNT;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_KEEP_ALIVE_SCHEDULED_FUTURE;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_ACTIVITY_LISTENERS;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_FUTURE;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_INITIALIZERS;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_WAIT_FUTURE;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_WAIT_TIME;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
+
+import com.digitalpetri.fsm.Fsm;
+import com.digitalpetri.fsm.FsmContext;
+import com.digitalpetri.fsm.dsl.ActionContext;
+import com.digitalpetri.fsm.dsl.FsmBuilder;
+import com.digitalpetri.netty.fsm.ChannelFsm;
+import com.google.common.collect.Streams;
+import com.google.common.primitives.Bytes;
+import io.netty.channel.Channel;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -25,15 +48,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import com.digitalpetri.fsm.Fsm;
-import com.digitalpetri.fsm.FsmContext;
-import com.digitalpetri.fsm.dsl.ActionContext;
-import com.digitalpetri.fsm.dsl.FsmBuilder;
-import com.digitalpetri.netty.fsm.ChannelFsm;
-import com.google.common.collect.Streams;
-import com.google.common.primitives.Bytes;
-import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
@@ -83,21 +97,8 @@ import org.eclipse.milo.opcua.stack.transport.client.OpcClientTransport;
 import org.eclipse.milo.opcua.stack.transport.client.tcp.OpcTcpClientTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_CLOSE_FUTURE;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_KEEP_ALIVE_FAILURE_COUNT;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_KEEP_ALIVE_SCHEDULED_FUTURE;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_ACTIVITY_LISTENERS;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_FUTURE;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_SESSION_INITIALIZERS;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_WAIT_FUTURE;
-import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.KEY_WAIT_TIME;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
+import org.slf4j.MDC;
+import org.slf4j.MDC.MDCCloseable;
 
 public class SessionFsmFactory {
 
@@ -110,11 +111,13 @@ public class SessionFsmFactory {
     private SessionFsmFactory() {}
 
     public static SessionFsm newSessionFsm(OpcUaClient client) {
+        Long instanceId = INSTANCE_ID.incrementAndGet();
+
         FsmBuilder<State, Event> builder = new FsmBuilder<>(
             SessionFsm.LOGGER_NAME,
-            Map.of("instance-id", String.valueOf(INSTANCE_ID.incrementAndGet())),
+            Map.of("instance-id", String.valueOf(instanceId)),
             client.getTransport().getConfig().getExecutor(),
-            null
+            instanceId
         );
 
         configureSessionFsm(builder, client);
@@ -217,11 +220,12 @@ public class SessionFsmFactory {
                 }
                 KEY_WAIT_TIME.set(ctx, waitTime);
 
-                ScheduledFuture<?> waitFuture = client.getTransport().getConfig().getScheduledExecutor().schedule(
-                    () -> ctx.fireEvent(new Event.CreatingWaitExpired()),
-                    waitTime,
-                    TimeUnit.SECONDS
-                );
+                ScheduledFuture<?> waitFuture = client.getTransport().getConfig()
+                    .getScheduledExecutor().schedule(
+                        () -> ctx.fireEvent(new Event.CreatingWaitExpired()),
+                        waitTime,
+                        TimeUnit.SECONDS
+                    );
                 KEY_WAIT_FUTURE.set(ctx, waitFuture);
             });
 
@@ -230,7 +234,9 @@ public class SessionFsmFactory {
             .via(Event.CloseSession.class)
             .execute(ctx -> {
                 ScheduledFuture<?> waitFuture = KEY_WAIT_FUTURE.remove(ctx);
-                if (waitFuture != null) waitFuture.cancel(false);
+                if (waitFuture != null) {
+                    waitFuture.cancel(false);
+                }
 
                 KEY_WAIT_TIME.remove(ctx);
 
@@ -284,12 +290,19 @@ public class SessionFsmFactory {
                 //noinspection Duplicates
                 createSession(ctx, client).whenComplete((csr, ex) -> {
                     if (csr != null) {
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
 
-                        LOGGER.debug("CreateSession succeeded: {}", csr.getSessionId());
+                            LOGGER.debug("CreateSession succeeded: {}", csr.getSessionId());
+                        }
 
                         ctx.fireEvent(new Event.CreateSessionSuccess(csr));
                     } else {
-                        LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
+                        }
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -303,11 +316,19 @@ public class SessionFsmFactory {
                 //noinspection Duplicates
                 createSession(ctx, client).whenComplete((csr, ex) -> {
                     if (csr != null) {
-                        LOGGER.debug("CreateSession succeeded: {}", csr.getSessionId());
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("CreateSession succeeded: {}", csr.getSessionId());
+                        }
 
                         ctx.fireEvent(new Event.CreateSessionSuccess(csr));
                     } else {
-                        LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
+                        }
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -357,11 +378,19 @@ public class SessionFsmFactory {
 
                 activateSession(ctx, client, event.response).whenComplete((session, ex) -> {
                     if (session != null) {
-                        LOGGER.debug("Session activated: {}", session);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("Session activated: {}", session);
+                        }
 
                         ctx.fireEvent(new Event.ActivateSessionSuccess(session));
                     } else {
-                        LOGGER.debug("ActivateSession failed: {}", ex.getMessage(), ex);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("ActivateSession failed: {}", ex.getMessage(), ex);
+                        }
 
                         ctx.fireEvent(new Event.ActivateSessionFailure(ex));
                     }
@@ -384,7 +413,8 @@ public class SessionFsmFactory {
             .execute(ctx -> ctx.shelveEvent(ctx.event()));
     }
 
-    private static void configureTransferringState(FsmBuilder<State, Event> fb, OpcUaClient client) {
+    private static void configureTransferringState(FsmBuilder<State, Event> fb,
+        OpcUaClient client) {
         /* Transitions */
 
         fb.when(State.Transferring)
@@ -411,11 +441,19 @@ public class SessionFsmFactory {
 
                 transferSubscriptions(ctx, client, event.session).whenComplete((u, ex) -> {
                     if (u != null) {
-                        LOGGER.debug("TransferSubscriptions succeeded");
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("TransferSubscriptions succeeded");
+                        }
 
                         ctx.fireEvent(new Event.TransferSubscriptionsSuccess(event.session));
                     } else {
-                        LOGGER.debug("TransferSubscriptions failed: {}", ex.getMessage(), ex);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("TransferSubscriptions failed: {}", ex.getMessage(), ex);
+                        }
 
                         ctx.fireEvent(new Event.TransferSubscriptionsFailure(ex));
                     }
@@ -438,7 +476,8 @@ public class SessionFsmFactory {
             .execute(ctx -> ctx.shelveEvent(ctx.event()));
     }
 
-    private static void configureInitializingState(FsmBuilder<State, Event> fb, OpcUaClient client) {
+    private static void configureInitializingState(FsmBuilder<State, Event> fb,
+        OpcUaClient client) {
         /* Transitions */
 
         fb.when(State.Initializing)
@@ -467,11 +506,19 @@ public class SessionFsmFactory {
 
                 initialize(ctx, client, session).whenComplete((u, ex) -> {
                     if (u != null) {
-                        LOGGER.debug("Initialization succeeded: {}", session);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.debug("Initialization succeeded: {}", session);
+                        }
 
                         ctx.fireEvent(new Event.InitializeSuccess(session));
                     } else {
-                        LOGGER.warn("Initialization failed: {}", session, ex);
+                        try (MDCCloseable ignored =
+                            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                            LOGGER.warn("Initialization failed: {}", session, ex);
+                        }
 
                         ctx.fireEvent(new Event.InitializeFailure(ex));
                     }
@@ -524,12 +571,13 @@ public class SessionFsmFactory {
                 long keepAliveInterval = client.getConfig().getKeepAliveInterval().longValue();
                 KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, 0L);
 
-                ScheduledFuture<?> scheduledFuture = client.getTransport().getConfig().getScheduledExecutor().scheduleWithFixedDelay(
-                    () -> ctx.fireEvent(new Event.KeepAlive(event.session)),
-                    keepAliveInterval,
-                    keepAliveInterval,
-                    TimeUnit.MILLISECONDS
-                );
+                ScheduledFuture<?> scheduledFuture = client.getTransport().getConfig()
+                    .getScheduledExecutor().scheduleWithFixedDelay(
+                        () -> ctx.fireEvent(new Event.KeepAlive(event.session)),
+                        keepAliveInterval,
+                        keepAliveInterval,
+                        TimeUnit.MILLISECONDS
+                    );
                 KEY_KEEP_ALIVE_SCHEDULED_FUTURE.set(ctx, scheduledFuture);
 
                 KEY_SESSION.set(ctx, event.session);
@@ -555,7 +603,14 @@ public class SessionFsmFactory {
 
                                 channelFsm.removeTransitionListener(this);
 
-                                LOGGER.debug("ChannelFsm transition from={} to={} via={}", from, to, via);
+                                try (MDCCloseable ignored =
+                                    MDC.putCloseable("instance-id",
+                                        ctx.getUserContext().toString())) {
+
+                                    LOGGER.debug(
+                                        "ChannelFsm transition from={} to={} via={}",
+                                        from, to, via);
+                                }
 
                                 ctx.fireEvent(new Event.ConnectionLost());
                             }
@@ -629,7 +684,13 @@ public class SessionFsmFactory {
                             Object value = results[0].getValue().getValue();
                             if (value instanceof Integer) {
                                 ServerState state = ServerState.from((Integer) value);
-                                LOGGER.debug("ServerState: {}", state);
+
+                                try (MDCCloseable ignored =
+                                    MDC.putCloseable("instance-id",
+                                        ctx.getUserContext().toString())) {
+
+                                    LOGGER.debug("ServerState: {}", state);
+                                }
                             }
                         }
 
@@ -645,13 +706,18 @@ public class SessionFsmFactory {
 
                         KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, keepAliveFailureCount);
 
-                        long keepAliveFailuresAllowed = client.getConfig().getKeepAliveFailuresAllowed().longValue();
+                        long keepAliveFailuresAllowed = client.getConfig()
+                            .getKeepAliveFailuresAllowed().longValue();
 
                         if (keepAliveFailureCount > keepAliveFailuresAllowed) {
-                            LOGGER.warn(
-                                "Keep Alive failureCount={} exceeds failuresAllowed={}",
-                                keepAliveFailureCount, keepAliveFailuresAllowed
-                            );
+                            try (MDCCloseable ignored =
+                                MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                                LOGGER.warn(
+                                    "Keep Alive failureCount={} exceeds failuresAllowed={}",
+                                    keepAliveFailureCount, keepAliveFailuresAllowed
+                                );
+                            }
 
                             ctx.fireEvent(new Event.KeepAliveFailure());
 
@@ -668,7 +734,12 @@ public class SessionFsmFactory {
                                 }
                             }
                         } else {
-                            LOGGER.debug("Keep Alive failureCount={}", keepAliveFailureCount, ex);
+                            try (MDCCloseable ignored =
+                                MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                                LOGGER.debug(
+                                    "Keep Alive failureCount={}", keepAliveFailureCount, ex);
+                            }
                         }
                     }
                 });
@@ -706,10 +777,14 @@ public class SessionFsmFactory {
                 OpcUaSession session = KEY_SESSION.get(ctx);
 
                 closeSession(ctx, client, session).whenComplete((u, ex) -> {
-                    if (u != null) {
-                        LOGGER.debug("Session closed: {}", session);
-                    } else {
-                        LOGGER.debug("CloseSession failed: {}", ex.getMessage(), ex);
+                    try (MDCCloseable ignored =
+                        MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                        if (u != null) {
+                            LOGGER.debug("Session closed: {}", session);
+                        } else {
+                            LOGGER.debug("CloseSession failed: {}", ex.getMessage(), ex);
+                        }
                     }
 
                     ctx.fireEvent(new Event.CloseSessionSuccess());
@@ -743,7 +818,6 @@ public class SessionFsmFactory {
                     complete(event.future).with(closeFuture.future);
                 }
             });
-
 
         fb.onInternalTransition(State.Closing)
             .via(e -> e.getClass() != Event.CloseSession.class)
@@ -794,7 +868,11 @@ public class SessionFsmFactory {
 
         CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
 
-        LOGGER.debug("Sending CloseSessionRequest...");
+        try (MDCCloseable ignored =
+            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+            LOGGER.debug("Sending CloseSessionRequest...");
+        }
 
         client.getTransport().sendRequestMessage(request).whenCompleteAsync(
             (csr, ex2) -> closeFuture.complete(Unit.VALUE),
@@ -855,14 +933,19 @@ public class SessionFsmFactory {
             client.getConfig().getMaxResponseMessageSize()
         );
 
-        LOGGER.debug("Sending CreateSessionRequest...");
+        try (MDCCloseable ignored =
+            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+            LOGGER.debug("Sending CreateSessionRequest...");
+        }
 
         return client.getTransport()
             .sendRequestMessage(request)
             .thenApply(CreateSessionResponse.class::cast)
             .thenCompose(response -> {
                 try {
-                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(
+                        endpoint.getSecurityPolicyUri());
 
                     if (securityPolicy != SecurityPolicy.None) {
                         if (response.getServerCertificate().isNullOrEmpty()) {
@@ -943,7 +1026,11 @@ public class SessionFsmFactory {
                 userTokenSignature
             );
 
-            LOGGER.debug("Sending ActivateSessionRequest...");
+            try (MDCCloseable ignored =
+                MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                LOGGER.debug("Sending ActivateSessionRequest...");
+            }
 
             return client.getTransport()
                 .sendRequestMessage(request)
@@ -997,7 +1084,11 @@ public class SessionFsmFactory {
             true
         );
 
-        LOGGER.debug("Sending TransferSubscriptionsRequest...");
+        try (MDCCloseable ignored =
+            MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+            LOGGER.debug("Sending TransferSubscriptionsRequest...");
+        }
 
         client.getTransport()
             .sendRequestMessage(request)
@@ -1006,29 +1097,34 @@ public class SessionFsmFactory {
                 if (tsr != null) {
                     TransferResult[] results = requireNonNull(tsr.getResults());
 
-                    LOGGER.debug(
-                        "TransferSubscriptions supported: {}",
-                        tsr.getResponseHeader().getServiceResult());
+                    try (MDCCloseable ignored =
+                        MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
 
-                    if (LOGGER.isDebugEnabled()) {
-                        try {
-                            Stream<UInteger> subscriptionIds = subscriptions.stream()
-                                .flatMap(s -> s.getSubscriptionId().stream());
-                            Stream<StatusCode> statusCodes = Stream.of(results)
-                                .map(TransferResult::getStatusCode);
+                        LOGGER.debug(
+                            "TransferSubscriptions supported: {}",
+                            tsr.getResponseHeader().getServiceResult());
 
-                            //noinspection UnstableApiUsage
-                            String[] ss = Streams.zip(
-                                subscriptionIds,
-                                statusCodes,
-                                (i, s) -> String.format("id=%s/%s",
-                                    i, StatusCodes.lookup(s.getValue())
-                                        .map(sa -> sa[0]).orElse(s.toString()))
-                            ).toArray(String[]::new);
+                        if (LOGGER.isDebugEnabled()) {
+                            try {
+                                Stream<UInteger> subscriptionIds = subscriptions.stream()
+                                    .flatMap(s -> s.getSubscriptionId().stream());
+                                Stream<StatusCode> statusCodes = Stream.of(results)
+                                    .map(TransferResult::getStatusCode);
 
-                            LOGGER.debug("TransferSubscriptions results: {}", Arrays.toString(ss));
-                        } catch (Throwable t) {
-                            LOGGER.error("error logging TransferSubscription results", t);
+                                //noinspection UnstableApiUsage
+                                String[] ss = Streams.zip(
+                                    subscriptionIds,
+                                    statusCodes,
+                                    (i, s) -> String.format("id=%s/%s",
+                                        i, StatusCodes.lookup(s.getValue())
+                                            .map(sa -> sa[0]).orElse(s.toString()))
+                                ).toArray(String[]::new);
+
+                                LOGGER.debug("TransferSubscriptions results: {}",
+                                    Arrays.toString(ss));
+                            } catch (Throwable t) {
+                                LOGGER.error("error logging TransferSubscription results", t);
+                            }
                         }
                     }
 
@@ -1097,11 +1193,12 @@ public class SessionFsmFactory {
         if (initializers.isEmpty()) {
             return completedFuture(Unit.VALUE);
         } else {
-            return runSequentially(client, session, initializers);
+            return runSequentially(ctx, client, session, initializers);
         }
     }
 
     private static CompletableFuture<Unit> runSequentially(
+        FsmContext<State, Event> ctx,
         OpcUaClient client,
         OpcUaSession session,
         LinkedList<SessionFsm.SessionInitializer> initializers
@@ -1114,15 +1211,21 @@ public class SessionFsmFactory {
 
             return initializer.initialize(client, session)
                 .exceptionally(ex -> {
-                    LOGGER.error("Uncaught initialization error: " +
-                        initializer.getClass().getSimpleName(), ex);
+                    try (MDCCloseable ignored =
+                        MDC.putCloseable("instance-id", ctx.getUserContext().toString())) {
+
+                        LOGGER.error("Uncaught initialization error: {}",
+                            initializer.getClass().getSimpleName(), ex);
+                    }
+
                     return Unit.VALUE;
                 })
-                .thenCompose(u -> runSequentially(client, session, initializers));
+                .thenCompose(u -> runSequentially(ctx, client, session, initializers));
         }
     }
 
-    private static CompletableFuture<ReadResponse> sendKeepAlive(OpcUaClient client, OpcUaSession session) {
+    private static CompletableFuture<ReadResponse> sendKeepAlive(OpcUaClient client,
+        OpcUaSession session) {
         ReadRequest keepAliveRequest = createKeepAliveRequest(client, session);
 
         return client.getTransport()
