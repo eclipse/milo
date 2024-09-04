@@ -404,6 +404,7 @@ public class BrowseHelper {
 
                 return references.stream()
                     .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId()))
+                    .filter(Reference::isForward)
                     .findFirst()
                     .map(Reference::getTargetNodeId)
                     .orElse(ExpandedNodeId.NULL_VALUE);
