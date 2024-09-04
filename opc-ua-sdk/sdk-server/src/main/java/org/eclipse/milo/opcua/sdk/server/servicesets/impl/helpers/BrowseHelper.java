@@ -81,13 +81,13 @@ public class BrowseHelper {
             AccessResult result = accessResults.get(pb.browseDescription.getNodeId());
 
             if (result.isDenied()) {
-                pb.referenceDescriptions =
-                    new ReferenceDescriptions.ReferenceDescriptionList(Collections.emptyList());
+                pb.referenceDescriptionResult =
+                    ReferenceDescriptionResult.of(Collections.emptyList());
             }
         }
 
         List<BrowseDescription> nodesToBrowse = pending.stream()
-            .filter(pb -> pb.referenceDescriptions == null)
+            .filter(pb -> pb.referenceDescriptionResult == null)
             .map(pb -> pb.browseDescription).toList();
 
         List<AddressSpace.ReferenceResult> referenceResults = server.getAddressSpaceManager().browse(
@@ -98,7 +98,7 @@ public class BrowseHelper {
                 .collect(Collectors.toList())
         );
 
-        List<ReferenceDescriptions> referenceDescriptionLists = createReferenceDescriptions(
+        List<ReferenceDescriptionResult> referenceDescriptionLists = createReferenceDescriptions(
             server,
             nodesToBrowse,
             referenceResults
@@ -106,11 +106,11 @@ public class BrowseHelper {
 
         for (int i = 0; i < nodesToBrowse.size(); i++) {
             PendingBrowse pb = pending.get(i);
-            ReferenceDescriptions referenceDescriptions = referenceDescriptionLists.get(i);
+            ReferenceDescriptionResult referenceDescriptionResult = referenceDescriptionLists.get(i);
 
-            if (referenceDescriptions instanceof ReferenceDescriptions.BadNoReferences) {
-                pb.referenceDescriptions = referenceDescriptions;
-            } else if (referenceDescriptions instanceof ReferenceDescriptions.ReferenceDescriptionList rdl) {
+            if (referenceDescriptionResult instanceof ReferenceDescriptionResult.BadNoReferences) {
+                pb.referenceDescriptionResult = referenceDescriptionResult;
+            } else if (referenceDescriptionResult instanceof ReferenceDescriptionResult.ReferenceDescriptionList rdl) {
                 List<NodeId> nodeIdsToCheck = rdl.referenceDescriptions.stream()
                     .map(r -> r.getNodeId().toNodeId(server.getNamespaceTable()).orElse(NodeId.NULL_VALUE))
                     .toList();
@@ -133,14 +133,14 @@ public class BrowseHelper {
                 }
 
                 // Filter out references to Nodes that the Session doesn't have Browse permission for.
-                pb.referenceDescriptions = new ReferenceDescriptions.ReferenceDescriptionList(filteredReferences);
+                pb.referenceDescriptionResult = ReferenceDescriptionResult.of(filteredReferences);
             }
         }
 
         // Gather all the ReferenceDescription lists: the ones we initially filtered out due to
         // lack of Browse permission and the ones from the actual Browse.
-        List<ReferenceDescriptions> allReferenceDescriptionLists =
-            pending.stream().map(pb -> pb.referenceDescriptions).toList();
+        List<ReferenceDescriptionResult> allReferenceDescriptionResults =
+            pending.stream().map(pb -> pb.referenceDescriptionResult).toList();
 
         int max = browseRequest.getRequestedMaxReferencesPerNode().longValue() == 0 ?
             Integer.MAX_VALUE :
@@ -148,14 +148,14 @@ public class BrowseHelper {
 
         var browseResults = new ArrayList<BrowseResult>();
 
-        for (ReferenceDescriptions referenceDescriptions : allReferenceDescriptionLists) {
-            if (referenceDescriptions instanceof ReferenceDescriptions.BadNoReferences bnr) {
+        for (ReferenceDescriptionResult referenceDescriptionResult : allReferenceDescriptionResults) {
+            if (referenceDescriptionResult instanceof ReferenceDescriptionResult.BadNoReferences bnr) {
                 browseResults.add(new BrowseResult(
                     bnr.statusCode,
                     null,
                     new ReferenceDescription[0]
                 ));
-            } else if (referenceDescriptions instanceof ReferenceDescriptions.ReferenceDescriptionList rdl) {
+            } else if (referenceDescriptionResult instanceof ReferenceDescriptionResult.ReferenceDescriptionList rdl) {
                 BrowseResult browseResult = createBrowseResult(
                     server,
                     context.getSession().orElse(null),
@@ -170,13 +170,13 @@ public class BrowseHelper {
         return browseResults;
     }
 
-    private static List<ReferenceDescriptions> createReferenceDescriptions(
+    private static List<ReferenceDescriptionResult> createReferenceDescriptions(
         OpcUaServer server,
         List<BrowseDescription> nodesToBrowse,
         List<AddressSpace.ReferenceResult> referenceResults
     ) {
 
-        var referenceDescriptionsList = new ArrayList<ReferenceDescriptions>();
+        var referenceDescriptionsList = new ArrayList<ReferenceDescriptionResult>();
 
         for (int i = 0; i < nodesToBrowse.size(); i++) {
             BrowseDescription browseDescription = nodesToBrowse.get(i);
@@ -186,9 +186,7 @@ public class BrowseHelper {
             if (result instanceof AddressSpace.ReferenceResult.ReferenceList r) {
                 references = r.references();
             } else {
-                referenceDescriptionsList.add(
-                    new ReferenceDescriptions.BadNoReferences(new StatusCode(StatusCodes.Bad_NodeIdUnknown))
-                );
+                referenceDescriptionsList.add(ReferenceDescriptionResult.of(StatusCodes.Bad_NodeIdUnknown));
                 continue;
             }
 
@@ -197,9 +195,7 @@ public class BrowseHelper {
             if (referenceTypeId.isNotNull() &&
                 !server.getReferenceTypeTree().containsType(referenceTypeId)) {
 
-                referenceDescriptionsList.add(
-                    new ReferenceDescriptions.BadNoReferences(new StatusCode(StatusCodes.Bad_ReferenceTypeIdInvalid))
-                );
+                referenceDescriptionsList.add(ReferenceDescriptionResult.of(StatusCodes.Bad_ReferenceTypeIdInvalid));
                 continue;
             }
 
@@ -245,7 +241,7 @@ public class BrowseHelper {
                 }
             }
 
-            referenceDescriptionsList.add(new ReferenceDescriptions.ReferenceDescriptionList(referenceDescriptions));
+            referenceDescriptionsList.add(ReferenceDescriptionResult.of(referenceDescriptions));
         }
 
         return referenceDescriptionsList;
@@ -456,7 +452,7 @@ public class BrowseHelper {
 
     private static class PendingBrowse {
 
-        ReferenceDescriptions referenceDescriptions;
+        ReferenceDescriptionResult referenceDescriptionResult;
         final BrowseDescription browseDescription;
 
         PendingBrowse(BrowseDescription browseDescription) {
@@ -465,13 +461,25 @@ public class BrowseHelper {
 
     }
 
-    private sealed interface ReferenceDescriptions {
+    private sealed interface ReferenceDescriptionResult {
 
-        record BadNoReferences(StatusCode statusCode) implements ReferenceDescriptions {}
+        record BadNoReferences(StatusCode statusCode) implements ReferenceDescriptionResult {}
 
         record ReferenceDescriptionList(
             List<ReferenceDescription> referenceDescriptions
-        ) implements ReferenceDescriptions {}
+        ) implements ReferenceDescriptionResult {}
+
+        static BadNoReferences of(long statusCode) {
+            return of(new StatusCode(statusCode));
+        }
+
+        static BadNoReferences of(StatusCode statusCode) {
+            return new BadNoReferences(statusCode);
+        }
+
+        static ReferenceDescriptionList of(List<ReferenceDescription> referenceDescriptions) {
+            return new ReferenceDescriptionList(referenceDescriptions);
+        }
 
     }
 
