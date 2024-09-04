@@ -108,7 +108,7 @@ public class BrowseHelper {
             PendingBrowse pb = pending.get(i);
             ReferenceDescriptions referenceDescriptions = referenceDescriptionLists.get(i);
 
-            if (referenceDescriptions instanceof ReferenceDescriptions.BadNodeIdUnknown) {
+            if (referenceDescriptions instanceof ReferenceDescriptions.BadNoReferences) {
                 pb.referenceDescriptions = referenceDescriptions;
             } else if (referenceDescriptions instanceof ReferenceDescriptions.ReferenceDescriptionList rdl) {
                 List<NodeId> nodeIdsToCheck = rdl.referenceDescriptions.stream()
@@ -149,9 +149,9 @@ public class BrowseHelper {
         var browseResults = new ArrayList<BrowseResult>();
 
         for (ReferenceDescriptions referenceDescriptions : allReferenceDescriptionLists) {
-            if (referenceDescriptions instanceof ReferenceDescriptions.BadNodeIdUnknown) {
+            if (referenceDescriptions instanceof ReferenceDescriptions.BadNoReferences bnr) {
                 browseResults.add(new BrowseResult(
-                    new StatusCode(StatusCodes.Bad_NodeIdUnknown),
+                    bnr.statusCode,
                     null,
                     new ReferenceDescription[0]
                 ));
@@ -176,7 +176,7 @@ public class BrowseHelper {
         List<AddressSpace.ReferenceResult> referenceResults
     ) {
 
-        var referenceDescriptionLists = new ArrayList<ReferenceDescriptions>();
+        var referenceDescriptionsList = new ArrayList<ReferenceDescriptions>();
 
         for (int i = 0; i < nodesToBrowse.size(); i++) {
             BrowseDescription browseDescription = nodesToBrowse.get(i);
@@ -186,7 +186,20 @@ public class BrowseHelper {
             if (result instanceof AddressSpace.ReferenceResult.ReferenceList r) {
                 references = r.references();
             } else {
-                referenceDescriptionLists.add(new ReferenceDescriptions.BadNodeIdUnknown());
+                referenceDescriptionsList.add(
+                    new ReferenceDescriptions.BadNoReferences(new StatusCode(StatusCodes.Bad_NodeIdUnknown))
+                );
+                continue;
+            }
+
+            NodeId referenceTypeId = browseDescription.getReferenceTypeId();
+
+            if (referenceTypeId.isNotNull() &&
+                !server.getReferenceTypeTree().containsType(referenceTypeId)) {
+
+                referenceDescriptionsList.add(
+                    new ReferenceDescriptions.BadNoReferences(new StatusCode(StatusCodes.Bad_ReferenceTypeIdInvalid))
+                );
                 continue;
             }
 
@@ -232,10 +245,10 @@ public class BrowseHelper {
                 }
             }
 
-            referenceDescriptionLists.add(new ReferenceDescriptions.ReferenceDescriptionList(referenceDescriptions));
+            referenceDescriptionsList.add(new ReferenceDescriptions.ReferenceDescriptionList(referenceDescriptions));
         }
 
-        return referenceDescriptionLists;
+        return referenceDescriptionsList;
     }
 
     private static ReferenceDescription createReferenceDescription(
@@ -453,7 +466,7 @@ public class BrowseHelper {
 
     private sealed interface ReferenceDescriptions {
 
-        record BadNodeIdUnknown() implements ReferenceDescriptions {}
+        record BadNoReferences(StatusCode statusCode) implements ReferenceDescriptions {}
 
         record ReferenceDescriptionList(
             List<ReferenceDescription> referenceDescriptions
