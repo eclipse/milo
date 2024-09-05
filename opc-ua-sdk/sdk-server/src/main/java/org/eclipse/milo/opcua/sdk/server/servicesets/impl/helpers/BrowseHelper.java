@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -78,11 +79,27 @@ public class BrowseHelper {
             server.getAccessController().checkBrowseAccess(session, nodeIds);
 
         for (PendingBrowse pb : pending) {
-            AccessResult result = accessResults.get(pb.browseDescription.getNodeId());
+            if (pb.browseDescription.getBrowseDirection() == null ||
+                pb.browseDescription.getBrowseDirection() == BrowseDirection.Invalid) {
 
-            if (result.isDenied()) {
                 pb.referenceDescriptionResult =
-                    ReferenceDescriptionResult.of(Collections.emptyList());
+                    ReferenceDescriptionResult.of(StatusCodes.Bad_BrowseDirectionInvalid);
+            } else {
+                NodeId referenceTypeId = pb.browseDescription.getReferenceTypeId();
+
+                if (referenceTypeId.isNotNull() &&
+                    !server.getReferenceTypeTree().containsType(referenceTypeId)) {
+
+                    pb.referenceDescriptionResult =
+                        ReferenceDescriptionResult.of(StatusCodes.Bad_ReferenceTypeIdInvalid);
+                } else {
+                    AccessResult result = accessResults.get(pb.browseDescription.getNodeId());
+
+                    if (result.isDenied()) {
+                        pb.referenceDescriptionResult =
+                            ReferenceDescriptionResult.of(Collections.emptyList());
+                    }
+                }
             }
         }
 
@@ -104,7 +121,8 @@ public class BrowseHelper {
             referenceResults
         );
 
-        for (int i = 0; i < nodesToBrowse.size(); i++) {
+        for (
+            int i = 0; i < nodesToBrowse.size(); i++) {
             PendingBrowse pb = pending.get(i);
             ReferenceDescriptionResult referenceDescriptionResult = referenceDescriptionLists.get(i);
 
@@ -187,15 +205,6 @@ public class BrowseHelper {
                 references = r.references();
             } else {
                 referenceDescriptionsList.add(ReferenceDescriptionResult.of(StatusCodes.Bad_NodeIdUnknown));
-                continue;
-            }
-
-            NodeId referenceTypeId = browseDescription.getReferenceTypeId();
-
-            if (referenceTypeId.isNotNull() &&
-                !server.getReferenceTypeTree().containsType(referenceTypeId)) {
-
-                referenceDescriptionsList.add(ReferenceDescriptionResult.of(StatusCodes.Bad_ReferenceTypeIdInvalid));
                 continue;
             }
 
@@ -386,7 +395,7 @@ public class BrowseHelper {
                         } catch (UaException e) {
                             LoggerFactory.getLogger(BrowseHelper.class)
                                 .error("Error browsing TypeDefinition for nodeId={}", nodeId, e);
-                            
+
                             typeDefinitions.add(ExpandedNodeId.NULL_VALUE);
                         }
                     }
