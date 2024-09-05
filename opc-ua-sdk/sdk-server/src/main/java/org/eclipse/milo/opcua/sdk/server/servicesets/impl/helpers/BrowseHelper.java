@@ -219,6 +219,7 @@ public class BrowseHelper {
             List<ExpandedNodeId> typeDefinitionIds = browseTypeDefinitions(
                 server,
                 targetNodeIds,
+                browseAttributes,
                 browseDescription.getResultMask()
             );
 
@@ -352,25 +353,49 @@ public class BrowseHelper {
         return browseAttributes;
     }
 
-    private static List<ExpandedNodeId> browseTypeDefinitions(OpcUaServer server, List<ExpandedNodeId> nodeIds, UInteger resultMask) {
+    private static List<ExpandedNodeId> browseTypeDefinitions(
+        OpcUaServer server,
+        List<ExpandedNodeId> nodeIds,
+        List<BrowseAttributes> browseAttributes,
+        UInteger resultMask
+    ) {
+
         EnumSet<BrowseResultMask> resultMasks = browseResultMasks(resultMask.longValue());
 
         if (!resultMasks.contains(BrowseResultMask.TypeDefinition)) {
             return Collections.nCopies(nodeIds.size(), ExpandedNodeId.NULL_VALUE);
         }
 
-        return nodeIds.stream()
-            .map(xni -> xni.toNodeId(server.getNamespaceTable()).orElse(NodeId.NULL_VALUE))
-            .map(nodeId -> {
-                try {
-                    return browseTypeDefinition(server, nodeId);
-                } catch (UaException e) {
-                    LoggerFactory.getLogger(BrowseHelper.class)
-                        .error("Error browsing TypeDefinition for nodeId={}", nodeId, e);
-                    return ExpandedNodeId.NULL_VALUE;
+        var typeDefinitions = new ArrayList<ExpandedNodeId>();
+
+        for (int i = 0; i < nodeIds.size(); i++) {
+            NodeId nodeId = nodeIds.get(i)
+                .toNodeId(server.getNamespaceTable())
+                .orElse(NodeId.NULL_VALUE);
+
+            BrowseAttributes attributes = browseAttributes.get(i);
+            NodeClass nodeClass = attributes.nodeClass;
+
+            if (nodeId.isNull() || nodeClass == null) {
+                typeDefinitions.add(ExpandedNodeId.NULL_VALUE);
+            } else {
+                switch (attributes.nodeClass) {
+                    case Object, Variable -> {
+                        try {
+                            typeDefinitions.add(browseTypeDefinition(server, nodeId));
+                        } catch (UaException e) {
+                            LoggerFactory.getLogger(BrowseHelper.class)
+                                .error("Error browsing TypeDefinition for nodeId={}", nodeId, e);
+                            
+                            typeDefinitions.add(ExpandedNodeId.NULL_VALUE);
+                        }
+                    }
+                    default -> typeDefinitions.add(ExpandedNodeId.NULL_VALUE);
                 }
-            })
-            .collect(Collectors.toList());
+            }
+        }
+
+        return typeDefinitions;
     }
 
     private static ExpandedNodeId browseTypeDefinition(OpcUaServer server, NodeId nodeId) throws UaException {
@@ -385,7 +410,7 @@ public class BrowseHelper {
             return typeDefinitionId;
         } else {
             LoggerFactory.getLogger(BrowseHelper.class)
-                .trace("No managed TypeDefinition for nodeId={}, browsing...", nodeId);
+                .debug("No managed TypeDefinition for nodeId={}, browsing...", nodeId);
 
             var browseContext = new BrowseContext(server, null);
 

@@ -16,7 +16,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AddressSpace.ReferenceResult.ReferenceList;
@@ -212,7 +214,7 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
 
     @Override
     public ReferenceList gather(BrowseContext context, ViewDescription view, NodeId nodeId) {
-        var references = new LinkedHashSet<Reference>();
+        var referenceStreams = new ArrayList<Stream<Reference>>();
 
         for (AddressSpace asx : addressSpaces) {
             var browseContext = new BrowseContext(
@@ -221,10 +223,15 @@ public class AddressSpaceComposite implements AddressSpaceFragment {
             );
 
             ReferenceList result = asx.gather(browseContext, view, nodeId);
-            references.addAll(result.references());
+            referenceStreams.add(result.references().stream());
         }
 
-        return ReferenceResult.of(new ArrayList<>(references));
+        List<Reference> references = referenceStreams.stream()
+            .flatMap(Function.identity())
+            .distinct()
+            .toList();
+
+        return ReferenceResult.of(references);
     }
 
     @Override
