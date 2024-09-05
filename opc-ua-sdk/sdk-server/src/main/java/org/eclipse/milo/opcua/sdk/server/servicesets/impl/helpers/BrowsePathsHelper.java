@@ -222,7 +222,7 @@ public class BrowsePathsHelper {
                 return ExpandedNodeId.NULL_VALUE;
             }
         } else {
-            throw new UaException(StatusCodes.Bad_NoMatch);
+            throw new UaException(StatusCodes.Bad_NodeIdUnknown);
         }
     }
 
@@ -281,7 +281,7 @@ public class BrowsePathsHelper {
                 return targets;
             }
         } else {
-            throw new UaException(StatusCodes.Bad_NoMatch);
+            throw new UaException(StatusCodes.Bad_NodeIdUnknown);
         }
     }
 
