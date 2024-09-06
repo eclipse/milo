@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.LinkedHashMultiset;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -155,11 +154,12 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter) {
-        return getReferences(nodeId)
-            .stream()
-            .filter(filter)
-            .collect(Collectors.toList());
+    public synchronized List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter) {
+        LinkedHashMultiset<Reference> references = referenceMap.get(nodeId);
+
+        return references != null ?
+            references.stream().filter(filter).toList() :
+            Collections.emptyList();
     }
 
 }
