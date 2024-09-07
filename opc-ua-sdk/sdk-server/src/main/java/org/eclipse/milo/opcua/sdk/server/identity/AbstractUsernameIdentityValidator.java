@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -72,10 +72,11 @@ public abstract class AbstractUsernameIdentityValidator extends AbstractIdentity
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
             }
 
-            if (algorithm != SecurityAlgorithm.Rsa15 &&
-                algorithm != SecurityAlgorithm.RsaOaepSha1 &&
-                algorithm != SecurityAlgorithm.RsaOaepSha256) {
+            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(policy.getSecurityPolicyUri());
 
+            // Don't allow the Client to specify a different algorithm than the one defined by the
+            // SecurityPolicy in the UserTokenPolicy.
+            if (!securityPolicy.getAsymmetricEncryptionAlgorithm().equals(algorithm)) {
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
             }
         }
