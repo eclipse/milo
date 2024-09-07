@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
-import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -48,7 +48,7 @@ public class UsernameProvider implements IdentityProvider {
 
     private final String username;
     private final String password;
-    private final ClientCertificateValidator certificateValidator;
+    private final CertificateValidator certificateValidator;
     private final Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser;
 
 
@@ -60,7 +60,7 @@ public class UsernameProvider implements IdentityProvider {
      * @param password the password to authenticate with.
      */
     public UsernameProvider(String username, String password) {
-        this(username, password, new ClientCertificateValidator.InsecureValidator());
+        this(username, password, new CertificateValidator.InsecureCertificateValidator());
     }
 
     /**
@@ -69,9 +69,9 @@ public class UsernameProvider implements IdentityProvider {
      *
      * @param username the username to authenticate with.
      * @param password the password to authenticate with.
-     * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
+     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
      */
-    public UsernameProvider(String username, String password, ClientCertificateValidator certificateValidator) {
+    public UsernameProvider(String username, String password, CertificateValidator certificateValidator) {
         this(username, password, certificateValidator, ps -> ps.get(0));
     }
 
@@ -83,15 +83,16 @@ public class UsernameProvider implements IdentityProvider {
      *
      * @param username the username to authenticate with.
      * @param password the password to authenticate with.
-     * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
+     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
      * @param policyChooser a function that selects a {@link UserTokenPolicy} to use. The policy list is
      *     guaranteed to be non-null and non-empty.
      */
     public UsernameProvider(
         String username,
         String password,
-        ClientCertificateValidator certificateValidator,
-        Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser) {
+        CertificateValidator certificateValidator,
+        Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser
+    ) {
 
         this.username = username;
         this.password = password;
@@ -164,7 +165,7 @@ public class UsernameProvider implements IdentityProvider {
                 certificateValidator.validateCertificateChain(
                     certificateChain,
                     endpoint.getServer().getApplicationUri(),
-                    EndpointUtil.getHost(endpoint.getEndpointUrl())
+                    new String[]{EndpointUtil.getHost(endpoint.getEndpointUrl())}
                 );
             }
 
@@ -239,7 +240,7 @@ public class UsernameProvider implements IdentityProvider {
     public static UsernameProvider of(
         String username,
         String password,
-        ClientCertificateValidator certificateValidator
+        CertificateValidator certificateValidator
     ) {
 
         return new UsernameProvider(username, password, certificateValidator);

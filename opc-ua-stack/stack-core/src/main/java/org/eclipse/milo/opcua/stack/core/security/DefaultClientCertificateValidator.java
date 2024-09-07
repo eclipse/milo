@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultClientCertificateValidator implements ClientCertificateValidator {
+public class DefaultClientCertificateValidator implements CertificateValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClientCertificateValidator.class);
 
@@ -32,7 +32,7 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
     private final CertificateQuarantine certificateQuarantine;
 
     /**
-     * Create a {@link ClientCertificateValidator} that performs no optional validation checks.
+     * Create a {@link CertificateValidator} that performs no optional validation checks.
      *
      * @param trustListManager the configured {@link TrustListManager}.
      * @param certificateQuarantine the {@link CertificateQuarantine} to use.
@@ -46,7 +46,7 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
     }
 
     /**
-     * Create a {@link ClientCertificateValidator} that performs a given set of optional
+     * Create a {@link CertificateValidator} that performs a given set of optional
      * validation checks.
      *
      * @param trustListManager the configured {@link TrustListManager}.
@@ -65,7 +65,12 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
     }
 
     @Override
-    public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
+    public void validateCertificateChain(
+        List<X509Certificate> certificateChain,
+        String applicationUri,
+        String[] validHostNames
+    ) throws UaException {
+
         PKIXCertPathBuilderResult certPathResult;
 
         try {
@@ -91,42 +96,36 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
             validationChecks,
             false
         );
-    }
-
-    @Override
-    public void validateCertificateChain(
-        List<X509Certificate> certificateChain,
-        String applicationUri,
-        String... validHostNames
-    ) throws UaException {
-
-        validateCertificateChain(certificateChain);
 
         X509Certificate certificate = certificateChain.get(0);
 
-        try {
-            CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
-        } catch (UaException e) {
-            if (validationChecks.contains(ValidationCheck.APPLICATION_URI)) {
-                throw e;
-            } else {
-                LOGGER.warn(
-                    "check suppressed: certificate failed application uri check: {} != {}",
-                    applicationUri, CertificateValidationUtil.getSubjectAltNameUri(certificate)
-                );
+        if (applicationUri != null) {
+            try {
+                CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
+            } catch (UaException e) {
+                if (validationChecks.contains(ValidationCheck.APPLICATION_URI)) {
+                    throw e;
+                } else {
+                    LOGGER.warn(
+                        "check suppressed: certificate failed application uri check: {} != {}",
+                        applicationUri, CertificateValidationUtil.getSubjectAltNameUri(certificate)
+                    );
+                }
             }
         }
 
-        try {
-            CertificateValidationUtil.checkHostnameOrIpAddress(certificate, validHostNames);
-        } catch (UaException e) {
-            if (validationChecks.contains(ValidationCheck.HOSTNAME)) {
-                throw e;
-            } else {
-                LOGGER.warn(
-                    "check suppressed: certificate failed hostname check: {}",
-                    certificate.getSubjectX500Principal().getName()
-                );
+        if (validHostNames != null) {
+            try {
+                CertificateValidationUtil.checkHostnameOrIpAddress(certificate, validHostNames);
+            } catch (UaException e) {
+                if (validationChecks.contains(ValidationCheck.HOSTNAME)) {
+                    throw e;
+                } else {
+                    LOGGER.warn(
+                        "check suppressed: certificate failed hostname check: {}",
+                        certificate.getSubjectX500Principal().getName()
+                    );
+                }
             }
         }
     }

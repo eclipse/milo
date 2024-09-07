@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -92,11 +92,11 @@ public interface CertificateGroup {
     CertificateFactory getCertificateFactory();
 
     /**
-     * Get the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
+     * Get the {@link CertificateValidator} for this {@link CertificateGroup}.
      *
-     * @return the {@link ServerCertificateValidator} for this {@link CertificateGroup}.
+     * @return the {@link CertificateValidator} for this {@link CertificateGroup}.
      */
-    ServerCertificateValidator getCertificateValidator();
+    CertificateValidator getCertificateValidator();
 
     /**
      * An entry describing a certificate and type belonging to a {@link CertificateGroup}.

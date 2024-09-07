@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
@@ -113,7 +112,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public CertificateValidator getCertificateValidator() {
-                return new ClientCertificateValidator.InsecureValidator();
+                return new CertificateValidator.InsecureCertificateValidator();
             }
 
             @Override
@@ -179,7 +178,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public CertificateValidator getCertificateValidator() {
-                return new ClientCertificateValidator.InsecureValidator();
+                return new CertificateValidator.InsecureCertificateValidator();
             }
 
             @Override
@@ -243,7 +242,7 @@ class OpcTcpTransportTest extends SecurityFixture {
 
             @Override
             public CertificateValidator getCertificateValidator() {
-                return new ClientCertificateValidator.InsecureValidator();
+                return new CertificateValidator.InsecureCertificateValidator();
             }
 
             @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,13 +21,14 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
 
-public class DefaultServerCertificateValidator implements ServerCertificateValidator {
+public class DefaultServerCertificateValidator implements CertificateValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServerCertificateValidator.class);
 
@@ -70,7 +71,12 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
     }
 
     @Override
-    public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
+    public void validateCertificateChain(
+        List<X509Certificate> certificateChain,
+        @Nullable String applicationUri,
+        @Nullable String[] validHostnames
+    ) throws UaException {
+
         PKIXCertPathBuilderResult certPathResult;
 
         try {
@@ -126,29 +132,23 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
                 throw new UaException(e.getStatusCode());
             }
         }
-    }
 
-    @Override
-    public void validateCertificateChain(
-        List<X509Certificate> certificateChain,
-        String applicationUri
-    ) throws UaException {
+        if (applicationUri != null) {
+            X509Certificate certificate = certificateChain.get(0);
 
-        validateCertificateChain(certificateChain);
-
-        X509Certificate certificate = certificateChain.get(0);
-
-        try {
-            CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
-        } catch (UaException e) {
-            if (validationChecks.contains(ValidationCheck.APPLICATION_URI)) {
-                throw e;
-            } else {
-                LOGGER.warn(
-                    "check suppressed: certificate failed application uri check: {} != {}",
-                    applicationUri, CertificateValidationUtil.getSubjectAltNameUri(certificate)
-                );
+            try {
+                CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
+            } catch (UaException e) {
+                if (validationChecks.contains(ValidationCheck.APPLICATION_URI)) {
+                    throw e;
+                } else {
+                    LOGGER.warn(
+                        "check suppressed: certificate failed application uri check: {} != {}",
+                        applicationUri, CertificateValidationUtil.getSubjectAltNameUri(certificate)
+                    );
+                }
             }
         }
     }
+
 }

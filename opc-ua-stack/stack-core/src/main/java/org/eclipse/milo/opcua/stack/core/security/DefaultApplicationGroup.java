@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,7 +32,7 @@ public class DefaultApplicationGroup implements CertificateGroup {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    private final ServerCertificateValidator certificateValidator;
+    private final CertificateValidator certificateValidator;
 
     private final TrustListManager trustListManager;
     private final CertificateStore certificateStore;
@@ -42,14 +42,13 @@ public class DefaultApplicationGroup implements CertificateGroup {
         TrustListManager trustListManager,
         CertificateStore certificateStore,
         CertificateFactory certificateFactory,
-        CertificateQuarantine certificateQuarantine
+        CertificateValidator certificateValidator
     ) {
 
-        this.certificateStore = certificateStore;
         this.trustListManager = trustListManager;
+        this.certificateStore = certificateStore;
         this.certificateFactory = certificateFactory;
-
-        certificateValidator = new DefaultServerCertificateValidator(trustListManager, certificateQuarantine);
+        this.certificateValidator = certificateValidator;
     }
 
     public void initialize() throws Exception {
@@ -161,7 +160,7 @@ public class DefaultApplicationGroup implements CertificateGroup {
     }
 
     @Override
-    public ServerCertificateValidator getCertificateValidator() {
+    public CertificateValidator getCertificateValidator() {
         return certificateValidator;
     }
 
@@ -171,6 +170,7 @@ public class DefaultApplicationGroup implements CertificateGroup {
      * @param trustListManager the {@link TrustListManager} to use.
      * @param certificateStore the {@link CertificateStore} to use.
      * @param certificateFactory the {@link CertificateFactory} to use.
+     * @param certificateValidator the {@link CertificateValidator} to use.
      * @return an initialized {@link DefaultApplicationGroup} instance.
      * @throws Exception if an error occurs while initializing the
      *     {@link DefaultApplicationGroup}.
@@ -179,14 +179,14 @@ public class DefaultApplicationGroup implements CertificateGroup {
         TrustListManager trustListManager,
         CertificateStore certificateStore,
         CertificateFactory certificateFactory,
-        CertificateQuarantine certificateQuarantine
+        CertificateValidator certificateValidator
     ) throws Exception {
 
         var defaultApplicationGroup = new DefaultApplicationGroup(
             trustListManager,
             certificateStore,
             certificateFactory,
-            certificateQuarantine
+            certificateValidator
         );
 
         defaultApplicationGroup.initialize();

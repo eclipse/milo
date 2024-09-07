@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.sdk.client.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -59,11 +59,11 @@ public interface OpcUaClientConfig {
     Optional<X509Certificate[]> getCertificateChain();
 
     /**
-     * Get the {@link ClientCertificateValidator} this client will use to validate server certificates when connecting.
+     * Get the {@link CertificateValidator} this client will use to validate server certificates when connecting.
      *
      * @return the validator this client will use to validate server certificates when connecting.
      */
-    ClientCertificateValidator getCertificateValidator();
+    CertificateValidator getCertificateValidator();
 
     /**
      * @return the name of the client application, as a {@link LocalizedText}.
@@ -72,7 +72,7 @@ public interface OpcUaClientConfig {
 
     /**
      * @return a URI for the client's application instance. This should be the same as the URI in the client
-     * certificate, if present.
+     *     certificate, if present.
      */
     String getApplicationUri();
 
@@ -123,7 +123,7 @@ public interface OpcUaClientConfig {
 
     /**
      * @return the number of consecutive keep-alive request failures allowed before a connection is determined to be in
-     * error state.
+     *     error state.
      */
     UInteger getKeepAliveFailuresAllowed();
 
@@ -180,7 +180,7 @@ public interface OpcUaClientConfig {
      * Copy the values from an existing {@link OpcUaClientConfig} into a new {@link OpcUaClientConfigBuilder} and then
      * submit the builder to the provided consumer for modification.
      *
-     * @param config   the {@link OpcUaClientConfig} to copy from.
+     * @param config the {@link OpcUaClientConfig} to copy from.
      * @param consumer a {@link Consumer} that may modify the builder.
      * @return a {@link OpcUaClientConfig} built from the builder provided to {@code consumer}.
      */

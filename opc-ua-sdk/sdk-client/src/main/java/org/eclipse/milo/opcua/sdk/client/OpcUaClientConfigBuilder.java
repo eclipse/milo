@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import org.eclipse.milo.opcua.sdk.client.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -31,7 +31,8 @@ public class OpcUaClientConfigBuilder {
     private KeyPair keyPair;
     private X509Certificate certificate;
     private X509Certificate[] certificateChain;
-    private ClientCertificateValidator certificateValidator = new ClientCertificateValidator.InsecureValidator();
+    private CertificateValidator certificateValidator =
+        new CertificateValidator.InsecureCertificateValidator();
 
     private LocalizedText applicationName = LocalizedText.english("Eclipse Milo application name not configured");
     private String applicationUri = "urn:eclipse:milo:client:applicationUriNotConfigured";
@@ -142,7 +143,7 @@ public class OpcUaClientConfigBuilder {
         return this;
     }
 
-    public OpcUaClientConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
+    public OpcUaClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
         this.certificateValidator = certificateValidator;
         return this;
     }
@@ -184,7 +185,7 @@ public class OpcUaClientConfigBuilder {
         private final KeyPair keyPair;
         private final X509Certificate certificate;
         private final X509Certificate[] certificateChain;
-        private final ClientCertificateValidator certificateValidator;
+        private final CertificateValidator certificateValidator;
         private final LocalizedText applicationName;
         private final String applicationUri;
         private final String productUri;
@@ -206,7 +207,7 @@ public class OpcUaClientConfigBuilder {
             KeyPair keyPair,
             X509Certificate certificate,
             X509Certificate[] certificateChain,
-            ClientCertificateValidator certificateValidator,
+            CertificateValidator certificateValidator,
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
@@ -264,7 +265,7 @@ public class OpcUaClientConfigBuilder {
         }
 
         @Override
-        public ClientCertificateValidator getCertificateValidator() {
+        public CertificateValidator getCertificateValidator() {
             return certificateValidator;
         }
 

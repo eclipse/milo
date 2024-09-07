@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -35,7 +35,11 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
+import org.eclipse.milo.opcua.stack.core.security.DefaultApplicationGroup;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.FileBasedCertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.FileBasedTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.KeyStoreCertificateStore;
 import org.eclipse.milo.opcua.stack.core.security.RsaSha256CertificateFactory;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -109,21 +113,36 @@ public class ExampleServer {
             )
         );
 
-        var certificateManager = DefaultCertificateManager.createWithDefaultApplicationGroup(
-            pkiDir.toPath(),
-            certificateStore,
-            new RsaSha256CertificateFactory() {
-                @Override
-                protected KeyPair createRsaSha256KeyPair() {
-                    return loader.getServerKeyPair();
-                }
+        var trustListManager = FileBasedTrustListManager.createAndInitialize(pkiDir.toPath());
 
-                @Override
-                protected X509Certificate[] createRsaSha256CertificateChain(KeyPair keyPair) {
-                    return loader.getServerCertificateChain();
-                }
-            }
+        var certificateQuarantine = FileBasedCertificateQuarantine.create(
+            pkiDir.toPath()
+                .resolve("rejected")
+                .resolve("certs")
         );
+
+        var certificateFactory = new RsaSha256CertificateFactory() {
+            @Override
+            protected KeyPair createRsaSha256KeyPair() {
+                return loader.getServerKeyPair();
+            }
+
+            @Override
+            protected X509Certificate[] createRsaSha256CertificateChain(KeyPair keyPair) {
+                return loader.getServerCertificateChain();
+            }
+        };
+
+        var certificateValidator = new DefaultServerCertificateValidator(trustListManager, certificateQuarantine);
+
+        var defaultGroup = DefaultApplicationGroup.createAndInitialize(
+            trustListManager,
+            certificateStore,
+            certificateFactory,
+            certificateValidator
+        );
+
+        var certificateManager = new DefaultCertificateManager(certificateQuarantine, defaultGroup);
 
         var identityValidator = new UsernameIdentityValidator(
             true,
