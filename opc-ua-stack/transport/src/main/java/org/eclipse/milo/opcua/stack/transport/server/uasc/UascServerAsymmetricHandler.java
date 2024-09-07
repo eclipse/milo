@@ -369,7 +369,11 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 } catch (MessageDecodeException e) {
                     logger.error("Error decoding asymmetric message", e);
 
-                    ctx.close();
+                    ctx.executor().schedule(
+                        () -> ctx.close(),
+                        new Random().nextInt(1000), TimeUnit.MILLISECONDS
+                    );
+
                     return;
                 }
 
