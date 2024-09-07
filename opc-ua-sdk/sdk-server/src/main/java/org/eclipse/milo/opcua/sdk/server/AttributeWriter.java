@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -147,7 +148,12 @@ public class AttributeWriter {
                 }
 
                 if (dataTypeId != null) {
-                    value = validateDataType(node.getNodeContext().getServer(), dataTypeId, value);
+                    boolean allowNulls = false;
+                    if (node instanceof UaVariableNode) {
+                        Boolean b = ((UaVariableNode) node).getAllowNulls();
+                        allowNulls = b != null ? b : false;
+                    }
+                    value = validateDataType(node.getNodeContext().getServer(), dataTypeId, value, allowNulls);
                 }
 
                 Integer valueRank;
@@ -241,13 +247,21 @@ public class AttributeWriter {
     private static DataValue validateDataType(
         OpcUaServer server,
         NodeId dataType,
-        DataValue value) throws UaException {
+        DataValue value,
+        boolean allowNulls
+    ) throws UaException {
 
         Variant variant = value.getValue();
         if (variant == null) return value;
 
         Object o = variant.getValue();
-        if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
+        if (o == null) {
+            if (allowNulls) {
+                return value;
+            } else {
+                throw new UaException(StatusCodes.Bad_TypeMismatch);
+            }
+        }
 
         Class<?> valueClass = o.getClass().isArray() ?
             ArrayUtil.getType(o) : o.getClass();
