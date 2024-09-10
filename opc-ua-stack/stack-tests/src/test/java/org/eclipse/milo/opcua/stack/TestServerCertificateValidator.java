@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,9 +16,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 
-public class TestServerCertificateValidator implements ServerCertificateValidator {
+public class TestServerCertificateValidator implements CertificateValidator {
 
     private final Set<X509Certificate> trustedCertificates = ConcurrentHashMap.newKeySet();
 
@@ -31,12 +32,12 @@ public class TestServerCertificateValidator implements ServerCertificateValidato
     }
 
     @Override
-    public void validateCertificateChain(List<X509Certificate> certificateChain) {
-        // noop
-    }
+    public void validateCertificateChain(
+        List<X509Certificate> certificateChain,
+        String applicationUri,
+        String[] validHostnames
+    ) throws UaException {
 
-    @Override
-    public void validateCertificateChain(List<X509Certificate> certificateChain, String applicationUri) {
         // noop
     }
 

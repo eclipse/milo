@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.ServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.testng.annotations.BeforeSuite;
 
 public abstract class SecurityFixture {
@@ -46,7 +46,7 @@ public abstract class SecurityFixture {
     protected volatile KeyPair serverKeyPair4096;
 
     protected volatile CertificateManager serverCertificateManager;
-    protected volatile ServerCertificateValidator serverCertificateValidator;
+    protected volatile CertificateValidator serverCertificateValidator;
 
     @BeforeSuite
     public void setUp() throws Exception {
@@ -98,12 +98,13 @@ public abstract class SecurityFixture {
             }
         }
 
+        serverCertificateValidator = new TestServerCertificateValidator(clientCertificate);
+
         serverCertificateManager = new TestCertificateManager(
             serverKeyPair,
-            serverCertificate
+            serverCertificate,
+            serverCertificateValidator
         );
-
-        serverCertificateValidator = new TestServerCertificateValidator(clientCertificate);
     }
 
 }

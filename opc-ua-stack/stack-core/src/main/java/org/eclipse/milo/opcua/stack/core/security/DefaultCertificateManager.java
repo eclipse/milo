@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.security;
 
-import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -96,41 +95,6 @@ public class DefaultCertificateManager implements CertificateManager {
                 }
             })
             .findFirst();
-    }
-
-    /**
-     * Create an instance of {@link DefaultCertificateManager} pre-populated with an instance of
-     * {@link DefaultApplicationGroup}, with keys and certificates managed by
-     * {@code certificateStore}.
-     *
-     * @param pkiDir the base PKI directory this group will operate in.
-     * @param certificateStore the {@link CertificateStore} managing the keys and certificates.
-     * @param certificateFactory a {@link CertificateFactory} to use for generating new
-     *     certificates.
-     * @return a new {@link DefaultCertificateManager} instance.
-     * @throws Exception if an error occurs while initializing the {@link KeyStoreCertificateStore} or
-     *     {@link DefaultApplicationGroup}.
-     */
-    public static DefaultCertificateManager createWithDefaultApplicationGroup(
-        Path pkiDir,
-        CertificateStore certificateStore,
-        CertificateFactory certificateFactory
-    ) throws Exception {
-
-        var trustListManager = FileBasedTrustListManager.createAndInitialize(pkiDir);
-
-        var certificateQuarantine = FileBasedCertificateQuarantine.create(
-            pkiDir.resolve("rejected").resolve("certs")
-        );
-
-        var defaultGroup = DefaultApplicationGroup.createAndInitialize(
-            trustListManager,
-            certificateStore,
-            certificateFactory,
-            certificateQuarantine
-        );
-
-        return new DefaultCertificateManager(certificateQuarantine, defaultGroup);
     }
 
 }

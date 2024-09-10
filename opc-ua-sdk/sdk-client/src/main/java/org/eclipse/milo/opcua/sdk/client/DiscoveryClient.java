@@ -25,7 +25,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.encoding.DefaultEncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -84,7 +83,7 @@ public class DiscoveryClient {
 
             @Override
             public CertificateValidator getCertificateValidator() {
-                return new ClientCertificateValidator.InsecureValidator();
+                return new CertificateValidator.InsecureCertificateValidator();
             }
 
             @Override

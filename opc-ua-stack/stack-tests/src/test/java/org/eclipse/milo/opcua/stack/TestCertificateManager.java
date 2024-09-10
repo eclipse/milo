@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.stack.core.security.CertificateGroup;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.CertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultApplicationGroup;
 import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
 import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateStore;
@@ -34,7 +35,12 @@ public class TestCertificateManager implements CertificateManager {
     private final X509Certificate certificate;
     private final DefaultApplicationGroup certificateGroup;
 
-    public TestCertificateManager(KeyPair keyPair, X509Certificate certificate) throws Exception {
+    public TestCertificateManager(
+        KeyPair keyPair,
+        X509Certificate certificate,
+        CertificateValidator certificateValidator
+    ) throws Exception {
+
         this.keyPair = keyPair;
         this.certificate = certificate;
 
@@ -52,7 +58,7 @@ public class TestCertificateManager implements CertificateManager {
                     return new X509Certificate[]{certificate};
                 }
             },
-            certificateQuarantine
+            certificateValidator
         );
     }
 
