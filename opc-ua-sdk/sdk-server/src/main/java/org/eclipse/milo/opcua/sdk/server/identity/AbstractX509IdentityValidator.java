@@ -45,14 +45,14 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
             SecurityPolicy securityPolicy = SecurityPolicy.fromUri(policy.getSecurityPolicyUri());
 
             if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(signature.getAlgorithm())) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                throw new UaException(StatusCodes.Bad_UserSignatureInvalid,
                     "algorithm in token signature did not match algorithm specified by token policy");
             }
         } else {
             SecurityPolicy securityPolicy = session.getSecurityConfiguration().getSecurityPolicy();
 
             if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(signature.getAlgorithm())) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                throw new UaException(StatusCodes.Bad_UserSignatureInvalid,
                     "algorithm in token signature did not match algorithm specified by secure channel");
             }
         }
@@ -60,12 +60,16 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
         SecurityAlgorithm algorithm = SecurityAlgorithm.fromUri(signature.getAlgorithm());
 
         if (algorithm != SecurityAlgorithm.None) {
-            verifySignature(
-                session,
-                signature,
-                certificate,
-                algorithm
-            );
+            try {
+                verifySignature(
+                    session,
+                    signature,
+                    certificate,
+                    algorithm
+                );
+            } catch (UaException e) {
+                throw new UaException(StatusCodes.Bad_UserSignatureInvalid, e);
+            }
         }
 
         return authenticateCertificateOrThrow(session, certificate);
@@ -81,7 +85,7 @@ public abstract class AbstractX509IdentityValidator extends AbstractIdentityVali
         if (identity != null) {
             return identity;
         } else {
-            throw new UaException(StatusCodes.Bad_UserAccessDenied);
+            throw new UaException(StatusCodes.Bad_IdentityTokenRejected);
         }
     }
 

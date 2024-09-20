@@ -98,10 +98,14 @@ public class ExampleServer {
 
         File pkiDir = securityTempDir.resolve("pki").toFile();
 
+        File userPkiDir = securityTempDir.resolve("user-pki").toFile();
+
         LoggerFactory.getLogger(getClass())
             .info("security dir: {}", securityTempDir.toAbsolutePath());
         LoggerFactory.getLogger(getClass())
             .info("security pki dir: {}", pkiDir.getAbsolutePath());
+        LoggerFactory.getLogger(getClass())
+            .info("security user pki dir: {}", userPkiDir.getAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -157,7 +161,9 @@ public class ExampleServer {
             }
         );
 
-        var x509IdentityValidator = new X509IdentityValidator(c -> true);
+        var userTrustListManager = FileBasedTrustListManager.createAndInitialize(userPkiDir.toPath());
+
+        var x509IdentityValidator = new X509IdentityValidator(userTrustListManager);
 
         X509Certificate certificate = loader.getServerCertificate();
 

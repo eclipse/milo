@@ -11,18 +11,37 @@
 package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.security.cert.X509Certificate;
-import java.util.function.Predicate;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.DefaultServerCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.MemoryCertificateQuarantine;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
+import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
 import org.jetbrains.annotations.Nullable;
 
 public class X509IdentityValidator extends AbstractX509IdentityValidator {
 
-    private final Predicate<X509Certificate> predicate;
+    // TODO this shouldn't re-use DefaultServerCertificateValidator because
+    //  the certificate requirements are not the same.
 
-    public X509IdentityValidator(Predicate<X509Certificate> predicate) {
-        this.predicate = predicate;
+    private final CertificateValidator certificateValidator;
+
+    private final TrustListManager trustListManager;
+
+    public X509IdentityValidator(TrustListManager trustListManager) {
+        this.trustListManager = trustListManager;
+
+        certificateValidator = new DefaultServerCertificateValidator(
+            trustListManager,
+            Set.of(ValidationCheck.VALIDITY, ValidationCheck.REVOCATION),
+            new MemoryCertificateQuarantine()
+        );
     }
+
 
     @Override
     protected @Nullable Identity.X509UserIdentity authenticateCertificate(
@@ -30,9 +49,11 @@ public class X509IdentityValidator extends AbstractX509IdentityValidator {
         X509Certificate certificate
     ) {
 
-        if (predicate.test(certificate)) {
+        try {
+            certificateValidator.validateCertificateChain(List.of(certificate), null, null);
+
             return new DefaultX509UserIdentity(certificate);
-        } else {
+        } catch (UaException e) {
             return null;
         }
     }
