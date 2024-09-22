@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.client.ObjectTypeManager.ObjectNodeConstructor;
+import org.eclipse.milo.opcua.sdk.client.model.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
@@ -338,6 +339,46 @@ public class AddressSpace {
                 }
             });
         }
+    }
+
+    /**
+     * Get the {@link UaObjectNode} instance for the Objects Folder Node.
+     *
+     * @return the {@link UaObjectNode} instance for the Objects Folder Node.
+     * @throws UaException if an error occurs while creating the Objects Folder Node.
+     */
+    public UaObjectNode getObjectsFolderNode() throws UaException {
+        return getObjectNode(NodeIds.ObjectsFolder);
+    }
+
+    /**
+     * Get the {@link UaObjectNode} instance for the Root Folder Node.
+     *
+     * @return the {@link UaObjectNode} instance for the Root Folder Node.
+     * @throws UaException if an error occurs while creating the Root Folder Node.
+     */
+    public UaObjectNode getRootFolderNode() throws UaException {
+        return getObjectNode(NodeIds.RootFolder);
+    }
+
+    /**
+     * Get the {@link UaObjectNode} instance for the Types Folder Node.
+     *
+     * @return the {@link UaObjectNode} instance for the Types Folder Node.
+     * @throws UaException if an error occurs while creating the Types Folder Node.
+     */
+    public UaObjectNode getTypesFolderNode() throws UaException {
+        return getObjectNode(NodeIds.TypesFolder);
+    }
+
+    /**
+     * Get the {@link ServerTypeNode} instance for the Server Node.
+     *
+     * @return the {@link ServerTypeNode} instance for the Server Node.
+     * @throws UaException if an error occurs while creating the Server Node.
+     */
+    public ServerTypeNode getServerNode() throws UaException {
+        return (ServerTypeNode) getObjectNode(NodeIds.Server, NodeIds.ServerType);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 the Eclipse Milo Authors
+ * Copyright (c) 2024 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -263,6 +263,42 @@ public class AddressSpaceTest extends AbstractClientServerTest {
         );
 
         assertEquals(StatusCodes.Bad_NodeIdUnknown, exception.getStatusCode().getValue());
+    }
+
+    @Test
+    public void getObjectsFolderNode() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+        UaNode objectsFolderNode = addressSpace.getObjectsFolderNode();
+
+        assertNotNull(objectsFolderNode);
+        assertEquals(NodeIds.ObjectsFolder, objectsFolderNode.getNodeId());
+    }
+
+    @Test
+    public void getRootFolderNode() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+        UaNode rootFolderNode = addressSpace.getRootFolderNode();
+
+        assertNotNull(rootFolderNode);
+        assertEquals(NodeIds.RootFolder, rootFolderNode.getNodeId());
+    }
+
+    @Test
+    public void getTypesFolderNode() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+        UaNode typesFolderNode = addressSpace.getTypesFolderNode();
+
+        assertNotNull(typesFolderNode);
+        assertEquals(NodeIds.TypesFolder, typesFolderNode.getNodeId());
+    }
+
+    @Test
+    public void getServerNode() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+        ServerTypeNode serverNode = addressSpace.getServerNode();
+
+        assertNotNull(serverNode);
+        assertEquals(NodeIds.Server, serverNode.getNodeId());
     }
 
 }
