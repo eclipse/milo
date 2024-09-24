@@ -1,3 +1,21 @@
+# Table of Contents
+
+1. [Introduction](#introduction)
+2. [Ways to Contribute](#ways-to-contribute)
+3. [Legal Requirements](#legal-requirements)
+   - 3.1 [Sign the Eclipse Contributor Agreement](#sign-the-eclipse-contributor-agreement)
+   - 3.2 [Add Your GitHub Username](#add-your-github-username)
+   - 3.3 [Sign-off on Commits](#sign-off-on-commits)
+   - 3.4 [Configuring Git Email](#configuring-git-email)
+4. [Making Your Changes](#making-your-changes)
+   - 4.1 [Fork the Repository](#fork-the-repository)
+   - 4.2 [Create a New Branch](#create-a-new-branch)
+   - 4.3 [Include a License Header](#include-a-license-header)
+   - 4.4 [Test Your Changes](#test-your-changes)
+5. [Submitting the Changes](#submitting-the-changes)
+6. [After Submitting](#after-submitting)
+7. [License Header](#license-header)
+
 # How to contribute to Eclipse Milo
 
 First of all, thank you for considering a contribution to Eclipse Milo. We really appreciate the time and effort you want to
@@ -36,6 +54,14 @@ When you do make sure that you *Sign-off* your commit records using the same ema
 You do this by adding the `-s` flag when you make the commit(s), e.g.
 
     $> git commit -s -m "Shave the yak some more"
+
+If the email address you used to sign the agreement differs from your global GitHub email, you'll need to configure your local Git environment. You can set the email for your commits using:
+
+    $> git config --global user.email "your-email@example.com"
+
+Alternatively, if you want to specify a different email for a specific repository, you can run the command inside that repository without the --global flag:
+
+    $> git config user.email "your-email@example.com"
 
 You can find all the details in the [Contributing via Git](http://wiki.eclipse.org/Development_Resources/Contributing_via_Git) document on the Eclipse web site.
 
