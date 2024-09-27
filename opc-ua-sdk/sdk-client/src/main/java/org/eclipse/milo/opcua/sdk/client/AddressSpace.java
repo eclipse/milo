@@ -833,12 +833,15 @@ public class AddressSpace {
     }
 
     private CompletableFuture<NodeId> readTypeDefinition(NodeId nodeId) {
+        // A NodeClassMask of 0 is used to work around bug in FreeOpcUa-based
+        // servers that cause no references to be returned when requesting only
+        // ObjectType and VariableType references.
         CompletableFuture<BrowseResult> browseFuture = client.browseAsync(new BrowseDescription(
             nodeId,
             BrowseDirection.Forward,
             NodeIds.HasTypeDefinition,
             false,
-            uint(NodeClass.ObjectType.getValue() | NodeClass.VariableType.getValue()),
+            uint(0),
             uint(BrowseResultMask.All.getValue())
         ));
 
