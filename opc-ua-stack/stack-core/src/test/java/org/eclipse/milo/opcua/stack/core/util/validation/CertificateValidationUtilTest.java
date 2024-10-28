@@ -43,6 +43,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.checkHostnameOrIpAddress;
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -451,6 +452,15 @@ public class CertificateValidationUtilTest {
         );
     }
 
+    @Test
+    public void testHostnameWithCaseInsensitive() throws Exception {
+        String hostname = "digitalpetri.com";
+        checkHostnameOrIpAddress(createSelfSignedCertificate("digitalpetri.com"), hostname);
+        checkHostnameOrIpAddress(createSelfSignedCertificate("DIGITALPETRI.COM"), hostname);
+        checkHostnameOrIpAddress(createSelfSignedCertificate("DIGITALPETRI.com"), hostname);
+        checkHostnameOrIpAddress(createSelfSignedCertificate("DigitalPetri.com"), hostname);
+    }
+
     private X509CRL generateCrl(X509Certificate ca, PrivateKey caPrivateKey, X509Certificate... revoked) throws Exception {
         X509v2CRLBuilder builder = new X509v2CRLBuilder(
             new X500Name(ca.getSubjectDN().getName()),
@@ -485,6 +495,16 @@ public class CertificateValidationUtilTest {
         X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);
         assertNotNull(certificate);
         return certificate;
+    }
+
+    private static X509Certificate createSelfSignedCertificate(String dnsName) throws Exception {
+        KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+
+        SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
+            .setApplicationUri("urn:eclipse:milo:test")
+            .addDnsName(dnsName);
+
+        return builder.build();
     }
 
 }
