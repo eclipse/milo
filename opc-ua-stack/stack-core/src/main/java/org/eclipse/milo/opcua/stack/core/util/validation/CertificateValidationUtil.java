@@ -497,6 +497,17 @@ public class CertificateValidationUtil {
     }
 
     /**
+     * Creates a predicate to compare a hostname against a SubjectAltName DNSName entry in a
+     * certificate. The comparison is case-insensitive, following RFC 3986.
+     *
+     * @param hostname the hostname to compare against.
+     * @return a predicate that returns {@code true} if the hostname matches the DNSName entry.
+     */
+    private static Predicate<Object> hostnameValidationPredicate(String hostname) {
+        return input -> input instanceof String && hostname.equalsIgnoreCase((String) input);
+    }
+
+    /**
      * Validate that one of {@code hostNames} matches a SubjectAltName DNSName or IPAddress entry in the certificate.
      *
      * @param certificate the certificate to validate against.
@@ -513,7 +524,7 @@ public class CertificateValidationUtil {
                 return checkSubjectAltNameField(
                     certificate,
                     SUBJECT_ALT_NAME_DNS_NAME,
-                    n::equals
+                    hostnameValidationPredicate(n)
                 );
             } catch (Throwable t) {
                 return false;
