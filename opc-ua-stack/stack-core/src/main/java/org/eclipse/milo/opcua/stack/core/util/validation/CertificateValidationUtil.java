@@ -512,7 +512,8 @@ public class CertificateValidationUtil {
                 return checkSubjectAltNameField(
                     certificate,
                     SUBJECT_ALT_NAME_DNS_NAME,
-                    n::equals
+                    fieldValue ->
+                        (fieldValue instanceof String dnsName) && dnsName.equalsIgnoreCase(n)
                 );
             } catch (Throwable t) {
                 return false;
