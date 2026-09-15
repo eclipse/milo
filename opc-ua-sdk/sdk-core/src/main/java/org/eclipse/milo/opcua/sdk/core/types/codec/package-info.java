@@ -16,9 +16,9 @@
  * and their inherited builtin representation. Decoded values retain their DataType metadata so they
  * can later be encoded through the same context.
  *
- * <p>Subtype-enabled structure arrays contain {@link
+ * <p>Subtype-enabled scalar, array, and matrix fields contain {@link
  * org.eclipse.milo.opcua.stack.core.types.UaStructuredType} values. Nested codecs may return
- * generated Java values or dynamic structures, unions, and option sets; the array preserves those
+ * generated Java values or dynamic structures, unions, and option sets; the fields preserve those
  * representations for subsequent encoding. Null ExtensionObjects become Java null values without
  * invoking a nested codec. Arrays and matrices preserve null elements and empty containers;
  * encoding maps null structured values back to null ExtensionObjects.
