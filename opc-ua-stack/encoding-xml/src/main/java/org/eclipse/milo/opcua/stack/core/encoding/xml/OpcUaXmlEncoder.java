@@ -409,6 +409,8 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
         if (value != null && value.isNotNull()) {
           xmlStreamWriter.writeCharacters(
               DatatypeConverter.printBase64Binary(value.bytesOrEmpty()));
+        } else {
+          xmlStreamWriter.writeAttribute("xsi", Namespaces.XML_SCHEMA_INSTANCE, "nil", "true");
         }
       } catch (XMLStreamException e) {
         throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);

@@ -113,6 +113,21 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
     return field == null || field.equals(currentNode.getLocalName());
   }
 
+  private static boolean isNil(Node node) {
+    Node attribute = node.getAttributes().getNamedItemNS(Namespaces.XML_SCHEMA_INSTANCE, "nil");
+    if (attribute == null) {
+      return false;
+    }
+
+    return switch (attribute.getNodeValue().trim()) {
+      case "true", "1" -> true;
+      case "false", "0" -> false;
+      default ->
+          throw new UaSerializationException(
+              StatusCodes.Bad_DecodingError, "invalid xsi:nil value: " + attribute.getNodeValue());
+    };
+  }
+
   @Override
   public Boolean decodeBoolean(String field) throws UaSerializationException {
     if (currentNode(field)) {
@@ -282,7 +297,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   public String decodeString(String field) throws UaSerializationException {
     if (currentNode(field)) {
       try {
-        return currentNode.getTextContent();
+        return isNil(currentNode) ? null : currentNode.getTextContent();
       } finally {
         currentNode = nextElementSibling(currentNode);
       }
@@ -327,14 +342,11 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   public ByteString decodeByteString(String field) throws UaSerializationException {
     if (currentNode(field)) {
       try {
-        String textContent = currentNode.getTextContent().trim();
-        if (textContent.isEmpty()) {
+        if (isNil(currentNode)) {
           return ByteString.NULL_VALUE;
-        } else {
-          byte[] bs = DatatypeConverter.parseBase64Binary(textContent);
-
-          return ByteString.of(bs);
         }
+        return ByteString.of(
+            DatatypeConverter.parseBase64Binary(currentNode.getTextContent().trim()));
       } catch (IllegalArgumentException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
@@ -349,7 +361,9 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   public XmlElement decodeXmlElement(String field) throws UaSerializationException {
     if (currentNode(field)) {
       try {
-        return nodeToXmlElement(firstElementChild(currentNode));
+        return isNil(currentNode)
+            ? XmlElement.of(null)
+            : nodeToXmlElement(firstElementChild(currentNode));
       } finally {
         currentNode = nextElementSibling(currentNode);
       }
@@ -634,6 +648,10 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       String nodeName = node.getLocalName();
 
       if (nodeName.startsWith("ListOf")) {
+        if (isNil(node)) {
+          currentNode = nextElementSibling(node);
+          return null;
+        }
         String type = nodeName.substring(6);
 
         List<Object> values = new ArrayList<>();
@@ -947,9 +965,13 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
     if (currentNode(field)) {
       Node node = currentNode;
+      Node listNode = firstElementChild(node);
+      if (isNil(node) || (listNode != null && isNil(listNode))) {
+        currentNode = nextElementSibling(node);
+        return null;
+      }
 
       List<Object> values = new ArrayList<>();
-      Node listNode = firstElementChild(node);
 
       if (listNode != null) {
         NodeList children = listNode.getChildNodes();
@@ -1110,9 +1132,13 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   public Integer[] decodeEnumArray(String field) throws UaSerializationException {
     if (currentNode(field)) {
       Node node = currentNode;
+      Node listNode = firstElementChild(node);
+      if (isNil(node) || (listNode != null && isNil(listNode))) {
+        currentNode = nextElementSibling(node);
+        return null;
+      }
 
       List<Integer> values = new ArrayList<>();
-      Node listNode = firstElementChild(node);
 
       if (listNode != null) {
         NodeList children = listNode.getChildNodes();
@@ -1141,6 +1167,11 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       throws UaSerializationException {
     if (currentNode(field)) {
       Node node = currentNode;
+      Node listNode = firstElementChild(node);
+      if (isNil(node) || (listNode != null && isNil(listNode))) {
+        currentNode = nextElementSibling(node);
+        return null;
+      }
 
       DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
@@ -1150,7 +1181,6 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       }
 
       List<Object> values = new ArrayList<>();
-      Node listNode = firstElementChild(node);
 
       if (listNode != null) {
         NodeList children = listNode.getChildNodes();

@@ -799,10 +799,10 @@ public class OpcUaXmlDecoderTest {
         Arguments.of(standardXml, "ByteString", testByteString),
 
         // Test case 2: XML with empty content
-        Arguments.of(emptyXml, "ByteString", nullByteString),
+        Arguments.of(emptyXml, "ByteString", ByteString.of(new byte[0])),
 
         // Test case 3: XML with only whitespace content
-        Arguments.of(whitespaceXml, "ByteString", nullByteString),
+        Arguments.of(whitespaceXml, "ByteString", ByteString.of(new byte[0])),
 
         // Test case 4: Standard XML with non-matching field name
         Arguments.of(standardXml, "NonMatchingField", nullByteString));

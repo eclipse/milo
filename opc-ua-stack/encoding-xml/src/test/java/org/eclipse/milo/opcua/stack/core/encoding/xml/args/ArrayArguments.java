@@ -486,7 +486,7 @@ public class ArrayArguments {
             <Test xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd">
               <uax:ByteString>AQIDBA==</uax:ByteString>
               <uax:ByteString></uax:ByteString>
-              <uax:ByteString></uax:ByteString>
+              <uax:ByteString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:ByteString>
             </Test>
             """),
         Arguments.of(
