@@ -215,7 +215,7 @@ public class VariantArguments {
             """
             <Test xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd">
               <uax:Value>
-                <uax:XmlElement></uax:XmlElement>
+                <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
               </uax:Value>
             </Test>
             """),
@@ -713,8 +713,8 @@ public class VariantArguments {
             <Test xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd">
               <uax:Value>
                 <uax:ListOfXmlElement>
-                  <uax:XmlElement></uax:XmlElement>
-                  <uax:XmlElement></uax:XmlElement>
+                  <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
+                  <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
                 </uax:ListOfXmlElement>
               </uax:Value>
             </Test>
@@ -1398,10 +1398,10 @@ public class VariantArguments {
                     <uax:Int32>2</uax:Int32>
                   </uax:Dimensions>
                   <uax:Elements>
-                    <uax:XmlElement></uax:XmlElement>
-                    <uax:XmlElement></uax:XmlElement>
-                    <uax:XmlElement></uax:XmlElement>
-                    <uax:XmlElement></uax:XmlElement>
+                    <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
+                    <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
+                    <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
+                    <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
                   </uax:Elements>
                 </uax:Matrix>
               </uax:Value>

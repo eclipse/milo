@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.SecureXmlUtil;
@@ -174,6 +175,20 @@ class OpcUaXmlDecoderNilTest {
       assertTrue(value.getFragment().contains("nil=\"true\""));
       assertTrue(value.getFragment().contains("  text  "));
       assertTrue(document.isEqualNode(original));
+    }
+  }
+
+  // Encoding must retain both array positions and distinguish null fragments from empty fragments.
+  @Test
+  void xmlElementVariantArrayRoundTripsNullAndEmptyFragments() throws Exception {
+    XmlElement[] values = {XmlElement.NULL_VALUE, XmlElement.of("")};
+    String encoded;
+    try (var encoder = new OpcUaXmlEncoder(DefaultEncodingContext.INSTANCE)) {
+      encoder.encodeVariant("Test", new Variant(values));
+      encoded = encoder.getOutputString();
+    }
+    try (var decoder = new OpcUaXmlDecoder(DefaultEncodingContext.INSTANCE, encoded)) {
+      assertArrayEquals(values, (XmlElement[]) decoder.decodeVariant("Test").value());
     }
   }
 

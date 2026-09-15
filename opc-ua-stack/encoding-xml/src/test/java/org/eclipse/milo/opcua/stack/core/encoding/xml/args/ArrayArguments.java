@@ -514,7 +514,7 @@ public class ArrayArguments {
             <Test xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd">
               <uax:XmlElement><SimpleElement>Hello, World!</SimpleElement></uax:XmlElement>
               <uax:XmlElement><Empty></Empty></uax:XmlElement>
-              <uax:XmlElement></uax:XmlElement>
+              <uax:XmlElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></uax:XmlElement>
             </Test>
             """),
         Arguments.of(

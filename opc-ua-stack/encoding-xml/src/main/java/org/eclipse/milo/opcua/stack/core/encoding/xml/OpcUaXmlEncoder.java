@@ -425,7 +425,12 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
     if (beginField(field, value == null, true)) {
       try {
         if (value != null && value.isNotNull()) {
-          XmlSerializationUtil.writeXmlFragment(xmlStreamWriter, value.getFragmentOrEmpty());
+          String fragment = value.getFragmentOrEmpty();
+          if (!fragment.isEmpty()) {
+            XmlSerializationUtil.writeXmlFragment(xmlStreamWriter, fragment);
+          }
+        } else {
+          xmlStreamWriter.writeAttribute("xsi", Namespaces.XML_SCHEMA_INSTANCE, "nil", "true");
         }
       } catch (XMLStreamException e) {
         throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);

@@ -484,11 +484,6 @@ public class OpcUaXmlSerializationTest {
   @MethodSource("xmlElementArguments")
   @ParameterizedTest
   void xmlElementSerialization(XmlElement value) throws Exception {
-    // Skip test for null or empty fragments as they're not properly handled in XML encoding
-    if (value.getFragment() == null || value.getFragment().isEmpty()) {
-      return;
-    }
-
     String encoded;
     try (var encoder = new OpcUaXmlEncoder(new DefaultEncodingContext())) {
       encoder.encodeXmlElement("Test", value);
@@ -503,6 +498,12 @@ public class OpcUaXmlSerializationTest {
       decoder.setInput(new StringReader(encoded));
 
       decoded = decoder.decodeXmlElement("Test");
+    }
+
+    // Null and empty fragments carry distinct values but cannot be compared as XML documents.
+    if (value.getFragment() == null || value.getFragment().isEmpty()) {
+      assertEquals(value.getFragment(), decoded.getFragment());
+      return;
     }
 
     Diff diff =
