@@ -19,7 +19,9 @@
  * <p>Subtype-enabled structure arrays contain {@link
  * org.eclipse.milo.opcua.stack.core.types.UaStructuredType} values. Nested codecs may return
  * generated Java values or dynamic structures, unions, and option sets; the array preserves those
- * representations for subsequent encoding.
+ * representations for subsequent encoding. Null ExtensionObjects become Java null values without
+ * invoking a nested codec. Arrays and matrices preserve null elements and empty containers;
+ * encoding maps null structured values back to null ExtensionObjects.
  *
  * <p>Structure definitions determine wire field order and optional-field mask positions. Omitting a
  * value does not change the position of any later optional field. Applications supply members by
