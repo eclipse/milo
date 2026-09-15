@@ -19,6 +19,10 @@
  * including trailing fields and all fields of an empty structure, use the field decoder defaults.
  * Reads without an available element outside a structure remain decoding errors.
  *
+ * <p>Nullable strings, byte strings, XML elements, and arrays retain the distinction between an
+ * empty value and a value marked null by the XML Schema instance {@code nil} attribute. This
+ * attribute is interpreted only on UA value containers, never inside opaque XML payloads.
+ *
  * <p>Variants identify their contained builtin type from the XML element name. Matrix decoding
  * validates dimensions, element types, and element counts for both Variants and directly decoded
  * matrices. Structured values are delegated to the codecs registered in the context.
