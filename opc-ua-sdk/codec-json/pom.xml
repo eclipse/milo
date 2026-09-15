@@ -50,6 +50,12 @@
   <dependencies>
     <dependency>
       <groupId>org.eclipse.milo</groupId>
+      <artifactId>milo-encoding-xml</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.milo</groupId>
       <artifactId>milo-sdk-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>

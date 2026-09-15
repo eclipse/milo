@@ -149,9 +149,9 @@ public class OpcUaJsonEncoder implements UaEncoder, AutoCloseable {
    * <p>{@link Encoding#COMPACT} is the default, and is used for serialization between OPC UA
    * applications.
    *
-   * <p>{@link Encoding#VERBOSE} is used when the consumer of the encoded JSON is something like a
-   * "cloud application", or otherwise not an OPC UA application, and cannot be deserialized by
-   * another OPC UA application's JSON decoder.
+   * <p>{@link Encoding#VERBOSE} includes default values and descriptive text for consumers such as
+   * cloud applications. Decoding optional structures and unions requires matching codecs that use
+   * the semantic header operations and a JSON decoder configured for VERBOSE.
    *
    * @param encoding the encoding to use.
    */
@@ -297,6 +297,20 @@ public class OpcUaJsonEncoder implements UaEncoder, AutoCloseable {
       }
     } catch (IOException e) {
       throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+    }
+  }
+
+  @Override
+  public void encodeEncodingMask(UInteger mask) throws UaSerializationException {
+    if (encoding == Encoding.COMPACT) {
+      UaEncoder.super.encodeEncodingMask(mask);
+    }
+  }
+
+  @Override
+  public void encodeSwitchField(UInteger selector) throws UaSerializationException {
+    if (encoding == Encoding.COMPACT) {
+      UaEncoder.super.encodeSwitchField(selector);
     }
   }
 
@@ -1538,9 +1552,14 @@ public class OpcUaJsonEncoder implements UaEncoder, AutoCloseable {
             // "Array" member
             jsonWriter.name("Array");
             jsonWriter.beginArray();
-            for (int i = 0; i < Array.getLength(flatArray); i++) {
-              Object e = Array.get(flatArray, i);
-              encodeEnum(null, (UaEnumeratedType) e);
+            contextPush(EncoderContext.BUILTIN);
+            try {
+              for (int i = 0; i < Array.getLength(flatArray); i++) {
+                Object e = Array.get(flatArray, i);
+                encodeEnum(null, (UaEnumeratedType) e);
+              }
+            } finally {
+              contextPop();
             }
             jsonWriter.endArray();
 

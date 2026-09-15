@@ -658,7 +658,7 @@ class MethodArgumentValidationTest extends AbstractClientServerTest {
 
       @Override
       public UnionOfScalar decodeType(EncodingContext context, UaDecoder decoder) {
-        if (decoder.decodeUInt32("SwitchField").intValue() != 1) {
+        if (decoder.decodeSwitchField("Value").intValue() != 1) {
           throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid union switch");
         }
         return new UnionOfScalar(decoder.decodeBoolean("Value"));
@@ -666,7 +666,7 @@ class MethodArgumentValidationTest extends AbstractClientServerTest {
 
       @Override
       public void encodeType(EncodingContext context, UaEncoder encoder, UnionOfScalar union) {
-        encoder.encodeUInt32("SwitchField", uint(1));
+        encoder.encodeSwitchField(uint(1));
         encoder.encodeBoolean("Value", union.value);
       }
     }

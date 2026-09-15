@@ -26,6 +26,10 @@
  * <p>Structure definitions determine wire field order and optional-field mask positions. Omitting a
  * value does not change the position of any later optional field. Applications supply members by
  * name; codecs translate those members into the declared wire layout.
+ *
+ * <p>Codecs pass optional-field and union-member names in definition order to the decoder's
+ * semantic header operations. This lets each encoding read numeric headers or recover presence and
+ * selection from named members without introducing encoding-specific decisions into the codecs.
  */
 @NullMarked
 package org.eclipse.milo.opcua.sdk.core.types.codec;
