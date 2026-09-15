@@ -193,8 +193,8 @@ class FieldUtil {
           ExtensionObject[] xos = decoder.decodeExtensionObjectArray(fieldName);
 
           return Arrays.stream(xos)
-              .map(xo -> (DynamicStructType) xo.decode(decoder.getEncodingContext()))
-              .toArray(DynamicStructType[]::new);
+              .map(xo -> xo.decode(decoder.getEncodingContext()))
+              .toArray(UaStructuredType[]::new);
         } else {
           return decoder.decodeStructArray(fieldName, dataTypeId);
         }
@@ -293,7 +293,7 @@ class FieldUtil {
         encoder.encodeEnumArray(fieldName, (UaEnumeratedType[]) value);
       } else if (fieldHint instanceof FieldHint.Struct) {
         if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(definition, field)) {
-          DynamicStructType[] structArray = (DynamicStructType[]) value;
+          UaStructuredType[] structArray = (UaStructuredType[]) value;
 
           ExtensionObject[] xoArray =
               Arrays.stream(structArray)
