@@ -959,47 +959,34 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private <T> T[] decodeArray(String field, Function<String, T> decoder, Class<T> clazz)
       throws UaSerializationException {
-
     if (currentNode(field)) {
       Node node = currentNode;
-      Node listNode = firstElementChild(node);
-      if (isNil(node) || (listNode != null && isNil(listNode))) {
-        currentNode = nextElementSibling(node);
-        return null;
-      }
-
-      List<Object> values = new ArrayList<>();
-
-      if (listNode != null) {
-        NodeList children = listNode.getChildNodes();
-
-        for (int i = 0; i < children.getLength(); i++) {
-          currentNode = children.item(i);
-
-          if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-            values.add(decoder.apply(currentNode.getLocalName()));
-          }
-        }
-      }
-
       try {
-        checkArrayLength(values.size());
-
-        Object array = Array.newInstance(clazz, values.size());
-        for (int i = 0; i < values.size(); i++) {
-          Array.set(array, i, values.get(i));
-        }
-
-        return (T[]) array;
+        return isNil(node) ? null : decodeArrayElements(node, decoder, clazz);
       } finally {
         currentNode = nextElementSibling(node);
       }
     } else {
       return null;
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T[] decodeArrayElements(Node node, Function<String, T> decoder, Class<?> clazz) {
+    List<T> values = new ArrayList<>();
+
+    // Part 6 §5.3.4: the field itself is the container; its direct elements are the members.
+    for (Node member = firstElementChild(node);
+        member != null;
+        member = nextElementSibling(member)) {
+      checkArrayLength(values.size() + 1);
+      currentNode = member;
+      values.add(decoder.apply(member.getLocalName()));
+    }
+
+    return values.toArray(size -> (T[]) Array.newInstance(clazz, size));
   }
 
   @Override
@@ -1130,36 +1117,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
   @Override
   public Integer[] decodeEnumArray(String field) throws UaSerializationException {
-    if (currentNode(field)) {
-      Node node = currentNode;
-      Node listNode = firstElementChild(node);
-      if (isNil(node) || (listNode != null && isNil(listNode))) {
-        currentNode = nextElementSibling(node);
-        return null;
-      }
-
-      List<Integer> values = new ArrayList<>();
-
-      if (listNode != null) {
-        NodeList children = listNode.getChildNodes();
-
-        for (int i = 0; i < children.getLength(); i++) {
-          currentNode = children.item(i);
-
-          if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-            values.add(decodeEnum(currentNode.getLocalName()));
-          }
-        }
-      }
-
-      try {
-        return values.toArray(Integer[]::new);
-      } finally {
-        currentNode = nextElementSibling(node);
-      }
-    } else {
-      return null;
-    }
+    return decodeArray(field, this::decodeEnum, Integer.class);
   }
 
   @Override
@@ -1167,40 +1125,18 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       throws UaSerializationException {
     if (currentNode(field)) {
       Node node = currentNode;
-      Node listNode = firstElementChild(node);
-      if (isNil(node) || (listNode != null && isNil(listNode))) {
-        currentNode = nextElementSibling(node);
-        return null;
-      }
-
-      DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
-
-      if (codec == null) {
-        throw new UaSerializationException(
-            StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
-      }
-
-      List<Object> values = new ArrayList<>();
-
-      if (listNode != null) {
-        NodeList children = listNode.getChildNodes();
-
-        for (int i = 0; i < children.getLength(); i++) {
-          currentNode = children.item(i);
-
-          if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-            values.add(decodeStruct(currentNode.getLocalName(), dataTypeId));
-          }
-        }
-      }
-
       try {
-        Object array = Array.newInstance(codec.getType(), values.size());
-        for (int i = 0; i < values.size(); i++) {
-          Array.set(array, i, values.get(i));
+        if (isNil(node)) {
+          return null;
         }
 
-        return (UaStructuredType[]) array;
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
+        if (codec == null) {
+          throw new UaSerializationException(
+              StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
+        }
+
+        return decodeArrayElements(node, member -> decodeStruct(member, codec), codec.getType());
       } finally {
         currentNode = nextElementSibling(node);
       }

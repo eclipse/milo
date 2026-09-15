@@ -93,7 +93,7 @@ class OpcUaXmlDecoderWhitespaceTest {
     }
   }
 
-  // Pretty-printed array wrappers must not silently produce empty arrays.
+  // Part 6 §5.3.4: whitespace between direct array members must not change the values.
   @ParameterizedTest
   @ValueSource(strings = {"", "\n  ", "\n  <!-- item -->\n  "})
   void decodesNodeIdArray(String gap) throws Exception {
@@ -101,13 +101,11 @@ class OpcUaXmlDecoderWhitespaceTest {
         decoder(
             "<Nodes>"
                 + gap
-                + "<ListOfNodeId>"
-                + gap
                 + "<NodeId>"
                 + gap
                 + "<Identifier>ns=1;i=5392</Identifier></NodeId>"
                 + gap
-                + "<NodeId><Identifier>i=6</Identifier></NodeId></ListOfNodeId></Nodes>")) {
+                + "<NodeId><Identifier>i=6</Identifier></NodeId></Nodes>")) {
       assertArrayEquals(
           new NodeId[] {new NodeId(1, 5392), NodeIds.Int32}, decoder.decodeNodeIdArray("Nodes"));
     }

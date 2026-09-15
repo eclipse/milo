@@ -21,7 +21,10 @@
  *
  * <p>Nullable strings, byte strings, XML elements, and arrays retain the distinction between an
  * empty value and a value marked null by the XML Schema instance {@code nil} attribute. This
- * attribute is interpreted only on UA value containers, never inside opaque XML payloads.
+ * attribute is interpreted only on UA value containers, never inside opaque XML payloads. Named
+ * array fields contain their members directly, without an additional {@code List} wrapper. Each
+ * member uses its value decoder's null/default rules independently of the array container. Array
+ * reads restore the cursor to the following field even when a member or length check fails.
  *
  * <p>Variants identify their contained builtin type from the XML element name. Matrix decoding
  * validates dimensions, element types, and element counts for both Variants and directly decoded

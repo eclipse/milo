@@ -125,11 +125,7 @@ class OpcUaXmlDecoderNilTest {
     return Stream.<Function<OpcUaXmlDecoder, Object>>of(
             d -> d.decodeStringArray("Items"), d -> d.decodeInt32Array("Items"),
             d -> d.decodeEnumArray("Items"), d -> d.decodeStructArray("Items", NodeIds.Argument))
-        .flatMap(
-            read ->
-                Stream.of(
-                    Arguments.of(read, "<Items n:nil='1'/>"),
-                    Arguments.of(read, "<Items><List n:nil='true'/></Items>")));
+        .map(read -> Arguments.of(read, "<Items n:nil='1'/>"));
   }
 
   @Test
