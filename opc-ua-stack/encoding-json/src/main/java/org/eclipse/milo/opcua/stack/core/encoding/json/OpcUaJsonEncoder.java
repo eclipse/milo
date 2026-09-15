@@ -1419,6 +1419,16 @@ public class OpcUaJsonEncoder implements UaEncoder, AutoCloseable {
       throws UaSerializationException {
 
     if (values == null) {
+      if (encoding == Encoding.VERBOSE || contextPeek() == EncoderContext.BUILTIN) {
+        try {
+          if (field != null) {
+            jsonWriter.name(field);
+          }
+          jsonWriter.nullValue();
+        } catch (IOException e) {
+          throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+      }
       return;
     }
 

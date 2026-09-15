@@ -15,6 +15,11 @@
  * codecs. The encoder supports compact and verbose output; the decoder reads each value from its
  * current input position. Callers supply the context and manage the encoder's output lifecycle.
  *
+ * <p>Structure codecs control optional field presence by invoking encoders only for present fields.
+ * Null array fields are omitted in COMPACT and emitted as named JSON {@code null} in VERBOSE. Empty
+ * arrays remain {@code []} in both modes. Outside a structure, null arrays are emitted as JSON
+ * {@code null}, preserving positions in enclosing arrays.
+ *
  * <p>For COMPACT structures, {@link
  * org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder} buffers the current object and
  * lets its codec select members by name. Each nested structure has its own lookup scope, and the
