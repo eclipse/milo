@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.encoding.json;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -25,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.eclipse.milo.opcua.stack.core.types.structured.Structure;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -36,8 +39,7 @@ class JsonArrayFieldEncodingTest {
   @ParameterizedTest
   @MethodSource("nullFields")
   void encodesNullArrayFieldsAccordingToMode(Encoding encoding, String expected) throws Exception {
-    assertEquals(
-        expected,
+    String json =
         encodeFields(
             encoding,
             e -> {
@@ -46,7 +48,17 @@ class JsonArrayFieldEncodingTest {
               e.encodeStructArray("Structures", null, NodeIds.Range);
               e.encodeStructArray("ExpandedStructures", null, Range.TYPE_ID);
               e.encodeExtensionObjectArray("Objects", null);
-            }));
+            });
+    assertEquals(expected, json);
+    decodeFields(
+        json,
+        d -> {
+          assertNull(d.decodeInt32Array("Numbers"));
+          assertNull(d.decodeEnumArray("Enums"));
+          assertNull(d.decodeStructArray("Structures", NodeIds.Range));
+          assertNull(d.decodeStructArray("ExpandedStructures", Range.TYPE_ID));
+          assertNull(d.decodeExtensionObjectArray("Objects"));
+        });
   }
 
   static Stream<Arguments> nullFields() {
@@ -62,15 +74,16 @@ class JsonArrayFieldEncodingTest {
   @MethodSource("optionalFields")
   void distinguishesAbsentNullEmptyAndPopulatedFields(
       Encoding encoding, boolean present, Integer[] values, String expected) throws Exception {
-    assertEquals(
-        expected,
+    String json =
         encodeFields(
             encoding,
             e -> {
               if (present) {
                 e.encodeInt32Array("Numbers", values);
               }
-            }));
+            });
+    assertEquals(expected, json);
+    decodeFields(json, d -> assertArrayEquals(values, d.decodeInt32Array("Numbers")));
   }
 
   static Stream<Arguments> optionalFields() {
@@ -91,8 +104,7 @@ class JsonArrayFieldEncodingTest {
   @ParameterizedTest
   @EnumSource(Encoding.class)
   void preservesEmptyArrayFields(Encoding encoding) throws Exception {
-    assertEquals(
-        "{\"Numbers\":[],\"Enums\":[],\"Structures\":[],\"Objects\":[],\"Tail\":88}",
+    String json =
         encodeFields(
             encoding,
             e -> {
@@ -100,7 +112,17 @@ class JsonArrayFieldEncodingTest {
               e.encodeEnumArray("Enums", new ApplicationType[0]);
               e.encodeStructArray("Structures", new Range[0], NodeIds.Range);
               e.encodeExtensionObjectArray("Objects", new ExtensionObject[0]);
-            }));
+            });
+    assertEquals(
+        "{\"Numbers\":[],\"Enums\":[],\"Structures\":[],\"Objects\":[],\"Tail\":88}", json);
+    decodeFields(
+        json,
+        d -> {
+          assertArrayEquals(new Integer[0], d.decodeInt32Array("Numbers"));
+          assertArrayEquals(new Integer[0], d.decodeEnumArray("Enums"));
+          assertArrayEquals(new Range[0], d.decodeStructArray("Structures", NodeIds.Range));
+          assertArrayEquals(new ExtensionObject[0], d.decodeExtensionObjectArray("Objects"));
+        });
   }
 
   // A null value must occupy its position rather than shift later JSON array elements.
@@ -117,7 +139,68 @@ class JsonArrayFieldEncodingTest {
       encoder.encodeInt32(null, 88);
       encoder.jsonWriter.endArray();
       assertEquals("[null,null,null,null,88]", encoder.getOutputString());
+
+      var decoder = new OpcUaJsonDecoder(new DefaultEncodingContext(), encoder.getOutputString());
+      decoder.jsonReader.beginArray();
+      assertNull(decoder.decodeInt32Array(null));
+      assertNull(decoder.decodeEnumArray(null));
+      assertNull(decoder.decodeStructArray(null, NodeIds.Range));
+      assertNull(decoder.decodeExtensionObjectArray(null));
+      assertEquals(88, decoder.decodeInt32(null));
+      decoder.jsonReader.endArray();
     }
+  }
+
+  // COMPACT populated arrays must retain their values while null handling changes.
+  @Test
+  void roundTripsPopulatedArrayFields() throws Exception {
+    var numbers = new Integer[] {0, 1};
+    var enums = new ApplicationType[] {ApplicationType.Server, ApplicationType.Client};
+    var ranges = new Range[] {new Range(1.0, 2.0)};
+    var objects =
+        new ExtensionObject[] {ExtensionObject.of("{\"Low\":1.0,\"High\":2.0}", NodeIds.Range)};
+    String json =
+        encodeFields(
+            Encoding.COMPACT,
+            e -> {
+              e.encodeInt32Array("Numbers", numbers);
+              e.encodeEnumArray("Enums", enums);
+              e.encodeStructArray("Structures", ranges, NodeIds.Range);
+              e.encodeStructArray("ExpandedStructures", ranges, Range.TYPE_ID);
+              e.encodeExtensionObjectArray("Objects", objects);
+            });
+    decodeFields(
+        json,
+        d -> {
+          assertArrayEquals(numbers, d.decodeInt32Array("Numbers"));
+          assertArrayEquals(new Integer[] {0, 1}, d.decodeEnumArray("Enums"));
+          assertArrayEquals(ranges, d.decodeStructArray("Structures", NodeIds.Range));
+          assertArrayEquals(ranges, d.decodeStructArray("ExpandedStructures", Range.TYPE_ID));
+          assertArrayEquals(objects, d.decodeExtensionObjectArray("Objects"));
+        });
+  }
+
+  private void decodeFields(String json, Consumer<UaDecoder> fields) {
+    var codec =
+        new GenericDataTypeCodec<Structure>() {
+          @Override
+          public Class<Structure> getType() {
+            return Structure.class;
+          }
+
+          @Override
+          public Structure decodeType(EncodingContext context, UaDecoder decoder) {
+            fields.accept(decoder);
+            assertEquals(88, decoder.decodeInt32("Tail"));
+            return new Structure() {};
+          }
+
+          @Override
+          public void encodeType(EncodingContext context, UaEncoder encoder, Structure value) {
+            throw new UnsupportedOperationException();
+          }
+        };
+    new OpcUaJsonDecoder(new DefaultEncodingContext(), json).decodeStruct(null, codec);
   }
 
   private String encodeFields(Encoding encoding, Consumer<UaEncoder> fields) throws Exception {

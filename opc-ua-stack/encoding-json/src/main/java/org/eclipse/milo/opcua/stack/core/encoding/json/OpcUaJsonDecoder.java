@@ -1371,6 +1371,11 @@ public class OpcUaJsonDecoder implements UaDecoder {
         }
       }
 
+      if (jsonReader.peek() == JsonToken.NULL) {
+        jsonReader.nextNull();
+        return null;
+      }
+
       var elements = new ArrayList<>();
 
       jsonReader.beginArray();
@@ -1415,6 +1420,11 @@ public class OpcUaJsonDecoder implements UaDecoder {
           this.peekedNextName = nextName;
           return null;
         }
+      }
+
+      if (jsonReader.peek() == JsonToken.NULL) {
+        jsonReader.nextNull();
+        return null;
       }
 
       var elements = new ArrayList<T>();

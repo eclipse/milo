@@ -18,7 +18,8 @@
  * <p>Structure codecs control optional field presence by invoking encoders only for present fields.
  * Null array fields are omitted in COMPACT and emitted as named JSON {@code null} in VERBOSE. Empty
  * arrays remain {@code []} in both modes. Outside a structure, null arrays are emitted as JSON
- * {@code null}, preserving positions in enclosing arrays.
+ * {@code null}, preserving positions in enclosing arrays. Array decoders accept both omitted fields
+ * and explicit JSON {@code null} as null arrays, while preserving empty arrays.
  *
  * <p>For COMPACT structures, {@link
  * org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder} buffers the current object and
