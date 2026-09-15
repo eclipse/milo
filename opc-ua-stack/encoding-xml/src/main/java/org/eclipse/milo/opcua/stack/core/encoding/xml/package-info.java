@@ -19,6 +19,16 @@
  * including trailing fields and all fields of an empty structure, use the field decoder defaults.
  * Reads without an available element outside a structure remain decoding errors.
  *
+ * <p>XML element namespaces are separate from NodeId namespaces. Supply authoritative
+ * model-to-schema mappings through {@code EncodingContext.withXmlNamespaceUris} and pass that view
+ * to the encoder or Default XML ExtensionObject encoding. Internally created encoders use the same
+ * context. Missing mappings preserve the model URI for compatibility. Structure fields belong to
+ * their declaring schema; nested structure contents and typed array items use their type's schema.
+ * Codecs writing inherited fields from another model must enter the base type through {@code
+ * encodeStruct} with a null field name to apply its namespace without adding a wrapper. The decoder
+ * matches structure fields by local name and does not validate schemas, so a round trip alone
+ * cannot establish XML namespace conformance.
+ *
  * <p>Nullable strings, byte strings, XML elements, and arrays retain the distinction between an
  * empty value and a value marked null by the XML Schema instance {@code nil} attribute. This
  * attribute is interpreted only on UA value containers, never inside opaque XML payloads.
