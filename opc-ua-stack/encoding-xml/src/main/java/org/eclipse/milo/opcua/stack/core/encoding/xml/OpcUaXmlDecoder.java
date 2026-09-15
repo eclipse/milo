@@ -91,7 +91,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
   public OpcUaXmlDecoder setInput(Document document) {
     this.document = document;
-    this.currentNode = document.getFirstChild();
+    this.currentNode = document.getDocumentElement();
 
     return this;
   }
@@ -121,7 +121,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (IllegalArgumentException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return false;
@@ -136,7 +136,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (IllegalArgumentException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return (byte) 0;
@@ -151,7 +151,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return 0;
@@ -166,7 +166,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return 0;
@@ -181,7 +181,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return 0L;
@@ -196,7 +196,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return UByte.MIN;
@@ -211,7 +211,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return UShort.MIN;
@@ -226,7 +226,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return UInteger.MIN;
@@ -241,7 +241,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return ULong.MIN;
@@ -256,7 +256,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return 0f;
@@ -271,7 +271,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return 0.0;
@@ -284,7 +284,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       try {
         return currentNode.getTextContent();
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return null;
@@ -301,7 +301,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (IllegalArgumentException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return DateTime.NULL_VALUE;
@@ -316,7 +316,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (IllegalArgumentException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return new UUID(0L, 0L);
@@ -338,7 +338,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (IllegalArgumentException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return ByteString.NULL_VALUE;
@@ -349,9 +349,9 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   public XmlElement decodeXmlElement(String field) throws UaSerializationException {
     if (currentNode(field)) {
       try {
-        return nodeToXmlElement(currentNode.getFirstChild());
+        return nodeToXmlElement(firstElementChild(currentNode));
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return XmlElement.of(null);
@@ -361,7 +361,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   @Override
   public NodeId decodeNodeId(String field) throws UaSerializationException {
     if (currentNode(field)) {
-      Node idNode = currentNode.getFirstChild();
+      Node idNode = firstElementChild(currentNode);
 
       try {
         if (idNode != null) {
@@ -379,7 +379,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
           return NodeId.NULL_VALUE;
         }
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return NodeId.NULL_VALUE;
@@ -389,7 +389,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
   @Override
   public ExpandedNodeId decodeExpandedNodeId(String field) throws UaSerializationException {
     if (currentNode(field)) {
-      Node expandedIdNode = currentNode.getFirstChild();
+      Node expandedIdNode = firstElementChild(currentNode);
 
       try {
         if (expandedIdNode != null) {
@@ -402,7 +402,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (UaRuntimeException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return ExpandedNodeId.NULL_VALUE;
@@ -425,7 +425,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (NumberFormatException e) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return new StatusCode(0L);
@@ -455,7 +455,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (Throwable t) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return QualifiedName.NULL_VALUE;
@@ -485,7 +485,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (Throwable t) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return LocalizedText.NULL_VALUE;
@@ -520,7 +520,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
             extensionObject = ExtensionObject.of(decodeByteString("ByteString"), typeId);
           } else {
             extensionObject =
-                ExtensionObject.of(nodeToXmlElement(bodyNode.getFirstChild()), typeId);
+                ExtensionObject.of(nodeToXmlElement(firstElementChild(bodyNode)), typeId);
           }
         }
 
@@ -528,7 +528,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (Throwable t) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return extensionObject;
@@ -594,7 +594,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
             serverTimestamp,
             serverPicoseconds);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return new DataValue(Variant.NULL_VALUE);
@@ -619,7 +619,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       } catch (Throwable t) {
         throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return Variant.NULL_VALUE;
@@ -814,7 +814,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
             innerStatusCode,
             innerDiagnosticInfo);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return DiagnosticInfo.NULL_VALUE;
@@ -838,12 +838,12 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       }
 
       if (codec != null) {
-        currentNode = node.getFirstChild();
+        currentNode = firstElementChild(node);
 
         try {
           return (UaMessageType) codec.decode(context, this);
         } finally {
-          currentNode = node.getNextSibling();
+          currentNode = nextElementSibling(node);
         }
       } else {
         throw new UaSerializationException(
@@ -873,7 +873,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
               StatusCodes.Bad_DecodingError, "invalid enum value: " + s);
         }
       } finally {
-        currentNode = currentNode.getNextSibling();
+        currentNode = nextElementSibling(currentNode);
       }
     } else {
       return 0;
@@ -891,10 +891,10 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
       if (codec != null) {
         try {
-          currentNode = node.getFirstChild();
+          currentNode = firstElementChild(node);
           return codec.decode(context, this);
         } finally {
-          currentNode = node.getNextSibling();
+          currentNode = nextElementSibling(node);
         }
       } else {
         throw new UaSerializationException(
@@ -928,11 +928,11 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       Node node = currentNode;
 
       try {
-        currentNode = node.getFirstChild();
+        currentNode = firstElementChild(node);
 
         return codec.decode(context, this);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       // TODO could be better if we passed Class<?> into method
@@ -948,7 +948,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       Node node = currentNode;
 
       List<Object> values = new ArrayList<>();
-      Node listNode = node.getFirstChild();
+      Node listNode = firstElementChild(node);
 
       if (listNode != null) {
         NodeList children = listNode.getChildNodes();
@@ -972,7 +972,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
         return (T[]) array;
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return null;
@@ -1111,7 +1111,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       Node node = currentNode;
 
       List<Integer> values = new ArrayList<>();
-      Node listNode = node.getFirstChild();
+      Node listNode = firstElementChild(node);
 
       if (listNode != null) {
         NodeList children = listNode.getChildNodes();
@@ -1128,7 +1128,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       try {
         return values.toArray(Integer[]::new);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return null;
@@ -1149,7 +1149,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       }
 
       List<Object> values = new ArrayList<>();
-      Node listNode = node.getFirstChild();
+      Node listNode = firstElementChild(node);
 
       if (listNode != null) {
         NodeList children = listNode.getChildNodes();
@@ -1171,7 +1171,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
         return (UaStructuredType[]) array;
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return null;
@@ -1249,7 +1249,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
         return new Matrix(array, dimensions, dataType);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return Matrix.ofNull();
@@ -1290,7 +1290,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
         // Enumerations reduce to Int32, mirroring OpcUaBinaryDecoder.decodeEnumMatrix.
         return new Matrix(elements.toArray(Integer[]::new), dimensions, OpcUaDataType.Int32);
       } finally {
-        currentNode = node.getNextSibling();
+        currentNode = nextElementSibling(node);
       }
     } else {
       return Matrix.ofNull();
