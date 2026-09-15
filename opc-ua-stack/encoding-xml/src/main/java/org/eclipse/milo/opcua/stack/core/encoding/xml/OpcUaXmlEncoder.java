@@ -91,7 +91,8 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
       String[] namespaces = context.getNamespaceTable().toArray();
       for (int i = 0; i < namespaces.length; i++) {
         if (i > 0) {
-          xmlStreamWriter.setPrefix("ns" + i, namespaces[i]);
+          xmlStreamWriter.setPrefix(
+              "ns" + i, context.getXmlNamespaceUris().getOrDefault(namespaces[i], namespaces[i]));
         }
       }
 
@@ -186,7 +187,7 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
     }
 
     if (namespaceIndex.intValue() == 0) {
-      // HA! Use the special OPC UA XML XSD namespace instead.
+      // Namespace zero has a fixed XML schema namespace.
       return Namespaces.OPC_UA_XSD;
     }
 
@@ -196,11 +197,12 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
           StatusCodes.Bad_EncodingError, "no namespace registered: " + typeId.toParseableString());
     }
 
-    return namespaceUri;
+    return context.getXmlNamespaceUris().getOrDefault(namespaceUri, namespaceUri);
   }
 
-  static String getXmlName(String namespaceUri, UaDataType dataType) {
-    if (Namespaces.OPC_UA_XSD.equals(namespaceUri)) {
+  static String getXmlName(EncodingContext context, UaDataType dataType) {
+    UShort namespaceIndex = dataType.getTypeId().getNamespaceIndex(context.getNamespaceTable());
+    if (UShort.MIN.equals(namespaceIndex)) {
       // Only use `UaDataType::getTypeName` and apply the XML name encoding rules to types
       // from namespaces. Types defined by OPC UA have their SymbolicName hardcoded in the
       // XML schema file, and the SymbolicName was used to generate the Class name.
@@ -1589,7 +1591,7 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
           namespaceStack.push(namespaceUri);
 
           for (UaEnumeratedType element : value) {
-            encodeEnum(getXmlName(namespaceUri, element), element);
+            encodeEnum(getXmlName(context, element), element);
           }
 
           namespaceStack.pop();
@@ -1614,7 +1616,7 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
 
         assert values != null;
         for (UaStructuredType v : values) {
-          encodeStruct(getXmlName(namespaceUri, v), v, dataTypeId);
+          encodeStruct(getXmlName(context, v), v, dataTypeId);
         }
 
         namespaceStack.pop();
@@ -1913,7 +1915,7 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
 
             namespaceStack.push(namespaceUri);
 
-            encodeEnum(getXmlName(namespaceUri, element), element);
+            encodeEnum(getXmlName(context, element), element);
 
             namespaceStack.pop();
           }
