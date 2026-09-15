@@ -512,15 +512,16 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
         Node bodyNode = children.get("Body");
         if (bodyNode != null) {
-          if ("ByteString".equals(bodyNode.getLocalName())
-              && Namespaces.OPC_UA_XSD.equals(bodyNode.getNamespaceURI())) {
+          Node payloadNode = firstElementChild(bodyNode);
+          if (payloadNode != null
+              && "ByteString".equals(payloadNode.getLocalName())
+              && Namespaces.OPC_UA_XSD.equals(payloadNode.getNamespaceURI())) {
 
-            currentNode = bodyNode;
+            currentNode = payloadNode;
 
             extensionObject = ExtensionObject.of(decodeByteString("ByteString"), typeId);
           } else {
-            extensionObject =
-                ExtensionObject.of(nodeToXmlElement(firstElementChild(bodyNode)), typeId);
+            extensionObject = ExtensionObject.of(nodeToXmlElement(payloadNode), typeId);
           }
         }
 
