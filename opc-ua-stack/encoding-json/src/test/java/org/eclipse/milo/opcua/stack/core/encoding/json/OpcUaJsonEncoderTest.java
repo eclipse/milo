@@ -1137,7 +1137,7 @@ class OpcUaJsonEncoderTest {
   void encodeBooleanArray() throws Exception {
     try (var encoder = new OpcUaJsonEncoder(context)) {
       encoder.encodeBooleanArray(null, null);
-      assertEquals("", encoder.getOutputString());
+      assertEquals("null", encoder.getOutputString());
 
       encoder.reset();
       encoder.encodeBooleanArray(null, new Boolean[] {});
@@ -1161,7 +1161,7 @@ class OpcUaJsonEncoderTest {
       encoder.jsonWriter.beginObject();
       encoder.encodeBooleanArray("foo", null);
       encoder.jsonWriter.endObject();
-      assertEquals("{}", encoder.getOutputString());
+      assertEquals("{\"foo\":null}", encoder.getOutputString());
     }
   }
 
