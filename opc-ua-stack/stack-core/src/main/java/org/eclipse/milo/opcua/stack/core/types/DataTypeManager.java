@@ -16,12 +16,61 @@ import org.jspecify.annotations.Nullable;
 
 public interface DataTypeManager {
 
+  /**
+   * Register an application-owned codec, overwriting the type lookup and supplied encoding lookups.
+   *
+   * <p>Null and OPC UA null encoding ids leave existing mappings unchanged. These registrations
+   * have no handle-managed lifetime. Use {@link #acquireType} to reject collisions and release
+   * temporary registrations.
+   */
   void registerType(
       NodeId dataTypeId,
       DataTypeCodec codec,
       @Nullable NodeId binaryEncodingId,
       @Nullable NodeId xmlEncodingId,
       @Nullable NodeId jsonEncodingId);
+
+  /**
+   * Acquire a codec registration without overwriting any existing lookup.
+   *
+   * <p>An existing registration can be shared only when the type id, codec instance, and all
+   * encoding mappings match. Null and OPC UA null encoding ids both mean no encoding. A conflict
+   * changes nothing. Each successful call returns an independent handle. Keep it while the codec is
+   * needed, then close it to release this caller's use:
+   *
+   * <pre>{@code
+   * try (var registration = manager.acquireType(typeId, codec, binaryId, null, null)) {
+   *   // Encode or decode values while the registration is retained.
+   * }
+   * }</pre>
+   *
+   * <p>The last release removes a registration created by this method. Registrations installed by
+   * {@link #registerType} are borrowed and are never removed by releasing handles. Later ordinary
+   * registrations survive release of older handles, even if they reuse the same codec instance.
+   * Acquisition, release, and ordinary registration must coordinate atomically with lookups.
+   * Separate lookup calls do not form a snapshot.
+   *
+   * @return a thread-safe handle whose {@code close()} is idempotent and throws no checked
+   *     exception.
+   * @throws IllegalStateException if any requested id or mapping conflicts with an existing
+   *     registration.
+   * @throws UnsupportedOperationException if this manager does not support registration lifetime.
+   */
+  default RegistrationHandle acquireType(
+      NodeId dataTypeId,
+      DataTypeCodec codec,
+      @Nullable NodeId binaryEncodingId,
+      @Nullable NodeId xmlEncodingId,
+      @Nullable NodeId jsonEncodingId) {
+    throw new UnsupportedOperationException("Registration lifetime is not supported");
+  }
+
+  /** One caller's use of a codec registration. */
+  interface RegistrationHandle extends AutoCloseable {
+    /** Release this use once; subsequent calls have no effect. */
+    @Override
+    void close();
+  }
 
   /**
    * Get the {@link DataTypeCodec} for the given {@link NodeId}.
