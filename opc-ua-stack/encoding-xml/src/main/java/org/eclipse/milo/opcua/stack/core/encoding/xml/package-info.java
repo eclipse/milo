@@ -21,6 +21,10 @@
  * validates dimensions, element types, and element counts for both Variants and directly decoded
  * matrices. Structured values are delegated to the codecs registered in the context.
  *
+ * <p>ExtensionObject decoding preserves the encoding identified by the Body payload. A ByteString
+ * element in the OPC UA Types.xsd namespace carries binary bytes; other payload elements remain XML
+ * structures. The encoding id is retained for subsequent decoding with the context's codecs.
+ *
  * <p>Structures inside Variants are carried as ExtensionObjects. Null elements of typed structure
  * arrays and Matrices use an {@code xsi:nil} ExtensionObject element; they are not passed to a
  * structure codec. Decoding retains these positions as null-valued ExtensionObjects. Matrices

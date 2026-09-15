@@ -10,12 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.core.encoding.xml;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.StringReader;
 import java.util.Base64;
+import java.util.HexFormat;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -29,12 +31,81 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class OpcUaXmlDecoderTest {
+
+  // Part 6 §5.3.1.16: a Types.xsd ByteString body carries binary data even in an XML document.
+  @ParameterizedTest
+  @ValueSource(strings = {"", "\n  <!-- payload -->\n  "})
+  void extensionObjectByteStringBodyDecodesAsBinary(String spacing) throws Exception {
+    String xml =
+        "<ExtensionObject xmlns=\"http://opcfoundation.org/UA/2008/02/Types.xsd\">"
+            + "<TypeId><Identifier>i=886</Identifier></TypeId><Body>"
+            + spacing
+            + "<ByteString>AAAAAAAA8D8AAAAAAAAAQA==</ByteString>"
+            + spacing
+            + "</Body></ExtensionObject>";
+
+    try (var decoder = new OpcUaXmlDecoder(DefaultEncodingContext.INSTANCE, xml)) {
+      ExtensionObject.Binary decoded =
+          assertInstanceOf(ExtensionObject.Binary.class, decoder.decodeVariantValue());
+      assertEquals(NodeIds.Range_Encoding_DefaultBinary, decoded.getEncodingOrTypeId());
+      assertArrayEquals(
+          HexFormat.of().parseHex("000000000000f03f0000000000000040"), decoded.getBody().bytes());
+      Range range = assertInstanceOf(Range.class, decoded.decode(DefaultEncodingContext.INSTANCE));
+      assertEquals(1.0, range.getLow());
+      assertEquals(2.0, range.getHigh());
+    }
+  }
+
+  @Test
+  void extensionObjectXmlBodyRetainsRangeStructure() throws Exception {
+    String xml =
+        """
+        <ExtensionObject xmlns="http://opcfoundation.org/UA/2008/02/Types.xsd">
+          <TypeId><Identifier>i=885</Identifier></TypeId>
+          <Body>
+            <Range><Low>1.0</Low><High>2.0</High></Range>
+          </Body>
+        </ExtensionObject>
+        """;
+
+    try (var decoder = new OpcUaXmlDecoder(DefaultEncodingContext.INSTANCE, xml)) {
+      ExtensionObject.Xml decoded =
+          assertInstanceOf(ExtensionObject.Xml.class, decoder.decodeVariantValue());
+      assertEquals(NodeIds.Range_Encoding_DefaultXml, decoded.getEncodingOrTypeId());
+      Range range = assertInstanceOf(Range.class, decoded.decode(DefaultEncodingContext.INSTANCE));
+      assertEquals(1.0, range.getLow());
+      assertEquals(2.0, range.getHigh());
+    }
+  }
+
+  // Only the Types.xsd namespace identifies ByteString as the binary body marker.
+  @ParameterizedTest
+  @ValueSource(strings = {"urn:custom", ""})
+  void extensionObjectByteStringInOtherNamespaceRemainsXml(String namespace) throws Exception {
+    String xml =
+        """
+        <ExtensionObject xmlns="http://opcfoundation.org/UA/2008/02/Types.xsd">
+          <TypeId><Identifier>i=886</Identifier></TypeId>
+          <Body><ByteString xmlns="%s">AAAAAAAA8D8AAAAAAAAAQA==</ByteString></Body>
+        </ExtensionObject>
+        """
+            .formatted(namespace);
+
+    try (var decoder = new OpcUaXmlDecoder(DefaultEncodingContext.INSTANCE, xml)) {
+      ExtensionObject.Xml decoded =
+          assertInstanceOf(ExtensionObject.Xml.class, decoder.decodeVariantValue());
+      assertEquals(NodeIds.Range_Encoding_DefaultBinary, decoded.getEncodingOrTypeId());
+      assertNotNull(decoded.getBody().getFragment());
+    }
+  }
 
   @ParameterizedTest
   @MethodSource("decodeBooleanProvider")
