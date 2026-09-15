@@ -21,11 +21,19 @@
  * {@code null}, preserving positions in enclosing arrays. Array decoders accept both omitted fields
  * and explicit JSON {@code null} as null arrays, while preserving empty arrays.
  *
- * <p>For COMPACT structures, {@link
- * org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder} buffers the current object and
- * lets its codec select members by name. Each nested structure has its own lookup scope, and the
- * outer reader is restored when decoding succeeds or fails. Missing members retain their type's
- * default value; unread members are errors. Reset discards the previous input and lookup state.
+ * <p>COMPACT is the default mode for both directions. For VERBOSE, configure the encoder and
+ * decoder with {@code OpcUaJsonEncoder.Encoding.VERBOSE}. Structure codecs must use the semantic
+ * mask and selector operations: VERBOSE omits those headers and reconstructs them from field names
+ * supplied by the codec, while COMPACT retains numeric headers. Enum fields use numeric values in
+ * COMPACT and strings containing the numeric value in VERBOSE. Legacy codecs that read and write
+ * headers as ordinary UInt32 fields must migrate before using VERBOSE. RawData type inference is
+ * not supported; these modes do not infer missing runtime type identifiers.
+ *
+ * <p>For structures, {@link org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder}
+ * buffers the current object and lets its codec select members by name. Each nested structure has
+ * its own lookup scope, and the outer reader is restored when decoding succeeds or fails. Missing
+ * members retain their type's default value; unread members are errors. Reset discards the previous
+ * input and lookup state.
  *
  * <p>Buffered structures and Variant/ExtensionObject bodies preserve numeric tokens and reject
  * duplicate names before a JSON tree could discard them. Built-in value decoders retain their own

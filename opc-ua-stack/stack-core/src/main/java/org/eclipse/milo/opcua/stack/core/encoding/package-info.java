@@ -17,6 +17,13 @@
  * org.eclipse.milo.opcua.stack.core.encoding.UaEncoder} and {@link
  * org.eclipse.milo.opcua.stack.core.encoding.UaDecoder}; concrete encoders own the wire format.
  *
+ * <p>Codecs use {@code encodeEncodingMask}/{@code decodeEncodingMask} for optional structures and
+ * {@code encodeSwitchField}/{@code decodeSwitchField} for unions. Decoders receive optional-field
+ * or union-member names in definition order. Binary and XML use numeric headers; other encodings
+ * may derive presence and selection from member names. Codecs own which members are present and
+ * must encode present null/default values. Ordinary UInt32 fields always use the primitive methods,
+ * even when named {@code EncodingMask} or {@code SwitchField}.
+ *
  * <p>XML element namespaces are separate from NodeId namespaces. Applications and model libraries
  * supply authoritative model-to-schema mappings using {@code EncodingContext.withXmlNamespaceUris}.
  * The returned view owns an immutable snapshot of the mappings and delegates the other services to

@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import org.eclipse.milo.opcua.stack.core.OpcUaDataType;
@@ -34,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonEncoder.Encoding;
 import org.eclipse.milo.opcua.stack.core.types.UaMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -65,6 +67,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class OpcUaJsonDecoder implements UaDecoder {
 
+  private Encoding encoding = Encoding.COMPACT;
+
   private String peekedNextName = null;
   private JsonObject structureFields;
   private boolean structureFieldSelected;
@@ -88,6 +92,20 @@ public class OpcUaJsonDecoder implements UaDecoder {
   @Override
   public EncodingContext getEncodingContext() {
     return context;
+  }
+
+  /**
+   * Selects the representation read by this decoder; COMPACT is the default.
+   *
+   * <p>VERBOSE derives optional masks and union selectors from member names supplied by codecs
+   * through {@link #decodeEncodingMask} and {@link #decodeSwitchField}. Select the mode before
+   * decoding a value. Resetting the input retains the selected mode. RawData type inference is not
+   * supported.
+   *
+   * @param encoding the JSON encoding used by the input.
+   */
+  public void setEncoding(Encoding encoding) {
+    this.encoding = Objects.requireNonNull(encoding);
   }
 
   public void reset(Reader reader) {
@@ -278,6 +296,50 @@ public class OpcUaJsonDecoder implements UaDecoder {
       }
     } catch (IOException | IllegalStateException | IllegalArgumentException e) {
       throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+    }
+  }
+
+  @Override
+  public UInteger decodeEncodingMask(String... optionalFieldNames) throws UaSerializationException {
+    if (encoding == Encoding.COMPACT) {
+      return UaDecoder.super.decodeEncodingMask(optionalFieldNames);
+    }
+    if (optionalFieldNames.length > 32) {
+      throw new IllegalArgumentException("An encoding mask supports at most 32 optional fields");
+    }
+    requireStructureHeader();
+    long mask = 0L;
+    for (int i = 0; i < optionalFieldNames.length; i++) {
+      if (structureFields.has(optionalFieldNames[i])) {
+        mask |= 1L << i;
+      }
+    }
+    return uint(mask);
+  }
+
+  @Override
+  public UInteger decodeSwitchField(String... fieldNames) throws UaSerializationException {
+    if (encoding == Encoding.COMPACT) {
+      return UaDecoder.super.decodeSwitchField(fieldNames);
+    }
+    requireStructureHeader();
+    int selector = 0;
+    for (int i = 0; i < fieldNames.length; i++) {
+      if (structureFields.has(fieldNames[i])) {
+        if (selector != 0) {
+          throw new UaSerializationException(
+              StatusCodes.Bad_DecodingError, "Union contains more than one member");
+        }
+        selector = i + 1;
+      }
+    }
+    return uint(selector);
+  }
+
+  private void requireStructureHeader() {
+    if (structureFields == null || structureFieldSelected) {
+      throw new UaSerializationException(
+          StatusCodes.Bad_DecodingError, "Decode structure headers before reading members");
     }
   }
 
@@ -743,6 +805,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
       }
 
       jsonReader.beginObject();
+      if (this.encoding == Encoding.VERBOSE && jsonReader.peek() == JsonToken.END_OBJECT) {
+        jsonReader.endObject();
+        return null;
+      }
 
       NodeId encodingId = null;
       int encoding = 0;
@@ -1137,7 +1203,19 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
   @Override
   public Integer decodeEnum(String field) {
-    return decodeInt32(field);
+    if (encoding == Encoding.COMPACT) {
+      return decodeInt32(field);
+    }
+    String value = decodeString(field);
+    if (value == null) {
+      throw new UaSerializationException(
+          StatusCodes.Bad_DecodingError, "Missing enumeration value");
+    }
+    try {
+      return Integer.parseInt(value.substring(value.lastIndexOf('_') + 1));
+    } catch (NumberFormatException e) {
+      throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+    }
   }
 
   @Override
@@ -1349,7 +1427,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
   @Override
   public Integer[] decodeEnumArray(String field) throws UaSerializationException {
-    return decodeInt32Array(field);
+    return decodeArray(field, this::decodeEnum, Integer.class);
   }
 
   @Override
@@ -1449,6 +1527,11 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
   @Override
   public Matrix decodeMatrix(String field, OpcUaDataType dataType) throws UaSerializationException {
+    return decodeMatrix(field, dataType, f -> readBuiltinTypeValue(f, dataType.getTypeId()));
+  }
+
+  private Matrix decodeMatrix(
+      String field, OpcUaDataType dataType, Function<String, ?> elementDecoder) {
     try {
       if (field != null) {
         String nextName = nextName(field);
@@ -1484,7 +1567,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 var elements = new ArrayList<>();
                 jsonReader.beginArray();
                 while (jsonReader.peek() != JsonToken.END_ARRAY) {
-                  elements.add(readBuiltinTypeValue(null, dataType.getTypeId()));
+                  elements.add(elementDecoder.apply(null));
                 }
                 jsonReader.endArray();
 
@@ -1532,7 +1615,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
   @Override
   public Matrix decodeEnumMatrix(String field) throws UaSerializationException {
-    return decodeMatrix(field, OpcUaDataType.Int32);
+    return decodeMatrix(field, OpcUaDataType.Int32, this::decodeEnum);
   }
 
   @Override

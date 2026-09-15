@@ -256,7 +256,7 @@ class FieldUtil {
       StructureDefinition definition,
       StructureField field,
       Map<StructureField, FieldHint> fieldHints,
-      Object value) {
+      @Nullable Object value) {
 
     String fieldName = requireNonNull(field.getName());
     NodeId dataTypeId = field.getDataType();
