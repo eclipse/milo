@@ -14,7 +14,8 @@
  * <p>Encoders and decoders use an encoding context for namespaces, limits, and structured-type
  * codecs. A decoder owns its XML cursor and should be used for one input at a time. Element
  * boundaries determine the value layout; indentation and comments between elements do not carry
- * values.
+ * values. Decoding skips non-element nodes at value boundaries without modifying the input DOM or
+ * whitespace inside String and XmlElement payloads.
  *
  * <p>Variants identify their contained builtin type from the XML element name. Matrix decoding
  * validates dimensions, element types, and element counts for both Variants and directly decoded
