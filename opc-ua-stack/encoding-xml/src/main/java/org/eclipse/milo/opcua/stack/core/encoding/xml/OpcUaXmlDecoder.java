@@ -54,6 +54,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
   private Document document;
   private Node currentNode;
+  private int structureDepth;
 
   private final EncodingContext context;
 
@@ -107,7 +108,12 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
 
   private boolean currentNode(String field) throws UaSerializationException {
     if (currentNode == null) {
-      throw new UaSerializationException(StatusCodes.Bad_DecodingError, "currentNode==null");
+      // Named fields omitted from an active structure use their decoder defaults.
+      if (field != null && structureDepth > 0) {
+        return false;
+      }
+      throw new UaSerializationException(
+          StatusCodes.Bad_DecodingError, "no XML element available for field: " + field);
     }
 
     return field == null || field.equals(currentNode.getLocalName());
@@ -839,13 +845,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       }
 
       if (codec != null) {
-        currentNode = firstElementChild(node);
-
-        try {
-          return (UaMessageType) codec.decode(context, this);
-        } finally {
-          currentNode = nextElementSibling(node);
-        }
+        return (UaMessageType) decodeStructure(node, codec);
       } else {
         throw new UaSerializationException(
             StatusCodes.Bad_DecodingError, "no codec registered: " + typeName);
@@ -891,12 +891,7 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
       DataTypeCodec codec = context.getDataTypeManager().getCodec(dataTypeId);
 
       if (codec != null) {
-        try {
-          currentNode = firstElementChild(node);
-          return codec.decode(context, this);
-        } finally {
-          currentNode = nextElementSibling(node);
-        }
+        return decodeStructure(node, codec);
       } else {
         throw new UaSerializationException(
             StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
@@ -928,16 +923,21 @@ public class OpcUaXmlDecoder implements UaDecoder, AutoCloseable {
     if (currentNode(field)) {
       Node node = currentNode;
 
-      try {
-        currentNode = firstElementChild(node);
-
-        return codec.decode(context, this);
-      } finally {
-        currentNode = nextElementSibling(node);
-      }
+      return decodeStructure(node, codec);
     } else {
       // TODO could be better if we passed Class<?> into method
       return null;
+    }
+  }
+
+  private UaStructuredType decodeStructure(Node node, DataTypeCodec codec) {
+    structureDepth++;
+    try {
+      currentNode = firstElementChild(node);
+      return codec.decode(context, this);
+    } finally {
+      structureDepth--;
+      currentNode = nextElementSibling(node);
     }
   }
 
