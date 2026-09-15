@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicEnumType;
-import org.eclipse.milo.opcua.sdk.core.types.DynamicStructType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataType;
 import org.eclipse.milo.opcua.sdk.core.typetree.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -266,7 +265,7 @@ class FieldUtil {
         encoder.encodeEnum(fieldName, (UaEnumeratedType) value);
       } else if (fieldHint instanceof FieldHint.Struct) {
         if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(definition, field)) {
-          DynamicStructType structValue = (DynamicStructType) value;
+          UaStructuredType structValue = (UaStructuredType) value;
           ExtensionObject xo = ExtensionObject.encode(encoder.getEncodingContext(), structValue);
           encoder.encodeExtensionObject(fieldName, xo);
         } else {
@@ -331,10 +330,7 @@ class FieldUtil {
         if (dataTypeId.equals(NodeIds.Structure) || fieldAllowsSubtyping(definition, field)) {
           Matrix xoMatrix =
               matrix.transform(
-                  o -> {
-                    DynamicStructType structValue = (DynamicStructType) o;
-                    return ExtensionObject.encode(encoder.getEncodingContext(), structValue);
-                  },
+                  o -> ExtensionObject.encode(encoder.getEncodingContext(), (UaStructuredType) o),
                   ExtensionObject.class,
                   OpcUaDataType.ExtensionObject);
 
