@@ -15,7 +15,9 @@
  * codecs. A decoder owns its XML cursor and should be used for one input at a time. Element
  * boundaries determine the value layout; indentation and comments between elements do not carry
  * values. Decoding skips non-element nodes at value boundaries without modifying the input DOM or
- * whitespace inside String and XmlElement payloads.
+ * whitespace inside String and XmlElement payloads. Named fields omitted from an active structure,
+ * including trailing fields and all fields of an empty structure, use the field decoder defaults.
+ * Reads without an available element outside a structure remain decoding errors.
  *
  * <p>Variants identify their contained builtin type from the XML element name. Matrix decoding
  * validates dimensions, element types, and element counts for both Variants and directly decoded
