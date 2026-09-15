@@ -102,7 +102,8 @@ class FieldUtil {
           return matrix.transform(
               o -> eagerlyDecodeExtensionObject(decoder, (ExtensionObject) o),
               UaStructuredType.class,
-              OpcUaDataType.ExtensionObject);
+              OpcUaDataType.ExtensionObject,
+              NodeIds.Structure.expanded());
         }
       }
     } catch (Exception e) {

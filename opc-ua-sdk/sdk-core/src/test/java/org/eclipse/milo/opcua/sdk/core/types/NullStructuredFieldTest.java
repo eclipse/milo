@@ -14,10 +14,12 @@ import static org.mockito.Mockito.when;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.milo.opcua.sdk.core.types.codec.DynamicCodecFactory;
 import org.eclipse.milo.opcua.sdk.core.types.codec.DynamicStructCodec;
 import org.eclipse.milo.opcua.sdk.core.types.util.AbstractDataType;
@@ -28,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.OpcUaDataType;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.encoding.xml.OpcUaXmlDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.xml.OpcUaXmlEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -37,6 +40,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 class NullStructuredFieldTest {
   // Empty XML subtype fields occur in published companion Nodesets and must remain null.
@@ -56,7 +63,7 @@ class NullStructuredFieldTest {
   @ParameterizedTest
   @MethodSource("cases")
   void structuredNullsSurviveDecodeAndReencode(
-      NodeId fieldType, int rank, boolean dynamic, String shape) {
+      NodeId fieldType, int rank, boolean dynamic, String shape) throws Exception {
     var fixture = new Fixture(fieldType, rank, dynamic);
     ExtensionObject xo = ExtensionObject.encode(fixture.context, fixture.range());
     ExtensionObject nil = ExtensionObject.of(ByteString.NULL_VALUE, NodeId.NULL_VALUE);
@@ -131,6 +138,93 @@ class NullStructuredFieldTest {
     }
   }
 
+  // XML encoding must accept matrices whose first element cannot supply type metadata.
+  @ParameterizedTest
+  @MethodSource("matrixCases")
+  void decodedMatricesCanBeEncodedAsXml(NodeId fieldType, boolean dynamic, String shape)
+      throws Exception {
+    var fixture = new Fixture(fieldType, fieldType.equals(NodeIds.BaseDataType) ? -1 : 2, dynamic);
+    Matrix matrix =
+        switch (shape) {
+          case "null" -> Matrix.ofNull();
+          case "empty" ->
+              new Matrix(
+                  new UaStructuredType[0],
+                  new int[] {0, 0},
+                  OpcUaDataType.ExtensionObject,
+                  NodeIds.Structure.expanded());
+          case "allNull" ->
+              new Matrix(
+                  new UaStructuredType[] {null, null},
+                  new int[] {1, 2},
+                  OpcUaDataType.ExtensionObject,
+                  NodeIds.Structure.expanded());
+          case "mixed" ->
+              new Matrix(
+                  new UaStructuredType[] {null, fixture.range(), null},
+                  new int[] {1, 3},
+                  OpcUaDataType.ExtensionObject,
+                  NodeIds.Structure.expanded());
+          default -> throw new IllegalArgumentException(shape);
+        };
+    var members = new LinkedHashMap<String, Object>();
+    members.put("Item", fieldType.equals(NodeIds.BaseDataType) ? new Variant(matrix) : matrix);
+    DynamicStructType decoded = fixture.roundTrip(new DynamicStructType(fixture.parent, members));
+    String xml;
+    try (var encoder = new OpcUaXmlEncoder(fixture.context)) {
+      encoder.encodeStruct("T", decoded, fixture.codec);
+      xml = encoder.getOutputString();
+    }
+    var factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+    NodeList dimensions = document.getElementsByTagNameNS("*", "Dimensions");
+    NodeList elements = document.getElementsByTagNameNS("*", "ExtensionObject");
+    // Binary Variants normalize a zero-length matrix to an empty array.
+    boolean emptyVariantArray = fieldType.equals(NodeIds.BaseDataType) && shape.equals("empty");
+    boolean hasDimensions = !shape.equals("null") && !emptyVariantArray;
+    assertEquals(hasDimensions ? 1 : 0, dimensions.getLength(), xml);
+    assertEquals(
+        emptyVariantArray ? 1 : 0,
+        document.getElementsByTagNameNS("*", "ListOfExtensionObject").getLength(),
+        xml);
+    assertEquals(
+        switch (shape) {
+          case "allNull" -> 2;
+          case "mixed" -> 3;
+          default -> 0;
+        },
+        elements.getLength(),
+        xml);
+    NodeList dimensionValues = document.getElementsByTagNameNS("*", "Int32");
+    assertEquals(
+        hasDimensions ? matrix.getDimensions().length : 0, dimensionValues.getLength(), xml);
+    for (int i = 0; i < dimensionValues.getLength(); i++) {
+      assertEquals(
+          Integer.toString(matrix.getDimensions()[i]),
+          dimensionValues.item(i).getTextContent(),
+          xml);
+    }
+    for (int i = 0; i < elements.getLength(); i++) {
+      boolean isNull = !shape.equals("mixed") || i != 1;
+      assertEquals(
+          isNull ? 0 : 1,
+          ((Element) elements.item(i)).getElementsByTagNameNS("*", "Body").getLength(),
+          xml);
+    }
+  }
+
+  static Stream<Arguments> matrixCases() {
+    return Stream.of(NodeIds.Range, NodeIds.Structure, NodeIds.BaseDataType)
+        .flatMap(
+            type ->
+                Stream.of(false, true)
+                    .flatMap(
+                        dynamic ->
+                            Stream.of("null", "empty", "allNull", "mixed")
+                                .map(shape -> Arguments.of(type, dynamic, shape))));
+  }
+
   static Stream<Arguments> cases() {
     return Stream.of(false, true)
         .flatMap(
@@ -173,6 +267,7 @@ class NullStructuredFieldTest {
   private static class Fixture {
     final DynamicEncodingContext context = new DynamicEncodingContext();
     final DataType rangeType;
+    final DataType parent;
     final DynamicStructCodec codec;
     final boolean dynamic;
 
@@ -195,6 +290,11 @@ class NullStructuredFieldTest {
             public NodeId getBinaryEncodingId() {
               return NodeIds.Range_Encoding_DefaultBinary;
             }
+
+            @Override
+            public NodeId getXmlEncodingId() {
+              return NodeIds.Range_Encoding_DefaultXml;
+            }
           };
       context.dataTypeManager.registerType(
           NodeIds.Range,
@@ -203,7 +303,7 @@ class NullStructuredFieldTest {
           NodeIds.Range_Encoding_DefaultXml,
           NodeIds.Range_Encoding_DefaultJson);
       when(context.dataTypeTree.isStructType(NodeIds.Range)).thenReturn(true);
-      DataType parent =
+      parent =
           new AbstractDataType(
               new NodeId(1, "T"),
               new QualifiedName(1, "T"),

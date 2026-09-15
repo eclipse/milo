@@ -1637,7 +1637,8 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
 
   @Override
   public void encodeMatrix(String field, Matrix value) throws UaSerializationException {
-    if (beginField(field, value == null, true, true)) {
+    boolean isNull = value == null || value.isNull();
+    if (beginField(field, isNull, true, true)) {
       try {
         namespaceStack.push(Namespaces.OPC_UA_XSD);
 
@@ -1648,7 +1649,7 @@ public class OpcUaXmlEncoder implements UaEncoder, AutoCloseable {
                   + context.getEncodingLimits().getMaxRecursionDepth());
         }
 
-        if (value != null) {
+        if (!isNull) {
           Integer[] dimensions = new Integer[value.getDimensions().length];
           for (int i = 0; i < dimensions.length; i++) {
             dimensions[i] = value.getDimensions()[i];
