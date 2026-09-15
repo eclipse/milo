@@ -15,6 +15,18 @@
  * codecs. The encoder supports compact and verbose output; the decoder reads each value from its
  * current input position. Callers supply the context and manage the encoder's output lifecycle.
  *
+ * <p>For COMPACT structures, {@link
+ * org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder} buffers the current object and
+ * lets its codec select members by name. Each nested structure has its own lookup scope, and the
+ * outer reader is restored when decoding succeeds or fails. Missing members retain their type's
+ * default value; unread members are errors. Reset discards the previous input and lookup state.
+ *
+ * <p>Buffered structures and Variant/ExtensionObject bodies preserve numeric tokens and reject
+ * duplicate names before a JSON tree could discard them. Built-in value decoders retain their own
+ * unknown-field policies. Input character and buffered-container depth limits come from the
+ * encoding context; size or depth violations report {@code Bad_EncodingLimitsExceeded}, while
+ * malformed values report {@code Bad_DecodingError}.
+ *
  * <p>Variants carry structures as ExtensionObjects. Non-null structure bodies use their registered
  * encoding. Null elements of typed structure arrays and Matrices are JSON {@code null} in both
  * modes, as required for array elements by OPC UA Part 6, 5.4.5. Decoding returns ExtensionObject
