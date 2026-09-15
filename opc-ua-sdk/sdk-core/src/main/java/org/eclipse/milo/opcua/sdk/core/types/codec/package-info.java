@@ -16,6 +16,11 @@
  * and their inherited builtin representation. Decoded values retain their DataType metadata so they
  * can later be encoded through the same context.
  *
+ * <p>Subtype-enabled structure arrays contain {@link
+ * org.eclipse.milo.opcua.stack.core.types.UaStructuredType} values. Nested codecs may return
+ * generated Java values or dynamic structures, unions, and option sets; the array preserves those
+ * representations for subsequent encoding.
+ *
  * <p>Structure definitions determine wire field order and optional-field mask positions. Omitting a
  * value does not change the position of any later optional field. Applications supply members by
  * name; codecs translate those members into the declared wire layout.
