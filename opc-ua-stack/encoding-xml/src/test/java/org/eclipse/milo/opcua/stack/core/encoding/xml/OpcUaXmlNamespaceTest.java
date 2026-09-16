@@ -50,6 +50,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -152,7 +153,7 @@ class OpcUaXmlNamespaceTest {
     Fixture container =
         fixture(CUSTOM, "Container", (c, e) -> e.encodeVariant("Value", new Variant(value)));
     Document variant = document(encode(mapped, container));
-    var body =
+    Node body =
         variant.getElementsByTagNameNS(IJT + "Types.xsd", "JoiningResultMetaDataType").item(0);
     assertNotNull(body);
     schema.newValidator().validate(new DOMSource(body));
