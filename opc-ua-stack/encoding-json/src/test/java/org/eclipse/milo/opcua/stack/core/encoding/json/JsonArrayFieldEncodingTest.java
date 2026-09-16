@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Structure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -180,7 +181,88 @@ class JsonArrayFieldEncodingTest {
         });
   }
 
+  // Part 6 §5.4.5: null elements use JSON null even when the scalar VERBOSE default is {}.
+  @ParameterizedTest
+  @MethodSource("extensionObjectElements")
+  void preservesNullExtensionObjectArrayElements(
+      Encoding encoding, ExtensionObject[] values, String expected) throws Exception {
+    try (var encoder = new OpcUaJsonEncoder(new DefaultEncodingContext())) {
+      encoder.setEncoding(encoding);
+      encoder.encodeExtensionObjectArray(null, values);
+      assertEquals(expected, encoder.getOutputString());
+
+      var decoder = new OpcUaJsonDecoder(new DefaultEncodingContext(), encoder.getOutputString());
+      decoder.setEncoding(encoding);
+      assertArrayEquals(values, decoder.decodeExtensionObjectArray(null));
+    }
+  }
+
+  // Generic structure codecs must preserve null-first subtype arrays and the following field.
+  @ParameterizedTest
+  @MethodSource("extensionObjectElements")
+  void preservesNullExtensionObjectElementsInStructureFields(
+      Encoding encoding, ExtensionObject[] values, String expected) throws Exception {
+    String json = encodeFields(encoding, e -> e.encodeExtensionObjectArray("Objects", values));
+    assertEquals("{\"Objects\":" + expected + ",\"Tail\":88}", json);
+    decodeFields(
+        encoding, json, d -> assertArrayEquals(values, d.decodeExtensionObjectArray("Objects")));
+  }
+
+  static Stream<Arguments> extensionObjectElements() {
+    ExtensionObject first = ExtensionObject.of("{\"Low\":1.0,\"High\":2.0}", NodeIds.Range);
+    ExtensionObject second = ExtensionObject.of("{\"Low\":3.0,\"High\":4.0}", NodeIds.Range);
+    String firstJson = "{\"UaTypeId\":\"i=884\",\"UaBody\":{\"Low\":1.0,\"High\":2.0}}";
+    String secondJson = "{\"UaTypeId\":\"i=884\",\"UaBody\":{\"Low\":3.0,\"High\":4.0}}";
+    return Stream.of(Encoding.values())
+        .flatMap(
+            encoding ->
+                Stream.of(
+                    Arguments.of(encoding, new ExtensionObject[] {null}, "[null]"),
+                    Arguments.of(encoding, new ExtensionObject[] {null, null}, "[null,null]"),
+                    Arguments.of(
+                        encoding,
+                        new ExtensionObject[] {null, first, null, second, null},
+                        "[null," + firstJson + ",null," + secondJson + ",null]"),
+                    Arguments.of(
+                        encoding,
+                        new ExtensionObject[] {first, second},
+                        "[" + firstJson + "," + secondJson + "]")));
+  }
+
+  // Part 6 §5.4.2.16: the VERBOSE scalar default remains {}, independently of array rules.
+  @ParameterizedTest
+  @CsvSource(
+      value = {"COMPACT|null", "VERBOSE|{}"},
+      delimiter = '|')
+  void preservesStandaloneNullExtensionObjectDefaults(Encoding encoding, String expected)
+      throws Exception {
+    try (var encoder = new OpcUaJsonEncoder(new DefaultEncodingContext())) {
+      encoder.setEncoding(encoding);
+      encoder.encodeExtensionObject(null, null);
+      assertEquals(expected, encoder.getOutputString());
+      var decoder = new OpcUaJsonDecoder(new DefaultEncodingContext(), encoder.getOutputString());
+      decoder.setEncoding(encoding);
+      assertNull(decoder.decodeExtensionObject(null));
+    }
+  }
+
+  // Scalar structure fields keep COMPACT omission and the VERBOSE empty-object default.
+  @ParameterizedTest
+  @CsvSource(
+      value = {"COMPACT|{\"Tail\":88}", "VERBOSE|{\"Object\":{},\"Tail\":88}"},
+      delimiter = '|')
+  void preservesNullExtensionObjectStructureFieldDefaults(Encoding encoding, String expected)
+      throws Exception {
+    String json = encodeFields(encoding, e -> e.encodeExtensionObject("Object", null));
+    assertEquals(expected, json);
+    decodeFields(encoding, json, d -> assertNull(d.decodeExtensionObject("Object")));
+  }
+
   private void decodeFields(String json, Consumer<UaDecoder> fields) {
+    decodeFields(Encoding.COMPACT, json, fields);
+  }
+
+  private void decodeFields(Encoding encoding, String json, Consumer<UaDecoder> fields) {
     var codec =
         new GenericDataTypeCodec<Structure>() {
           @Override
@@ -200,7 +282,9 @@ class JsonArrayFieldEncodingTest {
             throw new UnsupportedOperationException();
           }
         };
-    new OpcUaJsonDecoder(new DefaultEncodingContext(), json).decodeStruct(null, codec);
+    var decoder = new OpcUaJsonDecoder(new DefaultEncodingContext(), json);
+    decoder.setEncoding(encoding);
+    decoder.decodeStruct(null, codec);
   }
 
   private String encodeFields(Encoding encoding, Consumer<UaEncoder> fields) throws Exception {
