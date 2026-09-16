@@ -1381,7 +1381,21 @@ public class OpcUaJsonEncoder implements UaEncoder, AutoCloseable {
   @Override
   public void encodeExtensionObjectArray(String field, ExtensionObject[] value)
       throws UaSerializationException {
-    encodeArray(field, value, this::encodeExtensionObject);
+    encodeArray(
+        field,
+        value,
+        (f, v) -> {
+          if (v == null) {
+            // Part 6, 5.4.5: array nulls override the scalar VERBOSE empty-object default.
+            try {
+              jsonWriter.nullValue();
+            } catch (IOException e) {
+              throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+            }
+          } else {
+            encodeExtensionObject(f, v);
+          }
+        });
   }
 
   @Override
